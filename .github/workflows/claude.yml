@@ -1,0 +1,51 @@
+name: claude
+
+on:
+  workflow_call:
+    inputs:
+      trigger_phrase:
+        type: string
+        required: true
+      prompt:
+        type: string
+        required: false
+      reaction:
+        type: string
+        required: false
+    secrets:
+      LITELLM_KEY:
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+
+jobs:
+  claude:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: React
+        if: inputs.reaction && (github.event.comment.id || github.event.issue.number)
+        run: gh api repos/${{ github.repository }}/${{ github.event.comment.id && format('issues/comments/{0}', github.event.comment.id) || format('issues/{0}', github.event.issue.number) }}/reactions -f content=${{ inputs.reaction }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run
+        uses: anthropics/claude-code-action@v1
+        env:
+          ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
+        with:
+          anthropic_api_key: ${{ secrets.LITELLM_KEY }}
+          github_token: ${{ github.token }}
+          trigger_phrase: ${{ inputs.trigger_phrase }}
+          prompt: ${{ inputs.prompt || '' }}
+          claude_args: --dangerously-skip-permissions
