@@ -1,0 +1,37 @@
+---
+name: pomo
+description: Pomodoro timer for focus sessions. Use when user feels overwhelmed, needs to focus, or asks for a pomodoro/timer.
+---
+
+# Pomo
+
+Auto-cycling pomodoro. Start once, it handles the rest.
+
+## Start
+
+Two steps - BOTH required:
+
+```bash
+nohup ~/.claude/skills/pomo/timer.sh 25 work 1 > /tmp/pomo.log 2>&1 & disown
+```
+
+```bash
+~/.claude/skills/pomo/resume.sh  # run_in_background: true
+```
+
+## Cycle (auto)
+
+- 25 min work
+- 5 min break
+- repeat 4x then 15 min long break
+- loops forever until stopped
+
+## Stop
+
+```bash
+rm /tmp/pomo.status
+```
+
+## Recovery
+
+Run resume.sh with run_in_background - picks up wherever it left off.

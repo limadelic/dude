@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "jira": {
+      "type": "http",
+      "url": "https://sdlc-mcp.ukg.int:8080/mcp/",
+      "headers": {
+        "Authorization": "Token ${JIRA_PAT:-}"
+      }
+    },
+    "confluence": {
+      "type": "http",
+      "url": "https://sdlc-mcp.ukg.int:8081/mcp/",
+      "headers": {
+        "Authorization": "Token ${CONFLUENCE_PAT:-}"
+      }
+    }
+  }
+}
