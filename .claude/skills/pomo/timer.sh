@@ -13,6 +13,12 @@ echo "$(date +%H:%M:%S) pomo started: $MINUTES min ($LABEL)"
 
 sleep "$SECONDS_TOTAL"
 
+# Stop if status file was removed during sleep
+if [ ! -f "$STATUS_FILE" ]; then
+  echo "$(date +%H:%M:%S) pomo stopped (status file removed)"
+  exit 0
+fi
+
 echo "$(date +%H:%M:%S) pomo done: $LABEL"
 echo "transitioning|0|$ROUND" > "$STATUS_FILE"
 afplay ~/.claude/skills/pomo/ding.mp3 &
@@ -35,6 +41,12 @@ else
   ICON="apple.icns"
 fi
 osascript -e "display dialog \"$BODY\" with title \"$TITLE\" buttons {\"OK\"} default button \"OK\" with icon POSIX file \"$HOME/.claude/skills/pomo/$ICON\""
+
+# Stop if status file was removed
+if [ ! -f "$STATUS_FILE" ]; then
+  echo "$(date +%H:%M:%S) pomo stopped (status file removed)"
+  exit 0
+fi
 
 # Auto-chain to next phase
 if [[ "$LABEL" == "work" ]]; then
