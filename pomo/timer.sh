@@ -17,17 +17,24 @@ echo "$(date +%H:%M:%S) pomo done: $LABEL"
 echo "transitioning|0|$ROUND" > "$STATUS_FILE"
 afplay ~/.claude/skills/pomo/ding.mp3 &
 
-POMO_MSGS=("NICE WORK 💪" "CRUSHED IT 🔥" "25 DOWN 🎯" "SOLID FOCUS 🧠" "YOU SHOWED UP ⭐" "LOCKED IN 🔒" "THAT'S HOW 👊" "DEEP WORK 🌊" "MOMENTUM 📈" "RESPECT ✊")
-BREAK_MSGS=("RECHARGED 🔋" "BACK AT IT 🚀" "FRESH EYES 👀" "LET'S GO 💨" "ROUND 2 🥊" "RESET COMPLETE 🔄" "BATTERIES FULL ⚡" "STRETCH DONE 🧘" "HYDRATED 💧" "READY 🎬")
+WORK_MSGS=("FOCUS 🎯" "LOCK IN 🔒" "GRIND 🔥" "BUILD 🧱" "SHIP 🚀" "CREATE 🎨" "CRUSH IT 💪" "ZONE IN 🧠" "EXECUTE ⚡" "DELIVER 📦")
+BREAK_MSGS=("REFRESH 🔋" "BREATHE 🧘" "UNWIND 🌊" "STRETCH 🤸" "HYDRATE 💧" "REST 😌" "RECHARGE ⚡" "CHILL 🧊" "DECOMPRESS 🎈" "RESET 🔄")
 
 TITLE="🍅  POMO"
 if [[ "$LABEL" == *break* ]]; then
-  BODY="         ${BREAK_MSGS[$((RANDOM % 10))]}"
+  # Break done, work is next
+  BODY="         TIME TO ${WORK_MSGS[$((RANDOM % 10))]}"
 else
-  BODY="         ${POMO_MSGS[$((RANDOM % 10))]}"
+  # Work done, break is next
+  BODY="         TIME TO ${BREAK_MSGS[$((RANDOM % 10))]}"
 fi
 
-osascript -e "display dialog \"$BODY\" with title \"$TITLE\" buttons {\"OK\"} default button \"OK\" with icon POSIX file \"$HOME/.claude/skills/pomo/tomato.icns\""
+if [[ "$LABEL" == *break* ]]; then
+  ICON="tomato.icns"
+else
+  ICON="apple.icns"
+fi
+osascript -e "display dialog \"$BODY\" with title \"$TITLE\" buttons {\"OK\"} default button \"OK\" with icon POSIX file \"$HOME/.claude/skills/pomo/$ICON\""
 
 # Auto-chain to next phase
 if [[ "$LABEL" == "work" ]]; then
