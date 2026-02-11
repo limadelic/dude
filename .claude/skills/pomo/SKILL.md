@@ -28,8 +28,16 @@ nohup ~/.claude/skills/pomo/timer.sh 25 work 1 > /tmp/pomo.log 2>&1 & disown
 
 ## Stop
 
+Three steps - ALL required, in this order:
+
 ```bash
-rm /tmp/pomo.status
+pkill -f "timer.sh"        # 1. kill the timer process
+```
+
+Stop the resume.sh background task (TaskStop).  # 2. stop the watcher
+
+```bash
+rm /tmp/pomo.status         # 3. remove status file
 ```
 
 ## Recovery
