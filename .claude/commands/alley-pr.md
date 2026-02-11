@@ -20,3 +20,4 @@ Store as `<REPO>` for all commands below.
 7. Check what's blocking the PR: `gh pr view <PR#> --repo <REPO> --json reviewDecision,mergeStateStatus,statusCheckRollup -q '{review: .reviewDecision, state: .mergeStateStatus, pending: [.statusCheckRollup[]? | select(.state == "PENDING") | .name]}'`
 8. Use await skill (wait-while): `test "$(gh pr view <PR#> --repo <REPO> --json mergeStateStatus -q .mergeStateStatus)" = "BLOCKED"` with run_in_background: true
 9. When ready, merge with `gh pr merge <PR#> --repo <REPO> --squash`
+10. After merge, switch to main and pull: `git checkout main && git pull`
