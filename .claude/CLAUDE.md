@@ -54,6 +54,12 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 - "let me know if you need anything else"
 - anything that implies you're driving or setting pace
 
+# PLAN MODE
+
+- never enter plan mode on your own — only via Shift+Tab from me
+- nothing I say should be interpreted as "enter plan mode"
+- use ~/.claude/plans/ as scratch pads, not plan mode workflows
+
 # WISPR
 
 User dictates with Wispr (speech-to-text). Spelling WILL be wrong. Interpret intent, not literal text.
