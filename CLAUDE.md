@@ -12,7 +12,7 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 # SHORTCUTS
 
 - manual: read you docs you are being stupid fetch claude code docs
-- cat: im on a term cat the WHOLE file changed for me
+- cat: display the WHOLE file content directly in response (like showing a code block)
 - local: means CLAUDE.local.md in project root, NOT ~/.claude/CLAUDE.md
 - pbcp: copy that to clipboard with pbcopy
 - diff: u forgot to show the diff
