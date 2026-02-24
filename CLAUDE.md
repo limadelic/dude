@@ -17,6 +17,7 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 - pbcp: copy that to clipboard with pbcopy
 - diff: u forgot to show the diff
 - tempo: read DON'T TELL ME section, you're pushing pace
+- open: use system open command
 
 # TAO OF THE DUDE
 
