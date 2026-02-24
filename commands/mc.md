@@ -8,7 +8,7 @@ argument-hint: <on|off>
 ## on
 
 ```bash
-cp ~/.mcp.all.json .mcp.json
+cp ~/.claude/.mcp.all.json .mcp.json
 ```
 
 Then restart.
