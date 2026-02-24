@@ -38,24 +38,17 @@ Watches `~/.claude/` for changes and propagates them to `~/dev/self/dude/` via o
    - `diff -rq` to see what changed
    - `gh pr list -R UKGEPIC/dude --state open --json headRefName,title,number,url`
 
-   **Path A: Existing open PR, change is in scope**
-   - In scope = change to same files/area as current PR
-   - Sync changes to current branch
-   - Push
-   - Restart watcher (diffs quiet on same branch)
+   **Open PR exists → add to it**
+   - Checkout that branch
+   - Sync changed files
+   - Commit and push
+   - Restart watcher
 
-   **Path B: No open PR**
+   **No open PR → new branch**
    - Create branch from `origin/main`. Name: `<type>-<name>` (type: `skill|agent|cmd|plan|rules`, name: max 3 words, no action verbs)
-   - Sync changes and push
-   - Run `/alley-pr` and WAIT for full completion (PR created, approved, merged, back on main)
-   - Then restart watcher
-
-   **Path C: Existing open PR, change is out of scope**
-   - Out of scope = change to different files/skills than current PR
-   - STOP watcher (TaskStop)
-   - Open current PR URL in browser
-   - Tell user PR needs to be merged first
-   - DON'T restart watcher (user restarts manually after merge)
+   - Sync changed files, commit, push
+   - Run `/alley-pr` — do NOT wait for merge
+   - Restart watcher immediately
 
    NEVER merge branches locally.
 

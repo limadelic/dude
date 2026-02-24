@@ -49,6 +49,15 @@ if [ ! -f "$STATUS_FILE" ]; then
   exit 0
 fi
 
+# Quiet hours: lunch (12:00-13:00) and after 4:20pm
+HOUR=$(date +%H)
+MIN=$(date +%M)
+if [ "$HOUR" -eq 12 ] || { [ "$HOUR" -ge 16 ] && [ "$MIN" -ge 20 ]; } || [ "$HOUR" -ge 17 ]; then
+  echo "$(date +%H:%M:%S) pomo paused (quiet hours)"
+  rm -f "$STATUS_FILE"
+  exit 0
+fi
+
 # Auto-chain to next phase
 if [[ "$LABEL" == "work" ]]; then
   if [ "$ROUND" -ge 4 ]; then
