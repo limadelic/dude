@@ -36,12 +36,27 @@ Watches `~/.claude/` for changes and propagates them to `~/dev/self/dude/` via o
 
 2. When the watcher fires:
    - `diff -rq` to see what changed
-   - `gh pr list -R UKGEPIC/dude --state open --json headRefName,title,number`
-   - ONE branch at a time. All changes go to the current open PR branch.
-   - If a new change is out of scope for the current branch, ASK the user: merge the current PR first, or add it to the current branch anyway.
-   - If no open PR, create branch from `origin/main`. Name: `<type>-<name>` (type: `skill|agent|cmd|plan|rules`, name: max 3 words, no action verbs). Push and `/alley-pr`.
-   - Stay on the branch after pushing so the watcher diffs are quiet.
-   - NEVER merge branches locally.
-   - Restart watcher (step 1).
+   - `gh pr list -R UKGEPIC/dude --state open --json headRefName,title,number,url`
+
+   **Path A: Existing open PR, change is in scope**
+   - In scope = change to same files/area as current PR
+   - Sync changes to current branch
+   - Push
+   - Restart watcher (diffs quiet on same branch)
+
+   **Path B: No open PR**
+   - Create branch from `origin/main`. Name: `<type>-<name>` (type: `skill|agent|cmd|plan|rules`, name: max 3 words, no action verbs)
+   - Sync changes and push
+   - Run `/alley-pr` and WAIT for full completion (PR created, approved, merged, back on main)
+   - Then restart watcher
+
+   **Path C: Existing open PR, change is out of scope**
+   - Out of scope = change to different files/skills than current PR
+   - STOP watcher (TaskStop)
+   - Open current PR URL in browser
+   - Tell user PR needs to be merged first
+   - DON'T restart watcher (user restarts manually after merge)
+
+   NEVER merge branches locally.
 
 3. To stop: use TaskStop on the background task.
