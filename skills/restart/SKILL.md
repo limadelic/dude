@@ -7,14 +7,12 @@ description: Restart Claude Code. Use when config changes, hooks updated, or use
 
 ## What
 
-Restarts the current Claude Code session by creating a marker file and exiting.
+Restarts the current Claude Code session by creating a marker file and killing only this process.
 
 ## How
 
 ```bash
-touch ./restart
+touch ~/restart && kill $PPID
 ```
-
-Then `/exit`.
 
 The yolo wrapper detects the restart file and relaunches automatically.
