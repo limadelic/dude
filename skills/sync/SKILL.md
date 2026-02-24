@@ -11,7 +11,11 @@ Watches `~/.claude/` for changes and propagates them to `~/dev/self/dude/` via b
 
 ## Watched Dirs
 
+### Dirs
 `plans`, `skills`, `commands`, `subagents`
+
+### Files
+`CLAUDE.md`, `statusline.sh`
 
 ## How
 
@@ -22,7 +26,11 @@ Watches `~/.claude/` for changes and propagates them to `~/dev/self/dude/` via b
      [ -d ~/.claude/$dir ] || continue; \
      mkdir -p ~/dev/self/dude/$dir; \
      diff -rq --exclude=.DS_Store ~/.claude/$dir/ ~/dev/self/dude/$dir/ 2>&1 | grep -q . && exit 1; \
-   done; exit 0)' \
+   done; \
+   for f in CLAUDE.md statusline.sh; do \
+     diff -q ~/.claude/$f ~/dev/self/dude/$f 2>&1 | grep -q . && exit 1; \
+   done; \
+   exit 0)' \
   15
 ```
 
