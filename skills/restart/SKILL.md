@@ -8,5 +8,5 @@ description: Restart Claude Code. Use when config changes, hooks updated, or use
 Run this exactly. No changes.
 
 ```bash
-touch ./restart && kill $PPID
+./restart.sh $PPID
 ```
