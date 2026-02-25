@@ -14,4 +14,5 @@ projects/
 history.jsonl
 stats-cache.json
 ukg.pem
+plugins/blocklist.json
 .DS_Store

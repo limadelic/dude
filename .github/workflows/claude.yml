@@ -44,7 +44,7 @@ jobs:
       - name: Install
         run: |
           sudo rm -f /usr/local/bin/claude
-          npm install -g @anthropic-ai/claude-code@2.1.18
+          npm install -g @anthropic-ai/claude-code@latest
           echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
 
       - name: Run
@@ -58,6 +58,6 @@ jobs:
           github_token: ${{ github.token }}
           trigger_phrase: ${{ inputs.trigger_phrase }}
           prompt: ${{ inputs.prompt || '' }}
-          settings: .claude/settings.json
+          settings: settings.json
           show_full_output: true
           claude_args: --dangerously-skip-permissions
