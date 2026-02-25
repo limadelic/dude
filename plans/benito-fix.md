@@ -2,43 +2,67 @@
 
 ## Problem
 
-`claude-code-action` in **tag mode** doesn't resolve `.claude/commands/benito.md`. When someone comments `@benito`, the action passes the raw comment text `@benito` to Claude. Claude doesn't see the command file, so it does a single generic review instead of running the three sub-skills (`/review`, `/rec-review`, `/reversible`).
+`@benito` on a PR should create 3 TaskCreate items and run /review, /rec-review, /reversible. Instead Claude does a generic review.
 
-## What We Proved
+## Source Code Analysis (`/Users/maykel.suarez/dev/ext/claude-code-action`)
 
-- `prompt: "Run /benito"` in `benito.yml` makes it work — Claude Code CLI resolves the command file and runs all three skills.
-- But `prompt` switches `claude-code-action` to **agent mode**, which loses the rich GitHub PR context (diff, comments, review threads) that **tag mode** provides.
-- Without PR context, Claude can still fetch it via `gh pr diff`, but it's not automatic.
+### Mode Detection (`src/modes/detector.ts`)
 
-## Root Cause
+Priority order:
+1. `track_progress && isEntityContext` → **tag mode** (overrides everything)
+2. `prompt` set on comment events → **agent mode**
+3. `trigger_phrase` found in comment → **tag mode**
 
-`claude-code-action` has two modes:
-- **Tag mode**: rich PR context, but only passes comment text as instruction — no command file resolution
-- **Agent mode**: resolves commands via CLI, but minimal context
+### Agent Mode (`src/modes/agent/index.ts`)
 
-We need both: rich PR context AND command file resolution.
+- Writes `prompt` to file, passes to `claude -p`
+- NO PR diff, comments, reviews, or tracking comment
+- Claude resolves slash commands via CLI (`claude -p "/benito"` reads `.claude/commands/benito.md`)
+- Claude has `gh` CLI + filesystem access to find PR info itself
 
-## Options
+### Tag Mode (`src/modes/tag/index.ts`)
 
-1. **Use `prompt` + explicit PR context** — Pass `prompt: "Run /benito"` and let Claude fetch PR context itself via `gh pr diff`. Downside: loses automatic context injection (review comments, CI status, etc.)
+- Fetches ALL GitHub data: PR diff, changed files, comments, reviews
+- Creates tracking comment that Claude updates
+- `prompt` appended as `<custom_instructions>` — raw text, NOT resolved as slash command
+- Slash command resolution does NOT happen in tag mode
 
-2. **Contribute upstream** — Open an issue/PR on `anthropics/claude-code-action` to support `.claude/commands/` resolution in tag mode. This is the proper fix.
+### Prompt Assembly (`src/create-prompt/index.ts`)
 
-3. **Inline the prompt** — Pass benito's full instructions as the `prompt` value in `benito.yml`. Duplicates the content but works with agent mode. Defeats the purpose of the command file.
+- Agent: `promptContent = context.inputs.prompt` — just the raw string
+- Tag: `defaultPrompt + <custom_instructions>${prompt}</custom_instructions>`
 
-4. **Hybrid: prompt + trigger_phrase** — Test if both can coexist. Pass `prompt: "Run /benito"` alongside `trigger_phrase: "@benito"`. If the action gives Claude both the PR context AND the prompt, this might just work. We saw hints of this in the logs but didn't fully test it.
+## What Works
 
-## Recommended: Option 4 first, Option 2 as follow-up
+- **Agent mode + `/benito`**: CLI resolves `/benito` → reads benito.md → Claude creates 3 tasks → runs skills
+- **Agent mode from PR comment**: Claude figures out which PR from GitHub Actions environment (`gh`, event payload)
+- **Workflow_dispatch tests confirm**: 3/3 runs created tasks and ran skills
 
-## Testing
+## What Doesn't Work
 
-1. Add `workflow_dispatch` back to `benito.yml` with a `benito-test` job on a branch
-2. Trigger with `gh workflow run benito.yml --ref <branch> -f pr_number=<PR#>`
-3. Check logs for both PR context AND command file resolution
-4. If works, PR to main
+- `track_progress: true` forces tag mode → `/benito` becomes raw text in `<custom_instructions>` → no task creation
+- Original benito.md wording ("ALWAYS create TaskCreate") was too weak → Claude ignored it
+- Updated wording ("First, create all 3 TODOs") → Claude creates tasks consistently
 
-## Files
+## The Fix
 
-- `.github/workflows/benito.yml`
-- `.github/workflows/claude.yml`
-- `.claude/commands/benito.md`
+Two changes:
+
+### 1. claude.yml — Remove track_progress
+`track_progress` was added in PR #5427. It forces tag mode which breaks `/benito` resolution.
+Remove it so `prompt: "/benito"` triggers agent mode where CLI resolves the command.
+
+### 2. benito.md — Clarify task creation
+Original wording didn't reliably trigger TaskCreate. Updated to be explicit about creating todos first.
+
+## PR #5428
+
+Current state on branch `feature/PS-741409-remove-toggles`:
+- claude.yml: track_progress removed (reverts #5427)
+- benito.md: needs update (currently reverted to original which doesn't work)
+
+## Still TODO
+
+- Update benito.md with working wording
+- Merge #5428
+- Test `@benito` from real PR comment on main
