@@ -23,7 +23,7 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 
 - board: https://github.com/orgs/UKGEPIC/projects/156/views/1
 - repo: UKGEPIC/dude
-- dir: ~/dev/self/dude
+- dir: ~/.claude
 - create issues in the dude repo, not the current working repo
 - add issues to the board and set status to TO-DUDE
 
