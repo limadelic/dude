@@ -5,8 +5,5 @@ description: Restart Claude Code. Use when config changes, hooks updated, or use
 
 # Restart
 
-Run this exactly. No changes.
+Run restart.sh $PPID
 
-```bash
-./restart.sh $PPID
-```

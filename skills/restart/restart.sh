@@ -1,2 +1,3 @@
 #!/bin/bash
-touch "$(dirname "$0")/restart" && kill "$1"
+touch restart
+kill "$1"
