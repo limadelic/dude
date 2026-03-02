@@ -53,6 +53,7 @@
     ],
     "defaultMode": "dontAsk"
   },
+  "model": "claude-haiku",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh",
@@ -80,6 +81,5 @@
   },
   "autoUpdatesChannel": "latest",
   "skipDangerousModePermissionPrompt": true,
-  "effortLevel": "low",
-  "model": "opus"
+  "effortLevel": "low"
 }
