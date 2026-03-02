@@ -17,3 +17,5 @@ ukg.pem
 plugins/blocklist.json
 .DS_Store
 .idea/
+image-cache/
+plugins/

@@ -1,3 +1,5 @@
+If already on a branch with a PR, skip to step 3.
+
 Make a todo for each step and follow in order
 
 1. Ensure Branch Exist: We cannot push to main so if we r not in a brach we need to make one.
