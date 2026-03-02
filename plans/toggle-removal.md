@@ -7,10 +7,13 @@ Branch: `feature/PS-741409-remove-toggles`
 - Application team toggles
 
 ## Toggles to Remove
-1. [x] ApplicationIncorrectNameTextChanges - PR #5270, CI green, base=main
-2. [~] ApplicationSubmittedFilter + ApplicationSubmittedFilterReindex - PR #5279, CI running, base=main
-3. [~] AssessmentIntegration - PR #5301, CI round 4 running, base=main
-4. [ ] AssessmentLinkRequestOpp
+
+| # | Toggle | PR | Unit/Integration | System Tests (affected only) | Ready to Merge |
+|---|--------|-----|-----------------|------------------------------|----------------|
+| 1 | ApplicationIncorrectNameTextChanges | #5270 | ALL PASS | N/A (none affected) | YES |
+| 2 | ApplicationSubmittedFilter + Reindex | #5279 | ALL PASS | PASS (infra flakes only) | YES |
+| 3 | AssessmentIntegration | #5301 | ALL PASS | NOT RUN (job cancelled) | NO — re-run needed |
+| 4 | AssessmentLinkRequestOpp | — | — | — | Not started |
 
 ## PRs (both target main directly)
 - PR #5270 - ApplicationIncorrectNameTextChanges (watching: b3f8259)

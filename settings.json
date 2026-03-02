@@ -80,5 +80,6 @@
   },
   "autoUpdatesChannel": "latest",
   "skipDangerousModePermissionPrompt": true,
-  "effortLevel": "low"
+  "effortLevel": "low",
+  "model": "opus"
 }
