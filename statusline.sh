@@ -6,8 +6,9 @@ PCT=$(echo "$JSON" | jq -r '.context_window.used_percentage // 0 | floor')
 
 TODAY=$(date +%Y-%m-%d)
 SPEND=$(curl -s -L "https://sdlc-llm.ukg.int/user/daily/activity?start_date=$TODAY&end_date=$TODAY" \
-  -H "x-litellm-api-key: sk-qb1PkcByh_GbrdYPS96GIQ" --cacert ~/.claude/ukg.pem 2>/dev/null | \
+  -H "x-litellm-api-key: ${ANTHROPIC_AUTH_TOKEN}" --cacert ~/.claude/ukg.pem 2>/dev/null | \
   jq -r '.results[0].metrics.spend // 0' 2>/dev/null)
+
 SPEND_PCT=$(echo "$SPEND $SPEND_CAP" | awk '{printf "%.0f", $1/$2*100}')
 [ "$SPEND_PCT" -gt 100 ] && SPEND_PCT=100
 [ "$PCT" -gt 100 ] && PCT=100
