@@ -20,7 +20,8 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 
 # TAO OF THE DUDE
 
-- board: https://github.com/orgs/UKGEPIC/projects/156/views/1
+- dude board: https://github.com/orgs/UKGEPIC/projects/156/views/1
+- jira board: https://engjira.int.kronos.com/secure/RapidBoard.jspa?rapidView=3017
 - repo: UKGEPIC/dude
 - dir: ~/.claude
 - create issues in the dude repo, not the current working repo
