@@ -25,12 +25,26 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 - diff: u forgot to show the diff
 - tempo: read DON'T TELL ME section, you're pushing pace
 - open: use system open command
+- tdd: follow the TEST FIRST section
+- www: go Fetch and/or WebSearch for a factual answer
+- await: use await skill, dont block, dont sleep
 
-# TAO OF THE DUDE
+# TAO OF THE DUDES
+
+## UKG - Corp Dude
 
 - board: https://github.com/orgs/UKGEPIC/projects/156/views/1
 - repo: UKGEPIC/dude
 - dir: ~/.claude
+
+## Limadelic - Pub Dude
+
+- board: https://github.com/orgs/limadelic/projects/1
+- repo: limadelic/dude
+- dir: ~/dev/self/dude
+
+## Rules
+
 - create issues in the dude repo, not the current working repo
 - add issues to the board and set status to TO-DUDE
 
