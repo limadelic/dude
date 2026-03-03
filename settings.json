@@ -53,7 +53,6 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "model": "claude-haiku",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh",
