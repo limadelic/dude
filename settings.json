@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Bash(rm:*)",
+      "Bash(cd:*)",
+      "Bash(gh run watch*)",
+      "Bash(*sleep*)",
+      "mcp__playwright__browser_resize",
+      "mcp__playwright__browser_console_messages",
+      "mcp__playwright__browser_handle_dialog",
+      "mcp__playwright__browser_file_upload",
+      "mcp__playwright__browser_install",
+      "mcp__playwright__browser_press_key",
+      "mcp__playwright__browser_navigate_back",
+      "mcp__playwright__browser_network_requests",
+      "mcp__playwright__browser_run_code",
+      "mcp__playwright__browser_drag",
+      "mcp__playwright__browser_hover",
+      "mcp__playwright__browser_select_option"
+    ],
+    "defaultMode": "dontAsk"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  },
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "Abiding",
+      "Bowling",
+      "Sipping",
+      "Rolling",
+      "Striking",
+      "Mixing",
+      "Bathing",
+      "Napping",
+      "Opining",
+      "Mellowing",
+      "Chilling",
+      "Vibing",
+      "Taking it easy",
+      "Lounging",
+      "Drifting"
+    ]
+  },
+  "autoUpdatesChannel": "latest",
+  "skipDangerousModePermissionPrompt": true,
+  "effortLevel": "low"
+}

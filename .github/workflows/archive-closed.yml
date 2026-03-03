@@ -1,0 +1,56 @@
+name: Archive closed issues
+
+on:
+  issues:
+    types: [closed]
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Archive from project
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          # Get project item ID for this issue
+          ITEM_ID=$(gh api graphql -f query='
+            query($org: String!, $num: Int!) {
+              organization(login: $org) {
+                projectV2(number: $num) {
+                  items(first: 100) {
+                    nodes {
+                      id
+                      content {
+                        ... on Issue {
+                          number
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }' -f org="UKGEPIC" -F num=156 \
+            --jq '.data.organization.projectV2.items.nodes[] | select(.content.number == ${{ github.event.issue.number }}) | .id')
+
+          if [ -n "$ITEM_ID" ]; then
+            # Get project ID
+            PROJECT_ID=$(gh api graphql -f query='
+              query($org: String!, $num: Int!) {
+                organization(login: $org) {
+                  projectV2(number: $num) {
+                    id
+                  }
+                }
+              }' -f org="UKGEPIC" -F num=156 --jq '.data.organization.projectV2.id')
+
+            # Archive the item
+            gh api graphql -f query='
+              mutation($project: ID!, $item: ID!) {
+                archiveProjectV2Item(input: {projectId: $project, itemId: $item}) {
+                  item { id }
+                }
+              }' -f project="$PROJECT_ID" -f item="$ITEM_ID"
+            echo "Archived issue #${{ github.event.issue.number }} from project"
+          else
+            echo "Issue #${{ github.event.issue.number }} not found in project"
+          fi
