@@ -28,18 +28,11 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 
 # TAO OF THE DUDE
 
-- ukg board: https://github.com/orgs/UKGEPIC/projects/156/views/1
-- ukg repo: UKGEPIC/dude
-- limadelic board: https://github.com/orgs/limadelic/projects/1
-- limadelic repo: limadelic/dude
+- board: https://github.com/orgs/limadelic/projects/1
+- repo: limadelic/dude
 - dir: ~/.claude
 - create issues in the dude repo, not the current working repo
 - add issues to the board and set status to TO-DUDE
-
-# JIRA
-
-- board: https://engjira.int.kronos.com/secure/RapidBoard.jspa?rapidView=3017
-- ACs live in customfield_14400 — ALWAYS fetch with `fields: "*all"` and read that field
 
 # PRO
 

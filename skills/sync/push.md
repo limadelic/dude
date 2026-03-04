@@ -1,4 +1,9 @@
-If already on a branch with a PR, skip to step 3.
+If the current branch PR is merged or closed:
+  - Switch to main, pull
+  - Delete the local stale branch
+  - Continue to step 1 to create a new branch
+
+If already on a branch with an **open** PR, skip to step 3.
 
 Make a todo for each step and follow in order
 
@@ -15,3 +20,10 @@ Make a todo for each step and follow in order
 3. Commit and Push the changes
 
 4. Start the Watcher again
+
+## Merge
+
+When user says `merge`:
+- Merge the current PR with `gh pr merge`
+- Delete local and remote branch
+- Switch to main, pull
