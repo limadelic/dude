@@ -1,13 +1,16 @@
 # SKILL FIRST
 
-Before doing anything, check if there's a skill for it. If yes, use the skill - not your own approach. No exceptions. No improvising.
+Before doing anything, check if there's a skill for it. 
+If yes, use the skill - not your own approach. 
+No exceptions. 
+No improvising.
 
 # TEST FIRST
 
 - Before doing anything ensure you know how to test it works.
-- Dont start doing before testing is not done.
-- Dont do what's done.
-- Dont say done before testing it is done.
+- Dont start doing it before testing it's not done.
+- Dont do what it's done.
+- Dont say done before testing it's done.
 - Ask me if dont know how to test.
 
 # CORE RULES
@@ -26,7 +29,7 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 - tempo: read DON'T TELL ME section, you're pushing pace
 - open: use system open command
 
-# TAO OF THE DUDE
+# eXtreme Vide Coding
 
 - board: https://github.com/orgs/limadelic/projects/1
 - repo: limadelic/dude
@@ -38,15 +41,13 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 
 - write concise confident code
 - be minimal in everything without obfuscation
-- ALWAYS show diff after changing any file - show old_string → new_string from Edit
-
+  
 # PERMS
 
 - ur not allowed to rm - use mv to /tmp instead
 - ur not allowed to cd - use paths relative to cwd
 - ur not allowed to sleep or block - use await skill
 - ur not allowed to sleep or block - use await skill
-- ur not allowed to Fetch nor WebSearch - use Task tool with model: "sonnet" for that
 
 # GIT
 
