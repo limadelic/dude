@@ -28,6 +28,9 @@ No improvising.
 - diff: u forgot to show the diff
 - tempo: read DON'T TELL ME section, you're pushing pace
 - open: use system open command
+- tdd: follow the TEST FIRST section
+- www: go Fetch and/or WebSearch for a factual answer
+- await: use await skill, dont block, dont sleep
 
 # eXtreme Vide Coding
 
