@@ -1,43 +1,46 @@
 #!/bin/bash
-STATUS_FILE="/tmp/pomo.status"
-JSON=$(cat)
-PCT=$(echo "$JSON" | jq -r '.context_window.used_percentage // 0 | floor')
+POMO="/tmp/pomo.status"
 
-[ "$PCT" -gt 100 ] && PCT=100
-
-# Build progress bar: emoji + 10-block bar with color thresholds (or fixed color)
-build_bar() {
-  local pct=$1 emoji=$2 yellow=$3 red=$4 fixed_color=$5
-  pct=$(( pct < 0 ? 0 : pct > 100 ? 100 : pct ))
-  local blocks=$((pct / 10))
-  local color
-  if [ -n "$fixed_color" ]; then color="$fixed_color"
-  elif [ "$pct" -ge "$red" ]; then color="\033[31m"
-  elif [ "$pct" -ge "$yellow" ]; then color="\033[38;5;226m"
-  else color="\033[32m"
-  fi
-  printf "%s ${color}%s\033[0m" "$emoji" "$(printf '█%.0s' $(seq 1 $blocks))$(printf '░%.0s' $(seq 1 $((10-blocks))))"
+context() {
+  cat | jq -r '.context_window.used_percentage // 0 | floor'
 }
 
-CBAR=$(build_bar "$PCT" "🧠" 50 70)
+color() {
+  local pct=$1 lo=$2 hi=$3 fixed=$4
+  [ -n "$fixed" ] && { echo "$fixed"; return; }
+  [ "$pct" -ge "$hi" ] && { echo "\033[31m"; return; }
+  [ "$pct" -ge "$lo" ] && { echo "\033[38;5;226m"; return; }
+  echo "\033[32m"
+}
 
-if [ -f "$STATUS_FILE" ]; then
-  IFS='|' read -r LABEL END_TIME ROUND < "$STATUS_FILE"
-  if [[ "$LABEL" != "transitioning" ]]; then
-    NOW=$(date +%s)
-    REMAINING=$((END_TIME - NOW))
-    if [ "$REMAINING" -gt 0 ]; then
-      if [[ "$LABEL" == "long break" ]]; then TOTAL=900; elif [[ "$LABEL" == *break* ]]; then TOTAL=300; else TOTAL=1500; fi
-      ELAPSED=$((TOTAL - REMAINING))
-      POMO_PCT=$((ELAPSED * 100 / TOTAL))
-      [ "$POMO_PCT" -lt 0 ] && POMO_PCT=0
-      [ "$POMO_PCT" -gt 100 ] && POMO_PCT=100
-      if [[ "$LABEL" == *break* ]]; then EMOJI="🍏"; COLOR="\033[32m"; else EMOJI="🍅"; COLOR="\033[31m"; fi
-      POMO_CBAR=$(build_bar "$POMO_PCT" "$EMOJI" 0 0 "$COLOR")
-      printf "%s %s\n" "$CBAR" "$POMO_CBAR"
-      exit 0
-    fi
-  fi
-fi
+blocks() {
+  local n=$((($1 < 0 ? 0 : $1 > 100 ? 100 : $1) / 10))
+  printf '█%.0s' $(seq 1 $n)
+  printf '░%.0s' $(seq 1 $((10 - n)))
+}
 
-printf "%s\n" "$CBAR"
+bar() {
+  local pct=$1 icon=$2 clr
+  clr=$(color "$pct" "$3" "$4" "$5")
+  printf "%s ${clr}%s\033[0m" "$icon" "$(blocks "$pct")"
+}
+
+pomo_type() {
+  [[ "$1" == "long break" ]] && { echo "900 🍏 \033[32m"; return; }
+  [[ "$1" == *break* ]]      && { echo "300 🍏 \033[32m"; return; }
+  echo "1500 🍅 \033[31m"
+}
+
+pomo() {
+  [ -f "$POMO" ] || return 1
+  IFS='|' read -r label end _ < "$POMO"
+  [[ "$label" == "transitioning" ]] && return 1
+  local left=$(( end - $(date +%s) ))
+  [ "$left" -le 0 ] && return 1
+  read -r total icon clr <<< "$(pomo_type "$label")"
+  bar "$(( (total - left) * 100 / total ))" "$icon" 0 0 "$clr"
+}
+
+PCT=$(context)
+CBAR=$(bar "$PCT" "🧠" 50 70)
+PBAR=$(pomo) && printf "%s %s\n" "$CBAR" "$PBAR" || printf "%s\n" "$CBAR"
