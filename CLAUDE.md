@@ -25,6 +25,7 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 - diff: u forgot to show the diff
 - tempo: read DON'T TELL ME section, you're pushing pace
 - open: use system open command
+- merge: merge current PR, delete local+remote branch, switch to main, pull
 
 # TAO OF THE DUDE
 
