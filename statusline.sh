@@ -1,8 +1,18 @@
 #!/bin/bash
 POMO="/tmp/pomo.status"
+JSON=$(cat)
 
 context() {
-  cat | jq -r '.context_window.used_percentage // 0 | floor'
+  echo "$JSON" | jq -r '.context_window.used_percentage // 0 | floor'
+}
+
+model_emoji() {
+  local m=$(echo "$JSON" | jq -r '.model // ""')
+  case "$m" in
+    *haiku*) echo "🐇" ;;
+    *opus*)  echo "🎭" ;;
+    *)       echo "🎸" ;;
+  esac
 }
 
 color() {
@@ -43,4 +53,5 @@ pomo() {
 
 PCT=$(context)
 CBAR=$(bar "$PCT" "🧠" 50 70)
-PBAR=$(pomo) && printf "%s %s\n" "$CBAR" "$PBAR" || printf "%s\n" "$CBAR"
+MODEL=$(model_emoji)
+PBAR=$(pomo) && printf "%s %s %s\n" "$CBAR" "$PBAR" "$MODEL" || printf "%s %s\n" "$CBAR" "$MODEL"
