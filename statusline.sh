@@ -1,16 +1,8 @@
 #!/bin/bash
 STATUS_FILE="/tmp/pomo.status"
-SPEND_CAP=50
 JSON=$(cat)
 PCT=$(echo "$JSON" | jq -r '.context_window.used_percentage // 0 | floor')
 
-TODAY=$(date +%Y-%m-%d)
-SPEND=$(curl -s -L "https://sdlc-llm.ukg.int/user/daily/activity?start_date=$TODAY&end_date=$TODAY" \
-  -H "x-litellm-api-key: ${ANTHROPIC_AUTH_TOKEN}" --cacert ~/.claude/ukg.pem 2>/dev/null | \
-  jq -r '.results[0].metrics.spend // 0' 2>/dev/null)
-
-SPEND_PCT=$(echo "$SPEND $SPEND_CAP" | awk '{printf "%.0f", $1/$2*100}')
-[ "$SPEND_PCT" -gt 100 ] && SPEND_PCT=100
 [ "$PCT" -gt 100 ] && PCT=100
 
 # Build progress bar: emoji + 10-block bar with color thresholds (or fixed color)
@@ -42,12 +34,10 @@ if [ -f "$STATUS_FILE" ]; then
       [ "$POMO_PCT" -gt 100 ] && POMO_PCT=100
       if [[ "$LABEL" == *break* ]]; then EMOJI="🍏"; COLOR="\033[32m"; else EMOJI="🍅"; COLOR="\033[31m"; fi
       POMO_CBAR=$(build_bar "$POMO_PCT" "$EMOJI" 0 0 "$COLOR")
-      SPEND_BAR=$(build_bar "$SPEND_PCT" "💰" 60 80)
-      printf "%s %s %s\n" "$CBAR" "$SPEND_BAR" "$POMO_CBAR"
+      printf "%s %s\n" "$CBAR" "$POMO_CBAR"
       exit 0
     fi
   fi
 fi
 
-SPEND_BAR=$(build_bar "$SPEND_PCT" "💰" 60 80)
-printf "%s %s\n" "$CBAR" "$SPEND_BAR"
+printf "%s\n" "$CBAR"

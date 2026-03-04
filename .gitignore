@@ -19,3 +19,4 @@ plugins/blocklist.json
 .idea/
 image-cache/
 plugins/
+mcp-needs-auth-cache.json
