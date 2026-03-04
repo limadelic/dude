@@ -46,7 +46,6 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 - ur not allowed to cd - use paths relative to cwd
 - ur not allowed to sleep or block - use await skill
 - ur not allowed to sleep or block - use await skill
-- ur not allowed to Fetch nor WebSearch - use Task tool with model: "sonnet" for that
 
 # GIT
 
