@@ -28,8 +28,8 @@ Before doing anything, check if there's a skill for it. If yes, use the skill - 
 
 # TAO OF THE DUDE
 
-- limadelic board: https://github.com/orgs/limadelic/projects/1
-- limadelic repo: limadelic/dude
+- board: https://github.com/orgs/limadelic/projects/1
+- repo: limadelic/dude
 - dir: ~/.claude
 - create issues in the dude repo, not the current working repo
 - add issues to the board and set status to TO-DUDE
