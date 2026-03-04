@@ -1,4 +1,5 @@
-If already on a branch with a PR, skip to step 3.
+If already on a branch with an **open** PR, skip to step 3.
+If the PR is merged or closed, treat as if on main — go to step 1.
 
 Make a todo for each step and follow in order
 
