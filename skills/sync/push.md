@@ -20,3 +20,10 @@ Make a todo for each step and follow in order
 3. Commit and Push the changes
 
 4. Start the Watcher again
+
+## Merge
+
+When user says `merge`:
+- Merge the current PR with `gh pr merge`
+- Delete local and remote branch
+- Switch to main, pull
