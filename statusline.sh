@@ -3,9 +3,6 @@ STATUS_FILE="/tmp/pomo.status"
 JSON=$(cat)
 PCT=$(echo "$JSON" | jq -r '.context_window.used_percentage // 0 | floor')
 
-[ "$PCT" -gt 100 ] && PCT=100
-
-# Build progress bar: emoji + 10-block bar with color thresholds (or fixed color)
 build_bar() {
   local pct=$1 emoji=$2 yellow=$3 red=$4 fixed_color=$5
   pct=$(( pct < 0 ? 0 : pct > 100 ? 100 : pct ))
@@ -22,17 +19,18 @@ build_bar() {
 CBAR=$(build_bar "$PCT" "🧠" 50 70)
 
 if [ -f "$STATUS_FILE" ]; then
-  IFS='|' read -r LABEL END_TIME ROUND < "$STATUS_FILE"
+  IFS='|' read -r LABEL END_TIME _ < "$STATUS_FILE"
   if [[ "$LABEL" != "transitioning" ]]; then
-    NOW=$(date +%s)
-    REMAINING=$((END_TIME - NOW))
+    REMAINING=$(( END_TIME - $(date +%s) ))
     if [ "$REMAINING" -gt 0 ]; then
-      if [[ "$LABEL" == "long break" ]]; then TOTAL=900; elif [[ "$LABEL" == *break* ]]; then TOTAL=300; else TOTAL=1500; fi
-      ELAPSED=$((TOTAL - REMAINING))
-      POMO_PCT=$((ELAPSED * 100 / TOTAL))
-      [ "$POMO_PCT" -lt 0 ] && POMO_PCT=0
-      [ "$POMO_PCT" -gt 100 ] && POMO_PCT=100
-      if [[ "$LABEL" == *break* ]]; then EMOJI="🍏"; COLOR="\033[32m"; else EMOJI="🍅"; COLOR="\033[31m"; fi
+      if [[ "$LABEL" == "long break" ]]; then
+        TOTAL=900; EMOJI="🍏"; COLOR="\033[32m"
+      elif [[ "$LABEL" == *break* ]]; then
+        TOTAL=300; EMOJI="🍏"; COLOR="\033[32m"
+      else
+        TOTAL=1500; EMOJI="🍅"; COLOR="\033[31m"
+      fi
+      POMO_PCT=$(( (TOTAL - REMAINING) * 100 / TOTAL ))
       POMO_CBAR=$(build_bar "$POMO_PCT" "$EMOJI" 0 0 "$COLOR")
       printf "%s %s\n" "$CBAR" "$POMO_CBAR"
       exit 0
