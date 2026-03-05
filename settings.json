@@ -9,6 +9,8 @@
       "Read",
       "Grep",
       "Glob",
+      "Edit",
+      "Write",
       "mcp__playwright__browser_resize",
       "mcp__playwright__browser_console_messages",
       "mcp__playwright__browser_handle_dialog",
