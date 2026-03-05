@@ -19,7 +19,7 @@ function yolo {
     if [[ -f restart ]]; then
       rm restart
       source ~/.zshrc
-      claude -c --dangerously-skip-permissions "continue"
+      claude -c --dangerously-skip-permissions "u have been restarted continue if needed"
     else
       claude --dangerously-skip-permissions $initial_args
     fi
