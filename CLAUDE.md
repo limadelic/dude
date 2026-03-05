@@ -69,6 +69,13 @@ No improvising.
 - "let me know if you need anything else"
 - anything that implies you're driving or setting pace
 
+# DELEGATE TO SUBAGENTS
+
+- NEVER use Read, Grep, or Glob directly — always delegate to a subagent
+- Subagents do the legwork (read, search, explore) and return summaries
+- You reason and decide on summaries only — never raw file content
+- Use Agent for anything that can run independently or in parallel
+
 # PLAN MODE
 
 - never enter plan mode on your own — only via Shift+Tab from me
