@@ -9,7 +9,7 @@ context() {
 model_emoji() {
   local m=$(echo "$JSON" | jq -r '.model // ""')
   case "$m" in
-    *haiku*) echo "🐇" ;;
+    *haiku*) echo "🐸" ;;
     *opus*)  echo "🎭" ;;
     *)       echo "🎸" ;;
   esac

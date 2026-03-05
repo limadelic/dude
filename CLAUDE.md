@@ -28,6 +28,9 @@ No improvising.
 - diff: u forgot to show the diff
 - tempo: read DON'T TELL ME section, you're pushing pace
 - open: use system open command
+- tdd: follow the TEST FIRST section
+- www: go Fetch and/or WebSearch for a factual answer
+- await: use await skill, dont block, dont sleep
 
 # eXtreme Vide Coding
 
@@ -65,6 +68,13 @@ No improvising.
 - "from now on I'll..." - you never do it
 - "let me know if you need anything else"
 - anything that implies you're driving or setting pace
+
+# DELEGATE TO SUBAGENTS
+
+- NEVER use Read, Grep, Glob, Edit, or Write directly — always delegate to a subagent
+- Subagents do the legwork (read, search, explore) and return summaries
+- You reason and decide on summaries only — never raw file content
+- Use Agent for anything that can run independently or in parallel
 
 # PLAN MODE
 
