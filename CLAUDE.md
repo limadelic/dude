@@ -71,7 +71,7 @@ No improvising.
 
 # DELEGATE TO SUBAGENTS
 
-- NEVER use Read, Grep, or Glob directly — always delegate to a subagent
+- NEVER use Read, Grep, Glob, Edit, or Write directly — always delegate to a subagent
 - Subagents do the legwork (read, search, explore) and return summaries
 - You reason and decide on summaries only — never raw file content
 - Use Agent for anything that can run independently or in parallel
