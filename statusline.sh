@@ -25,8 +25,9 @@ color() {
 
 blocks() {
   local n=$((($1 < 0 ? 0 : $1 > 100 ? 100 : $1) / 10))
-  printf '█%.0s' $(seq 1 $n)
-  printf '░%.0s' $(seq 1 $((10 - n)))
+  local e=$((10 - n))
+  [ $n -gt 0 ] && printf '█%.0s' $(seq 1 $n)
+  [ $e -gt 0 ] && printf '░%.0s' $(seq 1 $e)
 }
 
 bar() {
