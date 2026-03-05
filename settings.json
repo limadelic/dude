@@ -6,6 +6,7 @@
       "Bash(cd:*)",
       "Bash(gh run watch*)",
       "Bash(*sleep*)",
+      "Bash(python*)",
       "Read",
       "Grep",
       "Glob",
@@ -25,6 +26,9 @@
       "mcp__playwright__browser_select_option"
     ],
     "defaultMode": "dontAsk"
+  },
+  "env": {
+    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
   },
   "statusLine": {
     "type": "command",
