@@ -1,9 +1,10 @@
 {
+  "autoMemoryEnabled": false,
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "deny": [
-      "Bash(rm:*)",
-      "Bash(cd:*)",
+      "Bash(rm *)",
+      "Bash(cd *)",
       "Bash(gh run watch*)",
       "Bash(*sleep*)",
       "Bash(python*)",
@@ -26,9 +27,6 @@
       "mcp__playwright__browser_select_option"
     ],
     "defaultMode": "dontAsk"
-  },
-  "env": {
-    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
   },
   "statusLine": {
     "type": "command",
