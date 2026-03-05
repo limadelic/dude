@@ -66,7 +66,7 @@
 - never use force
 - keep commits comments concise. Max 10 words.
 - use mv to keep git history
-- use GITHUB_PUBLIC_TOKEN env for push unless ssh
+- use GITHUB_LIMADELIC env for push unless ssh
 - use merge not rebase
 
 # DON'T TELL ME
