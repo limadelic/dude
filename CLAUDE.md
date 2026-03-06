@@ -54,6 +54,7 @@
 - board: https://github.com/orgs/limadelic/projects/1
 - repo: limadelic/dude
 - dir: ~/dev/self/dude
+- token: $GITHUB_LIMADELIC
 
 ## Rules
 
