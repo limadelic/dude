@@ -58,7 +58,7 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "model": "claude-sonnet-4-6",
+  "model": "haiku",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.rb",

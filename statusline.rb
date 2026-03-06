@@ -126,7 +126,11 @@ class Statusline
 
   def emoji_group(emoji, count, active, color)
     mult = count == 1 ? '' : "x#{count}"
-    active ? "#{BG_MAP[color]}#{color}#{emoji}#{COLORS[:reset]}#{color}#{mult}#{COLORS[:reset]}" : "#{color}#{emoji}#{mult}#{COLORS[:reset]}"
+    if active
+      "#{BG_MAP[color]}#{color}#{emoji} #{COLORS[:reset]}#{color}#{mult}#{COLORS[:reset]}"
+    else
+      "#{color}#{emoji} #{mult}#{COLORS[:reset]}"
+    end
   end
 
   def bar(pct, emoji, lo: nil, hi: nil, color: nil)
