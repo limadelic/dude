@@ -7,7 +7,7 @@ description: Restart Claude Code. Use when config changes, hooks updated, or use
 
 Run restart.sh $PPID
 
-## Setup
+# Setup
 
 Add this to your shell profile (~/.zshrc or ~/.bashrc):
 

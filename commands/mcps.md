@@ -5,7 +5,11 @@ argument-hint: <on|off>
 
 # MCP Toggle
 
+Master config: ~/.claude/.mcp.all.json
+
 ## on
+
+Copy master config to current project root:
 
 ```bash
 cp ~/.claude/.mcp.all.json .mcp.json

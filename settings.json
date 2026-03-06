@@ -1,5 +1,4 @@
 {
-  "autoMemoryEnabled": false,
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "attribution": {
     "commit": "",
@@ -7,16 +6,11 @@
   },
   "permissions": {
     "deny": [
-      "Bash(rm:*)",
-      "Bash(cd:*)",
+      "Bash(rm *)",
+      "Bash(cd *)",
       "Bash(gh run watch*)",
       "Bash(*sleep*)",
       "Bash(python*)",
-      "Read",
-      "Grep",
-      "Glob",
-      "Edit",
-      "Write",
       "mcp__jira__jira_get_user_profile",
       "mcp__jira__jira_search_fields",
       "mcp__jira__jira_get_project_issues",
@@ -64,13 +58,10 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "env": {
-    "CLAUDE_CODE_SUBAGENT_MODEL": "haiku"
-  },
-  "model": "claude-sonnet",
+  "model": "claude-sonnet-4-6",
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh",
+    "command": "~/.claude/statusline.rb",
     "padding": 0
   },
   "spinnerVerbs": {
@@ -94,6 +85,7 @@
     ]
   },
   "autoUpdatesChannel": "latest",
+  "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "effortLevel": "low"
 }
