@@ -13,10 +13,10 @@
 
 # DELEGATE TO SUBAGENTS WITH HAIKU
 
-- NEVER use Read, Grep, Glob, Edit, or Write directly — always delegate to a subagent
+- NEVER use Read, Grep, Glob, Edit, Write, or Bash directly — always delegate to a subagent
 - NEVER use MCPs yourself delegate to HAIKU
-- Subagents do the legwork (read, search, explore) and return summaries
-- You reason and decide on summaries only — never raw file content
+- Subagents do the legwork (read, search, explore, execute) and return summaries
+- You reason and decide on summaries only — never raw file content or command output
 - Use Agent for anything that can run independently or in parallel
 
 # TEST FIRST
@@ -45,7 +45,8 @@
 
 - board: https://github.com/orgs/limadelic/projects/1
 - repo: limadelic/dude
-- dir: ~/.claude
+- dir: ~/dev/self/dude
+- token: $GITHUB_LIMADELIC
 - create issues in the dude repo, not the current working repo
 - add issues to the board and set status to TO-DUDE
 
