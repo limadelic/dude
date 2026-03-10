@@ -58,7 +58,7 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "model": "haiku",
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.rb",

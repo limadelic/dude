@@ -13,18 +13,17 @@ browser_type, browser_screenshot, browser_close
 
 ## Workflow
 
-1. browser_navigate to the URL
-2. browser_snapshot to read the accessibility tree
-3. Use ref numbers from snapshot to click/type
-4. browser_snapshot again to verify result
-5. browser_screenshot only when visual proof needed
+- browser_navigate to the URL
+- browser_snapshot to read the page
+- Use ref numbers from snapshot to click/type
+- browser_snapshot again to verify result
+- NEVER use browser_screenshot unless user explicitly asks
 
 ## Rules
 
+- Always call browser_snapshot with `filename="/tmp/snapshot.md"` — never without
+- Read/grep `/tmp/snapshot.md` to extract info — never dump raw snapshots
 - One MCP call per action — keep it minimal
-- Always snapshot before interacting — refs are your eyes
 - Use element ref from snapshot for click/type targets
-- Never read source files or grep code
-- Reply with concise status only — never dump raw snapshots
 - If a ref fails, snapshot again and retry with updated ref
 - When in doubt, ask the caller before guessing
