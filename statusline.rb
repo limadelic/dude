@@ -52,7 +52,7 @@ class Statusline
   # Money (spend cap usage)
   def spend_section
     spend_pct = fetch_spend_percentage
-    bar(spend_pct, '💰', lo: 60, hi: 80)
+    bar(spend_pct, '💰')
   end
 
   def fetch_spend_percentage
@@ -123,17 +123,21 @@ class Statusline
   end
 
   BG_MAP = { "\033[32m" => "\033[42m", "\033[38;5;226m" => "\033[48;5;226m", "\033[31m" => "\033[41m" }.freeze
+  SUPERSCRIPTS = { 2 => '²', 3 => '³', 4 => '⁴', 5 => '⁵', 6 => '⁶', 7 => '⁷', 8 => '⁸', 9 => '⁹' }.freeze
+  BLACK = "\033[30m".freeze
+  JETBRAINS = ENV['TERMINAL_EMULATOR'] == 'JetBrains-JediTerm'
 
   def emoji_group(emoji, count, active, color)
-    mult = count == 1 ? '' : "x#{count}"
+    sup = count > 1 ? SUPERSCRIPTS[count] : ''
+    pad = JETBRAINS ? ' ' : ''
     if active
-      "#{BG_MAP[color]}#{color}#{emoji} #{COLORS[:reset]}#{color}#{mult}#{COLORS[:reset]}"
+      "#{BG_MAP[color]}#{BLACK}#{emoji}#{pad}#{sup}#{COLORS[:reset]}"
     else
-      "#{color}#{emoji} #{mult}#{COLORS[:reset]}"
+      "#{color}#{emoji}#{pad}#{sup}#{COLORS[:reset]}"
     end
   end
 
-  def bar(pct, emoji, lo: nil, hi: nil, color: nil)
+  def bar(pct, emoji, lo: 33, hi: 66, color: nil)
     pct, color = clamp(pct), color || color_for_pct(pct, lo, hi)
     "#{color}#{emoji} #{'█' * (pct * 9 / 100.0).round}#{'░' * (9 - (pct * 9 / 100.0).round)}#{COLORS[:reset]}"
   end

@@ -36,6 +36,18 @@ class StatuslineTest < Minitest::Test
   def test_ctx_yellow = assert(out('opus', 50).include?("\e[38;5;226m🧠"))
   def test_ctx_red    = assert(out('opus', 80).include?("\e[31m🧠"))
 
+  def spend_out(pct)
+    spend = Statusline::SPEND_CAP * pct / 100.0
+    mock = { 'results' => [{ 'metrics' => { 'spend' => spend }, 'breakdown' => { 'models' => {} } }] }
+    session = { 'model' => { 'id' => 'claude-opus-4-6' }, 'context_window' => { 'used_percentage' => 25 } }
+    capture { Statusline.new(session.to_json, activity: mock).run }
+  end
+
+  # Spend color
+  def test_spend_green  = assert(spend_out(20).include?("\e[32m💰"))
+  def test_spend_yellow = assert(spend_out(50).include?("\e[38;5;226m💰"))
+  def test_spend_red    = assert(spend_out(80).include?("\e[31m💰"))
+
   # Active model bg
   def test_opus_bg   = assert(out('opus').include?("\e[41m"))
   def test_sonnet_bg = assert(out('sonnet').include?("\e[42m"))
@@ -45,7 +57,7 @@ class StatuslineTest < Minitest::Test
   def test_model_order = assert(strip(out) =~ /🐸.*🎭.*🎸/)
 
   # Multiplier
-  def test_multiplier = assert(strip(out).match?(/x\d+/))
+  def test_multiplier = assert(strip(out).match?(/[²³⁴⁵⁶⁷⁸⁹]/))
 
   # Errors
   def test_invalid = refute_empty(capture { Statusline.new('bad', activity: MOCK).run })

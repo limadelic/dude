@@ -1,71 +1,68 @@
 # Multi-Agents
 
-## Investigation
+## Conclusion
 
-### 1. MAS (DS SDK Supervisor Pattern)
+**No multi-agent story needed.** The SDK (BryteAssist) handles routing automatically.
 
-- Supervisor pattern via LangGraph — supervisor delegates to team members via handoff tools
-- **Verdict:** Out of scope. Untested in prod, we're not guinea-pigging their framework.
+Both AIVA and Enigma must be registered in **BryteHub under SuiteX-Search** (not NREC). The SDK + chat backend (suitex-search-conversation-assistant) handle RouteToAgent end-to-end. No client-side code to write.
 
-### 2. IntentClassificationAgent (BryteHub)
+## How It Works (Full Stack)
 
-- Single gateway agent that classifies user intent via Intent-Detection-Tool (REST)
-- Confidence >= 8 → routes via RouteToAgent client tool to target agent
-- Key file: `ds/agents/resources/dev/us-east4/dev-dev/SuiteX-Search/agents/IntentClassificationAgent.json`
-- **Verdict:** Overkill for our case. Intent classification is for 10+ agents. We have 2.
+### The chain (user types → agent responds)
 
-### 3. RouteToAgent — How It Actually Works
+1. **bryte-assist-sdk** (TypeScript) — shell, loads the chat MFE → `ds/bryte-sdk`
+2. **suitex-search-web** (TypeScript) — chat UI, sends messages via SSE to backend → `ds/bryte-web`
+3. **suitex-search-conversation-assistant** (Kotlin) — chat backend, manages sessions, handles RouteToAgent → `ds/bryte-bff`
+4. **DS API** (Python) — agent service, sessions, messages, tool-result → `ds/api`
+5. **DS SDK** (Python) — agent runtime, graph execution, ClientTool interrupts → `ds/sdk`
+6. **Agent configs** — AIVA, Enigma definitions → `ds/agents` + `aiva/` + `enigma/`
 
-- RouteToAgent is a **ClientTool** — calls raise `ClientToolInterruptError`
-- API returns **202 ACCEPTED** with `WAITING_FOR_TOOL_RESULT` status
-- **Client orchestrates the round-trip:**
-  1. AIVA calls RouteToAgent → session pauses (not killed)
-  2. Client creates new session with target agent, runs it
-  3. Target agent finishes → client calls `POST /sessions/{ava_session_id}/actions/tool-result` with result
-  4. AIVA's session resumes — result comes back as ToolMessage in her graph
-- AIVA's session stays alive the whole time — she gets the response and keeps going
-- Enigma does NOT need RouteToAgent back — client handles the return
+### RouteToAgent flow (already implemented in #3)
 
-## AIVA (ProPeopleCandidateAssistAgent)
+1. AIVA calls RouteToAgent → DS API returns 202 with `intent_name` + `detailed_summarized_query`
+2. Chat backend (`SendAgentMessageAction.kt`) detects RouteToAgent → throws `RouteToAgentException`
+3. `ConversationHandlerService` catches it → uses intent to find target agent
+4. Creates new session with target agent → sends query → returns response
+5. All automatic — no code needed from us
 
-- Config: `ds/agents/resources/dev/us-east4/dev-dev/NREC/agents/ProPeopleCandidateAssistAgent.json`
-- Model: gemini-2.5-flash
-- Suite: ProSuite / ProPeople / Talent Acquisition / Recruiting
-- 4 REST tools: SKILLS_JOBMATCH, SUBSCRIBE_JOBALERT, QUICK_APPLY, GET_OPP
-- No RouteToAgent yet — no client tools at all
-- 32 instructions, state machine: DISCOVERY → SKILLS_SEARCH / SUBSCRIBE_FLOW / APPLY_FLOW
-- Deployed across 9 envs
+### Routing config (BryteHub)
 
-## Enigma (ProPeopleApplicationAgent)
+- Routing is configured via examples/instructions in BryteHub
+- "To route to which agent you need to train through the BryteHub... write few examples"
+- Agent must be under SuiteX-Search for SDK to find it
 
-- Dumb agent — just relays between user and wizard endpoint
-- Wizard pattern: POST payload → wizard returns "missing: X" with question → agent asks user → adds answer → POST again → repeat until 200
-- Wizard owns all brains: field ordering, validation, what's required
-- Agent owns nothing about the application schema — self-updating when wizard changes
-- 1 RESTTool pointing at wizard endpoint
-- Instructions: "POST, relay the question, collect the answer, POST again until submitted"
-- Two wizards already built and working E2E:
-  - QuickApplyWizard — `POST /{tenant}/JobBoard/{jobBoardId}/QuickApplyWizard` (POC complete, demo ready)
-  - ResumeApplyWizard — `POST /{tenant}/JobBoard/{jobBoardId}/ResumeApplyWizard` (POC complete, working E2E)
-- See plans: `quick-apply-wizard.md`, `apply-with-resume.md`
+## POC (this branch: aiva-enigma)
 
-## Decisions
+### What we proved
 
-- MAS out of scope — nobody using it in prod
-- Intent classification out of scope — too heavy for 2 agents
-- RouteToAgent round-trip works via client orchestration — AIVA pauses, client runs Enigma, feeds result back
-- Only AIVA needs RouteToAgent — Enigma just finishes and the client handles the return
-- Evals included in every story, never separate
-- Routing instruction is trivial: "when user wants to apply, call RouteToAgent with Enigma"
+- RouteToAgent works at the DS API level — AIVA routes to Enigma, Enigma responds, response comes back
+- E2E test: `test_routes_to_enigma_on_apply` — talk to AIVA, say "I want to apply", get Enigma's response
+- `session.rb` simulates what the chat backend does in prod (RouteToAgent round-trip)
 
-## Open Questions
+### Agent configs
 
-- Does our client already support the WAITING_FOR_TOOL_RESULT → run Enigma → tool-result callback flow?
-- If not, client-side orchestration is a dependency (not our story — client/gateway team)
-- POC needed but no time allocated
+- **AivaEnigma** — AIVA copy with RouteToAgent ClientTool + routing instruction (`aiva/config/aiva.json`)
+- **Enigma** — simple hello agent, placeholder for wizard (`enigma/config/enigma.json`)
 
-## Stories
+### Test infra added
 
-1. Agent-to-agent routing — add RouteToAgent client tool to AIVA's config + instructions for when to route + evals
-   - Agent-side only: tool definition + routing instructions in JSON
-   - Dependency: client must support ClientTool round-trip (202 → tool-result)
+- `lib/ds/agent.rb` — `Agent.tool_result` method (posts to `/actions/tool-result`)
+- `lib/ds/session.rb` — `Session.tool_result` + auto RouteToAgent handling in `Session.msg`
+
+## SDK Adoption (from meeting 2026-03-09)
+
+- SDK is a must — not optional, for beta too
+- Agents must be in SuiteX-Search (not NREC) for SDK to find them
+- SDK handles sessions automatically — no session creation needed
+- UX must follow SDK — no custom UI stories
+- **Known blockers:**
+  - Consent flow may not work with SDK
+  - No file upload in SDK (affects ResumeApplyWizard)
+
+## What's Left
+
+1. Register both agents in BryteHub under SuiteX-Search
+2. SDK adoption — move off custom website to SDK
+3. Enigma wizard integration — replace hello with actual wizard relay
+4. Solve consent for SDK
+5. Solve resume upload for SDK
