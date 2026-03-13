@@ -84,8 +84,8 @@
       "Drifting"
     ]
   },
+  "effortLevel": "low",
   "autoUpdatesChannel": "latest",
   "autoMemoryEnabled": false,
-  "skipDangerousModePermissionPrompt": true,
-  "effortLevel": "low"
+  "skipDangerousModePermissionPrompt": true
 }
