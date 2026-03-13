@@ -50,16 +50,15 @@ class Statusline
   end
 
   # Money (spend cap usage)
-  def spend_section
-    spend_pct = fetch_spend_percentage
-    bar(spend_pct, '💰')
+  def spend_pct
+    spend = activity_data.dig('results', 0, 'metrics', 'spend').to_f rescue 0
+    [clamp((spend / SPEND_CAP * 100).round), spend > 0 ? 1 : 0]
   end
 
-  def fetch_spend_percentage
-    spend = activity_data.dig('results', 0, 'metrics', 'spend').to_f
-    clamp((spend / SPEND_CAP * 100).round)
-  rescue StandardError
-    0
+  def spend_section
+    pct, min = spend_pct
+    blocks = [pct * 9 / 100, min].max
+    "#{color_for_pct(pct)}💰 #{'█' * blocks}#{'░' * (9 - blocks)}#{COLORS[:reset]}"
   end
 
   def activity_data = @activity || fetch_json(activity_url) || {}
@@ -103,12 +102,15 @@ class Statusline
   def model_counts(stats) = MODELS.map { |m, _| sum_metric(stats, m, 'successful_requests').to_i }
   def model_costs(stats) = MODELS.map { |m, _| sum_metric(stats, m, 'spend') }
 
+  def cost_pcts(costs)
+    costs.map { |c| costs.sum.zero? ? 0 : (c * 100 / costs.sum).round }
+  end
+
   def build_model_groups(stats)
     counts, costs = model_counts(stats), model_costs(stats)
     req_pcts = normalize_to_100(*counts.map { |c| percentage(c, counts.sum) })
-    cost_pcts = costs.map { |c| costs.sum.zero? ? 0 : (c * 100 / costs.sum).round }
     current = @session.dig('model', 'id') || ''
-    MODELS.each_with_index.map { |(m, emoji), i| [counts[i], emoji, req_pcts[i] / 10, current.include?(m), color_for_pct(cost_pcts[i])] }
+    MODELS.each_with_index.map { |(m, emoji), i| [counts[i], emoji, req_pcts[i] / 10, current.include?(m), color_for_pct(cost_pcts(costs)[i])] }
   end
 
   def fetch_model_stats
@@ -127,14 +129,13 @@ class Statusline
   BLACK = "\033[30m".freeze
   JETBRAINS = ENV['TERMINAL_EMULATOR'] == 'JetBrains-JediTerm'
 
+  def emoji_str(emoji, color, sup, pad)
+    "#{color}#{emoji}#{pad}#{sup}#{COLORS[:reset]}"
+  end
+
   def emoji_group(emoji, count, active, color)
-    sup = count > 1 ? SUPERSCRIPTS[count] : ''
-    pad = JETBRAINS ? ' ' : ''
-    if active
-      "#{BG_MAP[color]}#{BLACK}#{emoji}#{pad}#{sup}#{COLORS[:reset]}"
-    else
-      "#{color}#{emoji}#{pad}#{sup}#{COLORS[:reset]}"
-    end
+    sup, pad = count > 1 ? SUPERSCRIPTS[count] : '', JETBRAINS ? ' ' : ''
+    active ? "#{BG_MAP[color]}#{BLACK}#{emoji}#{pad}#{sup}#{COLORS[:reset]}" : emoji_str(emoji, color, sup, pad)
   end
 
   def bar(pct, emoji, lo: 33, hi: 66, color: nil)
@@ -183,5 +184,6 @@ end
 
 if $0 == __FILE__
   input = STDIN.read
+  input = '{}' if input.strip.empty?
   Statusline.new(input).run
 end
