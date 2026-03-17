@@ -20,3 +20,5 @@ plugins/blocklist.json
 image-cache/
 plugins/
 .mcp.json
+dudes/
+sessions/

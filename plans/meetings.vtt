@@ -1,0 +1,4998 @@
+WEBVTT
+
+f4bd7998-c27d-483c-8c74-22af3d418b34-0
+00:00:04.560 --> 00:00:08.720
+I'll start the recording though,
+just so I can start us off then.
+
+5edc3a1e-0c14-4046-acdd-f19341878671-0
+00:00:09.960 --> 00:00:14.480
+We wanted to do 2 things today,
+so I'll be set 2 minutes.
+
+8d45e7fd-3485-4e24-ae33-8fb4c22a2f32-0
+00:00:15.680 --> 00:00:18.680
+Number one,
+I think they're during quarterly planning.
+
+7c6e4e69-e3db-45f2-8740-5c31f760798f-0
+00:00:18.680 --> 00:00:24.117
+We were talking about how you guys have
+done some work already or maybe you've
+
+7c6e4e69-e3db-45f2-8740-5c31f760798f-1
+00:00:24.117 --> 00:00:28.040
+completed some work for the Bright SDK
+for talent pools.
+
+43266758-a503-4f17-93da-43a475986644-0
+00:00:28.440 --> 00:00:33.480
+And then we are also doing some work for
+the Bright control panel.
+
+18754031-eb29-4d5b-ad31-a795c7e63e3c-0
+00:00:33.480 --> 00:00:42.119
+I think they're now calling it the Bright
+admin console for like all agents or all
+
+18754031-eb29-4d5b-ad31-a795c7e63e3c-1
+00:00:42.119 --> 00:00:43.160
+AI things.
+
+4384fce9-5e37-4161-9770-7fc2aa9572f1-0
+00:00:43.520 --> 00:00:47.007
+So we were doing some work on that for
+Job Genius,
+
+4384fce9-5e37-4161-9770-7fc2aa9572f1-1
+00:00:47.007 --> 00:00:52.410
+since that's what's live and out there
+for recruiting right now and moving Job
+
+4384fce9-5e37-4161-9770-7fc2aa9572f1-2
+00:00:52.410 --> 00:00:56.240
+Genius into that Bright control panel,
+which is just a,
+
+4384fce9-5e37-4161-9770-7fc2aa9572f1-3
+00:00:56.240 --> 00:01:01.643
+a fancy way of saying they're going to be
+able to turn all AI things from that
+
+4384fce9-5e37-4161-9770-7fc2aa9572f1-4
+00:01:01.643 --> 00:01:03.080
+bright control panel.
+
+0a5010ba-595d-44c9-a445-505392686f4b-0
+00:01:03.080 --> 00:01:07.868
+So since Job Genius is the one real AI
+thing that we have out there in
+
+0a5010ba-595d-44c9-a445-505392686f4b-1
+00:01:07.868 --> 00:01:11.240
+recruiting,
+then that's where we're moving it to.
+
+71ea8be0-5fde-4ba9-809d-7cadfefc1695-0
+00:01:11.240 --> 00:01:15.656
+And then I think the expectation is,
+is for all of these other agents,
+
+71ea8be0-5fde-4ba9-809d-7cadfefc1695-1
+00:01:15.656 --> 00:01:20.818
+these new ones that we're bringing to the
+market to have those also be able to get
+
+71ea8be0-5fde-4ba9-809d-7cadfefc1695-2
+00:01:20.818 --> 00:01:23.120
+enabled in that bright control panel.
+
+9d725556-cd4f-4bd9-859f-14dd8400f62e-0
+00:01:23.120 --> 00:01:26.640
+So just sharing the work that we did for
+Job Genius as well.
+
+6b53268d-3635-4806-bd9c-e5facbadf986-0
+00:01:26.640 --> 00:01:31.753
+So it sounds like everybody else is going
+to have to be doing those things soon for
+
+6b53268d-3635-4806-bd9c-e5facbadf986-1
+00:01:31.753 --> 00:01:35.040
+their own agents that they're bringing to
+the market.
+
+dcbe67b0-fd8f-458c-b5de-218a18494c91-0
+00:01:37.000 --> 00:01:39.120
+So that's kind of the scope of this call.
+
+4aa8cb70-fdc8-4a05-a478-cc961469d82a-0
+00:01:39.120 --> 00:01:42.675
+It's probably going to be more than 30
+minutes if any of us have like a ton of
+
+4aa8cb70-fdc8-4a05-a478-cc961469d82a-1
+00:01:42.675 --> 00:01:43.800
+questions about the work.
+
+73c40155-a65f-4459-bf5f-1d51a1ab7314-0
+00:01:44.400 --> 00:01:48.220
+But I think for the Bright Control panel,
+it's a couple of stories that we worked
+
+73c40155-a65f-4459-bf5f-1d51a1ab7314-1
+00:01:48.220 --> 00:01:48.360
+on.
+
+a2653695-8b50-44ee-a48c-1a4931ed1fa3-0
+00:01:48.360 --> 00:01:53.612
+I think what is like with a lot of things,
+the difficulties come when you're trying
+
+a2653695-8b50-44ee-a48c-1a4931ed1fa3-1
+00:01:53.612 --> 00:01:56.738
+to test these things because I think even
+for us,
+
+a2653695-8b50-44ee-a48c-1a4931ed1fa3-2
+00:01:56.738 --> 00:01:59.552
+for the bright control panel for Job
+Genius,
+
+a2653695-8b50-44ee-a48c-1a4931ed1fa3-3
+00:01:59.552 --> 00:02:04.680
+it wasn't tested in our normal like suite
+end to end environment that we know of.
+
+519edb65-6488-459e-89f2-53c9b7c4cd05-0
+00:02:04.680 --> 00:02:06.080
+It was in a different environment.
+
+d0912d8e-266d-4338-aca8-4e163e158b18-0
+00:02:06.080 --> 00:02:08.320
+So just keeping those things in mind.
+
+956eb83f-b51a-4cc7-9ca6-d30dd4349c96-0
+00:02:10.920 --> 00:02:11.560
+Hey, Abby.
+
+cba4141f-4065-46a4-b454-2301ef35bb87-0
+00:02:11.920 --> 00:02:12.440
+Hello.
+
+538f1931-f1a3-4997-b80d-e25a296dd53b-0
+00:02:13.080 --> 00:02:14.600
+I'm sorry for being late.
+
+2fe97a6c-f42d-4c20-9b3c-f161dc862887-0
+00:02:14.920 --> 00:02:17.920
+Yeah, I completely missed that,
+that we have a meeting right now.
+
+554a3031-9322-4a12-8a7b-0317a44143f2-0
+00:02:18.840 --> 00:02:23.520
+Thanks, Josh for no worries.
+
+7781f52f-fa3f-47ca-9e58-7d5cbf9c12a5-0
+00:02:23.520 --> 00:02:25.520
+So I gave them the rundown.
+
+7932ff39-f5f2-4655-ba8f-e08175ff599b-0
+00:02:25.800 --> 00:02:31.162
+Today's meeting is basically we want to
+talk about the Bright control panel since
+
+7932ff39-f5f2-4655-ba8f-e08175ff599b-1
+00:02:31.162 --> 00:02:35.477
+we are doing that work for Job Genius and
+then for Deep D's team,
+
+7932ff39-f5f2-4655-ba8f-e08175ff599b-2
+00:02:35.477 --> 00:02:40.186
+they want to understand that because I
+think it it applies to interview
+
+7932ff39-f5f2-4655-ba8f-e08175ff599b-3
+00:02:40.186 --> 00:02:40.840
+Scorecard.
+
+db1a0703-62e6-40ba-a210-8b8bc82682c5-0
+00:02:40.840 --> 00:02:45.676
+And then we also would like to ask them
+about the Bright SDK since it sounds like
+
+db1a0703-62e6-40ba-a210-8b8bc82682c5-1
+00:02:45.676 --> 00:02:47.800
+they did some work for talent pools.
+
+462e58cb-bef3-4600-b92f-2d124490a7f6-0
+00:02:47.800 --> 00:02:53.680
+So we're just kind of sharing some
+details about all of those things.
+
+2a3ee47a-3d87-425f-9f68-835a6f04a48a-0
+00:02:54.120 --> 00:02:56.000
+So that's about the,
+the scope of this call.
+
+319d0b6f-d9de-480f-b596-20690c3833b8-0
+00:02:56.000 --> 00:02:57.960
+It may be more than 30 minutes, we'll see.
+
+9619e54d-0bb3-4337-9dd1-87ea0326a2b2-0
+00:02:57.960 --> 00:03:00.640
+It just kind of depends on how many
+questions we have.
+
+73dcff3f-dbef-46ad-8c20-8a14f4d0c497-0
+00:03:00.640 --> 00:03:07.560
+So do we want to start with Bright
+Control Panel or Bright SDK?
+
+dd1c83b9-587e-4d08-b98d-6bb88611a46d-0
+00:03:07.560 --> 00:03:11.176
+If,
+if you can give us like if you can show
+
+dd1c83b9-587e-4d08-b98d-6bb88611a46d-1
+00:03:11.176 --> 00:03:15.204
+us like how Bright control panel will
+look like,
+
+dd1c83b9-587e-4d08-b98d-6bb88611a46d-2
+00:03:15.204 --> 00:03:21.533
+like just if you have any Sigma around it
+or maybe how it will appear in our
+
+dd1c83b9-587e-4d08-b98d-6bb88611a46d-3
+00:03:21.533 --> 00:03:22.520
+application.
+
+ec307da7-2551-4f03-8423-2db70c33b61b-0
+00:03:22.600 --> 00:03:25.240
+If you can give a walkthrough about that,
+that will be great.
+
+34868b0e-34ca-40fd-bef5-2f88045f1a87-0
+00:03:26.040 --> 00:03:26.560
+Yeah.
+
+43ad7238-510f-49cd-8076-1e74d49d1ec2-0
+00:03:26.560 --> 00:03:28.200
+And I see you don't really need a Figma.
+
+151c925b-d7f8-4c0b-98f1-ae2933f5317a-0
+00:03:28.520 --> 00:03:29.760
+We will give you the real product.
+
+3b14d0f8-03c9-464e-83c1-c145a5afdbc8-0
+00:03:29.760 --> 00:03:30.600
+Yeah, yeah, yeah.
+
+248c2853-32cc-45cd-9a48-7db23c868d13-0
+00:03:31.680 --> 00:03:32.440
+Anything will work.
+
+e8982130-8147-4674-9848-715b2e0536fa-0
+00:03:33.200 --> 00:03:33.600
+Yeah.
+
+c724cf80-4909-4d00-af39-7b8fb099869c-0
+00:03:34.360 --> 00:03:34.760
+OK.
+
+22792081-9c1b-4e40-9b3b-c629d9b7c41d-0
+00:03:34.840 --> 00:03:39.493
+So let me quickly show you then that
+first we will start with BCP,
+
+22792081-9c1b-4e40-9b3b-c629d9b7c41d-1
+00:03:39.493 --> 00:03:41.160
+then give me one second.
+
+19f07038-e1a3-458a-bc54-6b226077b7b6-0
+00:03:41.160 --> 00:03:45.364
+My machine is not,
+I was not prepared and in the meantime
+
+19f07038-e1a3-458a-bc54-6b226077b7b6-1
+00:03:45.364 --> 00:03:48.698
+I'll be,
+I like to you know mention which was
+
+19f07038-e1a3-458a-bc54-6b226077b7b6-2
+00:03:48.698 --> 00:03:53.120
+discussed in last call since Diego was
+there with Jen Baker.
+
+232981d8-e0e7-4927-8267-f3eae2121a9f-0
+00:03:53.480 --> 00:03:57.920
+We since BCP is still in their beta,
+they are not going to Georgia with R1.
+
+e6e66525-3e36-45ab-94d6-22a66d725b9b-0
+00:03:58.120 --> 00:04:05.575
+So having our agents into BCP is not a
+mandate for Georgia as of now until BCP
+
+e6e66525-3e36-45ab-94d6-22a66d725b9b-1
+00:04:05.575 --> 00:04:07.840
+goes for Georgia itself.
+
+f398e836-efdb-4bc0-991d-a41a506d02b3-0
+00:04:08.440 --> 00:04:09.880
+So we are safe on that part.
+
+2dbc2436-90b8-47be-a7b1-fa8e670e288c-0
+00:04:09.880 --> 00:04:13.226
+I mean Nasib,
+if you won't be able to pick up right now
+
+2dbc2436-90b8-47be-a7b1-fa8e670e288c-1
+00:04:13.226 --> 00:04:14.960
+for this work that that's OK.
+
+6b11467d-435c-41a7-8af6-2e657d375a33-0
+00:04:15.000 --> 00:04:17.840
+We can plan it, but we can have the,
+you know,
+
+6b11467d-435c-41a7-8af6-2e657d375a33-1
+00:04:17.840 --> 00:04:20.680
+overview like how that thing needs to be
+done.
+
+ec857bb0-fe22-453b-aab3-02cd83b799bb-0
+00:04:23.640 --> 00:04:29.160
+OK, All right.
+
+62221769-f39e-4902-8775-4cc6ddd39841-0
+00:04:30.240 --> 00:04:32.000
+This is being recorded already.
+
+1c7e8e69-0fc1-43c6-83b3-a1c447b652c5-0
+00:04:32.000 --> 00:04:34.280
+And can you guys see my screen?
+
+fdfba90c-827d-41ff-a0bc-a1bf57a0220e-0
+00:04:35.600 --> 00:04:37.600
+Yes, awesome.
+
+9f2baa68-f7a1-48d6-a22a-529f30492b16-0
+00:04:38.000 --> 00:04:41.920
+And thank you Deepti for that
+clarification that it's not needed yet.
+
+d0af68d3-16cb-42d0-aee6-26615263c2ba-0
+00:04:42.080 --> 00:04:43.320
+So that was helpful.
+
+53735105-516b-4c16-8a06-7224bf583c84-0
+00:04:45.200 --> 00:04:45.520
+Yeah.
+
+602d3122-7ca7-4e92-b954-1e508563f282-0
+00:04:45.520 --> 00:04:49.462
+And on that note of the sorry Avi of it
+not being needed, I'm,
+
+602d3122-7ca7-4e92-b954-1e508563f282-1
+00:04:49.462 --> 00:04:54.531
+I'm trying to meet with Ankur because I
+was curious where if the bright control,
+
+602d3122-7ca7-4e92-b954-1e508563f282-2
+00:04:54.531 --> 00:04:59.600
+if we're not using bright control panel,
+if someone in let's say that, you know,
+
+602d3122-7ca7-4e92-b954-1e508563f282-3
+00:04:59.600 --> 00:05:04.607
+can't sourcing or interview scorecard
+someone like buys that in like the bright
+
+602d3122-7ca7-4e92-b954-1e508563f282-4
+00:05:04.607 --> 00:05:04.920
+skew.
+
+c257e314-35ed-4149-8688-8c15dd848996-0
+00:05:05.120 --> 00:05:10.348
+Like how would we know as recruiting that
+we need to activate that launch darkly
+
+c257e314-35ed-4149-8688-8c15dd848996-1
+00:05:10.348 --> 00:05:10.800
+toggle?
+
+72bf5105-25b5-4252-9157-5543f76b6cc4-0
+00:05:10.800 --> 00:05:11.440
+You know what I mean?
+
+e7201a9d-4c55-4337-bdb4-82db0a2f4faf-0
+00:05:12.760 --> 00:05:14.440
+Like,
+how would we know to enable the feature?
+
+59b0d71a-c8e7-4cd6-9648-1f49659134dd-0
+00:05:15.400 --> 00:05:16.240
+I, I don't know.
+
+fffad475-263f-44f7-a105-31e7038d35a2-0
+00:05:17.280 --> 00:05:19.177
+So I,
+I think I'm reaching out to someone from
+
+fffad475-263f-44f7-a105-31e7038d35a2-1
+00:05:19.177 --> 00:05:21.640
+the right team to ask them what are we
+supposed to do there?
+
+8261602b-663b-49b7-a016-f8b65813e359-0
+00:05:21.640 --> 00:05:22.920
+Does that make sense?
+
+e3e2adb0-44fc-4d7c-9081-d2948c5be94e-0
+00:05:22.920 --> 00:05:26.852
+If it is so if it is not in BCP,
+then how do we enable that is your
+
+e3e2adb0-44fc-4d7c-9081-d2948c5be94e-1
+00:05:26.852 --> 00:05:27.720
+question right?
+
+cb8a259a-aef9-40d2-b0ac-a51fd68da47f-0
+00:05:28.200 --> 00:05:30.400
+Yeah, like, right,
+because all these are behind launch
+
+cb8a259a-aef9-40d2-b0ac-a51fd68da47f-1
+00:05:30.400 --> 00:05:30.680
+darkly.
+
+61e394eb-5238-4851-ac8d-82743862a28c-0
+00:05:30.680 --> 00:05:31.600
+So that makes sense for me.
+
+ac9fdf81-8ece-47d4-a35b-1b66c97725d8-0
+00:05:31.600 --> 00:05:34.080
+But how would how would we know when to
+enable?
+
+d82c721b-9eb7-4575-9e4d-c675d885a5c6-0
+00:05:34.080 --> 00:05:35.640
+Like is someone emailing us?
+
+4d283994-62d7-4362-9a70-69901f1920c7-0
+00:05:35.640 --> 00:05:38.160
+Do we need to, do they have to call some?
+
+59a972e5-6577-4890-92a9-42caa5ec8897-0
+00:05:38.360 --> 00:05:38.920
+You know what I mean?
+
+4a1a02d4-ad41-4ac0-a1ea-4e6f10c2dd6a-0
+00:05:39.520 --> 00:05:40.800
+Yeah, that's an open question.
+
+4b59e3a4-04b0-4cd1-ac1d-f399a533dcce-0
+00:05:40.800 --> 00:05:41.640
+Yeah, yeah, yeah.
+
+0e1e0b62-beca-4c45-b950-086abf3d7c80-0
+00:05:41.640 --> 00:05:43.520
+So I'm asking them like,
+what are we supposed to do?
+
+0a7a38a3-f8ce-43eb-9c32-39c0f67bc5e5-0
+00:05:43.520 --> 00:05:46.400
+Like for now, is it just, hey,
+you'll you'll let us know?
+
+fd50fb06-512b-43b2-acc8-0bee2162a19c-0
+00:05:46.400 --> 00:05:48.320
+I mean, that's probably OK.
+
+542100a2-56a5-4de8-b740-2c085fee0d38-0
+00:05:48.320 --> 00:05:51.040
+But yeah,
+that's the only part that I'm confused on.
+
+bdc1adef-9b15-4586-bfec-2063ca698584-0
+00:05:52.400 --> 00:05:53.360
+It's how would we notify it?
+
+c5839838-c653-4486-831c-7a26c73001c8-0
+00:05:53.360 --> 00:05:54.800
+So I'm gonna, I'll look into that.
+
+3ac3eb42-d25f-48a3-a80b-8caec4b00047-0
+00:05:55.480 --> 00:05:55.760
+OK.
+
+4274f788-32b2-43d5-8085-303a84453678-0
+00:05:56.360 --> 00:05:56.640
+Awesome.
+
+92fb5e83-b0da-4b71-92e7-cddfa19d6491-0
+00:05:57.480 --> 00:05:57.920
+Thank you.
+
+905fe861-eb3d-46c8-be13-fe52e2882a77-0
+00:05:58.680 --> 00:06:00.600
+OK,
+so this is one of the in the suite
+
+905fe861-eb3d-46c8-be13-fe52e2882a77-1
+00:06:00.600 --> 00:06:02.520
+environment there is a separate tenant.
+
+b462cc45-ee34-465c-a054-fb194ef6f2ac-0
+00:06:03.040 --> 00:06:06.400
+So as recruiting team,
+we all use a specific tenant.
+
+51fffe2d-9e1c-4802-95b7-3168edf3db2f-0
+00:06:06.400 --> 00:06:09.527
+It starts with ARNI don't know the full
+name of the tenant,
+
+51fffe2d-9e1c-4802-95b7-3168edf3db2f-1
+00:06:09.527 --> 00:06:12.760
+but that is the one that we use for suite
+end to end testing.
+
+346374e7-1f34-43e8-b702-2087887b1d9e-0
+00:06:12.760 --> 00:06:15.760
+All of us, this is a separate tenant.
+
+f9297157-68b6-4dbe-a937-f6978a07320b-0
+00:06:15.960 --> 00:06:17.200
+It is not that fun.
+
+e1f0c9fe-8362-450e-841c-e2be1fcef9f6-0
+00:06:17.240 --> 00:06:22.064
+And in this one you have UKG auth and
+enabled and you have recruiting enabled
+
+e1f0c9fe-8362-450e-841c-e2be1fcef9f6-1
+00:06:22.064 --> 00:06:23.240
+and Pro is enabled.
+
+a0d61fa9-a214-42c4-b0b6-66594f781fe5-0
+00:06:23.680 --> 00:06:27.040
+And in this one,
+you have the full BCP functionality.
+
+ca5090e0-7932-449b-825d-39d6a1410522-0
+00:06:29.000 --> 00:06:32.044
+The other one,
+the one that we regularly use,
+
+ca5090e0-7932-449b-825d-39d6a1410522-1
+00:06:32.044 --> 00:06:35.485
+cannot have,
+cannot have BCP because of some issues
+
+ca5090e0-7932-449b-825d-39d6a1410522-2
+00:06:35.485 --> 00:06:36.279
+with authen.
+
+76237b0b-a36e-4a70-af9c-dd5d2ad87b9d-0
+00:06:37.280 --> 00:06:41.628
+Unless and until Authen is not available,
+then BCP cannot be available on on that
+
+76237b0b-a36e-4a70-af9c-dd5d2ad87b9d-1
+00:06:41.628 --> 00:06:42.000
+tenant.
+
+c4bcddb1-236f-444f-a4ba-fbafb042aa0d-0
+00:06:43.360 --> 00:06:48.664
+So let's navigate to Bright Control Panel
+and you can hear application setup,
+
+c4bcddb1-236f-444f-a4ba-fbafb042aa0d-1
+00:06:48.664 --> 00:06:52.880
+system configuration,
+and then we go to Bright Admin Console.
+
+eb6a006b-8394-4f11-9c2f-b73ac216360b-0
+00:06:57.760 --> 00:06:59.880
+So this is your Bright Control panel.
+
+f137f39a-3a25-4242-9cb5-7a4a6fac8e16-0
+00:07:00.080 --> 00:07:02.320
+As you can see here also Bright Control.
+
+d07709a5-87e7-482c-a4bb-86e19444840f-0
+00:07:03.040 --> 00:07:08.240
+And here we have Job Genius.
+
+103e086e-bffb-41ca-a5a9-e3fc4b907af5-0
+00:07:08.440 --> 00:07:13.200
+This is the one for which we have done
+the implementation part.
+
+dada7496-e3d7-4ebd-992e-40c0b132c235-0
+00:07:14.080 --> 00:07:18.360
+So Administrator is going to come to this
+page.
+
+f1c2ac69-af53-4461-a616-f9e6766e1bea-0
+00:07:18.360 --> 00:07:23.564
+They turn on Bright AI and then they turn
+on Job Genius, for example,
+
+f1c2ac69-af53-4461-a616-f9e6766e1bea-1
+00:07:23.564 --> 00:07:24.680
+every 12 hours.
+
+cb9ca5b8-c617-4c51-a715-b27cfe40884b-0
+00:07:24.680 --> 00:07:27.756
+We have written heartbeat code on the
+recruiting side,
+
+cb9ca5b8-c617-4c51-a715-b27cfe40884b-1
+00:07:27.756 --> 00:07:30.665
+which hits their API and checks whether
+this thing,
+
+cb9ca5b8-c617-4c51-a715-b27cfe40884b-2
+00:07:30.665 --> 00:07:32.400
+this feature is enabled or not.
+
+fe998719-63e5-47e8-8a5e-890c9cb3c523-0
+00:07:33.280 --> 00:07:38.200
+Yes, Diego, do we ever?
+
+63a25ce2-a02b-4ad0-bced-1bcd46f2eaf5-0
+00:07:38.680 --> 00:07:42.200
+What were the takeaways from that Slack
+chat with the Bright team?
+
+098bf790-bced-4cf0-b428-16d622170398-0
+00:07:42.200 --> 00:07:48.312
+Did they say that we just live with the
+calling each tenant one at a time every
+
+098bf790-bced-4cf0-b428-16d622170398-1
+00:07:48.312 --> 00:07:49.000
+12 hours?
+
+71d1ace4-2b48-4c8b-9a03-fc312140520f-0
+00:07:50.360 --> 00:07:53.365
+Yes, right now we are there only there is,
+we are,
+
+71d1ace4-2b48-4c8b-9a03-fc312140520f-1
+00:07:53.365 --> 00:07:55.840
+we are calling each tenant every 12 hours.
+
+391e0dd7-be42-4a15-8b68-f20adaa9a857-0
+00:07:56.080 --> 00:08:00.920
+There is a bulk end point,
+but our team has not implemented that.
+
+0baca2a1-752f-41e9-87b0-ba5690f81df5-0
+00:08:01.040 --> 00:08:04.320
+I am not sure where is that?
+
+5381982f-ea50-4a4e-84d5-78de9e6bd4f4-0
+00:08:04.400 --> 00:08:07.680
+I said Alex Sabatino,
+is that the name right?
+
+3f664d59-635f-4c1e-998b-ad1bffa8b1fd-0
+00:08:08.160 --> 00:08:09.200
+Yeah, Alex from our team.
+
+7b72feae-06c9-4621-918b-58ed15cbc949-0
+00:08:09.200 --> 00:08:09.360
+Yeah.
+
+3cc53a85-d753-4628-a090-ff6d0e246c22-0
+00:08:10.040 --> 00:08:10.840
+Alex from your team.
+
+4a2fac0a-9db7-488c-a625-6efde98673c3-0
+00:08:10.840 --> 00:08:11.880
+Yes, exactly.
+
+5114ba60-e3c5-4632-99bb-3423d1a04748-0
+00:08:11.880 --> 00:08:15.040
+So he is the one who probably is,
+you know, gonna use the new endpoint.
+
+2cdc210f-68dc-478b-8831-8e94728cee15-0
+00:08:15.240 --> 00:08:19.271
+That's what he said in the chat as did we
+create that endpoint already or or did
+
+2cdc210f-68dc-478b-8831-8e94728cee15-1
+00:08:19.271 --> 00:08:19.520
+they?
+
+480a569e-0704-4189-8f8a-cb2f046833df-0
+00:08:19.520 --> 00:08:22.640
+I I don't remember what was the final say
+from the bright team?
+
+bc3a35a9-1676-4242-ba4f-fe2bafda8aad-0
+00:08:22.640 --> 00:08:24.600
+Because I remember we needed them to do
+something.
+
+a7589300-70ce-43b1-bdfb-4456baca5595-0
+00:08:25.680 --> 00:08:29.637
+So they had they had one endpoint,
+but they had called it that do not use
+
+a7589300-70ce-43b1-bdfb-4456baca5595-1
+00:08:29.637 --> 00:08:30.440
+for production.
+
+75433e54-03f0-43e3-ad89-c4777a7e0e73-0
+00:08:30.680 --> 00:08:34.880
+But then over the chat they said that you
+can you can use it for production for now.
+
+7493edfd-0443-4d60-8275-0fb1606a545c-0
+00:08:36.200 --> 00:08:36.800
+Oh, OK.
+
+96694a8f-d818-42a3-bf81-0fc305fb3c85-0
+00:08:37.640 --> 00:08:37.920
+Yeah.
+
+b2d9e039-514d-4aae-a9a9-cda1bb9dc7cc-0
+00:08:37.920 --> 00:08:40.791
+So they do have the endpoint,
+but they initially said that that is not
+
+b2d9e039-514d-4aae-a9a9-cda1bb9dc7cc-1
+00:08:40.791 --> 00:08:41.600
+supposed to be used.
+
+fc219ad8-8c7d-4e2f-8510-9fce92d5c6dc-0
+00:08:43.960 --> 00:08:47.280
+OK, All right, so coming back to here.
+
+39b7d289-213b-4894-8d7a-88ba5f4a60d6-0
+00:08:47.840 --> 00:08:53.240
+So administrator comes here and they turn
+on Job Genius every 12 hours.
+
+f16f9551-9aa0-4245-b652-42c0b1435f4d-0
+00:08:53.240 --> 00:08:57.764
+We have implemented a heartbeat on our
+side and that heartbeat checks the status
+
+f16f9551-9aa0-4245-b652-42c0b1435f4d-1
+00:08:57.764 --> 00:08:59.720
+of of this flag if it is on or off.
+
+1a0b01b2-f781-4526-b184-6304c6324649-0
+00:09:00.160 --> 00:09:04.093
+And based on that,
+we turn on or off our feature here for
+
+1a0b01b2-f781-4526-b184-6304c6324649-1
+00:09:04.093 --> 00:09:04.840
+Job Genius.
+
+8f2e7d02-69fd-45df-afb6-ba1a6167bf50-0
+00:09:05.800 --> 00:09:13.119
+Right now it is on and the heartbeat must
+is currently running at everyday Eastern
+
+8f2e7d02-69fd-45df-afb6-ba1a6167bf50-1
+00:09:13.119 --> 00:09:13.560
+Time.
+
+4d7d62cd-17b3-4fd5-81c3-b8e73328e306-0
+00:09:13.600 --> 00:09:21.017
+I don't know with the daylight,
+the time changed from the 7:00 or 8:00 PM
+
+4d7d62cd-17b3-4fd5-81c3-b8e73328e306-1
+00:09:21.017 --> 00:09:22.320
+yeah, either.
+
+e660b79e-9ca6-47fc-8945-95f1ecc95cdc-0
+00:09:22.480 --> 00:09:25.240
+So it was running at 7:00 PM or and 7:00
+AM earlier.
+
+a5373cac-7da0-4b23-9cfe-51f4b6d9a5e8-0
+00:09:25.240 --> 00:09:27.800
+Now it is either 8 or 6,
+I don't know whichever way.
+
+9f5a99a1-ab6d-4aa1-a1a7-81d747fcd83a-0
+00:09:32.880 --> 00:09:37.280
+And here you can see that you can see
+Bright AI here.
+
+d4fdd3ac-ef61-4fb0-ac66-827d0b8aa18a-0
+00:09:39.000 --> 00:09:40.800
+Use Bright AI for job description.
+
+3968e5d1-8e34-43b9-b9a5-0f91b2fff2d3-0
+00:09:40.800 --> 00:09:43.360
+Use Bright AI for interview questions for
+these settings.
+
+d734d1ac-6338-438c-be4b-d4f2a1033217-0
+00:09:43.360 --> 00:09:45.000
+These settings are enabled.
+
+79332277-ab7d-4b23-8b08-f858208b9ec6-0
+00:09:45.800 --> 00:09:50.796
+And if you try to go and create an
+opportunity,
+
+79332277-ab7d-4b23-8b08-f858208b9ec6-1
+00:09:50.796 --> 00:09:57.146
+you can see here Draft with bright AI,
+Draft with Bright AI,
+
+79332277-ab7d-4b23-8b08-f858208b9ec6-2
+00:09:57.146 --> 00:10:00.270
+all these buttons are enabled.
+
+64a644cc-a1bd-493b-a0fd-5b66d7d19bd1-0
+00:10:00.270 --> 00:10:01.830
+And same thing for interview questions
+too.
+
+55b749e5-436c-4ad3-8770-1f2357381f42-0
+00:10:04.710 --> 00:10:11.973
+It's in the screening tab,
+interview questions here,
+
+55b749e5-436c-4ad3-8770-1f2357381f42-1
+00:10:11.973 --> 00:10:14.440
+drafted bright AI.
+
+5cd4c939-9690-4974-8c05-f845e326dd97-0
+00:10:15.120 --> 00:10:16.640
+So all these features are enabled.
+
+f595b421-46de-4b47-aecc-2c1a7b3432b8-0
+00:10:16.640 --> 00:10:20.913
+And if somebody turns it off right now,
+then whenever the heartbeat runs,
+
+f595b421-46de-4b47-aecc-2c1a7b3432b8-1
+00:10:20.913 --> 00:10:24.148
+let's say whatever it's like today at
+7:00 PM, it runs,
+
+f595b421-46de-4b47-aecc-2c1a7b3432b8-2
+00:10:24.148 --> 00:10:27.960
+then it will go ahead and turn off all
+these features at 7:00 PM.
+
+2246b517-b5ad-42ac-aba0-e17bee2ad045-0
+00:10:30.120 --> 00:10:34.758
+Yes, Diego,
+when you click the switch in the bright
+
+2246b517-b5ad-42ac-aba0-e17bee2ad045-1
+00:10:34.758 --> 00:10:39.397
+control panel,
+is it turning on the setting or just
+
+2246b517-b5ad-42ac-aba0-e17bee2ad045-2
+00:10:39.397 --> 00:10:41.360
+surfacing the setting?
+
+07da4216-b361-40da-b99c-6dc3b5d3ca45-0
+00:10:43.400 --> 00:10:44.840
+I am not clicking on it yet.
+
+e70d0149-8fd1-46ee-b197-c6a7a1a9a4f3-0
+00:10:44.840 --> 00:10:46.000
+I just searched it here.
+
+b51c64c1-fde4-43d9-a795-289d8aa02311-0
+00:10:46.000 --> 00:10:48.680
+That's all I did so far during this
+meeting.
+
+4855614d-83be-4e4c-a81f-c04cedb16d03-0
+00:10:49.520 --> 00:10:50.080
+Right, right, right.
+
+160c489d-b604-4ae3-91d2-56233fc59838-0
+00:10:50.080 --> 00:10:52.880
+I'm, I'm just saying,
+let's say it was turned off, right?
+
+6618c86c-568e-4247-a1fc-312dd03b36b4-0
+00:10:52.880 --> 00:10:53.200
+Yeah.
+
+11d0328a-02e8-49ab-8706-23c0aaf26f33-0
+00:10:53.560 --> 00:10:59.400
+Does it hide all the does it hide the
+bright AI settings in in recruiting?
+
+b63c50ad-70ca-4ae7-9ef0-304bf67f23ad-0
+00:11:00.600 --> 00:11:04.488
+Yes, it will,
+it will it will hide this guy also this
+
+b63c50ad-70ca-4ae7-9ef0-304bf67f23ad-1
+00:11:04.488 --> 00:11:05.640
+in the settings.
+
+b2b40c7b-1bcc-4e3e-8971-f07fa51d4937-0
+00:11:05.640 --> 00:11:07.840
+It this this will not be visible anymore.
+
+b61c3ad3-a025-4463-bbf3-d2f7ea729313-0
+00:11:09.320 --> 00:11:09.720
+OK.
+
+572ff85c-a358-46e9-8116-c3d669e9dbbc-0
+00:11:09.720 --> 00:11:12.690
+And then when you turn it back on in
+bright control panel,
+
+572ff85c-a358-46e9-8116-c3d669e9dbbc-1
+00:11:12.690 --> 00:11:16.920
+does it just surface the settings or does
+it also surface plus turn on the setting?
+
+e9c3377e-0382-4906-94f7-57fcbd5b4247-0
+00:11:16.920 --> 00:11:17.720
+Does that make sense?
+
+c2eac84f-a654-4c8b-90c0-6b08863d4635-0
+00:11:18.000 --> 00:11:20.120
+Surface plus turn on, yes.
+
+1134ce9e-51aa-4362-915c-1f06abe3ead6-0
+00:11:20.720 --> 00:11:21.280
+Gotcha.
+
+f17d1365-bc0b-468b-85a6-f9154f20f1a2-0
+00:11:21.280 --> 00:11:25.587
+But it but it will happen at that time
+that whenever the heartbeat runs, right,
+
+f17d1365-bc0b-468b-85a6-f9154f20f1a2-1
+00:11:25.587 --> 00:11:26.880
+it is not instantaneous.
+
+b040de09-0c73-4b47-a3fd-47b5aac376c6-0
+00:11:26.880 --> 00:11:27.120
+Yeah.
+
+b6300301-76a5-4229-9ac2-84746358a6d7-0
+00:11:29.800 --> 00:11:34.743
+Because the way that I thought we would
+do it is probably just surface it and
+
+b6300301-76a5-4229-9ac2-84746358a6d7-1
+00:11:34.743 --> 00:11:39.560
+then still let the admin turn it on or
+let the recruiter person turn it on.
+
+cf5067a1-11cb-4bad-a4fb-48236217dc87-0
+00:11:40.360 --> 00:11:42.520
+But I know we we were still talking about
+it.
+
+1b6ede0e-ec8b-4b12-a0f6-35bc789f187d-0
+00:11:47.760 --> 00:11:51.960
+OK, At least for for canned sourcing.
+
+1126cccf-89c0-4301-aabc-1c204ed995a2-0
+00:11:51.960 --> 00:11:53.960
+That's what that,
+that was my initial thoughts on it.
+
+6383acf7-e833-493e-ad7f-7926c83ea56e-0
+00:11:53.960 --> 00:11:57.864
+So, OK, yeah,
+whichever way we decide to implement that,
+
+6383acf7-e833-493e-ad7f-7926c83ea56e-1
+00:11:57.864 --> 00:11:59.920
+yes, yeah, I was just curious.
+
+0117273d-ad38-491a-b3b9-83fb61a456db-0
+00:12:00.840 --> 00:12:03.360
+Yeah, awesome.
+
+2095f1f8-0bc5-4b90-a5af-6674bdef3375-0
+00:12:03.440 --> 00:12:06.219
+Yeah,
+that's a good question to keep in mind
+
+2095f1f8-0bc5-4b90-a5af-6674bdef3375-1
+00:12:06.219 --> 00:12:10.789
+because if there are other things that
+you require to turn on your agent,
+
+2095f1f8-0bc5-4b90-a5af-6674bdef3375-2
+00:12:10.789 --> 00:12:14.926
+like I know for Job Genius,
+there's like 2 fields you have to fill
+
+2095f1f8-0bc5-4b90-a5af-6674bdef3375-3
+00:12:14.926 --> 00:12:18.200
+out when you're in that bright AI
+settings for that.
+
+a9935723-1339-4973-bbed-1cc7622fcbe9-0
+00:12:18.600 --> 00:12:21.480
+So we're not surfacing any of that here,
+right?
+
+42a74e5d-43ca-4278-8b02-761568495c49-0
+00:12:21.480 --> 00:12:22.560
+When you turn it on.
+
+93995cb5-44bf-4d79-b395-49c89e4bdd70-0
+00:12:22.840 --> 00:12:24.965
+Also,
+I don't know if you want to turn it on
+
+93995cb5-44bf-4d79-b395-49c89e4bdd70-1
+00:12:24.965 --> 00:12:28.840
+and show them that message where it says
+like it'll be on in the next 30 minutes.
+
+c57fd662-abb1-4555-88f6-7554d0955418-0
+00:12:32.920 --> 00:12:33.960
+Did we see that message?
+
+0f1f7ace-d0df-4bac-bde1-e2485c90e62b-0
+00:12:33.960 --> 00:12:37.000
+I don't think because we should turn this
+on, right and this right.
+
+149681fb-ec0e-4237-ae76-7256ea02ffda-0
+00:12:37.520 --> 00:12:37.680
+Yeah.
+
+eb780663-f731-499a-9298-f0c578f9afd3-0
+00:12:38.000 --> 00:12:40.988
+Whenever you whenever you toggle it,
+it shows that 30 minute message,
+
+eb780663-f731-499a-9298-f0c578f9afd3-1
+00:12:40.988 --> 00:12:42.440
+which is misleading in my opinion.
+
+d2dc6a5c-a867-4b44-beec-aa7e22c5b3fd-0
+00:12:42.560 --> 00:12:44.040
+It should say up to 12 hours.
+
+76c17686-a7f4-472e-9a18-cc9eb1209b97-0
+00:12:44.160 --> 00:12:46.440
+It was 30 Hispanic minutes.
+
+d8288f15-0528-47d4-bdbd-24245fbce1b9-0
+00:12:46.440 --> 00:12:50.080
+That's what I would say, yes, basically.
+
+03f6bbc8-6253-44d3-b85c-da39057635d8-0
+00:12:55.680 --> 00:13:00.226
+OK, Deepti, like did I,
+did we answer your question like I or did
+
+03f6bbc8-6253-44d3-b85c-da39057635d8-1
+00:13:00.226 --> 00:13:04.360
+you have a question on that or you're
+just pointing it out?
+
+61005765-be6c-4d3a-a302-d8f316d3149b-0
+00:13:05.720 --> 00:13:06.880
+Oh, me, I was just pointing it out.
+
+6a6ecce2-5523-47e0-bd1f-fb039aa31909-0
+00:13:06.880 --> 00:13:09.200
+I didn't know if anybody else had seen
+this before.
+
+8db14b31-fc76-44bc-bf9a-359017ff53d8-0
+00:13:09.200 --> 00:13:12.440
+So I was just pointing out all the things
+that we know about it so far.
+
+0375c435-f76e-437f-b122-7fad995c7f1e-0
+00:13:12.440 --> 00:13:17.035
+So that 30 minute message thing was
+another thing that it's funny because it
+
+0375c435-f76e-437f-b122-7fad995c7f1e-1
+00:13:17.035 --> 00:13:19.840
+doesn't turn on in the next 30 minutes
+for us.
+
+2dd1b4ec-05eb-4790-9ddb-c342595fd9cc-0
+00:13:19.840 --> 00:13:21.280
+So you have to wait until the heartbeat.
+
+bdc534e4-a68b-4157-b05b-18faa18da8c4-0
+00:13:21.280 --> 00:13:25.120
+So, yeah, OK, sorry.
+
+12d56ddc-f404-4f93-9bc7-6336117849e4-0
+00:13:25.120 --> 00:13:25.680
+Go ahead, Deepti.
+
+1f5a6b09-35fa-45e5-8cdd-8854bf5fc599-0
+00:13:27.040 --> 00:13:29.775
+So I mean,
+you have already answered my first
+
+1f5a6b09-35fa-45e5-8cdd-8854bf5fc599-1
+00:13:29.775 --> 00:13:31.560
+question what Diego has asked.
+
+8876515f-1651-442d-83ed-623d429ba9ed-0
+00:13:31.560 --> 00:13:32.760
+So that was my first one.
+
+5255add2-8400-46d7-bf25-3c37f0ea6c8b-0
+00:13:33.120 --> 00:13:34.600
+So second Abhi.
+
+af69eab9-2fbd-4141-92f2-9081973c89dd-0
+00:13:34.600 --> 00:13:38.229
+So in this case,
+now if I understood it correct,
+
+af69eab9-2fbd-4141-92f2-9081973c89dd-1
+00:13:38.229 --> 00:13:42.971
+it is like once the setting on this
+bright admin console first,
+
+af69eab9-2fbd-4141-92f2-9081973c89dd-2
+00:13:42.971 --> 00:13:48.379
+if it's enabled and the settings on our
+recruiting bright AI is enabled,
+
+af69eab9-2fbd-4141-92f2-9081973c89dd-3
+00:13:48.379 --> 00:13:51.120
+then only I'm able to see my feature.
+
+a51964ae-f2a3-4877-84d6-fb908f75ff2c-0
+00:13:51.320 --> 00:13:54.040
+I mean whatever feature we have a bright
+enable feature.
+
+83b6cd05-e546-4259-995f-33e3eef9821e-0
+00:13:54.760 --> 00:14:00.808
+Let's suppose consider a case the setting
+over here of I mean this on the bright
+
+83b6cd05-e546-4259-995f-33e3eef9821e-1
+00:14:00.808 --> 00:14:03.720
+admin console this toggle is turned on.
+
+fe29919a-42a5-43a6-b6a1-066b8c3fda9e-0
+00:14:04.240 --> 00:14:08.431
+But on recruiting side,
+someone has turned off the right AI
+
+fe29919a-42a5-43a6-b6a1-066b8c3fda9e-1
+00:14:08.431 --> 00:14:08.920
+toggle.
+
+d48c0a13-e6e8-48ea-a3d7-623ac4bb9f0a-0
+00:14:11.360 --> 00:14:16.866
+This when you say turned off the toggle
+like toggle means through the Mongo DB,
+
+d48c0a13-e6e8-48ea-a3d7-623ac4bb9f0a-1
+00:14:16.866 --> 00:14:17.280
+right?
+
+93ed2ddf-c4fc-4260-8c7b-67acd0d03cf0-0
+00:14:18.880 --> 00:14:21.160
+Both ways, let's say through Mongo DB.
+
+cc91dc58-3f3d-486c-bcc8-eb668d5b5763-0
+00:14:21.800 --> 00:14:24.291
+OK,
+let's first consider through Mongo DB
+
+cc91dc58-3f3d-486c-bcc8-eb668d5b5763-1
+00:14:24.291 --> 00:14:28.800
+then in that case anyways, I mean,
+we are not going to access the features,
+
+cc91dc58-3f3d-486c-bcc8-eb668d5b5763-2
+00:14:28.800 --> 00:14:30.640
+bright enabled features, right?
+
+a9ff4a19-acc6-47f3-88f0-90f79a423410-0
+00:14:31.200 --> 00:14:31.440
+No.
+
+b54f73dc-6e00-40f8-94e8-27e93b2de319-0
+00:14:31.440 --> 00:14:34.240
+So when the heartbeat runs,
+it will check OK, it is on here.
+
+e12846f3-ed54-4dc3-951c-dd2ecb47bc16-0
+00:14:34.280 --> 00:14:37.320
+So it will turn on the toggles that Mongo
+DB toggles on our side.
+
+153920ef-ef94-427f-92b3-66e3183a49a8-0
+00:14:38.120 --> 00:14:42.960
+It will turn on the toggle automatically,
+yes.
+
+0e4cb17c-dd91-417c-9bb2-68a23c0264dc-0
+00:14:43.680 --> 00:14:48.064
+What if a customer has decided that for a
+momentary or for some time,
+
+0e4cb17c-dd91-417c-9bb2-68a23c0264dc-1
+00:14:48.064 --> 00:14:51.634
+they don't want to, you know,
+turn on the bright toggle,
+
+0e4cb17c-dd91-417c-9bb2-68a23c0264dc-2
+00:14:51.634 --> 00:14:53.200
+so they turn it off here.
+
+c0c622d5-73d8-4ab0-a5e1-bb702050d7c6-0
+00:14:54.280 --> 00:14:55.920
+This should be the final source of truth.
+
+eb9f150d-f4e5-4d7b-85f2-274c583ad5cd-0
+00:14:56.440 --> 00:14:58.080
+This should be the final source of truth.
+
+09e65418-3ef8-4ad4-96ea-ad9940571bfe-0
+00:14:58.720 --> 00:14:59.040
+Yeah.
+
+90351a4e-5adb-4d9e-bd17-b30a4f0bd201-0
+00:14:59.280 --> 00:15:03.836
+So if that is ultimately probably, yeah,
+we might want to remove it here from here
+
+90351a4e-5adb-4d9e-bd17-b30a4f0bd201-1
+00:15:03.836 --> 00:15:04.440
+completely.
+
+f7734c23-7785-4055-b5dc-c6687046d0ec-0
+00:15:04.640 --> 00:15:04.840
+Yeah.
+
+caeb737a-b6a8-4597-a937-cd520c1f3f12-0
+00:15:05.000 --> 00:15:07.200
+That, that that is what I'm right.
+
+463e865d-1223-499f-b09e-63f28ed25302-0
+00:15:07.200 --> 00:15:08.240
+This is what I'm coming to.
+
+ddf2f958-fe75-4845-b8ef-4ae03c04e69d-0
+00:15:08.240 --> 00:15:11.440
+Like then we do not require the settings
+of on our side.
+
+a3d16c23-61c1-4006-9290-059aca7a328c-0
+00:15:11.440 --> 00:15:17.200
+This would be the source for all the
+control on on the bright features, right?
+
+bc931f97-50b8-4445-a699-6eb64b4d5343-0
+00:15:17.680 --> 00:15:18.400
+Exactly.
+
+02ba5eab-2d89-40d0-8242-2c1c5c0e167a-0
+00:15:18.400 --> 00:15:21.040
+So that is the whole point of this bright
+control panel.
+
+19aa86d4-bd4d-43d2-8678-623f6301d8ac-0
+00:15:21.360 --> 00:15:25.299
+All the bright related features will be
+controlled here through the whole UKG
+
+19aa86d4-bd4d-43d2-8678-623f6301d8ac-1
+00:15:25.299 --> 00:15:27.320
+like not just recruiting for everything.
+
+f3ab97ba-91e4-4e3a-8a48-696729633eaa-0
+00:15:27.320 --> 00:15:31.480
+As you can see here, all the agents,
+everything will be controlled here.
+
+ba17be8f-0ce3-4fce-b7ab-43bd9c695502-0
+00:15:32.240 --> 00:15:32.920
+OK, gotcha, Gotcha.
+
+b9ed51fb-2d31-4c04-92a6-ab8b2edabde1-0
+00:15:33.520 --> 00:15:34.280
+Yeah, thank you.
+
+f12d04e1-7f06-460d-be52-3c44aced0682-0
+00:15:35.040 --> 00:15:38.280
+No problem, Naseeb.
+
+8b2569aa-8900-4a7e-af3d-2d3fe6f1d13f-0
+00:15:40.440 --> 00:15:44.040
+Yeah, I just want to know,
+like I can see there are 63 total
+
+8b2569aa-8900-4a7e-af3d-2d3fe6f1d13f-1
+00:15:44.040 --> 00:15:45.280
+settings here, right?
+
+a7719086-7234-4903-95f2-e2749aa668a5-0
+00:15:45.320 --> 00:15:48.680
+Out of which 55 are active, right?
+
+b0954917-6bfb-464c-b4b0-1296eac8415e-0
+00:15:49.360 --> 00:15:52.080
+OK, So yeah,
+this page is not specific to us, right?
+
+b80de53a-7ac0-4a6f-851f-bf4c49c8e4cc-0
+00:15:52.120 --> 00:15:55.000
+Like right, maybe it is pro specific,
+right?
+
+140af97c-37a5-4ea8-98cd-3cdec890a9e9-0
+00:15:55.480 --> 00:15:57.440
+And what are the settings that we need to
+do?
+
+786ad579-a28b-4689-939e-41ca00d7ce96-0
+00:15:57.760 --> 00:16:02.464
+And now going ahead,
+if you want to add interview scorecard
+
+786ad579-a28b-4689-939e-41ca00d7ce96-1
+00:16:02.464 --> 00:16:07.169
+agent settings here,
+then we'll add one more option, right,
+
+786ad579-a28b-4689-939e-41ca00d7ce96-2
+00:16:07.169 --> 00:16:07.640
+Right.
+
+ab4c0a0f-bd2f-45ba-85f2-3148acc9342b-0
+00:16:08.760 --> 00:16:13.192
+And instead of turning on the bright,
+the launch darkly toggle,
+
+ab4c0a0f-bd2f-45ba-85f2-3148acc9342b-1
+00:16:13.192 --> 00:16:16.240
+we will turn on the toggle here on and
+off.
+
+fb25d25d-c32f-49fa-9c0f-e4ca5b6a69b1-0
+00:16:16.240 --> 00:16:20.840
+And according to that,
+it will be visible on our recruiting side.
+
+a319c583-90b6-4baf-aaf7-c0305aa656c8-0
+00:16:21.800 --> 00:16:24.840
+This should be the end goal or like,
+right, Yeah, yeah, yeah.
+
+abf68aba-717b-427a-863a-6368caa979b9-0
+00:16:24.840 --> 00:16:25.080
+Right.
+
+d1eb29d3-4a73-4464-a315-be8610265e46-0
+00:16:25.080 --> 00:16:29.906
+Now what we want to do is so keep your
+launch darkly toggle and when you turn it
+
+d1eb29d3-4a73-4464-a315-be8610265e46-1
+00:16:29.906 --> 00:16:34.733
+on here like suppose you add the add your
+interview scorecard here then you will
+
+d1eb29d3-4a73-4464-a315-be8610265e46-2
+00:16:34.733 --> 00:16:39.680
+put that code in the heartbeat that every
+12 hours it is gonna check whether it is
+
+d1eb29d3-4a73-4464-a315-be8610265e46-3
+00:16:39.680 --> 00:16:42.600
+on or not interview scorecard is on or
+not here.
+
+f9a46157-250d-426f-b763-79d6d185b264-0
+00:16:43.080 --> 00:16:46.640
+If it is on then turn on the launch
+startly toggle on on the recruiting side.
+
+293a235a-8f9e-4a9d-9c4c-1ffc6c2ed883-0
+00:16:46.960 --> 00:16:50.395
+If it is off here then turn off the
+launch startly toggle on your side behind
+
+293a235a-8f9e-4a9d-9c4c-1ffc6c2ed883-1
+00:16:50.395 --> 00:16:50.880
+the scenes.
+
+65a86dad-4d46-492a-9a43-3e7280bfb78b-0
+00:16:52.440 --> 00:16:57.408
+OK, one more related question,
+like which which team is responsible for
+
+65a86dad-4d46-492a-9a43-3e7280bfb78b-1
+00:16:57.408 --> 00:17:00.582
+adding just for like for my learning
+purpose,
+
+65a86dad-4d46-492a-9a43-3e7280bfb78b-2
+00:17:00.582 --> 00:17:04.240
+which team is responsible for adding an
+option here?
+
+e4e8728e-1f6c-4190-96db-025cdd28baf0-0
+00:17:04.240 --> 00:17:10.232
+Like do we need to do our own or like
+there is a different team on pro site
+
+e4e8728e-1f6c-4190-96db-025cdd28baf0-1
+00:17:10.232 --> 00:17:15.200
+that add this option the way we are
+responsible the MX, right?
+
+ed8309fc-6f00-404f-8a4d-80223c6de553-0
+00:17:15.200 --> 00:17:17.240
+Yeah, it's, it's our responsibility.
+
+6e6a5b91-f7a2-4094-a82b-018eb6033ba9-0
+00:17:17.520 --> 00:17:22.560
+So they have created documentation for
+that on how to how to add a feature.
+
+297d86b8-86b7-45ab-9b40-f3f498eb325c-0
+00:17:22.720 --> 00:17:26.480
+And currently we are following that
+documentation also to add a new feature.
+
+26240dd3-4975-4be5-966d-8e9a4da94f15-0
+00:17:26.760 --> 00:17:30.920
+When I started working on this job genius
+one job genius one already existed.
+
+df823661-2332-4fed-be15-b4613d7ff8db-0
+00:17:31.200 --> 00:17:35.826
+So I did not have to go through this pain,
+but right now I'm working on another
+
+df823661-2332-4fed-be15-b4613d7ff8db-1
+00:17:35.826 --> 00:17:40.280
+feature for our rec candidate assist on
+the job board, the Ava chat feature.
+
+a93659fd-2e9f-4d96-8506-c0dd7bbe7954-0
+00:17:40.760 --> 00:17:43.904
+So for that one,
+I'm I'm trying to add that and I'm
+
+a93659fd-2e9f-4d96-8506-c0dd7bbe7954-1
+00:17:43.904 --> 00:17:48.320
+basically there is a there is a couple of
+steps that you need to follow.
+
+b5dd3355-f408-4779-b7b0-98a7bfb32bd9-0
+00:17:48.800 --> 00:17:54.564
+There is a specific repo to which you
+need to create your PR against against
+
+b5dd3355-f408-4779-b7b0-98a7bfb32bd9-1
+00:17:54.564 --> 00:17:59.880
+that repo and get that get approvals for
+for that specific your agent.
+
+951638fa-dc8c-4141-b155-fd8d4de1cb43-0
+00:18:00.480 --> 00:18:03.702
+And once it goes through that,
+then it will start showing up as a
+
+951638fa-dc8c-4141-b155-fd8d4de1cb43-1
+00:18:03.702 --> 00:18:04.240
+capability.
+
+806a8812-24d5-47b4-ba20-f51e2064caad-0
+00:18:04.240 --> 00:18:08.160
+They call it capability behind theirs
+behind the scenes in the APIs.
+
+9b388167-2600-406c-9a89-2c6b954f4520-0
+00:18:09.000 --> 00:18:10.480
+So you will have to add the capability.
+
+45b5a59e-a8ad-417e-b079-fbb20b5b9497-0
+00:18:11.680 --> 00:18:13.200
+OK, Yeah.
+
+980ba73f-0105-451b-8a91-460a52c1d9e5-0
+00:18:14.040 --> 00:18:19.157
+So I can share that documentation
+separately on how to how to add your
+
+980ba73f-0105-451b-8a91-460a52c1d9e5-1
+00:18:19.157 --> 00:18:21.680
+capability to Bright control panel.
+
+49d5c1f4-b99e-4b8f-bdd4-025a52896749-0
+00:18:22.840 --> 00:18:26.360
+OK, Yeah, thank you.
+
+4a1a231e-e037-4640-87a1-7b32d2fe0a03-0
+00:18:27.160 --> 00:18:28.040
+Yeah, no problem.
+
+ac359e15-fb41-4216-8d6e-b1ef471319ad-0
+00:18:28.840 --> 00:18:33.430
+And Ankur, Ankur Arora is,
+is from their team and Manjul Dikshit,
+
+ac359e15-fb41-4216-8d6e-b1ef471319ad-1
+00:18:33.430 --> 00:18:38.090
+these are the two people,
+two key people whom you will have to get
+
+ac359e15-fb41-4216-8d6e-b1ef471319ad-2
+00:18:38.090 --> 00:18:41.360
+approvals from whenever you have the PR
+ready.
+
+a23b43f1-11ae-4c54-808b-2a8c1fdb4fc1-0
+00:18:44.000 --> 00:18:54.600
+OK, Are we all good?
+
+147014b0-9b1c-4a67-b789-014b6c2f0358-0
+00:19:05.160 --> 00:19:05.280
+Cool.
+
+95e7c1a9-3245-4033-bae0-8562a52a3bc5-0
+00:19:06.440 --> 00:19:10.160
+I think now we could switch over to the
+SDK.
+
+16464607-848b-4ea9-9091-6384b29c86b3-0
+00:19:12.120 --> 00:19:12.360
+Yeah.
+
+5787dd1e-b7a7-4677-afea-177386781a2b-0
+00:19:15.400 --> 00:19:20.622
+OK, so before I start like Abhi,
+like I shared few documents with you like
+
+5787dd1e-b7a7-4677-afea-177386781a2b-1
+00:19:20.622 --> 00:19:25.774
+did did you get any chance to go through
+that like or I can start from my
+
+5787dd1e-b7a7-4677-afea-177386781a2b-2
+00:19:25.774 --> 00:19:26.680
+introduction?
+
+684bbfbf-1b31-4d03-bf6d-ee6a5f9fb55b-0
+00:19:27.480 --> 00:19:29.160
+I think you will have to start from
+scratch.
+
+c08791a3-5f2a-4626-aaf4-53b1572754a6-0
+00:19:29.160 --> 00:19:32.400
+I tried to look at it but did not get a
+chance to dig deeper into it.
+
+81e47ea5-da85-4ef0-8a1e-2e6455bee705-0
+00:19:34.440 --> 00:19:36.440
+OK, let me share my screen.
+
+dd30aa5d-26e5-424d-a8f8-3078c5f9eb9f-0
+00:19:36.440 --> 00:19:37.760
+Let me know if it is visible.
+
+a7bef270-81a9-4769-aeba-bf15d81e3cb6-0
+00:19:38.200 --> 00:19:44.269
+Then maybe I'll just walk through what we
+have achieved so far and what will be the
+
+a7bef270-81a9-4769-aeba-bf15d81e3cb6-1
+00:19:44.269 --> 00:19:44.920
+end goal.
+
+617056c3-cea9-4ca7-9bdf-dfec097dc74e-0
+00:19:44.920 --> 00:19:46.520
+Let me know if my screen is visible.
+
+a7305166-0180-4028-bcec-86eb8b291e88-0
+00:19:51.440 --> 00:19:52.000
+Is it visible?
+
+1f299d00-679f-494b-8666-61cd86a3cd94-0
+00:19:52.960 --> 00:19:53.240
+Yeah.
+
+a400d6a6-5cfb-44f3-bc4c-b6d6d380cacd-0
+00:19:54.560 --> 00:19:58.720
+OK, let me go to the dashboard page.
+
+e3479314-2a69-420d-9241-93afee238646-0
+00:20:01.760 --> 00:20:01.960
+Right.
+
+3c01777d-fe30-4c7b-9fc6-39f67ed9b137-0
+00:20:01.960 --> 00:20:05.120
+This is our recruiting app and this is
+our rec preview environment.
+
+418fc635-e0f8-40b2-b1af-399fd540c7ba-0
+00:20:05.960 --> 00:20:08.120
+I'm navigating to the pools page.
+
+271b991b-7449-4472-b6fa-59158e3aac73-0
+00:20:08.160 --> 00:20:13.640
+So this is the pool page which we created
+for our talent pool work.
+
+b949908c-67d2-456d-8019-9eea3825c3f5-0
+00:20:13.720 --> 00:20:15.920
+And this is not an existing pool page.
+
+d01a4533-2660-4e49-9ac0-656cfe8bf05b-0
+00:20:16.280 --> 00:20:19.560
+We have a manual way of creating a pool,
+right?
+
+3b24cc58-5981-4e42-ab18-d92079428ba5-0
+00:20:20.760 --> 00:20:24.000
+But like this is only creating through a
+bright.
+
+8ab5b5ed-c63d-415a-83b3-80805fe2ac1f-0
+00:20:24.000 --> 00:20:29.742
+So we have created altogether a different
+page which will serve only that will
+
+8ab5b5ed-c63d-415a-83b3-80805fe2ac1f-1
+00:20:29.742 --> 00:20:32.360
+create a pool through bright, right?
+
+9a375100-1353-4a52-8746-d99da28384a6-0
+00:20:32.960 --> 00:20:38.327
+So only one option will be visible either
+this pool which is stating the bright
+
+9a375100-1353-4a52-8746-d99da28384a6-1
+00:20:38.327 --> 00:20:43.628
+talent pool or maybe there is another
+pool which will simply say the pool page
+
+9a375100-1353-4a52-8746-d99da28384a6-2
+00:20:43.628 --> 00:20:45.440
+something like this, right?
+
+bea8be2c-49d6-4289-82dd-e2f64e1648b3-0
+00:20:45.640 --> 00:20:50.640
+Just just for the understanding that you
+are landing to the correct page or not.
+
+58553c64-e7ba-4847-a495-bb62b54dc2fc-0
+00:20:51.440 --> 00:20:55.060
+If I toggle is on,
+we will be navigating to bright with
+
+58553c64-e7ba-4847-a495-bb62b54dc2fc-1
+00:20:55.060 --> 00:20:56.160
+talent pool page.
+
+34b9ee02-2c56-45c5-b1d4-c48d754c09ba-0
+00:20:56.440 --> 00:21:00.110
+If our toggle is off,
+we will be landing to the old pool page
+
+34b9ee02-2c56-45c5-b1d4-c48d754c09ba-1
+00:21:00.110 --> 00:21:04.728
+that comes with the new navigation,
+not the one which is which has the legacy
+
+34b9ee02-2c56-45c5-b1d4-c48d754c09ba-2
+00:21:04.728 --> 00:21:05.320
+one right?
+
+f3ad597c-d246-418a-b5da-26f1fcdbb3c2-0
+00:21:06.640 --> 00:21:10.430
+And if you see on the like the bottom
+right corner,
+
+f3ad597c-d246-418a-b5da-26f1fcdbb3c2-1
+00:21:10.430 --> 00:21:14.440
+we have it this bright assist MFE micro
+content right?
+
+32803f8e-130d-4f27-8a65-1d22ba3c8a5d-0
+00:21:14.440 --> 00:21:18.827
+If I click it here,
+the bright assist window will open and it
+
+32803f8e-130d-4f27-8a65-1d22ba3c8a5d-1
+00:21:18.827 --> 00:21:20.880
+comes with a welcome message.
+
+0b320fea-dffd-4c4c-ac16-bf6926472905-0
+00:21:20.880 --> 00:21:21.640
+Hi, I am Bright.
+
+b4eb75cd-6870-4fb5-9172-17ff7e23de01-0
+00:21:21.640 --> 00:21:23.560
+What can I do for you today?
+
+a887611d-5dcc-46ef-891c-0745867ab292-0
+00:21:24.120 --> 00:21:29.910
+And here what you need to do is simply
+tell the agent that what you want to
+
+a887611d-5dcc-46ef-891c-0745867ab292-1
+00:21:29.910 --> 00:21:30.520
+perform.
+
+da8869b0-e69f-4b8d-98f6-95d796261c75-0
+00:21:30.520 --> 00:21:33.570
+Like if I say if I'm on a talent pool
+page,
+
+da8869b0-e69f-4b8d-98f6-95d796261c75-1
+00:21:33.570 --> 00:21:36.760
+if I simply type create a talent pool,
+right?
+
+a24f1b15-818e-4846-bc33-7bc79622aa85-0
+00:21:38.680 --> 00:21:44.979
+So this is my first instruction and it
+will search for the agents that we have
+
+a24f1b15-818e-4846-bc33-7bc79622aa85-1
+00:21:44.979 --> 00:21:50.720
+registered on to the Bright Hub and it
+will find the subsequent result.
+
+0e68c826-ec09-40ab-8778-31d264c815ce-0
+00:21:51.560 --> 00:21:56.360
+If, if, if it is present,
+if you can see the instructions as well.
+
+9afa9128-41a4-4ea2-9a1a-f071c729354a-0
+00:21:57.920 --> 00:21:59.320
+This instruction is coming up.
+
+79958691-fc8a-44af-811c-9981eb89c068-0
+00:21:59.320 --> 00:22:01.360
+I'm pulling up the right tool for your
+request.
+
+13a9e920-d9ad-4ccf-a126-2dae4a70b9c1-0
+00:22:01.960 --> 00:22:08.040
+So now this request has been successfully
+interacted with our agent.
+
+b3b13b3f-78a9-45b9-8cb9-4302f86b5e95-0
+00:22:08.120 --> 00:22:10.400
+That is why we are seeing this response.
+
+f8a59d96-a290-4767-81d2-929a0ffbc385-0
+00:22:11.360 --> 00:22:12.200
+Yeah, go ahead Abhi.
+
+bbef94ac-96e6-4147-9a20-40d14d9d26be-0
+00:22:14.320 --> 00:22:16.360
+So you are showing the product demo here.
+
+7d3a5a36-29c0-4829-bd6c-565e92afb32c-0
+00:22:16.360 --> 00:22:19.901
+I thought we were just gonna look at the
+SDK or is that something for everyone
+
+7d3a5a36-29c0-4829-bd6c-565e92afb32c-1
+00:22:19.901 --> 00:22:23.040
+that other people are also interested in
+looking at the product demo?
+
+bfb90437-8c68-4e5d-ae3d-2734eb7036ea-0
+00:22:25.640 --> 00:22:27.280
+It is up to you.
+
+2509e8ac-c125-4a91-b04c-73a8c53c46e6-0
+00:22:27.280 --> 00:22:31.400
+Like if you want to go into the technical
+and see the implementation.
+
+b8f2e337-98ac-4b06-a367-3d3e6b5e0cb7-0
+00:22:31.800 --> 00:22:33.440
+This is just a walk through for one.
+
+d3a1531a-4993-43af-9d36-4e59e1938ca7-0
+00:22:33.440 --> 00:22:33.680
+One.
+
+f4713b7e-5dbd-493c-9769-254aa5f707e9-0
+00:22:33.760 --> 00:22:34.920
+Yeah, OK.
+
+7640c688-eb7f-4834-b164-188a480b867f-0
+00:22:34.920 --> 00:22:37.080
+Yeah, for me,
+I wanted to look at the technical stuff
+
+7640c688-eb7f-4834-b164-188a480b867f-1
+00:22:37.080 --> 00:22:39.200
+only, but if, if,
+since I know product is also here.
+
+8f5bc6e4-6a75-472b-9913-ed6d4e12a9da-0
+00:22:39.200 --> 00:22:40.920
+So that's why I am raising that question.
+
+23d2b751-0c21-4abf-8c43-da4237470368-0
+00:22:41.440 --> 00:22:46.981
+Like what's the purpose of so I'll,
+I'll not like take too much time onto
+
+23d2b751-0c21-4abf-8c43-da4237470368-1
+00:22:46.981 --> 00:22:47.880
+this, right?
+
+9e610705-bd9a-41f8-9082-4a99f7550b55-0
+00:22:48.160 --> 00:22:51.480
+OK, So this is simple,
+simple the instructions, right?
+
+07cf4a94-db51-4dc3-ba0d-61d70b077262-0
+00:22:51.480 --> 00:22:55.240
+So our agent has been invoked like we
+have trained our agents.
+
+05f658c6-bee0-45ba-8e1e-8012c7eeccfe-0
+00:22:55.240 --> 00:22:59.349
+If we get the responses in this form as
+the next question here,
+
+05f658c6-bee0-45ba-8e1e-8012c7eeccfe-1
+00:22:59.349 --> 00:23:04.614
+I'm saying that I am looking for creating
+a talent pool for product managers with
+
+05f658c6-bee0-45ba-8e1e-8012c7eeccfe-2
+00:23:04.614 --> 00:23:07.440
+the experience of this range 5 to 20
+years.
+
+d824d825-1e2e-413e-9dc7-d4a935081692-0
+00:23:08.320 --> 00:23:11.429
+Right now,
+there are some set of suggestions that is
+
+d824d825-1e2e-413e-9dc7-d4a935081692-1
+00:23:11.429 --> 00:23:14.480
+given by the agent what skills you are
+looking for.
+
+b1d8a6f6-21e3-4b13-a185-e51aabd23995-0
+00:23:14.800 --> 00:23:21.480
+You can type your or you can type
+whatever you receive from the AI, right?
+
+d5fe62db-dac4-4dfd-b026-5cd2689c8241-0
+00:23:22.000 --> 00:23:25.979
+And we are building,
+we are building the pool on the basis of
+
+d5fe62db-dac4-4dfd-b026-5cd2689c8241-1
+00:23:25.979 --> 00:23:27.520
+four criteria as of now.
+
+8c337bcd-92ec-4c8e-9586-befb2385deeb-0
+00:23:27.840 --> 00:23:30.880
+We'll be further extended other criterias
+as well.
+
+c1b4d634-dce1-4b47-bbb3-7c023425e9ef-0
+00:23:31.160 --> 00:23:33.200
+But as of now, there are 4 criterias.
+
+491ed7f9-8563-42aa-8294-df0ea1161feb-0
+00:23:33.200 --> 00:23:36.458
+1 is the skill,
+another is a number of years of
+
+491ed7f9-8563-42aa-8294-df0ea1161feb-1
+00:23:36.458 --> 00:23:40.124
+experience,
+3rd is the employer type and 4th 1 is the
+
+491ed7f9-8563-42aa-8294-df0ea1161feb-2
+00:23:40.124 --> 00:23:40.600
+region.
+
+c3a055ba-b4a0-4750-8c1f-5573c9ea5afb-0
+00:23:41.280 --> 00:23:41.720
+Right.
+
+f67f67bd-d5b2-4e5c-9743-90f74d9965d9-0
+00:23:43.120 --> 00:23:47.000
+So we haven't created anything for this
+UI.
+
+c551daea-b1c4-4459-9703-b2487dc76938-0
+00:23:47.200 --> 00:23:50.400
+It is directly achieved through the
+Bright SDK.
+
+2d70d644-041d-4cd0-9e6b-c20e9364a1d5-0
+00:23:50.760 --> 00:23:57.135
+And if I say yes this is the criteria and
+it looks good to me,
+
+2d70d644-041d-4cd0-9e6b-c20e9364a1d5-1
+00:23:57.135 --> 00:24:00.880
+I can simply say confirm and proceed.
+
+25b61a15-e911-4798-bf3a-ce5ee1b7125e-0
+00:24:01.480 --> 00:24:07.880
+It has found 33 candidate based on the
+criteria that I have entered and and now
+
+25b61a15-e911-4798-bf3a-ce5ee1b7125e-1
+00:24:07.880 --> 00:24:09.320
+this pool is live.
+
+67402b63-6857-4c82-af81-bb12a1c1e060-0
+00:24:10.160 --> 00:24:22.517
+If I refresh or maybe check in a while
+then we can see one more one pool created
+
+67402b63-6857-4c82-af81-bb12a1c1e060-1
+00:24:22.517 --> 00:24:28.010
+on our pool page just still loading.
+
+b91e5941-92d8-4745-b958-0efab6e29ed3-0
+00:24:28.010 --> 00:24:35.783
+Let me yeah,
+this is has been created with a number of
+
+b91e5941-92d8-4745-b958-0efab6e29ed3-1
+00:24:35.783 --> 00:24:43.840
+candidate as this is just a walkthrough
+right as of now.
+
+3d8d0166-dfbc-4bb6-aebf-0774e2be75d6-0
+00:24:44.000 --> 00:24:48.648
+Like there are not so many teams who have
+adopted the Bright SDK which are outside
+
+3d8d0166-dfbc-4bb6-aebf-0774e2be75d6-1
+00:24:48.648 --> 00:24:49.040
+of Pro.
+
+f1dad4fb-b5d3-441a-ba49-81819229ef1a-0
+00:24:49.480 --> 00:24:53.400
+So we have this provision not to use the
+bright assist as well.
+
+e37b3436-efec-4b0a-ac5c-2812e2fe75c5-0
+00:24:53.400 --> 00:24:56.680
+We can simply do it the way we did for
+the interview scorecard.
+
+832b74b9-ebba-495c-aa81-b3c142683116-0
+00:24:56.960 --> 00:25:02.193
+We simply create like we can simply
+create a pool through Bright through this
+
+832b74b9-ebba-495c-aa81-b3c142683116-1
+00:25:02.193 --> 00:25:03.200
+button as well.
+
+d303e32b-6687-4c92-9b2d-de84add09733-0
+00:25:03.200 --> 00:25:07.957
+And this is the UI which we created it
+and the experience will be same in both
+
+d303e32b-6687-4c92-9b2d-de84add09733-1
+00:25:07.957 --> 00:25:08.560
+the cases.
+
+0355b79f-43b6-49d4-8ed5-c2252182be3a-0
+00:25:09.160 --> 00:25:12.360
+So this is the additional thing that we
+did for the talent pool as of now.
+
+a4c815db-9560-499c-ad4d-95eae18b7535-0
+00:25:13.240 --> 00:25:19.306
+Maybe going forward we can remove this
+button functionality and only creating a
+
+a4c815db-9560-499c-ad4d-95eae18b7535-1
+00:25:19.306 --> 00:25:21.960
+pool through the bright assist now.
+
+f11cd51e-c8b4-4877-97aa-4596dd255cb9-0
+00:25:22.200 --> 00:25:28.353
+Now coming to the technical part,
+basically they have provided a CDN that
+
+f11cd51e-c8b4-4877-97aa-4596dd255cb9-1
+00:25:28.353 --> 00:25:32.760
+will help us to load the micro front end
+at our end.
+
+a4b1a5da-116b-406e-8904-eb59c1dedfa5-0
+00:25:33.680 --> 00:25:36.480
+If if you see this confluence with that
+is why I asked.
+
+388571ab-56b8-4096-9ca9-2da7c85d22df-0
+00:25:36.480 --> 00:25:41.240
+I checked with you that did you get
+chance to go through the documentation.
+
+b4e9e5c5-5364-41c0-b34e-06ac35c1cfb0-0
+00:25:41.240 --> 00:25:42.600
+It is pretty much straightforward.
+
+f06d6717-eb23-4c6f-af8f-8b35cd8e9994-0
+00:25:43.440 --> 00:25:45.880
+This is the CDN that they have provided
+it.
+
+e5f6ea3a-1643-419f-95c9-e085b3a3c349-0
+00:25:46.560 --> 00:25:53.240
+You have to use this CDN on your STML or
+maybe your CSTML page right?
+
+5feac83b-59f1-4c58-85b3-b60074a39907-0
+00:25:53.520 --> 00:25:57.740
+If you want to render this MFV icon,
+this MFV icon,
+
+5feac83b-59f1-4c58-85b3-b60074a39907-1
+00:25:57.740 --> 00:26:03.828
+you need to simply use this element UKG
+bright shell, bright assist shell,
+
+5feac83b-59f1-4c58-85b3-b60074a39907-2
+00:26:03.828 --> 00:26:07.400
+give the IDs of it,
+give the headers of it.
+
+fdf352c3-e6c4-48ca-8dce-127bfbe71644-0
+00:26:07.720 --> 00:26:13.040
+These are the launch darkly fields that
+are optional if you want to give it right
+
+fdf352c3-e6c4-48ca-8dce-127bfbe71644-1
+00:26:13.040 --> 00:26:16.480
+similarly local and this is the search
+dispatch URL.
+
+7cd1a1bd-6fbf-4a25-97a4-8505120b1775-0
+00:26:16.840 --> 00:26:20.048
+So,
+so as of now what we are doing is we are
+
+7cd1a1bd-6fbf-4a25-97a4-8505120b1775-1
+00:26:20.048 --> 00:26:23.400
+creating our agents into the NREC repo,
+right?
+
+a1addfa1-0b7b-4f3e-aaa4-f93e1eff6646-0
+00:26:23.840 --> 00:26:25.400
+We have a different repo, right.
+
+a3a939d8-7618-4939-98e6-a4c419f71ff3-0
+00:26:25.840 --> 00:26:32.326
+But if you want to use Bright SDK your
+your agent should lie into the Suitex
+
+a3a939d8-7618-4939-98e6-a4c419f71ff3-1
+00:26:32.326 --> 00:26:39.149
+search because now we are consume going
+through the Bright SDK approach and they
+
+a3a939d8-7618-4939-98e6-a4c419f71ff3-2
+00:26:39.149 --> 00:26:44.119
+are using Suitex URL to identify or fetch
+the agent right?
+
+61441af5-3f0b-4da8-a2d5-d12d11419207-0
+00:26:44.120 --> 00:26:46.040
+Like I mentioned create talent pool.
+
+f8278e1d-9f1e-463a-baa7-452d88b781f6-0
+00:26:46.320 --> 00:26:51.068
+If your pool is lie under the NREC it
+will not able to find it because now we
+
+f8278e1d-9f1e-463a-baa7-452d88b781f6-1
+00:26:51.068 --> 00:26:56.000
+are going through the suitex search and
+like this is the only way to achieve it.
+
+9a48f085-59ec-4c49-b896-52b81e0bc668-0
+00:26:56.000 --> 00:27:03.226
+So my agent that that I'm interacting in
+this bright assist is lie under the
+
+9a48f085-59ec-4c49-b896-52b81e0bc668-1
+00:27:03.226 --> 00:27:05.760
+suitex search not the NREC.
+
+54e1a04e-3d5c-4217-b98c-321fef00cb33-0
+00:27:06.240 --> 00:27:13.775
+I can by this means I'm saying that we,
+our agent should lie under the Suitex
+
+54e1a04e-3d5c-4217-b98c-321fef00cb33-1
+00:27:13.775 --> 00:27:16.480
+search, not the NREC, right.
+
+b431a3d6-21e4-4a94-a9bf-5cfb7273d06c-0
+00:27:16.840 --> 00:27:20.160
+So this is the pre request if you want to
+adopt the brightest decay.
+
+b7d6b5b6-e91c-4c81-ac70-d5b9c01772a5-0
+00:27:21.160 --> 00:27:23.080
+So alright Josh, where is ours?
+
+c41b1b6c-9c51-470c-8567-8b62e7ec1ac9-0
+00:27:23.480 --> 00:27:25.600
+Is it under NREC or is it under Suitex?
+
+45647524-77ca-415b-9256-e45c894cb9fa-0
+00:27:25.800 --> 00:27:26.840
+I thought it was under Suitex.
+
+7d0ffe0e-12a2-4a37-b612-c5b1cbcfa4dc-0
+00:27:26.840 --> 00:27:29.200
+No, it's under, it's under NREC.
+
+74b2ccec-45e9-4a30-8582-0138ccf5c005-0
+00:27:29.200 --> 00:27:29.480
+Yeah.
+
+dba2c19e-7b11-4b0f-a219-3ced05ba0bd7-0
+00:27:30.240 --> 00:27:31.280
+Oh OK.
+
+182e747b-1e06-4b23-94f6-47acf2afabf1-0
+00:27:31.600 --> 00:27:34.000
+So there is no issue in doing it.
+
+1f143ce1-b470-4b53-908d-707632add832-0
+00:27:34.000 --> 00:27:36.360
+We can simply copy paste like earlier.
+
+73bcb74e-c69c-41c8-977f-26cc8d733ebf-0
+00:27:36.360 --> 00:27:41.728
+We are also thinking that we can consume
+through NREC but once we get the clarity
+
+73bcb74e-c69c-41c8-977f-26cc8d733ebf-1
+00:27:41.728 --> 00:27:44.805
+that we have to move our agent through
+Suitex,
+
+73bcb74e-c69c-41c8-977f-26cc8d733ebf-2
+00:27:44.805 --> 00:27:49.781
+we can simply copy paste the Jason and
+create a raise a PR to move into the
+
+73bcb74e-c69c-41c8-977f-26cc8d733ebf-3
+00:27:49.781 --> 00:27:50.240
+Suitex.
+
+e534be30-bd27-4e56-8ddf-5603dc38d400-0
+00:27:51.800 --> 00:27:54.800
+OK right.
+
+a4190a39-35cc-460c-b2dc-9c33b0347041-0
+00:27:55.120 --> 00:28:01.440
+So all you need to use this HTML tag,
+this element UKG bright shell right?
+
+814f2d3d-89c8-452c-a021-d0de0841434e-0
+00:28:02.920 --> 00:28:07.600
+If if your request is supposed to receive
+any token as well,
+
+814f2d3d-89c8-452c-a021-d0de0841434e-1
+00:28:07.600 --> 00:28:12.280
+you can send it through in a header using
+your token, right?
+
+a2450dff-62e9-458a-acfb-6c468c4a80d4-0
+00:28:12.360 --> 00:28:18.200
+Instead of using the X custom header,
+you need to set the accept context.
+
+7a3f4b9c-ea90-4bac-a493-026f53abe971-0
+00:28:18.240 --> 00:28:21.000
+I'll I'll come come to that later, right.
+
+098782f2-ba00-454f-bee0-2c99e316b87d-0
+00:28:22.680 --> 00:28:28.840
+So there are two URLs that we need to
+find it as as per their documentation,
+
+098782f2-ba00-454f-bee0-2c99e316b87d-1
+00:28:28.840 --> 00:28:32.360
+we need to find that URL through DX,
+right?
+
+cf1c759c-af9d-41fa-a9a0-ee30e281b11a-0
+00:28:33.920 --> 00:28:40.400
+So if you see it here the instruction one
+is we need to fetch the CDN, right?
+
+4f7340c7-384e-4339-bef9-a431fc082a3e-0
+00:28:40.840 --> 00:28:48.240
+CDN that we are using it here,
+line number, this thing right?
+
+27f998cd-713e-4be0-95fa-4dd05b225ea4-0
+00:28:48.480 --> 00:28:50.720
+This is a CDN that we need to fetch it
+right?
+
+ab3f04cb-e9b5-4a41-8e2a-8ea796bd0209-0
+00:28:50.960 --> 00:28:52.600
+We cannot use in a hard coded way.
+
+cb239441-3b24-4335-970a-26ffe5404b95-0
+00:28:52.600 --> 00:28:55.880
+We cannot simply give this URL right.
+
+2811e1c7-f784-467c-bafc-ea41ad5bae9f-0
+00:28:55.880 --> 00:29:00.819
+What we need to do is we need to navigate
+we need to fetch this URL through TRX
+
+2811e1c7-f784-467c-bafc-ea41ad5bae9f-1
+00:29:00.819 --> 00:29:02.240
+using the service code.
+
+7da2f0c8-e444-4ee3-8eaa-0b0fa71abe11-0
+00:29:02.560 --> 00:29:09.982
+This is the service code that I'm using
+to fetch this URL SX SX SDK CDN and there
+
+7da2f0c8-e444-4ee3-8eaa-0b0fa71abe11-1
+00:29:09.982 --> 00:29:16.680
+is another URL such dispatch URL which
+also need to fetch from the T Rex.
+
+4ebc3a63-1061-4fa0-bac7-584561f88b81-0
+00:29:16.920 --> 00:29:20.640
+So similarly for that as well that like.
+
+25a6bea3-e2fd-417f-aa29-218f8d849b54-0
+00:29:20.680 --> 00:29:23.760
+So if we just Simply put it in the
+JavaScript it will not work like this.
+
+13233ad9-f8b7-427a-992e-206638b69e6a-0
+00:29:24.240 --> 00:29:26.960
+It will work like this but it is not
+suggested.
+
+1e5b68e5-fb71-4f1d-9d0d-ee740142eeeb-0
+00:29:26.960 --> 00:29:28.880
+See if you see it here as well.
+
+8d115947-98d3-4eea-b024-94a2cbf070a8-0
+00:29:29.240 --> 00:29:31.120
+They are stating it to dev right.
+
+5c74e55f-1ee0-41e5-8449-6fd49ca41d86-0
+00:29:31.400 --> 00:29:38.200
+Similarly in this search URL it is also
+stating dev right for upper environment.
+
+ab3fe1b9-30e5-4f2c-9857-b4720096f6d7-0
+00:29:38.400 --> 00:29:43.840
+You need to go through the T Rex only
+right I So if you want.
+
+a67b349b-d680-46cf-a4ac-d62f3172d7cf-0
+00:29:44.000 --> 00:29:48.994
+So the way you have implemented it is
+like you fetch the URL from whatever
+
+a67b349b-d680-46cf-a4ac-d62f3172d7cf-1
+00:29:48.994 --> 00:29:54.254
+service like your config file or whatever
+and then you plug it in here in this
+
+a67b349b-d680-46cf-a4ac-d62f3172d7cf-2
+00:29:54.254 --> 00:29:55.320
+JavaScript, yes.
+
+3d9c648c-9bd7-43f5-9123-82e1e0e11cb5-0
+00:29:55.320 --> 00:30:00.600
+So these changes are already in the rec
+preview.
+
+ebf99d91-1a05-42af-b0fb-f4e91e1f2618-0
+00:30:01.160 --> 00:30:06.105
+So what we did is we simply gave the
+service code and that data center
+
+ebf99d91-1a05-42af-b0fb-f4e91e1f2618-1
+00:30:06.105 --> 00:30:09.240
+environment type,
+we'll get this static URL.
+
+bba9dfd5-c53e-4c1e-a306-22072e4babc7-0
+00:30:09.480 --> 00:30:13.680
+Static URL is static asset URL is no
+longer reading now needed now.
+
+1d8a2601-a16b-403a-a407-755ab4a56f03-0
+00:30:14.000 --> 00:30:16.880
+Earlier it was required,
+but it is no longer needed.
+
+00caf1ff-3e0d-49fd-bf8c-aa87944e4ffc-0
+00:30:17.080 --> 00:30:17.720
+Needed now.
+
+8e2d567a-1ca4-4ae9-9781-6c0db7d087fb-0
+00:30:18.560 --> 00:30:24.331
+SDK URL, the CDN one and the gateway URL,
+these are the two URLs that you need to
+
+8e2d567a-1ca4-4ae9-9781-6c0db7d087fb-1
+00:30:24.331 --> 00:30:25.880
+fetch through the TRS.
+
+abce2bac-5fb3-4bfb-96ab-884880bd4780-0
+00:30:26.640 --> 00:30:28.520
+OK, right.
+
+26be6f4a-15ee-4746-8f9a-e537c27b9dc8-0
+00:30:29.120 --> 00:30:34.120
+And once you do that,
+it will work for you, right?
+
+f53e31aa-612d-4ecf-a1e5-9b8541d49825-0
+00:30:34.760 --> 00:30:39.568
+There are some additional properties that
+you can play around that are still near
+
+f53e31aa-612d-4ecf-a1e5-9b8541d49825-1
+00:30:39.568 --> 00:30:39.920
+to me.
+
+d6a1d1e4-b2a5-4629-92b2-f0f2011ce879-0
+00:30:40.440 --> 00:30:40.720
+Yeah.
+
+3b808bd2-1fda-478f-9fcf-d6397abaef34-0
+00:30:40.720 --> 00:30:42.280
+So we have to plug in this JavaScript.
+
+ebf0f1ac-5e52-4919-aab3-8b0e9761cee6-0
+00:30:42.280 --> 00:30:46.543
+We have to follow the code part that you
+have that you just showed of fetching the
+
+ebf0f1ac-5e52-4919-aab3-8b0e9761cee6-1
+00:30:46.543 --> 00:30:46.800
+URLs.
+
+8be11f97-c06a-4037-8776-73bf091dd954-0
+00:30:47.560 --> 00:30:49.240
+What about the interaction?
+
+a8345173-2329-4a01-95e8-171e4f0e25d5-0
+00:30:49.520 --> 00:30:50.800
+Interaction with the agent?
+
+0b71b4a6-0b7a-4d43-b146-62e2f81b3e6f-0
+00:30:51.160 --> 00:30:56.976
+Because right now the way we have
+implemented our agent is we are doing raw
+
+0b71b4a6-0b7a-4d43-b146-62e2f81b3e6f-1
+00:30:56.976 --> 00:30:59.120
+API calls for for the agent.
+
+8c07ff3b-27d1-46d4-b6e7-e03b19bf6377-0
+00:30:59.120 --> 00:31:01.920
+We send out the message and then we get
+the response back.
+
+0244bcff-2252-411d-95fd-dacb52cebd13-0
+00:31:01.920 --> 00:31:04.560
+And every time we get the response back,
+we display it on the UI.
+
+3628b3b8-9055-401f-93e2-575a05095385-0
+00:31:05.200 --> 00:31:06.920
+But these are all raw API calls.
+
+1e03df05-02e7-4091-9eb5-025d1cdd8d6e-0
+00:31:07.240 --> 00:31:11.790
+So I think my understanding was that this
+SDK will create a wrapper around those
+
+1e03df05-02e7-4091-9eb5-025d1cdd8d6e-1
+00:31:11.790 --> 00:31:12.240
+raw API.
+
+446d1d01-8da0-446f-b127-09627af3baf5-0
+00:31:12.240 --> 00:31:13.360
+Yeah, you don't need to.
+
+7c30e20e-b018-4f1f-9493-76c7e897592b-0
+00:31:13.400 --> 00:31:16.120
+You don't need to do anything explicitly
+for that.
+
+41125e98-8c7b-4458-af80-0a801d04411c-0
+00:31:16.560 --> 00:31:18.440
+You don't need to create a session for it.
+
+cf9481e7-b82f-49db-a292-c79a1456d3a2-0
+00:31:18.800 --> 00:31:20.640
+Sutex will create a session for it.
+
+374b3961-e979-4907-a118-65a570ce199d-0
+00:31:20.880 --> 00:31:23.040
+It will give you the response.
+
+34954a8d-3eb2-4951-8099-0202dd8603a9-0
+00:31:23.480 --> 00:31:25.680
+It will like you can make a request.
+
+5f579c17-6840-4628-b93b-2f34cd38489a-0
+00:31:25.720 --> 00:31:32.120
+If you see this,
+let me show you something maybe.
+
+aad4978f-376f-427b-82ea-27165609fb9e-0
+00:31:33.960 --> 00:31:36.788
+Oh,
+so you are not relaying the message from
+
+aad4978f-376f-427b-82ea-27165609fb9e-1
+00:31:36.788 --> 00:31:38.360
+your application anymore?
+
+36b96e75-68b5-4db4-8db5-388d3722fc2d-0
+00:31:38.880 --> 00:31:41.720
+No, we are going via the proxy.
+
+a94a5dcd-da11-47e2-bb92-28d1861024ba-0
+00:31:42.400 --> 00:31:44.040
+OK, we are going via the proxy.
+
+8332d660-0864-49a4-a390-956a5317a083-0
+00:31:44.040 --> 00:31:56.860
+If you see it here,
+let the response come right.
+
+b09791d8-cc86-43fa-95b2-dc003687866c-0
+00:31:56.860 --> 00:32:04.340
+So all you need to do is traverse this
+event stream and it will display
+
+b09791d8-cc86-43fa-95b2-dc003687866c-1
+00:32:04.340 --> 00:32:09.640
+automatically in this bright assist
+window, right?
+
+8e75b977-5420-4dbf-a350-6ce95c98d2c4-0
+00:32:10.120 --> 00:32:12.320
+I'm not creating any session for it.
+
+006c9d69-f71e-4a4b-b2d9-f8bfb8573c15-0
+00:32:12.320 --> 00:32:17.586
+I'm not doing anything specifically that
+we did for the interview scorecard of
+
+006c9d69-f71e-4a4b-b2d9-f8bfb8573c15-1
+00:32:17.586 --> 00:32:20.120
+sending the criteria from here, right?
+
+25721497-7aea-4e3f-95a9-fdacd5a0b0f9-0
+00:32:22.080 --> 00:32:28.240
+All I need to do is just to render this
+UI and invoke an agent.
+
+d25cf6f5-3b1d-434f-8cfd-899948b41143-0
+00:32:29.120 --> 00:32:32.021
+Agent response will be rendered
+automatically in this Bright assist
+
+d25cf6f5-3b1d-434f-8cfd-899948b41143-1
+00:32:32.021 --> 00:32:32.320
+window.
+
+be0e4cd3-cd63-414b-add4-d1fed842f13d-0
+00:32:34.840 --> 00:32:37.581
+If you want to specifically decorate your
+responses,
+
+be0e4cd3-cd63-414b-add4-d1fed842f13d-1
+00:32:37.581 --> 00:32:40.840
+you can do that output configuration onto
+the Bright hub side.
+
+460262a8-c36b-4569-98c4-e14b5db279fe-0
+00:32:42.120 --> 00:32:43.960
+There is documentation for that as well.
+
+23d02460-4318-4fc1-8fd2-31c30065ce81-0
+00:32:43.960 --> 00:32:48.654
+I can share it with you or maybe you can
+see in the related conference that I
+
+23d02460-4318-4fc1-8fd2-31c30065ce81-1
+00:32:48.654 --> 00:32:50.280
+shared it with you earlier.
+
+78580b92-43d3-4700-83a2-04f4b32b0590-0
+00:32:52.600 --> 00:33:00.161
+Now coming back so so now this is this is
+the confluence of the back end
+
+78580b92-43d3-4700-83a2-04f4b32b0590-1
+00:33:00.161 --> 00:33:02.440
+implementation, right?
+
+41f67704-73b2-4187-b276-e363cf3ce072-0
+00:33:03.560 --> 00:33:06.246
+Like I said,
+if if our request requires some
+
+41f67704-73b2-4187-b276-e363cf3ce072-1
+00:33:06.246 --> 00:33:10.723
+authentication or authorization,
+you need to send that authorization token
+
+41f67704-73b2-4187-b276-e363cf3ce072-2
+00:33:10.723 --> 00:33:11.439
+in a header.
+
+0fa6f2a2-acd7-4afd-ac35-c490f4ead6f4-0
+00:33:12.280 --> 00:33:14.960
+Whereas there is only one difference.
+
+d530bc66-e231-4b2c-9aee-ac69a9216ea3-0
+00:33:15.360 --> 00:33:19.534
+Like I said,
+we cannot use X custom header attribute
+
+d530bc66-e231-4b2c-9aee-ac69a9216ea3-1
+00:33:19.534 --> 00:33:20.480
+in a header.
+
+312cf9af-0ed8-4f85-b9ce-1eeb04d30755-0
+00:33:20.480 --> 00:33:26.080
+We have to use accept context header as
+we are outside of pro.
+
+be03067d-177e-4b7f-887d-ad4ef467248a-0
+00:33:26.400 --> 00:33:29.240
+So this is the specific header that we
+need to use.
+
+95f439b6-c174-4703-975a-591199c1ae91-0
+00:33:29.960 --> 00:33:36.000
+So if you see in accept context there are
+few required fields that you need to pass.
+
+c9b424ba-01ee-4a38-ae52-33da147aa516-0
+00:33:36.240 --> 00:33:40.080
+One is the tenant ID, user ID,
+service code, deployment identifier.
+
+9e61ebca-74d8-4bf4-a621-0bb7ed96c57c-0
+00:33:40.800 --> 00:33:44.357
+So what it did is whatever you specify it
+here,
+
+9e61ebca-74d8-4bf4-a621-0bb7ed96c57c-1
+00:33:44.357 --> 00:33:47.840
+sue text will eventually invoke your
+endpoint.
+
+b1e0dc3e-fd38-4fef-8a4d-f5649ab5948e-0
+00:33:48.240 --> 00:33:50.840
+Maybe I can show you through code as well.
+
+64ebea1e-584a-4c7c-aeed-d7f4b293bf33-0
+00:33:52.160 --> 00:33:53.440
+This is the talent pool right?
+
+63611c71-3649-45af-8fca-e450ef07f7bb-0
+00:33:53.560 --> 00:34:00.530
+I'm I'm setting up this accept context in
+my HTML page where like I said you need
+
+63611c71-3649-45af-8fca-e450ef07f7bb-1
+00:34:00.530 --> 00:34:04.440
+to specify the service code TRS service
+code.
+
+3f490252-1226-42c5-8d14-691ee191e8a0-0
+00:34:04.960 --> 00:34:10.962
+So our rec service code is H rec our API
+you need to give the deployment
+
+3f490252-1226-42c5-8d14-691ee191e8a0-1
+00:34:10.962 --> 00:34:12.360
+identifier right?
+
+413604eb-626d-4238-b86d-f1e5c23cb7f5-0
+00:34:12.840 --> 00:34:15.360
+If it is dev or GCP or US E 1.
+
+0b3334cb-6bc4-41e8-8740-7747f3524ae0-0
+00:34:15.840 --> 00:34:19.760
+Similarly the environment type and this
+is a user context part.
+
+bb874852-f4ca-40ef-8650-b623faed018f-0
+00:34:19.760 --> 00:34:23.440
+This is the endpoint that you need to
+provide it right?
+
+6034afcf-a745-4d65-a46b-ab964fc7c6b5-0
+00:34:23.800 --> 00:34:27.120
+So eventually sue text will land up to
+this endpoint.
+
+9d30da35-7bad-4b55-848b-693533b4da44-0
+00:34:27.400 --> 00:34:32.295
+And if this endpoint requires any source
+of authentication or authorization,
+
+9d30da35-7bad-4b55-848b-693533b4da44-1
+00:34:32.295 --> 00:34:34.520
+you need to pass in a header right?
+
+d6383d64-690d-4721-b5d5-c2f7a7440ed6-0
+00:34:35.080 --> 00:34:41.740
+And once it lands to this endpoint,
+it will actually authenticate either you
+
+d6383d64-690d-4721-b5d5-c2f7a7440ed6-1
+00:34:41.740 --> 00:34:47.017
+are a valid product,
+it it should give a result of a user or
+
+d6383d64-690d-4721-b5d5-c2f7a7440ed6-2
+00:34:47.017 --> 00:34:54.023
+maybe a tenant that it is a valid user
+and it is valid talent tenant and it is a
+
+d6383d64-690d-4721-b5d5-c2f7a7440ed6-3
+00:34:54.023 --> 00:34:55.840
+valid product, right?
+
+36abb254-d056-407e-898d-039548ca9bcd-0
+00:34:56.000 --> 00:35:12.250
+If I show you the implementation of this
+as well, OK, session details.
+
+07e136b6-9295-4a9b-8920-044d043dbd97-0
+00:35:13.890 --> 00:35:19.330
+So this is basically so Sutex will call
+our this endpoint, right?
+
+859a1bdc-ef38-4bdc-beda-37dcd688f934-0
+00:35:19.850 --> 00:35:25.680
+We will check either the tenant we have
+received is valid, OK, right.
+
+bb4ac3ec-66c3-4a3f-9a11-90eb77061a77-0
+00:35:25.680 --> 00:35:25.920
+OK.
+
+3455dbb9-1006-4c36-8edb-35fdcb7be584-0
+00:35:25.920 --> 00:35:28.120
+So once it's more of what's the word for
+it?
+
+57e5ade0-980d-4ca1-9a9d-28c01301324c-0
+00:35:28.120 --> 00:35:31.638
+Like basically you put in the endpoints
+and then they will call these endpoints
+
+57e5ade0-980d-4ca1-9a9d-28c01301324c-1
+00:35:31.638 --> 00:35:34.144
+like you still have to,
+you will have to implement these
+
+57e5ade0-980d-4ca1-9a9d-28c01301324c-2
+00:35:34.144 --> 00:35:35.200
+endpoints, right, right.
+
+25742e81-baff-4281-bb62-232f14aa8b0e-0
+00:35:35.400 --> 00:35:38.360
+This is for the for the first interaction.
+
+47b542eb-d75a-44d4-87cf-3581f72336a4-0
+00:35:38.360 --> 00:35:42.456
+Once that interaction is successful,
+you can simply make a connection and
+
+47b542eb-d75a-44d4-87cf-3581f72336a4-1
+00:35:42.456 --> 00:35:43.840
+interact with your agent.
+
+856f9615-68ff-464d-b567-692433d2e8e0-0
+00:35:46.040 --> 00:35:47.320
+This is for first connection.
+
+3ffb7364-2fa1-4f69-8158-6a24b902ed41-0
+00:35:47.320 --> 00:35:50.077
+OK,
+first like once you are initializing the
+
+3ffb7364-2fa1-4f69-8158-6a24b902ed41-1
+00:35:50.077 --> 00:35:54.182
+bright assist on your side,
+they need to authenticate you that you
+
+3ffb7364-2fa1-4f69-8158-6a24b902ed41-2
+00:35:54.182 --> 00:35:57.920
+are a valid product,
+you are a valid user or a valid tenant.
+
+406f6d20-571b-47f7-a9e4-ffa740171620-0
+00:35:58.920 --> 00:36:02.200
+OK, right, right.
+
+66f0733f-4835-4466-b0d0-3209179e72ce-0
+00:36:04.120 --> 00:36:11.075
+But just to add on,
+see bright assist is not only like given
+
+66f0733f-4835-4466-b0d0-3209179e72ce-1
+00:36:11.075 --> 00:36:14.040
+to use on a specific page.
+
+f6e0b020-e288-458b-9068-38c9b36adc0d-0
+00:36:14.520 --> 00:36:19.040
+Ideally it should be available throughout
+the application, not on the pool page.
+
+0d138d72-ac1c-4a32-ac27-823e58b0104a-0
+00:36:19.440 --> 00:36:22.208
+As of now,
+our requirement is to have it on a pool
+
+0d138d72-ac1c-4a32-ac27-823e58b0104a-1
+00:36:22.208 --> 00:36:22.480
+page.
+
+b0c73ab3-6b36-45f2-ba68-6db168989b2b-0
+00:36:22.840 --> 00:36:27.560
+Ideally it should be on the maybe a
+dashboard on every page, right?
+
+5beeda6f-7938-4887-9e7d-57344c011a19-0
+00:36:27.840 --> 00:36:31.640
+And we can perform whatever actions we
+want to do it.
+
+a2c123bf-2e75-4c9d-bae9-fa332060a2bf-0
+00:36:31.720 --> 00:36:32.760
+This is the end goal.
+
+7d6f6286-b3a7-4097-9221-f84b6261d499-0
+00:36:37.560 --> 00:36:41.280
+So Bright SDKS implemented as of now.
+
+99323dad-cc46-4030-b498-fed0a36bcd50-0
+00:36:41.280 --> 00:36:45.240
+What I did is I placed this MFE onto my
+page.
+
+21e72699-7535-48ff-a776-1b26bc138a58-0
+00:36:45.800 --> 00:36:49.520
+You don't need to adopt the Bright SDK
+because it is already done.
+
+1dac2f88-0c5f-4441-9036-0d47aadbe30f-0
+00:36:49.520 --> 00:36:53.725
+If I move this icon onto the dashboard or
+the layout page,
+
+1dac2f88-0c5f-4441-9036-0d47aadbe30f-1
+00:36:53.725 --> 00:36:56.720
+it will be available to you as well right?
+
+0051a6d0-1b27-45b4-9663-de98fce2ea0c-0
+00:36:58.600 --> 00:37:04.629
+OK, yes,
+so you so you don't need to adopt Bright
+
+0051a6d0-1b27-45b4-9663-de98fce2ea0c-1
+00:37:04.629 --> 00:37:06.800
+SDK again, got it.
+
+8903698d-8a72-47e9-b0fb-b9db810ed003-0
+00:37:06.920 --> 00:37:08.240
+OK, OK, right.
+
+918dd97a-068b-4a70-b767-10ab829dfdd9-0
+00:37:08.240 --> 00:37:08.480
+OK.
+
+cb8c4200-a809-4178-8fe8-64e24a1b1cff-0
+00:37:09.000 --> 00:37:13.373
+If you,
+because the purpose of Bright assist is
+
+cb8c4200-a809-4178-8fe8-64e24a1b1cff-1
+00:37:13.373 --> 00:37:20.388
+to provide a kind of a chat window or a
+help window throughout your pages on
+
+cb8c4200-a809-4178-8fe8-64e24a1b1cff-2
+00:37:20.388 --> 00:37:22.120
+every pages, right?
+
+4fa24341-5a5e-4fd1-a2a6-40535db9c5cc-0
+00:37:22.120 --> 00:37:27.207
+If you see on a pro as well,
+we have this bright MFV icon on every
+
+4fa24341-5a5e-4fd1-a2a6-40535db9c5cc-1
+00:37:27.207 --> 00:37:30.320
+page or maybe on the landing page, right?
+
+43cfa3a4-7a3b-4104-aef5-6711d6b10e13-0
+00:37:30.560 --> 00:37:32.560
+And you can simply interact through it.
+
+794bfbee-0c00-48c1-a1bc-bd98e358424b-0
+00:37:32.680 --> 00:37:36.880
+Let navigate me to the locations,
+navigate me to the user roles, right?
+
+93e9fa5b-11e0-44bc-8cad-9e843a38c1c6-0
+00:37:36.880 --> 00:37:39.840
+You can do it each and every operations,
+whatever you want to perform.
+
+9d3d4a00-7ccd-403c-9c83-89a622a86da8-0
+00:37:41.440 --> 00:37:48.200
+So this has been adopted but as of now I
+have placed it onto the talent pool page.
+
+c2e1f3f5-09f7-4679-bd21-22544df4819b-0
+00:37:48.640 --> 00:37:53.011
+Eventually it should go out and if I say
+it here create a talent pool,
+
+c2e1f3f5-09f7-4679-bd21-22544df4819b-1
+00:37:53.011 --> 00:37:54.920
+it should create a talent pool.
+
+fb67bf1a-330e-4fd9-8fbb-8de6b69b001c-0
+00:37:55.200 --> 00:38:00.266
+If I say create an interview scorecard,
+it will invoke the instructions for the
+
+fb67bf1a-330e-4fd9-8fbb-8de6b69b001c-1
+00:38:00.266 --> 00:38:05.080
+interview scorecard right through this
+page as well whatever page you want.
+
+f19794c7-297d-4d40-ab20-b3f68f1e23ab-0
+00:38:06.200 --> 00:38:07.520
+But right now it does not right?
+
+580676cf-e258-44e6-893a-14b3ff357fcb-0
+00:38:07.520 --> 00:38:12.783
+Like even if there is multiple then
+multiple multiple AI agents associated
+
+580676cf-e258-44e6-893a-14b3ff357fcb-1
+00:38:12.783 --> 00:38:17.555
+with recruiting application,
+I don't think we have the IT will know
+
+580676cf-e258-44e6-893a-14b3ff357fcb-2
+00:38:17.555 --> 00:38:19.520
+how to route to which agent.
+
+fa4b38f8-b718-498d-b7e4-b3537db6fcd0-0
+00:38:20.240 --> 00:38:24.180
+So,
+so to route to which agent that you need
+
+fa4b38f8-b718-498d-b7e4-b3537db6fcd0-1
+00:38:24.180 --> 00:38:28.120
+to train through the bright hub only,
+right?
+
+84a2409f-c660-4ae2-93e1-612ac925756d-0
+00:38:28.200 --> 00:38:31.920
+If I show you here, let me refresh it,
+right.
+
+80aa2083-3d0d-434c-a2f3-8182eb7b31eb-0
+00:38:35.760 --> 00:38:37.160
+So this is our agent.
+
+dc0b93f5-a3e8-4778-980c-241c2f7fa5a5-0
+00:38:38.240 --> 00:38:40.840
+If you see it examples here, right?
+
+dd1ad615-cdbc-4295-adc7-7757ec5eece4-0
+00:38:41.280 --> 00:38:45.736
+You need to write few examples,
+create a pool, generate a talent pool,
+
+dd1ad615-cdbc-4295-adc7-7757ec5eece4-1
+00:38:45.736 --> 00:38:49.000
+create a talent community,
+create a candidate pool.
+
+4a21f4a2-292c-4bad-855a-76e4028e969e-0
+00:38:49.320 --> 00:38:55.401
+So whenever we type anything specific to
+this in our bright assist,
+
+4a21f4a2-292c-4bad-855a-76e4028e969e-1
+00:38:55.401 --> 00:38:58.800
+it will find automatically, OK, right.
+
+df6c7371-f310-4cf9-a2c4-45dea91a7a2e-0
+00:38:59.160 --> 00:39:01.760
+And that is the additional step that you
+need to do.
+
+6f23742b-1cb3-4e71-9933-fa158fa4c5f3-0
+00:39:02.360 --> 00:39:06.355
+And in Bright Assist,
+you cannot configure the first welcome
+
+6f23742b-1cb3-4e71-9933-fa158fa4c5f3-1
+00:39:06.355 --> 00:39:06.880
+message.
+
+cc298bdd-daba-4304-8496-c309a48b850c-0
+00:39:07.200 --> 00:39:11.680
+It will always show you, hi,
+what can I do for you, right?
+
+ad057ee1-73d8-4d00-a924-d6e9d27944ff-0
+00:39:12.080 --> 00:39:20.400
+If I say create a interview scorecard
+right now, what will happen?
+
+82b7b2b8-8e17-4c7d-8c3b-6ab0d9b8b22e-0
+00:39:20.640 --> 00:39:26.400
+There is no such instruction or no such
+intent.
+
+009bdd17-a3fa-4ff3-84a8-9e6a12cb16b9-0
+00:39:26.840 --> 00:39:29.680
+Training has been set up for this thing.
+
+5212813a-e8a9-4afb-924d-8c9a7ac6d1a7-0
+00:39:30.040 --> 00:39:32.040
+It will result into nothing.
+
+fe69d52c-73dc-450b-be7d-b8c1d0191e80-0
+00:39:32.800 --> 00:39:47.560
+Let's see if you see it here right?
+
+36878304-fcdb-42f1-838e-9d8e8f184dd1-0
+00:39:48.160 --> 00:39:50.720
+Nothing happened specific to the
+interview scorecard.
+
+9ca5cc09-1030-4f7b-83bf-3c36015436fe-0
+00:39:50.920 --> 00:39:54.720
+It will only perform whatever the
+instructions that you.
+
+69bfcc53-4810-4357-87fc-4de676ad7986-0
+00:39:54.840 --> 00:40:00.533
+So whenever you are creating an agent,
+even you can modify your existing agent
+
+69bfcc53-4810-4357-87fc-4de676ad7986-1
+00:40:00.533 --> 00:40:02.480
+and add these instructions.
+
+87085738-587e-449a-a2c7-ff203184b1a1-0
+00:40:02.720 --> 00:40:07.960
+Once you add these instructions,
+the Bright SDK will invoke your agent.
+
+706d6519-cb29-48e0-ace8-3af71c6eed4c-0
+00:40:11.000 --> 00:40:11.120
+Right.
+
+0c325c58-b086-45b8-8ee0-e79d07bf4220-0
+00:40:16.410 --> 00:40:20.316
+OK,
+so now the way I'm thinking is that I
+
+0c325c58-b086-45b8-8ee0-e79d07bf4220-1
+00:40:20.316 --> 00:40:23.850
+don't yeah, it looks like multi agent.
+
+c8446919-b60d-46d3-ae47-c4e204d36885-0
+00:40:25.490 --> 00:40:27.170
+I don't know how this would work for
+consent.
+
+1f8ca9c7-5ba4-4d8a-be75-e86fd87ab28a-0
+00:40:29.610 --> 00:40:30.570
+That is also true.
+
+be9663a0-78c3-4842-8786-48ae6eadf53e-0
+00:40:33.210 --> 00:40:35.810
+There has to be a common consent across
+recruiting then.
+
+33d4ae69-a5c2-4173-af13-52a9653b7352-0
+00:40:41.800 --> 00:40:43.120
+That's a very good point, Josh.
+
+b052eb36-2b2d-4b24-b71d-84cd0af75490-0
+00:40:44.480 --> 00:40:44.760
+Yeah.
+
+98614954-6f97-4721-ae78-11d0d3a5d234-0
+00:40:44.960 --> 00:40:45.320
+What am I?
+
+46ac333a-93c8-4a04-88fc-4fa3c8878a03-0
+00:40:45.320 --> 00:40:48.680
+I was gonna ask,
+I was gonna ask is this needed?
+
+c50b05d9-ff86-47b9-b96f-60588d94f76f-0
+00:40:48.800 --> 00:40:53.735
+Because this is a lot of work to read,
+like to redo our agent to be compatible
+
+c50b05d9-ff86-47b9-b96f-60588d94f76f-1
+00:40:53.735 --> 00:40:54.360
+with this.
+
+6df4e61a-3e5d-4b47-a4c5-0b2575789a9a-0
+00:40:55.320 --> 00:40:55.640
+Yeah.
+
+c7c776c0-4a24-4dea-a91d-42ab207a6048-0
+00:40:55.680 --> 00:40:58.560
+So moving the agent to the other part
+then?
+
+3e01e8f6-633e-47db-a55c-08e65ec925e7-0
+00:40:58.560 --> 00:41:01.331
+Yeah,
+like this is only putting in the
+
+3e01e8f6-633e-47db-a55c-08e65ec925e7-1
+00:41:01.331 --> 00:41:07.157
+JavaScript, then making the hook, yeah,
+the web hook again that that Nasib showed
+
+3e01e8f6-633e-47db-a55c-08e65ec925e7-2
+00:41:07.157 --> 00:41:10.000
+for session creation and all that stuff.
+
+a1c12157-3e52-47e9-930a-7763d75a9be5-0
+00:41:10.240 --> 00:41:13.780
+And then cleaning up all the code for
+relaying the messages that we have right
+
+a1c12157-3e52-47e9-930a-7763d75a9be5-1
+00:41:13.780 --> 00:41:13.960
+now.
+
+82c7f83b-7e37-40bf-bce9-b9a91d6fc118-0
+00:41:15.480 --> 00:41:17.604
+And then and then that's why I'm thinking
+I'm like, well,
+
+82c7f83b-7e37-40bf-bce9-b9a91d6fc118-1
+00:41:17.604 --> 00:41:18.960
+how will how will we do consent then?
+
+52400e19-2eec-42f4-9799-f9baf04ed399-0
+00:41:19.200 --> 00:41:24.690
+Like our curb implementation of consent
+because we show like a custom message
+
+52400e19-2eec-42f4-9799-f9baf04ed399-1
+00:41:24.690 --> 00:41:29.758
+right before, but this looks like,
+like it's just all controlled by the
+
+52400e19-2eec-42f4-9799-f9baf04ed399-2
+00:41:29.758 --> 00:41:31.800
+agent side with instructions.
+
+d6b88b11-06c1-411f-9136-2cbb6fdc8028-0
+00:41:32.960 --> 00:41:36.360
+Yeah, as of now,
+we cannot modify the first message.
+
+3f18cc90-17fc-4204-abea-4c2f70144e9c-0
+00:41:36.880 --> 00:41:37.920
+Yes, exactly.
+
+f06a4f43-747a-4a56-b80a-13ff71c4b01e-0
+00:41:37.920 --> 00:41:42.216
+So it's like,
+and that's feedback that I can give back
+
+f06a4f43-747a-4a56-b80a-13ff71c4b01e-1
+00:41:42.216 --> 00:41:44.560
+to the Bright SDK team, right?
+
+edeb0c52-3b21-4389-8927-8a9eadc36b20-0
+00:41:44.560 --> 00:41:49.149
+Because that was one of my questions that
+I had for Naseeb is when you were
+
+edeb0c52-3b21-4389-8927-8a9eadc36b20-1
+00:41:49.149 --> 00:41:52.772
+implementing this,
+did you run into anything that let's say
+
+edeb0c52-3b21-4389-8927-8a9eadc36b20-2
+00:41:52.772 --> 00:41:56.516
+you needed for pools,
+but the Bright SDK doesn't allow you to
+
+edeb0c52-3b21-4389-8927-8a9eadc36b20-3
+00:41:56.516 --> 00:41:57.000
+do that.
+
+738d8284-785c-4d63-9522-5a426f437d93-0
+00:41:57.000 --> 00:41:59.600
+Like our consent is a good example of
+that.
+
+2756bd05-5ce1-4ef6-b934-09abb5785185-0
+00:41:59.600 --> 00:42:05.108
+And another good example is there is no
+like upload option that you really can
+
+2756bd05-5ce1-4ef6-b934-09abb5785185-1
+00:42:05.108 --> 00:42:07.200
+get with the bright SDK right?
+
+75773ec8-9327-4867-99d1-947a151ab6fd-0
+00:42:07.200 --> 00:42:10.520
+Like that bright assist MFE that you were
+showing.
+
+939c8a21-188f-4dc4-bece-db9372820cdf-0
+00:42:10.800 --> 00:42:16.560
+There's nowhere to like upload a resume
+because I know for our chat bot on the
+
+939c8a21-188f-4dc4-bece-db9372820cdf-1
+00:42:16.560 --> 00:42:17.800
+job board, right?
+
+db78f260-15cf-4452-a429-c4ff1f7180de-0
+00:42:18.160 --> 00:42:23.366
+For it to be very useful for a candidate,
+they'd wanna be able or we'd wanna be
+
+db78f260-15cf-4452-a429-c4ff1f7180de-1
+00:42:23.366 --> 00:42:26.360
+able to allow them to upload a resume,
+right?
+
+d350c2c3-144b-4b99-a190-d7b2c746a154-0
+00:42:26.360 --> 00:42:32.843
+Maybe you have some skills in your resume
+that we could import and use to identify
+
+d350c2c3-144b-4b99-a190-d7b2c746a154-1
+00:42:32.843 --> 00:42:34.640
+and match you to a job.
+
+05863e67-f4c8-422d-b182-4ec5dfbd10cc-0
+00:42:34.920 --> 00:42:39.405
+So we did let the SDK team know about
+that cuz there's not really I think an
+
+05863e67-f4c8-422d-b182-4ec5dfbd10cc-1
+00:42:39.405 --> 00:42:40.920
+option for that right now.
+
+422480e0-0b38-429b-b8df-c06d400b488e-0
+00:42:40.920 --> 00:42:45.349
+And they are aware,
+I'm not sure about that uploading thing,
+
+422480e0-0b38-429b-b8df-c06d400b488e-1
+00:42:45.349 --> 00:42:50.359
+but there can be provision,
+but I need to check like because that is
+
+422480e0-0b38-429b-b8df-c06d400b488e-2
+00:42:50.359 --> 00:42:52.320
+not our requirement so far.
+
+0883baca-c70a-44b8-8d40-e82cb6aa0f81-0
+00:42:52.320 --> 00:42:54.800
+So we haven't focused on to that as of
+now.
+
+476702f6-efdb-4ca1-a3cf-7ba2a54d0a36-0
+00:42:55.560 --> 00:42:56.320
+Right, right, right.
+
+e4951885-d8e2-4ff3-bead-e1e5711379f1-0
+00:42:56.320 --> 00:42:57.000
+So that's what I'm saying.
+
+f965d14b-5eca-471e-93b2-122088e476bd-0
+00:42:57.000 --> 00:43:00.653
+Outside of that,
+did you run into anything that you were
+
+f965d14b-5eca-471e-93b2-122088e476bd-1
+00:43:00.653 --> 00:43:02.000
+looking to implement?
+
+a937e805-3e5f-4315-ba4f-b80415a7c2f2-0
+00:43:02.080 --> 00:43:04.920
+It just it wasn't available from their
+side.
+
+5103c989-f026-49f2-bca4-3c057c5357b5-0
+00:43:06.440 --> 00:43:11.153
+So one thing that is that I already
+mentioned that we cannot tweak the
+
+5103c989-f026-49f2-bca4-3c057c5357b5-1
+00:43:11.153 --> 00:43:12.680
+welcome message, right?
+
+caa1ef58-4981-4c3c-9b90-7a9f3de27af5-0
+00:43:13.080 --> 00:43:18.397
+Another recommendation is that that
+earlier our requirement is to when I hit
+
+caa1ef58-4981-4c3c-9b90-7a9f3de27af5-1
+00:43:18.397 --> 00:43:23.506
+onto this button create pool with bright,
+it should open a assist window,
+
+caa1ef58-4981-4c3c-9b90-7a9f3de27af5-2
+00:43:23.506 --> 00:43:26.199
+not this window the this window, right?
+
+82830b23-03d3-48a1-83c1-a0b51fc1d05b-0
+00:43:26.840 --> 00:43:30.080
+So for that as well we need to do some
+tweaks.
+
+cd037b38-706f-4098-b4a5-7ec65f432d53-0
+00:43:30.200 --> 00:43:35.059
+We can achieve that,
+but their recommendation is to not to do
+
+cd037b38-706f-4098-b4a5-7ec65f432d53-1
+00:43:35.059 --> 00:43:36.000
+by this way.
+
+e62e6cc5-9933-412b-8c3b-8cba660f2534-0
+00:43:36.520 --> 00:43:40.720
+If you want to open a bright assist,
+simply create MFE.
+
+b17902af-adf3-476a-8784-7b651b2a18be-0
+00:43:41.160 --> 00:43:45.485
+Also,
+there are some configurations like
+
+b17902af-adf3-476a-8784-7b651b2a18be-1
+00:43:45.485 --> 00:43:54.031
+suppose if I want to decorate my response
+in a form of chips or maybe in form of
+
+b17902af-adf3-476a-8784-7b651b2a18be-2
+00:43:54.031 --> 00:43:56.880
+some another markup, right?
+
+c703db9c-d48b-436e-9656-fd4316c6d635-0
+00:43:57.160 --> 00:44:03.538
+That is also limited like in a In this
+case, if we are receiving some response,
+
+c703db9c-d48b-436e-9656-fd4316c6d635-1
+00:44:03.538 --> 00:44:08.960
+what we what we do is we simply decorate
+in a form of chips, right?
+
+defa42a2-1113-4418-8b4e-50c4740827fa-0
+00:44:09.480 --> 00:44:15.544
+But in a case of bright assist,
+if the response is coming from the if the
+
+defa42a2-1113-4418-8b4e-50c4740827fa-1
+00:44:15.544 --> 00:44:22.183
+response is coming from your REST tool,
+this is a little bit maybe I can explain
+
+defa42a2-1113-4418-8b4e-50c4740827fa-2
+00:44:22.183 --> 00:44:27.920
+you what is the REST tool, Abhi,
+you must be aware it aware about it.
+
+f394e3af-ce20-4f5d-a18f-44723a84ba7b-0
+00:44:29.160 --> 00:44:33.440
+So these are the REST tools for the APIs
+that we have set up.
+
+1cd163f3-8d14-4ffb-8a76-f810837ddb0f-0
+00:44:33.920 --> 00:44:38.100
+Suppose yes,
+I am entering some criteria and now like
+
+1cd163f3-8d14-4ffb-8a76-f810837ddb0f-1
+00:44:38.100 --> 00:44:41.507
+I said,
+UX designer number of years is this
+
+1cd163f3-8d14-4ffb-8a76-f810837ddb0f-2
+00:44:41.507 --> 00:44:45.920
+employee type is internal location is
+California, right?
+
+d95b5531-2b19-445c-bce1-f76f82f6ce86-0
+00:44:46.240 --> 00:44:51.321
+Eventually it will fetch the results and
+how it will fetch the result it will call
+
+d95b5531-2b19-445c-bce1-f76f82f6ce86-1
+00:44:51.321 --> 00:44:55.240
+our API and for that we need to configure
+this REST tool right?
+
+b6f494d9-7ecc-4e4d-91bf-34f32b02cb9d-0
+00:44:55.640 --> 00:45:01.805
+If the output is coming from the REST
+tool, we can decorate it in any form,
+
+b6f494d9-7ecc-4e4d-91bf-34f32b02cb9d-1
+00:45:01.805 --> 00:45:04.320
+maybe in chips, table, buttons.
+
+b02b6eaa-90a9-4095-83c9-14b6185ed534-0
+00:45:04.680 --> 00:45:12.760
+But if your output is given by the AI,
+suppose I said that UX designer, right?
+
+656240bc-61d5-42dd-ad36-5f7b0aa7f821-0
+00:45:12.920 --> 00:45:17.080
+The next question is asked for to me is
+what skills you are looking for?
+
+b3f0475d-686b-46eb-bfd2-92d29ec802a3-0
+00:45:17.080 --> 00:45:19.400
+There are 10 skills which is given by the
+AI.
+
+8b1c65fd-d50a-45fe-a664-2c4639b44503-0
+00:45:19.840 --> 00:45:22.640
+That is not given by our API.
+
+f08cff34-2b46-4add-8eb4-f17ededcdf2f-0
+00:45:22.640 --> 00:45:24.240
+That is given by the AI.
+
+cd509722-f6ed-4822-a2fb-b9c4dbe60244-0
+00:45:24.800 --> 00:45:27.760
+For that there is a scope.
+
+ac55272c-f7c1-4d22-9f42-2d1c75984f24-0
+00:45:28.760 --> 00:45:33.800
+There is a limitation where we cannot
+decorate it in a form of chips.
+
+599f2354-32b3-4d3a-9aa1-1bc782d6f8eb-0
+00:45:34.480 --> 00:45:36.680
+This is another challenge which I face.
+
+f41dc88d-ba84-48b2-bcb2-f91f3b8efeeb-0
+00:45:40.640 --> 00:45:45.960
+If you want I can reiterate it right?
+
+af5c9516-db37-4491-840c-55a4544a4056-0
+00:45:46.520 --> 00:45:49.520
+If I say create a talent pool, right.
+
+558f3f15-b010-4452-9c5e-0e2bfb38028f-0
+00:45:52.160 --> 00:45:55.840
+So first thing is I'm get getting this
+text right.
+
+39da0e28-0851-461a-8909-bd73eb4ceed9-0
+00:45:55.840 --> 00:45:57.440
+What role you are looking for?
+
+0dca54d6-29d1-4a0a-81b3-ed15499d48e3-0
+00:45:58.960 --> 00:46:02.800
+If I say UX designer,
+let's see if the response come.
+
+dc875914-2219-4165-ad50-4ed1ba3aaed8-0
+00:46:09.960 --> 00:46:13.282
+Now,
+if I want to show these things in a form
+
+dc875914-2219-4165-ad50-4ed1ba3aaed8-1
+00:46:13.282 --> 00:46:15.160
+of chip, I cannot do that.
+
+1c598ca2-8f7c-471f-9e51-9c82615470dc-0
+00:46:17.760 --> 00:46:18.480
+As of now.
+
+9000626f-eef5-4022-a1b9-f627b892a2d5-0
+00:46:20.320 --> 00:46:21.400
+There is a limitation.
+
+b56bbaa7-1a5b-476c-b780-f7cfc882a6e0-0
+00:46:21.400 --> 00:46:26.760
+With the bright assist,
+we can simply use the text, right?
+
+d19732ad-61fe-47d3-95d5-83a16c8e876e-0
+00:46:27.840 --> 00:46:34.808
+See these are the these are the skills
+given by the AI, not from our API,
+
+d19732ad-61fe-47d3-95d5-83a16c8e876e-1
+00:46:34.808 --> 00:46:36.880
+not from our endpoint.
+
+1ab22959-d0e4-498c-8496-d24c389ec5ee-0
+00:46:37.120 --> 00:46:39.931
+If I want to decorate it in a form of
+chips,
+
+1ab22959-d0e4-498c-8496-d24c389ec5ee-1
+00:46:39.931 --> 00:46:44.680
+by chips means the action button like if
+I simply click it, it will select.
+
+abe36c43-fcc7-4b92-a2f2-ce543c9ac9a3-0
+00:46:45.080 --> 00:46:47.360
+So I cannot decorate it in that form.
+
+d7319302-4b96-4573-8727-7de685305a65-0
+00:46:47.400 --> 00:46:53.606
+This is another limitation that I feel
+that I feel on the brightest side,
+
+d7319302-4b96-4573-8727-7de685305a65-1
+00:46:53.606 --> 00:46:57.800
+whereas the similar we can control it on
+our end.
+
+86d12a45-5636-4065-90af-9854aa8e2e35-0
+00:47:00.840 --> 00:47:02.600
+So can you show me that on your side?
+
+e82260bd-f1c3-4ee7-b991-adea79b5915b-0
+00:47:04.000 --> 00:47:04.200
+Yeah.
+
+36d8d4cc-42cb-441b-8aad-eb0774f81b20-0
+00:47:04.640 --> 00:47:10.480
+Let me quickly jump to the scorecard
+template.
+
+29cc18cc-3a66-438d-bbb4-1f4b2511a1e1-0
+00:47:15.900 --> 00:47:18.896
+The thing is, Vicky,
+the way that we have been set set up
+
+29cc18cc-3a66-438d-bbb4-1f4b2511a1e1-1
+00:47:18.896 --> 00:47:23.081
+right now and even with our screenshots,
+we wouldn't be able to do any of it for
+
+29cc18cc-3a66-438d-bbb4-1f4b2511a1e1-2
+00:47:23.081 --> 00:47:23.340
+this.
+
+63328110-5cd4-4bfa-869a-4088d41cf3ff-0
+00:47:23.340 --> 00:47:24.220
+Can you see this?
+
+7977f357-cacc-4a87-ae59-e12673bcee88-0
+00:47:26.620 --> 00:47:26.860
+Yeah.
+
+af8e8806-e101-432c-8993-b728c64fdc99-0
+00:47:27.980 --> 00:47:28.940
+So these are the chips.
+
+c16a6869-f9cd-419f-8b27-799070aaa60e-0
+00:47:28.940 --> 00:47:35.080
+We can simply select it right And capture
+our response.
+
+7b777625-c928-4f3c-84ac-3008d12685d4-0
+00:47:35.360 --> 00:47:36.840
+So skills right.
+
+fd61897d-4985-4c10-bda2-40eb57522741-0
+00:47:39.800 --> 00:47:40.840
+Interesting.
+
+15d3730b-f4ee-43c1-9da1-213778b75da5-0
+00:47:40.920 --> 00:47:42.640
+Did you provide this feedback to them?
+
+9bccd067-19e7-4d76-8480-08aef57421a5-0
+00:47:42.640 --> 00:47:45.327
+Did they have anything to to mention
+about Oh,
+
+9bccd067-19e7-4d76-8480-08aef57421a5-1
+00:47:45.327 --> 00:47:49.844
+maybe we could work on including this
+these as chips instead of just like as a
+
+9bccd067-19e7-4d76-8480-08aef57421a5-2
+00:47:49.844 --> 00:47:51.560
+listlet that that we just saw.
+
+ec5d21d6-5f96-4dce-a680-96f9d9d5bd19-0
+00:47:51.560 --> 00:47:54.625
+So,
+so they have a work around for this like
+
+ec5d21d6-5f96-4dce-a680-96f9d9d5bd19-1
+00:47:54.625 --> 00:47:57.622
+if,
+if your chips are hard coded like every
+
+ec5d21d6-5f96-4dce-a680-96f9d9d5bd19-2
+00:47:57.622 --> 00:48:00.824
+time,
+if you get the user research wireframing
+
+ec5d21d6-5f96-4dce-a680-96f9d9d5bd19-3
+00:48:00.824 --> 00:48:05.252
+and prototyping, right,
+if this is the result every time you can
+
+ec5d21d6-5f96-4dce-a680-96f9d9d5bd19-4
+00:48:05.252 --> 00:48:07.160
+decorate in a form of chips.
+
+f272d669-306d-4e70-b932-53ea45503236-0
+00:48:07.400 --> 00:48:12.863
+But that like that is not our case
+because that is responses are coming from
+
+f272d669-306d-4e70-b932-53ea45503236-1
+00:48:12.863 --> 00:48:13.360
+the AI.
+
+6a664dd6-e5b4-4376-9579-9ef739063214-0
+00:48:14.000 --> 00:48:19.520
+It can be vary at different time, right,
+right, right, right, right.
+
+4ba87486-509a-49c7-a28f-bb23e472178d-0
+00:48:19.920 --> 00:48:24.172
+Because I'm looking at that like for our
+job, Abby and Josh,
+
+4ba87486-509a-49c7-a28f-bb23e472178d-1
+00:48:24.172 --> 00:48:29.680
+when you get the list of jobs right,
+they're like links that you can click on.
+
+e28c51cd-cd01-438e-9e40-81b7288be657-0
+00:48:30.040 --> 00:48:34.400
+I don't know how bright assist or yeah,
+SDK would handle that.
+
+06aa9121-e212-4aab-9464-9fc812fc53c7-0
+00:48:35.600 --> 00:48:36.120
+Oh, yeah.
+
+ca6b385a-5905-46fc-8e1d-1e53dbf7ed7a-0
+00:48:36.120 --> 00:48:40.290
+I mean, we would have to it, it would,
+I think allow us because that comes from
+
+ca6b385a-5905-46fc-8e1d-1e53dbf7ed7a-1
+00:48:40.290 --> 00:48:40.760
+the tool.
+
+849b380a-4d0b-486d-ad35-51a05c071aec-0
+00:48:41.360 --> 00:48:42.720
+A response comes from the tool.
+
+239e3c87-525b-42b5-a9fa-686d828c3181-0
+00:48:42.720 --> 00:48:48.320
+So he's saying like anything from a tool,
+you can, you can format any type of UI.
+
+9341b5f8-e58a-40c1-8c57-4979e7a72978-0
+00:48:49.080 --> 00:48:51.729
+OK,
+But the consent though is still we don't
+
+9341b5f8-e58a-40c1-8c57-4979e7a72978-1
+00:48:51.729 --> 00:48:54.320
+it doesn't the consent we cannot do at
+all.
+
+13499b1d-742e-438e-b3fb-cda7df096456-0
+00:48:54.320 --> 00:48:58.350
+Because yeah,
+if you think about the the chat,
+
+13499b1d-742e-438e-b3fb-cda7df096456-1
+00:48:58.350 --> 00:49:04.440
+the chat is is bright like front end,
+like they own the code for that.
+
+951e1a99-b86b-4be5-acbf-b5b65486ad5e-0
+00:49:04.480 --> 00:49:08.520
+And like we can't tell it to display a
+it's like right here.
+
+53e5ac49-e8fa-4eab-b151-c893d4280d2d-0
+00:49:08.520 --> 00:49:10.800
+It says high on bright and that's the
+first message always.
+
+26ac9089-1b8c-4efe-80ba-5e3d4b27f27a-0
+00:49:10.800 --> 00:49:14.541
+So we can't even even,
+they would type and then then we would
+
+26ac9089-1b8c-4efe-80ba-5e3d4b27f27a-1
+00:49:14.541 --> 00:49:18.887
+have to call, call an API, which we just,
+we just cancelled that story,
+
+26ac9089-1b8c-4efe-80ba-5e3d4b27f27a-2
+00:49:18.887 --> 00:49:21.120
+which was to get the consent message.
+
+f6c66d33-3a59-4e4a-a120-5a6e51464a5d-0
+00:49:21.440 --> 00:49:26.202
+We would call an API to grab that message
+so it can be formatted how we want before
+
+f6c66d33-3a59-4e4a-a120-5a6e51464a5d-1
+00:49:26.202 --> 00:49:29.320
+letting them continue like that would be
+the only way.
+
+893068ae-0e05-4b85-b37e-477facc0d172-0
+00:49:30.040 --> 00:49:35.336
+But yeah, this is, it'll be,
+it's like redoing our whole thing,
+
+893068ae-0e05-4b85-b37e-477facc0d172-1
+00:49:35.336 --> 00:49:37.240
+what we have right now.
+
+bcbbfcf8-4b02-4fe3-be48-eaf55eaf2f8a-0
+00:49:38.320 --> 00:49:43.388
+Yeah, if it's really needed, I mean,
+it probably can be done,
+
+bcbbfcf8-4b02-4fe3-be48-eaf55eaf2f8a-1
+00:49:43.388 --> 00:49:47.640
+but it definitely not like by April or or
+anything.
+
+9f734a3b-f895-4c5a-9b05-9bc92dc62688-0
+00:49:47.640 --> 00:49:50.768
+No, this is,
+this is not gonna be for us to do by beta
+
+9f734a3b-f895-4c5a-9b05-9bc92dc62688-1
+00:49:50.768 --> 00:49:51.280
+for sure.
+
+57d7340f-d151-4a95-bd67-673c0d82c724-0
+00:49:51.280 --> 00:49:53.360
+Cuz that's what that's what we're trying
+to work on now.
+
+61026adf-72e6-478e-9d17-d653282fe63b-0
+00:49:53.360 --> 00:49:54.960
+It's just let's get us to beta.
+
+778708ba-ee28-4c89-917e-bbea39c53a57-0
+00:49:54.960 --> 00:50:00.165
+And the SDK is not going to be done for
+that, but for Georgia, right,
+
+778708ba-ee28-4c89-917e-bbea39c53a57-1
+00:50:00.165 --> 00:50:05.371
+the general availability part of this
+where it goes live to everyone,
+
+778708ba-ee28-4c89-917e-bbea39c53a57-2
+00:50:05.371 --> 00:50:11.023
+I have a feeling that they're going to
+want us to be on SDKI know that Didi
+
+778708ba-ee28-4c89-917e-bbea39c53a57-3
+00:50:11.023 --> 00:50:15.931
+already mentioned like for R1,
+things that are going GASDK is not
+
+778708ba-ee28-4c89-917e-bbea39c53a57-4
+00:50:15.931 --> 00:50:19.575
+required,
+but we're not going GA in R1 or May or
+
+778708ba-ee28-4c89-917e-bbea39c53a57-5
+00:50:19.575 --> 00:50:21.360
+whatever that is, right?
+
+99e1ed20-e017-4a7b-8eb1-0600c87e1b3f-0
+00:50:21.400 --> 00:50:22.400
+We're going beta.
+
+8556c090-74ef-4a5f-923b-f7071449bc96-0
+00:50:22.400 --> 00:50:28.000
+So the GA discussion for bright SDK is
+still going to be ongoing.
+
+be54a8d7-f544-47d0-98a1-497514056dba-0
+00:50:28.000 --> 00:50:32.161
+But things like this, like our consent,
+I can definitely bring up to that team
+
+be54a8d7-f544-47d0-98a1-497514056dba-1
+00:50:32.161 --> 00:50:34.480
+and say,
+how are you guys solving for this?
+
+bf0e80dc-ad83-47e4-8b52-7ecfceff8303-0
+00:50:34.480 --> 00:50:39.523
+Because Bright right now is really set up
+for like if you are an employee,
+
+bf0e80dc-ad83-47e4-8b52-7ecfceff8303-1
+00:50:39.523 --> 00:50:45.037
+it's not really set up or if you are an
+external candidate that has nothing to do
+
+bf0e80dc-ad83-47e4-8b52-7ecfceff8303-2
+00:50:45.037 --> 00:50:48.400
+with being an employee at the company yet,
+right?
+
+7b94c7e2-6b05-480f-b33f-a7c408f49950-0
+00:50:48.400 --> 00:50:52.323
+So it's not they don't really care about
+consent because you're already an
+
+7b94c7e2-6b05-480f-b33f-a7c408f49950-1
+00:50:52.323 --> 00:50:53.160
+employee, right?
+
+2134acf4-7b49-40fd-9521-8c17d4ec8a3e-0
+00:50:54.120 --> 00:50:57.320
+So I think that's that's where the the
+difference lies.
+
+f46ff5c7-24b9-43cb-bc74-16d36b13ba9a-0
+00:50:57.320 --> 00:51:00.493
+So, but yeah,
+this is definitely something I can bring
+
+f46ff5c7-24b9-43cb-bc74-16d36b13ba9a-1
+00:51:00.493 --> 00:51:04.360
+back to that the SDK team and say,
+what do you guys have for this?
+
+856b66ca-a92a-49ed-942f-6648997a3f4b-0
+00:51:04.360 --> 00:51:06.797
+Because if you guys haven't solved for
+this yet,
+
+856b66ca-a92a-49ed-942f-6648997a3f4b-1
+00:51:06.797 --> 00:51:10.329
+then I can't really say in good
+conscience that we're gonna be able to
+
+856b66ca-a92a-49ed-942f-6648997a3f4b-2
+00:51:10.329 --> 00:51:12.120
+move to SDK for even Georgia, right?
+
+f4e54fb9-adb9-439e-b68f-e4bd083f01ce-0
+00:51:12.120 --> 00:51:14.440
+So it's a good conversation to have.
+
+829b25c7-ef0e-46ed-9ec1-5c7cdeb8e97e-0
+00:51:19.800 --> 00:51:23.531
+So like so as you can, yeah,
+you can configure this output through
+
+829b25c7-ef0e-46ed-9ec1-5c7cdeb8e97e-1
+00:51:23.531 --> 00:51:24.200
+this, right.
+
+e8570701-8c1b-479c-897d-763606ff66ae-0
+00:51:24.720 --> 00:51:28.593
+The output that we are getting from the
+tool, the REST tool,
+
+e8570701-8c1b-479c-897d-763606ff66ae-1
+00:51:28.593 --> 00:51:30.880
+we can configure it and in any form.
+
+f1ebef45-e3e3-44ed-a733-55d8b4856dc6-0
+00:51:31.960 --> 00:51:35.800
+But output that is generating to the
+bright that cannot be configured.
+
+8c8be1a0-3f0e-4a33-b4e7-58bfb9ea2b9e-0
+00:51:38.760 --> 00:51:41.580
+You can use table here you can use
+markdown,
+
+8c8be1a0-3f0e-4a33-b4e7-58bfb9ea2b9e-1
+00:51:41.580 --> 00:51:46.280
+you can use markdown string template,
+action buttons, whatever you can do.
+
+33fa33e3-dcd8-4b7a-b092-e4a9d6745874-0
+00:51:51.320 --> 00:51:54.080
+Yeah,
+go ahead to be you are asking something
+
+33fa33e3-dcd8-4b7a-b092-e4a9d6745874-1
+00:51:54.080 --> 00:51:54.320
+now.
+
+776423bb-4fe1-49b4-8908-4a5346fee656-0
+00:51:54.360 --> 00:51:55.200
+I was saying that.
+
+dff79909-8e2c-4a2d-9e2d-e22e717e99df-0
+00:51:55.200 --> 00:51:58.200
+So, OK, so the SDK is available to us.
+
+60a0973f-5cd4-40fb-a48b-9a014b64a816-0
+00:51:58.200 --> 00:51:59.600
+It is there added as a project.
+
+588883c9-2734-4c18-ad62-6f54d574ded7-0
+00:51:59.680 --> 00:52:05.750
+It's just that we have to do the UI work
+and set these sessions and move it,
+
+588883c9-2734-4c18-ad62-6f54d574ded7-1
+00:52:05.750 --> 00:52:10.480
+move the agent to to the bright like to
+the Suite X, right.
+
+533bff1e-eb05-468b-a6f8-f77b34d75b66-0
+00:52:10.480 --> 00:52:12.720
+This is the main things to do for our
+from our side.
+
+19048114-8ce8-4bb1-999a-3f6cfd1bfaae-0
+00:52:13.040 --> 00:52:15.602
+And other than that, yeah,
+the challenges that we are just
+
+19048114-8ce8-4bb1-999a-3f6cfd1bfaae-1
+00:52:15.602 --> 00:52:16.080
+discussing.
+
+ccd5cf14-acda-49c0-9823-27a581b7e4d9-0
+00:52:17.280 --> 00:52:23.057
+So our first step would be that move a
+copy of your agent into the Sultex, right,
+
+ccd5cf14-acda-49c0-9823-27a581b7e4d9-1
+00:52:23.057 --> 00:52:23.480
+right.
+
+c2df9a5f-9641-4bbf-92a6-665c912d150a-0
+00:52:24.160 --> 00:52:28.413
+And don't move,
+don't move it like make a copy of it into
+
+c2df9a5f-9641-4bbf-92a6-665c912d150a-1
+00:52:28.413 --> 00:52:30.760
+Sultex and try to invoke, right.
+
+56a27e31-0ebf-4e33-b797-1acf9947f592-0
+00:52:31.040 --> 00:52:34.640
+And in your instructions,
+you are specifying some markdown, right?
+
+92157bd9-58fa-4696-aa77-ff67ad5649ac-0
+00:52:36.640 --> 00:52:41.762
+We are specifying some markdown,
+markdown to display the responses like
+
+92157bd9-58fa-4696-aa77-ff67ad5649ac-1
+00:52:41.762 --> 00:52:47.524
+this or that if if the Jasons come in the
+response render this in render in this
+
+92157bd9-58fa-4696-aa77-ff67ad5649ac-2
+00:52:47.524 --> 00:52:47.880
+form.
+
+cc9c577c-605f-42c3-981a-0dea71781bb9-0
+00:52:48.120 --> 00:52:50.640
+Are you doing Oh yes, something like that,
+yes, right, yes.
+
+693c9013-5633-4b0f-86dc-91b41a303412-0
+00:52:50.760 --> 00:52:55.916
+So now you are doing through assist,
+you need to modify your instructions as
+
+693c9013-5633-4b0f-86dc-91b41a303412-1
+00:52:55.916 --> 00:52:56.720
+well, right.
+
+ae38ca5a-b9e2-4f35-a7e9-11c42cdd6dce-0
+00:52:57.640 --> 00:53:04.090
+Oh, another thing OK,
+is you need to register your Brite to
+
+ae38ca5a-b9e2-4f35-a7e9-11c42cdd6dce-1
+00:53:04.090 --> 00:53:06.240
+register with Brite.
+
+c9fa7233-9b3b-4736-bd85-a45eeb38bfcc-0
+00:53:06.920 --> 00:53:13.093
+I think you haven't done it for your
+agent because it is not requirement if we
+
+c9fa7233-9b3b-4736-bd85-a45eeb38bfcc-1
+00:53:13.093 --> 00:53:15.360
+are doing in a raw way right?
+
+d0908294-db36-466b-be48-d70ac7b77c6c-0
+00:53:15.760 --> 00:53:20.400
+And there is Ald toggle to get your agent
+available.
+
+52436fa7-37db-404f-a2b8-430fe6f4d6e9-0
+00:53:20.720 --> 00:53:25.787
+So one is the register with bright,
+another is 1 raises GR request which will
+
+52436fa7-37db-404f-a2b8-430fe6f4d6e9-1
+00:53:25.787 --> 00:53:30.400
+be a feature flag request pose that only
+your agent will be available.
+
+4cbf641f-14fe-432c-ba4e-ff6eefaeaf0a-0
+00:53:30.800 --> 00:53:36.400
+Another thing is you you need to do is
+the intent classifier means how you will
+
+4cbf641f-14fe-432c-ba4e-ff6eefaeaf0a-1
+00:53:36.400 --> 00:53:38.920
+identify your agent will be invoked.
+
+8fdbf31e-8dc0-44b3-adef-041c56e1d7f1-0
+00:53:39.200 --> 00:53:42.560
+For that you need to do this intent
+classifier.
+
+45533655-b806-41a7-9e92-66bfd0ff9dae-0
+00:53:42.560 --> 00:53:45.297
+If you see it here,
+my agent is lying it here,
+
+45533655-b806-41a7-9e92-66bfd0ff9dae-1
+00:53:45.297 --> 00:53:46.520
+so you need to do it.
+
+db1c66f1-faf2-46e9-991c-1a65c6c4266d-0
+00:53:47.680 --> 00:53:51.195
+I I can share the technical process or
+how to raise a PR for it,
+
+db1c66f1-faf2-46e9-991c-1a65c6c4266d-1
+00:53:51.195 --> 00:53:52.440
+I'll share it with you.
+
+cda83a14-d099-4fc8-8664-150b3248a177-0
+00:53:52.800 --> 00:53:56.700
+And once you do that,
+suppose that only your agent will be
+
+cda83a14-d099-4fc8-8664-150b3248a177-1
+00:53:56.700 --> 00:53:59.080
+available through the bright assist.
+
+3ace3c9a-a8e2-4dec-8da6-e63f499c1139-0
+00:54:01.200 --> 00:54:02.880
+OK, no.
+
+0843d7a9-ba98-4e35-bc7b-a08fe1c1add9-0
+00:54:04.680 --> 00:54:09.563
+So I remember Vicky Ankur was asking me
+for adding it to the BCP also like for
+
+0843d7a9-ba98-4e35-bc7b-a08fe1c1add9-1
+00:54:09.563 --> 00:54:12.530
+adding it adding this Ava our our agent
+to BCP,
+
+0843d7a9-ba98-4e35-bc7b-a08fe1c1add9-2
+00:54:12.530 --> 00:54:17.600
+he was asking me have you registered it
+through Bright or not and all that stuff.
+
+3991b27b-ed0c-4893-8d58-b658fc46a6dd-0
+00:54:18.280 --> 00:54:22.181
+And now I understand if we do not go
+through this step,
+
+3991b27b-ed0c-4893-8d58-b658fc46a6dd-1
+00:54:22.181 --> 00:54:27.615
+then we can't even effectively or we
+would have to change the approach on how
+
+3991b27b-ed0c-4893-8d58-b658fc46a6dd-2
+00:54:27.615 --> 00:54:28.800
+to add it to BCP.
+
+b043ced5-2c5d-4226-b028-29547e555d9f-0
+00:54:28.800 --> 00:54:34.480
+Also because Ankur is expecting that our
+agent is right now registered there in
+
+b043ced5-2c5d-4226-b028-29547e555d9f-1
+00:54:34.480 --> 00:54:37.889
+Bright,
+which is not right because if we go put
+
+b043ced5-2c5d-4226-b028-29547e555d9f-2
+00:54:37.889 --> 00:54:41.440
+it in Suite X and then only it will be
+available.
+
+2c7d3c5c-df70-451b-a248-4fc317805e71-0
+00:54:45.600 --> 00:54:51.120
+So these two steps are integrated with
+each other or we will have to ask Ankur
+
+2c7d3c5c-df70-451b-a248-4fc317805e71-1
+00:54:51.120 --> 00:54:56.501
+to give us an exception on Ava that this
+is not something that is registered
+
+2c7d3c5c-df70-451b-a248-4fc317805e71-2
+00:54:56.501 --> 00:54:57.480
+through Brite.
+
+bf1b2a29-c12d-4070-8ae0-dce7406454a9-0
+00:54:57.480 --> 00:54:59.400
+This is a separate thing like a job
+genius.
+
+4f2962fa-d68d-4446-8639-e87785f8fab9-0
+00:54:59.400 --> 00:55:01.640
+Job genius is as as it is completely
+separate.
+
+8cb9950c-576c-4d16-84c6-1f5de2e96ced-0
+00:55:02.760 --> 00:55:06.000
+So interview scorecard as well is not
+registered with right.
+
+91bdc704-fb69-4b92-8512-9f62ddb35a26-0
+00:55:06.680 --> 00:55:11.527
+Also intent classification is not done
+for the interview scorecard as well
+
+91bdc704-fb69-4b92-8512-9f62ddb35a26-1
+00:55:11.527 --> 00:55:16.440
+because that is not required if we are
+interacting directly with our agent.
+
+0d3172f4-4fa1-46f0-b966-07a9c7b6e4d0-0
+00:55:18.400 --> 00:55:22.305
+And this intent classification is
+something that is,
+
+0d3172f4-4fa1-46f0-b966-07a9c7b6e4d0-1
+00:55:22.305 --> 00:55:25.400
+that is allow us to find our agent, right?
+
+c482cc0e-0bf5-4f4b-8124-b3eece3d035d-0
+00:55:25.400 --> 00:55:30.160
+That is at the recruiting level,
+like not just at one page level, right?
+
+ffc4fabc-7a5f-49b8-ac61-cb5fe27d0ba9-0
+00:55:30.200 --> 00:55:32.200
+So that is specific to the agent level.
+
+d7d304da-929f-4fb7-ac00-97cd5bf72367-0
+00:55:32.200 --> 00:55:34.200
+No, no,
+that is specific to the agent level.
+
+70f277d3-9b29-43bb-820e-7744bbf57c54-0
+00:55:34.200 --> 00:55:40.000
+If you want to invoke specific agent,
+right, for each agent, you need to do it.
+
+1b0d22b0-0d5d-4298-a430-51fbf4c9ccbe-0
+00:55:40.080 --> 00:55:42.960
+If you see it here and there is a
+challenge understood.
+
+79875a6b-a655-41ac-b889-37b3dd838f87-0
+00:55:42.960 --> 00:55:46.681
+But what that will do is effectively is
+that if you call,
+
+79875a6b-a655-41ac-b889-37b3dd838f87-1
+00:55:46.681 --> 00:55:49.890
+if you ask for job recommendations, our,
+our API,
+
+79875a6b-a655-41ac-b889-37b3dd838f87-2
+00:55:49.890 --> 00:55:52.200
+our AI provides job recommendations.
+
+c80bc0aa-7112-47c2-aae2-e745f7e104d5-0
+00:55:52.440 --> 00:56:02.126
+So if you ask it even on the talent pool
+then also it will respond like no no you
+
+c80bc0aa-7112-47c2-aae2-e745f7e104d5-1
+00:56:02.126 --> 00:56:07.560
+need to add intent classifier for your
+agent.
+
+6f8869c3-a840-435a-87a3-de09d78a44ec-0
+00:56:09.800 --> 00:56:13.000
+This is the global tenant ID right?
+
+3231a780-7bd6-4e4b-aa04-c8132e11684e-0
+00:56:13.560 --> 00:56:16.954
+If if it should be available for each
+tenant,
+
+3231a780-7bd6-4e4b-aa04-c8132e11684e-1
+00:56:16.954 --> 00:56:22.120
+it should be null like empty good right
+and agent and the agent name.
+
+1adc4627-c8d7-4395-b0fa-4f7fa85ff761-0
+00:56:22.600 --> 00:56:26.840
+Then only it will find your agent through
+bright assist.
+
+3c582afe-47c8-4355-ae17-e9f800b9799e-0
+00:56:27.560 --> 00:56:28.480
+So there are two things.
+
+8abae353-aa38-42e8-9f4b-425406fbe8b1-0
+00:56:28.480 --> 00:56:35.598
+One is you need to add the examples like
+I showed it to you examples here, right,
+
+8abae353-aa38-42e8-9f4b-425406fbe8b1-1
+00:56:35.598 --> 00:56:40.200
+that if you receive anything specific to
+this right.
+
+f4e389e8-4bb3-4760-9a86-ab45e9fcb6a9-0
+00:56:40.560 --> 00:56:44.440
+Another thing is to you need to do the
+intent classification.
+
+534bd771-4362-4246-af2d-1f892925ef7f-0
+00:56:47.080 --> 00:56:49.680
+See this is a golden phrases testing.
+
+f811d543-c8f9-4abf-abd6-9e31a4d10658-0
+00:56:50.160 --> 00:56:52.160
+If I select it here, right?
+
+ece7d8fe-7ba5-4be3-bbc5-6afe012fd61a-0
+00:56:52.160 --> 00:57:15.536
+Let me try agent, right,
+So here what you do do is add your
+
+ece7d8fe-7ba5-4be3-bbc5-6afe012fd61a-1
+00:57:15.536 --> 00:57:21.380
+phrases, right?
+
+514fceb1-a2af-415c-92be-7059dd885965-0
+00:57:29.980 --> 00:57:31.140
+So this will be added.
+
+2cadff0e-082d-4635-b800-6589bfbe3c81-0
+00:57:31.140 --> 00:57:35.764
+So whenever you type something similar to
+this through assist,
+
+2cadff0e-082d-4635-b800-6589bfbe3c81-1
+00:57:35.764 --> 00:57:38.480
+it will eventually invoke your agent.
+
+e4d93547-136c-448d-b995-f8d74f2be879-0
+00:57:40.880 --> 00:57:45.560
+This is basically a training that you are
+giving right, right, right.
+
+86b6cfbd-41cd-40c2-8276-6153f7c4fd84-0
+00:57:45.600 --> 00:57:49.405
+Now by by by by doing this,
+if I say create a talent pool on any page
+
+86b6cfbd-41cd-40c2-8276-6153f7c4fd84-1
+00:57:49.405 --> 00:57:52.721
+inside recruiting,
+it will it will trigger Yeah, yeah, yeah,
+
+86b6cfbd-41cd-40c2-8276-6153f7c4fd84-2
+00:57:52.721 --> 00:57:53.320
+yeah, yeah.
+
+98ba42dc-263f-4ac9-8c41-0e7030f40749-0
+00:57:54.080 --> 00:57:56.560
+That's eventually it should be like this
+only, right?
+
+13bf8a97-4578-4373-951a-d3eb58e839c2-0
+00:57:56.560 --> 00:58:02.179
+It should not specific because the MFE
+purpose is it should be available on each
+
+13bf8a97-4578-4373-951a-d3eb58e839c2-1
+00:58:02.179 --> 00:58:05.440
+and every page, not on a specific page,
+right?
+
+0d5af007-a846-46fa-82fd-1412a8cbdb70-0
+00:58:05.440 --> 00:58:06.280
+That's what I'm trying to say.
+
+99105781-1c3c-4b06-8ad3-c9484dd5dabf-0
+00:58:06.280 --> 00:58:07.920
+So OK, so this will make it available.
+
+882e6a36-173a-404b-9f03-9d9ca437c32d-0
+00:58:07.920 --> 00:58:11.806
+It is it will make it like whole
+recruiting in any recruiting and
+
+882e6a36-173a-404b-9f03-9d9ca437c32d-1
+00:58:11.806 --> 00:58:14.280
+application within recruiting application.
+
+d8236513-bf0c-4e11-ba79-59e036caf081-0
+00:58:14.280 --> 00:58:17.417
+If you call this, oh,
+I'm looking for search for job or I'm
+
+d8236513-bf0c-4e11-ba79-59e036caf081-1
+00:58:17.417 --> 00:58:20.816
+looking to create a pool,
+it will trigger it irrespective of the
+
+d8236513-bf0c-4e11-ba79-59e036caf081-2
+00:58:20.816 --> 00:58:22.960
+page on which right, right, right, right.
+
+7b8b9fae-14bd-4261-8cfb-a2c43dd58acd-0
+00:58:25.360 --> 00:58:29.624
+If I simply move this MFE to some another
+page and I simply write this instruction,
+
+7b8b9fae-14bd-4261-8cfb-a2c43dd58acd-1
+00:58:29.624 --> 00:58:30.640
+it will work for me.
+
+5ea406cb-88f9-4f14-9aea-26b309858a87-0
+00:58:30.640 --> 00:58:31.960
+Got it.
+
+ad9e06b6-8d9a-40c5-8fd5-85acabc28cc8-0
+00:58:33.960 --> 00:58:39.910
+So it it knows like what agent,
+it'll just use another agent that we have
+
+ad9e06b6-8d9a-40c5-8fd5-85acabc28cc8-1
+00:58:39.910 --> 00:58:41.840
+that with those intents.
+
+9f1ac5ec-e95e-4a50-8592-3f47ed440391-0
+00:58:43.240 --> 00:58:44.880
+Like right now it's using a talent pool
+agent.
+
+5f8d556a-3bab-4350-a220-c34cb22d5a61-0
+00:58:44.880 --> 00:58:50.642
+But if I said I need a job, for example,
+and and that is connect like that intent
+
+5f8d556a-3bab-4350-a220-c34cb22d5a61-1
+00:58:50.642 --> 00:58:55.000
+is through Ava's agent,
+it'll know to just go to Ava's agent.
+
+b4974a6d-8c17-4997-a1b7-afa4d06862ef-0
+00:58:56.480 --> 00:59:02.754
+Yeah, in our in our agent, in our agent,
+we will mention that our intent is job
+
+b4974a6d-8c17-4997-a1b7-afa4d06862ef-1
+00:59:02.754 --> 00:59:04.480
+recommendation, right.
+
+cb2cb2a0-07e0-46cf-a4fc-9d9ab2514508-0
+00:59:05.520 --> 00:59:08.843
+So once we mentioned that, then anytime,
+anywhere it sees that OK,
+
+cb2cb2a0-07e0-46cf-a4fc-9d9ab2514508-1
+00:59:08.843 --> 00:59:12.018
+I'm looking for a job,
+then our agent will get triggered and it
+
+cb2cb2a0-07e0-46cf-a4fc-9d9ab2514508-2
+00:59:12.018 --> 00:59:14.400
+will ask for job recommendations from our
+side.
+
+bb33372d-87aa-41f5-9944-0dd6f9478c44-0
+00:59:15.640 --> 00:59:19.160
+But yeah,
+the consent part is still up in the air.
+
+8837fa94-7dc1-4936-ae14-66394df53070-0
+00:59:19.160 --> 00:59:20.040
+In that case.
+
+1ebaa66b-7d3d-41ce-b7ad-15c07da30999-0
+00:59:21.720 --> 00:59:25.480
+It also might be weird if it's on the on
+like talent blue page for example.
+
+963db69d-d1fa-49a8-aafd-e92261181a78-0
+00:59:26.440 --> 00:59:30.120
+And then you say find me a job.
+
+1b89ad6a-2979-4872-9592-8d2f080a7e9a-0
+00:59:31.280 --> 00:59:33.226
+Well, actually,
+actually I guess that's the candidate's
+
+1b89ad6a-2979-4872-9592-8d2f080a7e9a-1
+00:59:33.226 --> 00:59:33.400
+side.
+
+5fc2b3ee-b113-47f3-bf62-3fb8a26b0134-0
+00:59:33.480 --> 00:59:35.440
+So maybe maybe it won't do that.
+
+b5aa9989-d2b5-4fa5-ab15-7f1bde0fefe0-0
+00:59:36.320 --> 00:59:39.763
+I was just trying to think of like it'll
+then prompt consent,
+
+b5aa9989-d2b5-4fa5-ab15-7f1bde0fefe0-1
+00:59:39.763 --> 00:59:44.040
+which is kind of weird because it just
+let you do a bunch of things or yeah,
+
+b5aa9989-d2b5-4fa5-ab15-7f1bde0fefe0-2
+00:59:44.040 --> 00:59:46.040
+there is lots of education internal.
+
+1ffce3f0-0c51-4a54-b99d-8e8c6caab224-0
+00:59:47.040 --> 00:59:50.200
+Even if you're an internal candidate,
+don't you have to agree to that first
+
+1ffce3f0-0c51-4a54-b99d-8e8c6caab224-1
+00:59:50.200 --> 00:59:51.240
+consent that you have in?
+
+1f36850f-028d-4e24-a69a-3c8e8e6328ea-0
+00:59:51.280 --> 00:59:54.815
+Yeah, yeah, yeah, you would right as well,
+even if that, that's what they,
+
+1f36850f-028d-4e24-a69a-3c8e8e6328ea-1
+00:59:54.815 --> 00:59:58.727
+even if you're an internal candidate yeah
+like if you wanted to find internal jobs
+
+1f36850f-028d-4e24-a69a-3c8e8e6328ea-2
+00:59:58.727 --> 01:00:00.801
+here,
+like it just did a bunch of stuff and
+
+1f36850f-028d-4e24-a69a-3c8e8e6328ea-3
+01:00:00.801 --> 01:00:02.639
+then it's gonna prompt you for consent.
+
+33979dd0-070a-4f7d-bba9-78bac33d970c-0
+01:00:03.520 --> 01:00:06.240
+Right, right, right, right, right, right,
+right, right.
+
+331c0c43-f2a6-43a4-a6ee-e26ffe59ca25-0
+01:00:06.720 --> 01:00:09.618
+I mean, that's, that's the that again,
+I think consent is a,
+
+331c0c43-f2a6-43a4-a6ee-e26ffe59ca25-1
+01:00:09.618 --> 01:00:13.182
+a great example that we could bring up to
+the bright SDK team to say, hey,
+
+331c0c43-f2a6-43a4-a6ee-e26ffe59ca25-2
+01:00:13.182 --> 01:00:14.560
+how are you solving for this?
+
+f504c45f-999e-4fd6-8580-aac180621dbb-0
+01:00:14.560 --> 01:00:17.744
+If you've not we,
+we have our own solution, but it's,
+
+f504c45f-999e-4fd6-8580-aac180621dbb-1
+01:00:17.744 --> 01:00:21.400
+it doesn't look like how they would like
+it to look like cuz.
+
+68020aec-c29d-46e8-993c-a91ab210a826-0
+01:00:21.920 --> 01:00:26.760
+This this exact bright assist is what you
+guys would currently have in pro.
+
+980e55e4-2090-492a-8c81-7ccab06a5926-0
+01:00:26.760 --> 01:00:31.542
+If you guys have ever used like bright in
+pro at the top where it's like how can I
+
+980e55e4-2090-492a-8c81-7ccab06a5926-1
+01:00:31.542 --> 01:00:36.037
+help you right it you could type in
+anything anything about pig simply I type
+
+980e55e4-2090-492a-8c81-7ccab06a5926-2
+01:00:36.037 --> 01:00:39.840
+it generate employee statement and I got
+some instructions right?
+
+165bf1f3-064a-4bc2-bf08-5cbdf65f2b7b-0
+01:00:40.160 --> 01:00:41.000
+Yep, Yep, Yep.
+
+065a1598-8607-4248-95cb-17137f6a713a-0
+01:00:41.080 --> 01:00:42.600
+But that's I haven't implemented any.
+
+adcbef74-7e45-4c7f-939f-1ab1d4b9fd67-0
+01:00:45.040 --> 01:00:47.520
+Yeah, Yep.
+
+0f949218-5f8a-4cc9-8d1c-384c68cad9cf-0
+01:00:47.520 --> 01:00:51.225
+And even though you're like in recruiting,
+you could interact with this and ask it
+
+0f949218-5f8a-4cc9-8d1c-384c68cad9cf-1
+01:00:51.225 --> 01:00:52.520
+about things outside of that.
+
+56091b2b-a4b6-49cd-8c75-197e41377671-0
+01:00:52.520 --> 01:00:54.200
+That's the whole point of this thing.
+
+b223f29d-9334-4b37-87cf-72e79c941f30-0
+01:00:54.400 --> 01:00:59.189
+But it just means that there's a lot of
+things that we would have to do to get it
+
+b223f29d-9334-4b37-87cf-72e79c941f30-1
+01:00:59.189 --> 01:01:01.760
+in there to to make it unified in this
+way.
+
+13475634-7db8-4a64-ae5d-f299ed4863f4-0
+01:01:02.000 --> 01:01:06.449
+And I guess now I understand better about
+when you was saying like a couple of
+
+13475634-7db8-4a64-ae5d-f299ed4863f4-1
+01:01:06.449 --> 01:01:09.434
+weeks ago,
+like we as the recruiting product need to
+
+13475634-7db8-4a64-ae5d-f299ed4863f4-2
+01:01:09.434 --> 01:01:13.319
+have a stance on how we are wanna doing,
+we wanna do the bright SDK.
+
+c893f89f-1981-497f-9953-ce448fad5c92-0
+01:01:13.320 --> 01:01:18.040
+Cuz it's,
+it's not just a per agent conversation.
+
+66e9b192-13c6-4471-ab55-b3e7981a4299-0
+01:01:18.440 --> 01:01:21.880
+Cuz if you put it here,
+it's kind of universal for all recruiting.
+
+51bc7798-b0bf-47c6-b09a-ba9f6831de6c-0
+01:01:21.880 --> 01:01:23.480
+It shouldn't just be on one page.
+
+c9b3547b-42ff-4912-9e7a-a5830bf99ff4-0
+01:01:23.480 --> 01:01:29.332
+It should be on any of the pages in
+recruiting and what it should be able to
+
+c9b3547b-42ff-4912-9e7a-a5830bf99ff4-1
+01:01:29.332 --> 01:01:29.560
+do.
+
+31ccf7ac-4251-42c9-a3b3-d14ca2a89e76-0
+01:01:29.800 --> 01:01:35.217
+So if it's just pools right now and there,
+it's probably not super helpful to put it
+
+31ccf7ac-4251-42c9-a3b3-d14ca2a89e76-1
+01:01:35.217 --> 01:01:40.380
+to put this bright assist MFE everywhere
+because the only thing it'll do is tell
+
+31ccf7ac-4251-42c9-a3b3-d14ca2a89e76-2
+01:01:40.380 --> 01:01:41.400
+you about pools.
+
+57f15ce3-e480-4f99-aa69-472c91af5ac5-0
+01:01:41.680 --> 01:01:43.440
+It won't tell you about anything else.
+
+2c046a1c-4fe6-4138-966f-2ad8ac9664f3-0
+01:01:43.600 --> 01:01:47.360
+So that's another thing.
+
+4ac89f84-a9df-44bb-be61-a21df393d39d-0
+01:01:47.960 --> 01:01:48.800
+That's another thing, too.
+
+88502882-97b0-4204-bfd3-497d4c48061f-0
+01:01:48.840 --> 01:01:53.680
+Like what team is going to move it to be?
+
+a015502a-0781-4035-afdb-7afcabd653b8-0
+01:01:54.400 --> 01:01:56.000
+I mean, across all recruiting.
+
+cae8fe78-008a-4c3f-8b5e-d422d53f73ed-0
+01:01:56.000 --> 01:01:56.320
+That's right.
+
+80660152-d8f8-4729-8b91-268debb6586b-0
+01:01:58.320 --> 01:01:58.920
+It's this page.
+
+813c4e19-1176-4af7-8bb7-b01edb8becf3-0
+01:01:59.000 --> 01:02:03.280
+It's off to me now.
+
+090adace-f960-48cd-bc8a-0c293cbb7a14-0
+01:02:04.800 --> 01:02:07.320
+We put it up, although I can't hear you.
+
+0155af50-2923-4038-bc14-e321a71c346f-0
+01:02:07.360 --> 01:02:08.960
+You sound really far away.
+
+a114c86a-ff88-48f1-b08f-9ad4a676c8b4-0
+01:02:09.120 --> 01:02:10.720
+Yeah, your voice is breaking.
+
+076f2767-4bd0-48da-9741-e05c2a9bd6cd-0
+01:02:13.920 --> 01:02:14.520
+Hello.
+
+2ff8a8b9-5a93-4e27-98f4-6ac07e9c5813-0
+01:02:14.520 --> 01:02:15.200
+Hello.
+
+48bb0433-05ea-4915-ab11-9efb1941c21a-0
+01:02:17.280 --> 01:02:19.840
+You might hear us, but we can't hear you.
+
+7e2eb806-1418-42a1-abb2-7e562c6a3818-0
+01:02:27.360 --> 01:02:29.240
+Any other questions related to this?
+
+a4ec723d-d21d-4d11-9368-5ec53a6723a6-0
+01:02:29.240 --> 01:02:31.600
+Maybe if you need any other.
+
+572beb73-0073-44f6-9df8-a905700dbe8c-0
+01:02:32.200 --> 01:02:38.200
+If you need PRS that I raised for this
+specific task, I can share it with you.
+
+92a2579e-0d31-467c-99f6-b3c09fd11a96-0
+01:02:38.200 --> 01:02:38.560
+Abhi.
+
+3962f9dd-9324-4235-93a2-8c10c8fad9ff-0
+01:02:39.520 --> 01:02:44.704
+Everything is into rec preview but there
+are few things that I did on the bright
+
+3962f9dd-9324-4235-93a2-8c10c8fad9ff-1
+01:02:44.704 --> 01:02:45.280
+hub side.
+
+d2ccb638-0052-4dad-839d-f579a0d69453-0
+01:02:45.920 --> 01:02:46.920
+I'll share that.
+
+11dbdcc3-da09-439b-ba20-d8ca16f012a4-0
+01:02:47.200 --> 01:02:50.120
+If you required the same,
+just let me know.
+
+9519531f-72e3-4466-a4f6-270cd846e39d-0
+01:02:51.280 --> 01:02:51.520
+OK?
+
+f3eb793e-62f8-4717-83eb-245771786a0b-0
+01:02:53.280 --> 01:02:53.560
+Sure.
+
+1f1c2578-4650-4d5c-88d1-4fdf2ac6bd6d-0
+01:02:53.640 --> 01:02:54.320
+We will let you know.
+
+bf616dd2-6810-4f86-812c-52978aaa9fab-0
+01:02:54.440 --> 01:02:54.880
+Yes.
+
+7bfd3805-0e86-4d16-821a-136ea055637e-0
+01:02:55.120 --> 01:02:55.480
+Thank you.
+
+aae09d37-ad9f-434a-b163-a8280c34ab8f-0
+01:02:55.480 --> 01:02:57.680
+Thank you so much, Nasif,
+for going through this.
+
+458e22fa-e295-437b-9cc8-2356d6acda69-0
+01:02:58.160 --> 01:02:59.080
+Josh, are you back?
+
+cd4e3076-0ab0-4a00-bbac-47fcd5fbb8ea-0
+01:02:59.560 --> 01:03:04.680
+Since Josh was saying something,
+he put his question in the chat.
+
+7c0bede7-0635-4a3a-af09-4746aa0d57cf-0
+01:03:04.680 --> 01:03:09.080
+His question was about what team was
+going to be able to move it.
+
+96f17d01-dd57-45ac-8d8e-0e74872151f8-0
+01:03:10.000 --> 01:03:16.800
+What team is going to be the one to move
+it to be for all recruiting pages.
+
+39677472-7161-42a4-bc5d-81607e6a389d-0
+01:03:18.200 --> 01:03:19.120
+Yeah, it's a great question.
+
+2ae20e8f-039d-4b5a-8713-17d4dfd17e0e-0
+01:03:19.120 --> 01:03:19.600
+I don't know.
+
+7687d9e1-0488-4fbe-91e6-f5592ca3ffae-0
+01:03:20.160 --> 01:03:22.280
+I don't have an answer for you about that
+right now.
+
+a8aef5c2-d90f-40ad-a646-ef42082c04fc-0
+01:03:27.880 --> 01:03:33.629
+Yeah, page of recruiting,
+I don't know like if the speaker,
+
+a8aef5c2-d90f-40ad-a646-ef42082c04fc-1
+01:03:33.629 --> 01:03:36.600
+but yeah, that was my question.
+
+5aa0fe6a-290f-4a1e-a5f0-3c32682a3289-0
+01:03:36.600 --> 01:03:39.227
+Like who's gonna,
+what team is the one that's gonna move it
+
+5aa0fe6a-290f-4a1e-a5f0-3c32682a3289-1
+01:03:39.227 --> 01:03:39.840
+for all pages?
+
+ae71dc55-2cf2-4bcc-86a5-50ce461122a1-0
+01:03:39.840 --> 01:03:44.666
+Because otherwise if we implement this,
+then we're just copying and then putting
+
+ae71dc55-2cf2-4bcc-86a5-50ce461122a1-1
+01:03:44.666 --> 01:03:45.560
+it on our page.
+
+fef024e5-a149-489f-b5bf-1131e8cab925-0
+01:03:45.560 --> 01:03:49.200
+But eventually it's gonna have to be
+moved for everybody, right?
+
+a328d434-1d38-44e3-b144-a476ee5f231a-0
+01:03:49.360 --> 01:03:57.160
+If we start adding even more,
+more like agents to the SDK, right?
+
+d424323f-e7ec-407a-998d-421fb3b9aad8-0
+01:03:57.240 --> 01:03:57.720
+Right.
+
+6d8f1d84-ba2a-4d22-a178-3a0680afeebc-0
+01:03:57.800 --> 01:04:01.600
+Well, cuz even when I say our page,
+our page is like the job board.
+
+3c617c88-0d2e-4cc9-8219-ab7e638e776f-0
+01:04:02.080 --> 01:04:05.840
+It's not really like internal really
+anywhere, right?
+
+2809c92a-d537-4b3e-8584-4ae5dc67d2fd-0
+01:04:05.840 --> 01:04:07.840
+Ours is the job board.
+
+73311e4e-3640-434f-9b34-218f92aeb5f2-0
+01:04:09.000 --> 01:04:14.397
+So we're talking about putting this
+brightest MFE on the job board page,
+
+73311e4e-3640-434f-9b34-218f92aeb5f2-1
+01:04:14.397 --> 01:04:16.320
+like every job board page.
+
+11070933-2253-4301-8e46-72a49e74ee4f-0
+01:04:19.120 --> 01:04:26.520
+I think the first step should be like to
+move our agents to the respective area to
+
+11070933-2253-4301-8e46-72a49e74ee4f-1
+01:04:26.520 --> 01:04:30.800
+get it accessible through Bright Assist,
+right?
+
+442653bb-ecc8-434b-8a0f-bd6e32f59f7c-0
+01:04:30.800 --> 01:04:36.424
+Maybe like we have Eva chat,
+Write Job genius and maybe Talent pool
+
+442653bb-ecc8-434b-8a0f-bd6e32f59f7c-1
+01:04:36.424 --> 01:04:39.320
+and the interview scorecard, right?
+
+2c72e534-ad06-43a8-8df1-7dacd143f709-0
+01:04:39.640 --> 01:04:44.452
+If if we do it for all these four agents
+as well,
+
+2c72e534-ad06-43a8-8df1-7dacd143f709-1
+01:04:44.452 --> 01:04:52.249
+then we can move it to the global page or
+maybe the layout page and like and for
+
+2c72e534-ad06-43a8-8df1-7dacd143f709-2
+01:04:52.249 --> 01:04:58.313
+other set of instructions, if any,
+if the user input for that,
+
+2c72e534-ad06-43a8-8df1-7dacd143f709-3
+01:04:58.313 --> 01:05:05.339
+we can simply add a guardrails in our
+agent that I'm specific to do this
+
+2c72e534-ad06-43a8-8df1-7dacd143f709-4
+01:05:05.339 --> 01:05:06.880
+particular task.
+
+c22bc130-6554-44da-bc74-93a308013241-0
+01:05:07.360 --> 01:05:12.766
+So we can we can mention that thing and
+like like maybe we can,
+
+c22bc130-6554-44da-bc74-93a308013241-1
+01:05:12.766 --> 01:05:18.003
+I can check with Deepti,
+but maybe she have some plan in this
+
+c22bc130-6554-44da-bc74-93a308013241-2
+01:05:18.003 --> 01:05:20.960
+context, but I'm not sure about it.
+
+9171dc9a-b2b7-479a-bcfa-9f2decc44cd8-0
+01:05:23.680 --> 01:05:29.697
+It's all depend on the availability and
+as well as the what we are picking up
+
+9171dc9a-b2b7-479a-bcfa-9f2decc44cd8-1
+01:05:29.697 --> 01:05:32.320
+next depend on that thing as well.
+
+192d6b75-ae58-4ee1-a2c5-380a48d67c55-0
+01:05:34.720 --> 01:05:48.690
+All right, Do we have anything else?
+
+176294ce-c053-4bf5-8eb2-39d659203639-0
+01:05:50.890 --> 01:05:54.210
+I don't have any more questions.
+
+db9b1c27-c29b-4fe6-89b7-ea839ce53a63-0
+01:05:54.490 --> 01:05:56.410
+Yeah,
+we missed the stand up Vicki and Josh.
+
+07b4626f-9f0e-438d-b2d0-010bb7d5ac4c-0
+01:05:57.520 --> 01:05:58.200
+Yeah, I know.
+
+ae94580a-b0ca-47bc-8008-72a1138a40b9-0
+01:05:58.200 --> 01:06:03.104
+But this this was a good conversation
+though this we've we've not had any like
+
+ae94580a-b0ca-47bc-8008-72a1138a40b9-1
+01:06:03.104 --> 01:06:04.160
+SDK conversation.
+
+d95a0b60-c1c6-4f2c-91e7-c22503cd5063-0
+01:06:04.160 --> 01:06:06.240
+So this was very much needed for us.
+
+91cce778-49c2-4a8e-8560-ae095f27b371-0
+01:06:06.880 --> 01:06:07.440
+I agree.
+
+5a3f91f2-3ace-444e-a60a-be93f48dd191-0
+01:06:09.080 --> 01:06:10.440
+OK, it was much needed.
+
+70a1899c-b740-4243-b7d3-88e528633fc8-0
+01:06:10.480 --> 01:06:11.040
+Yes.
+
+c920fedb-a541-4e65-a590-18cc2f5fa995-0
+01:06:14.880 --> 01:06:16.840
+All right, all right.
+
+b42ce965-d9d7-4b79-9fb4-1bc55e3d611d-0
+01:06:17.760 --> 01:06:21.625
+Anything else if I guess if we have any
+questions, we'll we'll be coming to you,
+
+b42ce965-d9d7-4b79-9fb4-1bc55e3d611d-1
+01:06:21.625 --> 01:06:21.960
+Naseeb.
+
+913bbcd3-ffe9-4b08-9603-7ee9387fda5e-0
+01:06:22.560 --> 01:06:26.946
+But for me though,
+my take away is the next time that we
+
+913bbcd3-ffe9-4b08-9603-7ee9387fda5e-1
+01:06:26.946 --> 01:06:30.640
+have this Bright call with the Bright SDK
+team,
+
+913bbcd3-ffe9-4b08-9603-7ee9387fda5e-2
+01:06:30.640 --> 01:06:36.334
+that's probably one of the things I'm
+gonna bring up is the whole consent
+
+913bbcd3-ffe9-4b08-9603-7ee9387fda5e-3
+01:06:36.334 --> 01:06:37.720
+portion of things.
+
+600289c5-c07b-4e01-807e-b959f4733a47-0
+01:06:37.720 --> 01:06:41.120
+So I appreciate that.
+
+1740d1e6-45ce-47e8-b47c-14c9b531c13c-0
+01:06:46.080 --> 01:06:46.520
+All right.
+
+4041981d-04db-4b0d-84ba-929648eaed15-0
+01:06:46.680 --> 01:06:47.800
+OK, thank you.
+
+b94e8f11-d1b1-4a63-b04f-cd0fd849d4a4-0
+01:06:47.800 --> 01:06:49.600
+Yeah, yeah, thank you.
+
+364cb68a-cd2f-47a4-994e-28f92c2ea8f8-0
+01:06:49.600 --> 01:06:50.560
+Thank you so much, Steve.
+
+43eedf12-8537-4899-8f9c-c364905482b9-0
+01:06:51.000 --> 01:06:51.680
+Let's sync up.
+
+615506ba-cbe3-4f2a-8c7a-3e47eddb2dc8-0
+01:06:51.680 --> 01:06:53.080
+Vicky and Josh, we can sync up.
+
+a4be6d44-4afb-4771-85f3-6d6e3b2f1e84-0
+01:06:55.200 --> 01:06:55.360
+Yeah.
+
+eaa4cee0-8b0d-49e7-a51c-698d1ba713b9-0
+01:06:55.360 --> 01:06:55.880
+Oh, OK.
+
+440eb356-e95b-4f24-af2f-d1d2978b76d8-0
+01:06:56.240 --> 01:06:56.520
+OK.
+
+4037b125-feeb-424b-a3b9-6c21d785a15a-0
+01:06:56.600 --> 01:06:57.240
+Thank you, you guys.
+
+5d08b6ea-3d17-4f2c-acac-572c017c0444-0
+01:06:57.480 --> 01:06:57.560
+Bye.
+
+7a3fe2dc-70aa-43a3-b435-dd5bcffb5d78-0
+01:06:57.640 --> 01:06:58.040
+Bye.
