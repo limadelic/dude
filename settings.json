@@ -58,10 +58,9 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "model": "opus",
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.rb",
+    "command": "dude status_line",
     "padding": 0
   },
   "spinnerVerbs": {
