@@ -10,7 +10,7 @@ Reads and processes first unhandled message:
 1. Read first msg where `status == "new"` from `{cwd}/.claude/dudes/inbox.json`
 2. `TaskCreate` with msg content
 3. Set `status: "wip"` on that msg in inbox.json
-4. (later) Reply, remove the message, then re-arm watcher
+4. (later) Reply, remove the message, then start watching again
 
 ## Steps (to add to pub.md step 5)
 

@@ -1,0 +1,13 @@
+require 'rspec/core/rake_task'
+
+RSpec::Core::RakeTask.new(:spec)
+
+desc 'Build and install gem'
+task :install do
+  Dir.chdir(__dir__) do
+    sh 'gem build dude.gemspec'
+    sh 'gem install dude-*.gem && rm dude-*.gem'
+  end
+end
+
+task default: :spec

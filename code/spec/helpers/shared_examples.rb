@@ -1,0 +1,45 @@
+RSpec.shared_examples 'color threshold' do |low, mid, high|
+  it 'is green at low threshold' do
+    expect(output_at_percentage(low)).to include("\e[32m")
+  end
+
+  it 'is yellow at mid threshold' do
+    expect(output_at_percentage(mid)).to include("\e[38;5;226m")
+  end
+
+  it 'is red at high threshold' do
+    expect(output_at_percentage(high)).to include("\e[31m")
+  end
+end
+
+RSpec.shared_context 'StatusLine helpers' do
+  let(:session) { mock_session('opus', 25).to_json }
+  let(:activity) { mock_activity }
+
+  def mock_session(model = 'opus', context = 25)
+    {
+      'model' => { 'id' => "claude-#{model}-4-6" },
+      'context_window' => { 'used_percentage' => context }
+    }
+  end
+
+  def mock_activity(spend: 10.0, models: nil)
+    models ||= {
+      'claude-haiku-4-5' => { 'metrics' => { 'successful_requests' => 50, 'spend' => 0.5 } },
+      'claude-opus-4-6' => { 'metrics' => { 'successful_requests' => 30, 'spend' => 15.0 } },
+      'claude-sonnet-4-6' => { 'metrics' => { 'successful_requests' => 20, 'spend' => 4.0 } }
+    }
+    {
+      'results' => [{
+        'metrics' => { 'spend' => spend },
+        'breakdown' => { 'models' => models }
+      }]
+    }
+  end
+
+  def out(session_data, activity_data = activity, dudes_data = nil)
+    capture_output do
+      StatusLine::Runner.new(session_data, activity: activity_data, dudes: dudes_data).run
+    end
+  end
+end

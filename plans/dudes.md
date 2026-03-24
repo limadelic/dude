@@ -29,7 +29,7 @@ Enable independent Claude Code sessions to communicate with each other via file-
 
 ## Structure
 
-Inbox lives with the dude: `{project}/.claude/dude/inbox.json`. Global dudes dir is just symlinks for discovery.
+Inbox lives with the dude: `{project}/.claude/dudes/inbox.json`. Global dudes dir is just symlinks for discovery.
 
 ```
 ~/.claude/              (global sup)
@@ -39,20 +39,19 @@ Inbox lives with the dude: `{project}/.claude/dude/inbox.json`. Global dudes dir
     smith -> /dev/self/smith/.claude/ (symlink)
 
 rec/.claude/            (rec's sup)
-  dude/
-    inbox.json          (rec's own inbox)
   dudes/
+    inbox.json          (rec's own inbox)
     bob/                (sub dude — ops/build/run)
       .claude/          (bob's config, no MCPs)
-      dude/
+      dudes/
         inbox.json
     kenny/              (sub dude — TDD)
       .claude/
-      dude/
+      dudes/
         inbox.json
     elizabeth/          (sub dude — browser/visual)
       .claude/          (has Playwright MCP)
-      dude/
+      dudes/
         inbox.json
 ```
 
