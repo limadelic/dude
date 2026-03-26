@@ -1,8 +1,27 @@
 require_relative 'spec_helper'
-require_relative '../lib/status_line'
+require_relative '../lib/status_line/runner'
+require_relative 'helpers/shared_examples'
 
 describe StatusLine::Runner do
   include_context 'StatusLine helpers'
+
+  before do
+    allow(StatusLine::Dudes).to receive(:new).and_return(mock_renderer)
+    allow(Pomo::Timer).to receive(:new).and_return(mock_pomo)
+    allow(Open3).to receive(:capture3).and_return(mock_curl_response)
+  end
+
+  let(:mock_renderer) do
+    instance_double(StatusLine::Dudes, to_s: '🎭', write_status: nil)
+  end
+
+  let(:mock_pomo) do
+    instance_double(Pomo::Timer, to_s: nil)
+  end
+
+  let(:mock_curl_response) do
+    [activity.to_json, '', double(success?: true)]
+  end
 
   describe 'Structure and order' do
     it 'has sections' do
@@ -29,11 +48,23 @@ describe StatusLine::Runner do
   end
 
   describe 'API contract' do
-    it 'has expected activity_data structure' do
+    it 'fetches JSON from API when activity not passed' do
       runner = StatusLine::Runner.new('{}')
+      runner.send(:activity_data)
+      expect(Open3).to have_received(:capture3).with('curl', '-s', '-L', anything, anything, anything, anything, anything)
+    end
+
+    it 'uses passed activity without API call' do
+      out(session, activity)
+      expect(Open3).not_to have_received(:capture3)
+    end
+
+    it 'has expected activity_data structure' do
+      runner = StatusLine::Runner.new('{}', activity: activity)
       raw = runner.send(:activity_data)
       expect(raw.dig('results', 0, 'metrics', 'spend')).to be_truthy
       expect(raw.dig('results', 0, 'breakdown', 'models')).to be_truthy
     end
   end
+
 end

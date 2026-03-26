@@ -1,4 +1,5 @@
-module StatusLine::Format
+module StatusLine
+  module Format
   COLORS = {
     red: "\033[31m",
     green: "\033[32m",
@@ -50,5 +51,6 @@ module StatusLine::Format
     rounded = [a, b, c].map { |n| round_to_10(n) }
     rounded[[a, b, c].index([a, b, c].max)] += 100 - rounded.sum
     rounded
+  end
   end
 end

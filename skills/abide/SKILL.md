@@ -3,22 +3,19 @@ name: abide
 description: Use to handle other Agents (dudes) requests. Triggered by a bg watcher.
 ---
 
-# WATCH
+# AWAIT TO ABIDE
 
-- Run `abide/abide.sh` with `run_in_background: true`
+- Run `dude abide` with `run_in_background: true`
 
-# ABIDE
+# DO ABIDE
 
-The watcher echoes the message when it arrives.  
-Handle it! Abide!
+The watcher echoes the message when it arrives.
+Handle it, then proceed to DONE ABIDING.
 
-# DONE
+# DONE ABIDING
 
-- If from present a reply is expected.    
-  If reply is too long, write to `plans/` instead. 
-  Run `abide/done.sh "{from}" "{reply}"`
-
-- If no from
-  Run `abide/done.sh`
-
-- watch again!
+- If from is present, a reply is expected.
+  If reply is too long, write to `plans/` instead.
+  Run `dude abided "{from}" "{reply}"`
+- If no from, run `dude abided`
+- Watch again!

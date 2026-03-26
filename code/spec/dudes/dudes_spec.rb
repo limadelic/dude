@@ -1,135 +1,201 @@
 require_relative '../spec_helper'
-require_relative '../../lib/status_line'
+require_relative '../../lib/dudes/dudes'
+require 'json'
 
-describe Dudes::Renderer do
-  include_context 'StatusLine helpers'
+describe 'Dude::GLOBAL_DIR' do
+  it 'is defined as ~/.claude/dudes' do
+    expanded = File.expand_path('~/.claude/dudes')
+    expect(Dude::GLOBAL_DIR).to eq(expanded)
+  end
+end
 
-  let(:dudes_data) do
-    [
-      { name: 'dude', icon: '🎳', messages: 0, context: 25, current: true },
-      { name: 'rec', icon: '🔴', messages: 3, context: 50, current: false },
-      { name: 'smith', icon: '🤖', messages: 0, context: 80, current: false }
-    ]
+describe Dude::Dudes do
+  def dudes
+    described_class.new
   end
 
-  describe 'Dudes section' do
-    it 'shows dude icons' do
-      output = out(session, activity, dudes_data)
-      expect(strip(output)).to include('🎳', '🔴', '🤖')
+  before do
+    allow(Dir).to receive(:children).and_return(%w[rec])
+    allow(File).to receive(:symlink?).and_return(true)
+    allow(File).to receive(:readlink).and_return('/proj/.claude/')
+    allow(Dude::Dudes).to receive(:pids).and_return({ 12345 => '/proj/.claude' })
+    allow(File).to receive(:exist?).and_return(true)
+    allow(File).to receive(:read).and_return("---\nicon: 🔴\n---\n")
+    allow(JSON).to receive(:load_file).and_return({}, [])
+    allow(Process).to receive(:ppid).and_return(12345)
+  end
+
+  describe '#all' do
+    it 'returns list of Dude objects' do
+      allow(JSON).to receive(:load_file).and_return({ 'context' => 50 }, [])
+      result = dudes.all
+      expect(result.length).to eq(1)
+      expect(result.first).to be_a(Dude::Dudes::Dude)
     end
 
-    it 'shows message count superscript' do
-      output = out(session, activity, dudes_data)
-      expect(strip(output)).to match(/🔴 ?³/)
+    it 'returns empty when no symlinks' do
+      allow(Dir).to receive(:children).and_return([])
+      expect(dudes.all).to eq([])
     end
 
-    it 'shows zero superscript' do
-      output = out(session, activity, dudes_data)
-      expect(strip(output)).to match(/🎳 ?⁰/)
+    it 'skips dudes without icon' do
+      allow(File).to receive(:exist?).and_return(false)
+      expect(dudes.all).to eq([])
     end
 
-    it 'appears after models' do
-      output = out(session, activity, dudes_data)
-      expect(strip(output).index('🎭')).to be < strip(output).index('🎳')
-    end
-
-    it 'highlights current dude with background' do
-      output = out(session, activity, dudes_data)
-      expect(output).to include("\e[42m\e[97m🎳")
-    end
-
-    it 'does not highlight non-current dude' do
-      output = out(session, activity, dudes_data)
-      expect(output).not_to include("\e[42m\e[97m🔴")
-    end
-
-    it 'highlights current yellow dude with black text' do
-      yellow_dudes = [{ name: 'dude', icon: '🎳', messages: 0, context: 50, current: true }]
-      session_data = { 'model' => { 'id' => 'claude-opus-4-6' }, 'context_window' => { 'used_percentage' => 50 } }.to_json
-      output = out(session_data, activity, yellow_dudes)
-      expect(output).to include("\e[48;5;226m\e[30m🎳")
+    it 'sets dude name from symlink' do
+      expect(dudes.all.first.name).to eq('rec')
     end
   end
 
-  describe 'Abide watcher status' do
-    context 'dead watcher' do
-      it 'shows ˣ with context color' do
-        dudes = [{ name: 'rec', icon: '🔴', messages: 3, context: 50, current: false, abide_dead: true }]
-        output = out(session, activity, dudes)
-        expect(output).to include("\e[38;5;226m🔴", "ˣ")
-      end
-
-      it 'shows green ˣ with low context' do
-        dudes = [{ name: 'rec', icon: '🔴', messages: 0, context: 10, current: false, abide_dead: true }]
-        output = out(session, activity, dudes)
-        expect(output).to include("\e[32m🔴", "ˣ")
-      end
-
-      it 'has background highlight for current dead dude' do
-        dudes = [{ name: 'rec', icon: '🔴', messages: 0, context: 25, current: true, abide_dead: true }]
-        output = out(session, activity, dudes)
-        expect(output).to include("\e[42m\e[97m🔴", "ˣ")
-      end
-
-      it 'shows red ˣ with high context' do
-        dudes = [{ name: 'rec', icon: '🔴', messages: 0, context: 80, current: false, abide_dead: true }]
-        output = out(session, activity, dudes)
-        expect(output).to include("\e[31m🔴", "ˣ")
-      end
+  describe '#current' do
+    it 'returns the current dude' do
+      expect(dudes.current.name).to eq('rec')
     end
 
-    context 'alive watcher' do
-      it 'shows message count' do
-        dudes = [{ name: 'rec', icon: '🔴', messages: 3, context: 50, current: false, abide_dead: false }]
-        output = out(session, activity, dudes)
-        expect(strip(output)).to match(/🔴 ?³/)
-      end
-    end
-
-    context 'when abide_dead key absent' do
-      it 'shows message count' do
-        dudes = [{ name: 'rec', icon: '🔴', messages: 3, context: 50, current: false }]
-        output = out(session, activity, dudes)
-        expect(strip(output)).to match(/🔴 ?³/)
-      end
+    it 'returns nil when no current' do
+      allow(File).to receive(:readlink).and_return('/other/.claude/')
+      allow(Dude::Dudes).to receive(:pids).and_return({ 12345 => '/other/.claude' })
+      allow(Process).to receive(:ppid).and_return(99999)
+      expect(dudes.current).to be_nil
     end
   end
 
-  describe '#write_status' do
-    let(:fs) { double('fs', dir_exist?: true, read: '{}', write: nil) }
-    let(:pct) { 50 }
-    let(:renderer) { Dudes::Renderer.new({}, nil, '/tmp', fs, pct) }
-
-    before { allow(renderer).to receive(:system) }
-
-    context 'context color' do
-      { 0 => 'green', 32 => 'green', 33 => 'yellow', 66 => 'yellow', 67 => 'red', 100 => 'red' }.each do |p, c|
-        it "writes #{c} at #{p}%" do
-          r = Dudes::Renderer.new({}, nil, '/tmp', fs, p)
-          allow(r).to receive(:system)
-          r.write_status
-          expect(fs).to have_received(:write).with(anything, include("\"color\":\"#{c}\""))
-        end
-      end
+  describe 'multiple PIDs same target' do
+    before do
+      allow(Dir).to receive(:children).and_return(%w[rec])
+      allow(File).to receive(:symlink?).and_return(true)
+      allow(File).to receive(:readlink).and_return('/proj/.claude/')
+      allow(File).to receive(:exist?).and_return(true)
+      allow(File).to receive(:read).and_return("---\nicon: 🔴\n---\n")
+      allow(JSON).to receive(:load_file).and_return({ 'context' => 50 }, [])
+      allow(Dude::Dudes).to receive(:pids).and_return({
+        111 => '/proj/.claude',
+        222 => '/proj/.claude',
+        333 => '/proj/.claude'
+      })
     end
 
-    context 'session color sync' do
-      it 'fires when color changes' do
-        allow(fs).to receive(:read).and_return('{"color":"green"}')
-        renderer.write_status
-        expect(renderer).to have_received(:system)
-      end
-
-      it 'skips when color unchanged' do
-        allow(fs).to receive(:read).and_return('{"color":"yellow"}')
-        renderer.write_status
-        expect(renderer).not_to have_received(:system)
-      end
-
-      it 'fires on first run' do
-        renderer.write_status
-        expect(renderer).to have_received(:system)
-      end
+    it 'creates one dude per PID' do
+      result = dudes.all
+      expect(result.length).to eq(3)
+      expect(result.map(&:name)).to eq(%w[rec rec rec])
+      expect(result.map(&:pid)).to match_array([111, 222, 333])
     end
   end
+
+  describe '#resolve_inbox' do
+    it 'returns inbox path from symlink target' do
+      # Before hook already mocks File.symlink? to true and File.readlink to /proj/.claude/
+      allow(File).to receive(:readlink).and_return('/projects/rec/.claude/')
+      result = dudes.resolve_inbox('rec')
+      expect(result).to eq('/projects/rec/.claude/dudes/inbox.json')
+    end
+
+    it 'raises when symlink not found' do
+      allow(File).to receive(:symlink?).and_return(false)
+      expect { dudes.resolve_inbox('missing') }.to raise_error("dude 'missing' not found")
+    end
+
+    it 'handles symlink trailing slash' do
+      allow(File).to receive(:readlink).and_return('/projects/rec/.claude/')
+      result = dudes.resolve_inbox('rec')
+      expect(result).to eq('/projects/rec/.claude/dudes/inbox.json')
+    end
+  end
+
+  describe '#read_self_name' do
+    it 'reads name from status.json' do
+      allow(JSON).to receive(:load_file).with('/proj/.claude/dudes/status.json').and_return({ 'name' => 'smith' })
+      result = dudes.read_self_name('/proj/.claude/dudes')
+      expect(result).to eq('smith')
+    end
+  end
+
+  describe '#is_current?' do
+    before do
+      allow(File).to receive(:exist?).and_return(false)
+      allow_any_instance_of(Dude::Dudes).to receive(:shell_parent_pid)
+    end
+
+    it 'returns true when pid is in ancestor chain' do
+      allow(Process).to receive(:ppid).and_return(200)
+      allow_any_instance_of(Dude::Dudes).to receive(:shell_parent_pid).and_return(100, 1)
+      allow(Dude::Dudes).to receive(:pids).and_return({ 100 => '/proj/.claude' })
+      expect(dudes.is_current?(100)).to be true
+    end
+
+    it 'returns false when pid not in ancestor chain' do
+      allow(Process).to receive(:ppid).and_return(200)
+      allow_any_instance_of(Dude::Dudes).to receive(:shell_parent_pid).and_return(999, 1)
+      allow(Dude::Dudes).to receive(:pids).and_return({})
+      expect(dudes.is_current?(100)).to be false
+    end
+
+    it 'returns false when pid is nil' do
+      expect(dudes.is_current?(nil)).to be false
+    end
+  end
+
+  describe '#is_abiding?' do
+    before do
+      allow(Dude::Dudes).to receive(:pids).and_return(1000 => '/proj/.claude')
+    end
+
+    it 'returns true when abide task exists as child of pid' do
+      allow(BackgroundTasks).to receive(:list).and_return([
+        { pid: 123, parent_pid: 1000, command: 'dude abide /proj/.claude/dudes' }
+      ])
+      expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be true
+    end
+
+    it 'returns false when no abide task' do
+      allow(BackgroundTasks).to receive(:list).and_return([])
+      expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be false
+    end
+
+    it 'returns false when task parent is not the pid' do
+      allow(BackgroundTasks).to receive(:list).and_return([
+        { pid: 123, parent_pid: 999, command: 'dude abide /proj/.claude/dudes' }
+      ])
+      expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be false
+    end
+
+    it 'returns false when task is for different dude' do
+      allow(BackgroundTasks).to receive(:list).and_return([
+        { pid: 123, parent_pid: 1000, command: 'dude abide /other/.claude/dudes' }
+      ])
+      expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be false
+    end
+  end
+
+  describe '#pids_for_target' do
+    it 'returns pids matching target or parent' do
+      allow(Dude::Dudes).to receive(:pids).and_return({
+        100 => '/proj/.claude',
+        200 => '/proj/.claude',
+        300 => '/other/.claude'
+      })
+      result = dudes.pids_for_target('/proj/.claude')
+      expect(result).to match_array([100, 200])
+    end
+
+    it 'handles target with trailing slash' do
+      allow(Dude::Dudes).to receive(:pids).and_return({
+        100 => '/proj/.claude',
+        200 => '/proj'
+      })
+      result = dudes.pids_for_target('/proj/.claude/')
+      expect(result).to match_array([100, 200])
+    end
+
+    it 'returns empty when no matching pids' do
+      allow(Dude::Dudes).to receive(:pids).and_return({
+        100 => '/other/.claude'
+      })
+      result = dudes.pids_for_target('/proj/.claude')
+      expect(result).to eq([])
+    end
+  end
+
 end

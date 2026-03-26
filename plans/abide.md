@@ -1,79 +1,79 @@
-# /abide plan (issue #39)
+# Abide Plan — Shell → Ruby Migration
 
 ## Goal
-Make watch.sh self-sufficient. Less LLM, more shell. Watch is a pure bg loop that detects, marks wip, creates the todo, and keeps watching — all by itself. The dude never looks at watch output.
+Move ALL bash plumbing (pub, unpub, tell, ask, abide, done) into the dude gem.
+Commands/skills invoke `dude <subcommand>` instead of shell scripts.
 
-## Principle
-Every decision that can be encoded in shell, MUST be. LLM only does reasoning (abide). Shell does plumbing (watch, wip, done, paths, envelopes).
+## Why
+- Shell scripts are fragile, hard to test, duplicating logic already in Ruby
+- Ruby classes can be specced with mock FS, same pattern as existing code
+- Single `dude` CLI binary already exists (Thor), just needs subcommands
 
-## Flow
+## Architecture
 
-### WATCH (shell, bg, loops forever)
-- resolve inbox path itself (don't rely on LLM passing correct path)
-- wait-until new message at top of inbox
-- mark it wip (jq)
-- create a todo in the session ← **unsolved: how?**
-- restart watch (loop)
+### New CLI Subcommands (cli.rb via Thor)
+- `dude pub [name]` — register this session as a pub dude
+- `dude unpub` — tear down dudes dir and symlinks
+- `dude tell <name> <message>` — send message (no reply expected)
+- `dude ask <name> <message>` — send message with from field (reply expected)
+- `dude abide` — watch inbox, mark wip, return first new message
+- `dude done [from] [reply]` — dequeue wip, optionally reply
 
-### ABIDE (dude, via task system)
-- todo appears → dude abides it
-- "Abide: ..." → told, no reply needed
-- "Abide {name}: ..." → asked, reply owed
+### New Ruby Classes (lib/dudes/)
+- `Dudes::Pub` — mkdir dudes/, init inbox.json, write status.json, create symlink
+- `Dudes::Unpub` — remove symlinks, dudes dirs, kill watchers
+- `Dudes::Inbox` — read/write inbox operations (append msg, mark wip, dequeue, reply)
 
-### DONE (shell)
-- reply via done.sh if asked
-- remove wip from inbox
-- mark todo complete
+### Reuse Existing
+- `Helpers::FS` — add mkdir, symlink, rm_symlink, rm_dir methods as needed
+- `Helpers::Json` — already handles read, add write_json
+- `Dudes::Home` — already reads dude links/data, reuse for tell/ask target resolution
 
-## SOLVED: how does watch.sh create a todo in the session?
-Write JSON to `~/.claude/tasks/{sessionId}/{id}.json` — Claude picks it up via TaskList.
-Session ID from `~/.claude/sessions/$PPID.json`. Verified working.
+## Steps
 
-## Parked: done.sh reply envelope
-- Currently missing "from" in reply
-- Parked until /msg gets redesigned → split into /ask and /tell
-- That redesign will determine how done.sh builds replies
+### 1. Dudes::Inbox (pure inbox operations)
+- `append(inbox_path, message_hash)` — add message to inbox array
+- `mark_wip(inbox_path)` — set first item status to "wip"
+- `dequeue_wip(inbox_path)` — remove first item if wip
+- `first_new(inbox_path)` — return first item with status "new"
+- Spec first, mock FS
 
-## Parked: SKILL.md todo.sh step
-- Currently LLM runs todo.sh and does TaskCreate itself
-- Becomes redundant if watch.sh can create todos directly
-- Depends on solving the unsolved blocker above
+### 2. Dudes::Pub
+- `register(cwd, name)` — mkdir, init inbox/status, create symlink
+- Needs: FS.mkdir_p, FS.symlink (new FS methods)
+- Spec first
 
-## Parked: orphan wip recovery
-- If abide crashes, wip message sits with no todo
-- watch.sh should detect orphaned wip on startup and re-create the todo
-- Depends on solving the "todo from shell" blocker
-- Encode in shell, not LLM
+### 3. Dudes::Unpub
+- `teardown` — find symlinks, remove dudes dirs, remove symlinks
+- Needs: FS.rm_dir, FS.rm_symlink (new FS methods)
+- Spec first
 
-## Parked: /msg redesign
-- Split /msg into /ask and /tell
-- Affects done.sh reply logic and envelope format
-- Will revisit when we get to it
+### 4. CLI subcommands
+- Wire Thor subcommands to classes
+- `dude tell` → resolve target via Home, append via Inbox
+- `dude ask` → same but with from field from status.json
+- `dude abide` → Inbox.first_new, loops via wait-until (or Ruby polling)
+- `dude done` → Inbox.dequeue_wip, optionally Inbox.append to reply target
 
-## Path resolution
-- watch.sh finds inbox itself — no LLM path passing
-- Convention: every dude runs inside .claude/ dir
-- sup: ~/.claude/, pub dudes: ~/dev/X/.claude/
-- Shell resolves, not LLM
+### 5. Update commands/skills to call gem
+- `tell.md` → `dude tell $ARGUMENTS`
+- `ask.md` → `dude ask $ARGUMENTS`
+- `pub.md` → `dude pub $ARGUMENTS`
+- `unpub.md` → `dude unpub`
+- `abide/SKILL.md` → `dude abide`
+- `abide/done.sh` → `dude done`
 
-## Entry point
-`/pub` calls `/abide` once to start watch.
+### 6. Delete shell scripts
+- commands/scripts/tell.sh, ask.sh, pub.sh, unpub.sh
+- skills/abide/abide.sh, done.sh, todo.sh
 
-## Reply strategy
-- Short → `/msg {from} here's the answer`
-- Long → write to `plans/`, reply with path
-- /msg itself is due for redesign → split into /ask and /tell
+## Decided
+- ALL bash goes away, including wait-until polling
+- `dude abide` does its own polling loop in Ruby (sleep + check inbox)
+- `dude await` replaces wait-until.sh — generic Ruby poller for any condition
+- Helpers::Wait — sleep loop with configurable interval and timeout
 
-## Bugs — fix one at a time
-
-1. [x] inbox.json is 1 byte (not `[]`) — fixed
-2. [x] session ID via $PPID — verified, works fine
-3. [x] jq command quoting — verified, works fine
-4. [x] writing task JSON to disk — verified, it surfaces in TaskList
-
-## Test
-1. `/pub` → starts WATCH in bg
-2. From another dude: `/msg dude something`
-3. Watch detects → marks wip → todo appears in session
-4. Dude abides → done.sh → inbox clean → watch keeps going
-5. No LLM involved in watch/wip/done — only in abide (reasoning)
+## Parked
+- Reply envelope format
+- Orphan WIP recovery
+- Sub dudes (ephemeral scoped dudes)

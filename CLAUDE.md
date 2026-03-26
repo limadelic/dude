@@ -63,6 +63,10 @@ icon: 🎳
 - dir: ~/dev/self/dude
 - token: $GITHUB_LIMADELIC
 
+## CLI
+
+- use the `dude` CLI. If unsure, run `dude -h`.
+
 ## Rules
 
 - create issues in the dude repo, not the current working repo

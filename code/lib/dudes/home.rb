@@ -1,23 +1,19 @@
 require_relative '../helpers/json'
-require_relative '../dudes'
+require_relative './inbox'
 
-class Dudes::Home
+class Dude::Dudes::Home
   include Helpers::Json
 
-  def initialize(fs)
-    @fs = fs
-  end
-
   def list_dude_names(dir)
-    @fs.children(dir).select { |n| @fs.symlink?(File.join(dir, n)) }
+    Dir.children(dir).select { |n| File.symlink?(File.join(dir, n)) }
   rescue
     []
   end
 
   def read_dude_link(dudes_dir, name)
     link_path = File.join(dudes_dir, name)
-    return nil unless @fs.symlink?(link_path)
-    target = expand_target(@fs.readlink(link_path), dudes_dir)
+    return nil unless File.symlink?(link_path)
+    target = expand_target(File.readlink(link_path), dudes_dir)
     is_accessible?(target) ? target : nil
   end
 
@@ -25,7 +21,8 @@ class Dudes::Home
     icon = read_icon(File.join(target, 'CLAUDE.md'))
     return nil unless icon
     status = read_json(File.join(target, 'dudes', 'status.json')) || {}
-    inbox = read_json(File.join(target, 'dudes', 'inbox.json')) || []
+    inbox_path = File.join(target, 'dudes', 'inbox.json')
+    inbox = Dude::Dudes::Inbox.new(inbox_path)
     { icon: icon, target: target, status: status, inbox: inbox, dude_dir: File.join(target, 'dudes') }
   end
 
@@ -47,6 +44,6 @@ class Dudes::Home
   end
 
   def is_accessible?(target)
-    @fs.claude_cwds.any? { |c| c == target || File.dirname(target) == c }
+    Dude::Dudes.pids.any? { |_pid, cwd| cwd == target || File.dirname(target) == cwd }
   end
 end
