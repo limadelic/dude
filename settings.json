@@ -63,6 +63,7 @@
     "command": "dude status_line",
     "padding": 0
   },
+  "extraKnownMarketplaces": {},
   "spinnerVerbs": {
     "mode": "replace",
     "verbs": [

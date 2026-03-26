@@ -1,8 +1,7 @@
-require_relative '../dudes'
+require 'json'
 
-class Dudes::Health
-  def initialize(fs)
-    @fs = fs
+class Dude::Dudes::Health
+  def initialize
   end
 
   def check(dude_dir, status)
@@ -15,7 +14,7 @@ class Dudes::Health
 
   def find_pids(dude_dir)
     pattern = "wait-until.*#{File.join(dude_dir, 'inbox.json')}"
-    @fs.pgrep_all(pattern)
+    pgrep_all(pattern)
   end
 
   def resolve_pid(pids, dude_dir, status)
@@ -31,7 +30,19 @@ class Dudes::Health
   end
 
   def check_one(pid)
-    @fs.orphaned?(pid) ? (@fs.kill(pid); nil) : pid
+    orphaned?(pid) ? (kill(pid); nil) : pid
+  end
+
+  def pgrep_all(pattern)
+    `pgrep -f "#{pattern}"`.strip.split("\n").map(&:to_i).select(&:positive?)
+  end
+
+  def orphaned?(pid)
+    `ps -p #{pid} -o ppid=`.strip.to_i == 1
+  end
+
+  def kill(pid)
+    Process.kill('TERM', pid) rescue nil
   end
 
   def pid_changed?(pid_alive, status)
@@ -40,6 +51,6 @@ class Dudes::Health
 
   def update_pid(dude_dir, status, pid_alive)
     path = File.join(dude_dir, 'status.json')
-    @fs.write(path, status.merge('abide_pid' => pid_alive).to_json) rescue nil
+    File.write(path, status.merge('abide_pid' => pid_alive).to_json) rescue nil
   end
 end

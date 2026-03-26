@@ -1,8 +1,13 @@
 require_relative '../spec_helper'
-require_relative '../../lib/status_line'
+require_relative '../../lib/status_line/spend'
+require_relative '../helpers/shared_examples'
 
 describe StatusLine::Spend do
   include_context 'StatusLine helpers'
+
+  before do
+    allow(StatusLine::Dudes).to receive(:new).and_return(instance_double(StatusLine::Dudes, to_s: nil, write_status: nil))
+  end
 
   describe 'Spend section color coding' do
     it 'is green at 20%' do

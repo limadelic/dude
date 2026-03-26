@@ -1,3 +1,5 @@
+require_relative '../../lib/status_line/runner'
+
 RSpec.shared_examples 'color threshold' do |low, mid, high|
   it 'is green at low threshold' do
     expect(output_at_percentage(low)).to include("\e[32m")

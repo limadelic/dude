@@ -1,89 +1,182 @@
-require_relative '../status_line/format'
-require_relative '../dudes'
-require_relative 'registry'
-require_relative 'abide'
-require_relative 'home'
-require_relative 'health'
-require_relative 'tasks'
-require 'json'
+require_relative '../helpers/background_tasks'
 
-class Dudes::Renderer
-  include StatusLine::Format
+module Dude
+  GLOBAL_DIR = File.expand_path('~/.claude/dudes').freeze
 
-  def initialize(session, dudes_override, cwd, fs, context_percentage)
-    @session, @dudes = session, dudes_override
-    @cwd, @fs, @context_percentage = cwd, fs, context_percentage
+class Dudes
+  def self.pids
+    @pids ||= `pgrep -a claude`.strip.split("\n").each_with_object({}) do |line, hash|
+      pid = line.split.first&.to_i
+      next unless pid&.positive?
+      cwd = `lsof -p #{pid} 2>/dev/null`[/cwd\s+DIR\s+\S+\s+\S+\s+\S+\s+(.+)/, 1]
+      hash[pid] = cwd if cwd
+    end
   end
 
-  def render
-    dudes = @dudes || load_dudes
-    dudes.empty? ? nil : dudes.map { |d| dude_display(d) }.join(' ') rescue nil
+  def pids
+    @pids ||= self.class.pids
   end
 
-  def write_status
-    return unless @fs.dir_exist?(dude_dir)
-    existing = read_status
-    color = context_color
-    sync_session_color(color, existing['color'])
-    merged = existing.merge('context' => @context_percentage, 'color' => color)
-    @fs.write(status_path, merged.to_json) rescue nil
+  def initialize
+    @home = ::Dude::Dudes::Home.new
+    @tasks = ::Dude::Dudes::Tasks.new
+    @pids = nil  # Will be lazily initialized and memoized
+    @parent_pids = {}  # Cache for parent_pid lookups
+  end
+
+  def all
+    @all ||= load_all_with_pid_binding
+  end
+
+  def current
+    all.find(&:is_current?)
+  end
+
+  def resolve_inbox(name)
+    link = File.join(::Dude::GLOBAL_DIR, name)
+    raise "dude '#{name}' not found" unless File.symlink?(link)
+    target = File.readlink(link).chomp('/')
+    File.join(target, 'dudes', 'inbox.json')
+  end
+
+  def read_self_name(dude_dir)
+    status = File.join(dude_dir, 'status.json')
+    JSON.load_file(status)['name']
+  end
+
+  def is_current?(pid)
+    return false unless pid
+    current_pid = Process.ppid
+    loop do
+      return true if current_pid == pid
+      return false if current_pid == 1
+      next_pid = parent_pid(current_pid)
+      return false if next_pid == current_pid
+      current_pid = next_pid
+    end
+  end
+
+  def is_abiding?(pid, dude_dir, target)
+    effective_pid = pid
+    return false if effective_pid.nil?
+
+    tasks = ::BackgroundTasks.list
+    tasks
+      .select { |t| has_ancestor_pid?(t[:parent_pid], effective_pid) }
+      .any? { |t| matches_abide_task?(t, dude_dir, target) }
+  end
+
+  def pids_for_target(target)
+    target_normalized = target.chomp('/')
+    parent = File.dirname(target_normalized)
+    pids.select { |_pid, cwd|
+      c = cwd.chomp('/')
+      c == target_normalized || c == parent
+    }.keys
   end
 
   private
 
-  def dude_display(d)
-    color = color_for_pct(d[:context] || 0)
-    emoji_group(d[:icon], d[:abide_dead] ? 'ˣ' : d[:messages], d[:current], color)
+  def load_all_with_pid_binding
+    names = @home.list_dude_names(::Dude::GLOBAL_DIR)
+    template_dudes = names.filter_map { |name| build_dude(name) }
+    expand_dudes_by_pid(template_dudes)
   end
 
-  def load_dudes
-    loader = Dudes::Home.new(@fs)
-    names = loader.list_dude_names(root_dude_dir)
-    raw_dudes = names.filter_map { |name| load_single_dude(loader, name) }
-    registry = Dudes::Registry.new(@fs, @cwd, @context_percentage)
-    registry.load(raw_dudes)
+  def expand_dudes_by_pid(template_dudes)
+    require_relative './dude'
+    result = []
+    target_to_templates = template_dudes.group_by(&:target)
+
+    target_to_templates.each do |_target, templates|
+      # Get all PIDs for this target
+      pids = pids_for_target(templates.first&.target) || []
+
+      if pids.empty?
+        # No running processes, keep original templates
+        result.concat(templates)
+      else
+        # Create one dude entry per PID
+        pids.each do |pid|
+          # Use the first template as a base
+          template = templates.first
+          target = template.target
+          data = @home.read_dude_data(target)
+          next unless data
+
+          # Create a new dude for this specific PID
+          dude = ::Dude::Dudes::Dude.new(**data.merge(name: template.name, registry: self))
+          dude.pid = pid
+          result << dude
+        end
+      end
+    end
+
+    result
   end
 
-  def load_single_dude(loader, name)
-    target = loader.read_dude_link(root_dude_dir, name)
+  def build_dude(name)
+    require_relative './dude'
+    target = @home.read_dude_link(::Dude::GLOBAL_DIR, name)
     return nil unless target
-    data = loader.read_dude_data(target)
+    data = @home.read_dude_data(target)
     return nil unless data
-    data.merge(name: name, abide_dead: check_dead(data))
+    ::Dude::Dudes::Dude.new(**data.merge(name: name, registry: self))
   end
 
-  def check_dead(data)
-    h = Dudes::Health.new(@fs).check(data[:dude_dir], data[:status])
-    has_task = Dudes::Tasks.new(@fs).has_abide?(data[:dude_dir])
-    Dudes::Abide.new.dead?(h[:pids], h[:pid_alive], data[:inbox], has_task)
+  def has_ancestor_pid?(check_pid, target_pid)
+    current_pid = check_pid
+    loop do
+      return true if current_pid == target_pid
+      return false if current_pid == 1
+      next_pid = parent_pid(current_pid)
+      return false if next_pid == current_pid
+      current_pid = next_pid
+    end
   end
 
-  def context_color
-    @context_percentage < 33 ? 'green' : (@context_percentage <= 66 ? 'yellow' : 'red')
+  def matches_abide_task?(task, dude_dir, target)
+    cmd = task[:command]
+
+    # If it explicitly mentions a dude_dir, it must be this one
+    if cmd.include?('/.claude/dudes')
+      return cmd.include?(dude_dir)
+    end
+
+    # Check for "dude abide" (bare or wrapped) with target running
+    return true if cmd.include?('dude abide') && pids_for_target(target).any?
+
+    # Check for wait-until monitoring this dude's inbox
+    return true if cmd.include?("wait-until") && cmd.include?(File.join(dude_dir, 'inbox.json'))
+
+    false
   end
 
-  def sync_session_color(color, previous)
-    return if color == previous
-    system('osascript', '-e', "tell application \"System Events\"\nkeystroke \"/color #{color}\"\nkeystroke return\nend tell")
+  def parent_pid(pid)
+    @parent_pids ||= {}
+    return @parent_pids[pid] if @parent_pids.key?(pid)
+
+    result = fetch_parent_pid(pid)
+    @parent_pids[pid] = result
+    result
   end
 
-  def read_status
-    JSON.parse(@fs.read(status_path)) rescue {}
+  def fetch_parent_pid(pid)
+    proc_path = "/proc/#{pid}/stat"
+    return File.read(proc_path).split[3].to_i if File.exist?(proc_path)
+    shell_parent_pid(pid)
+  rescue
+    pid
   end
 
-  def status_path
-    File.join(dude_dir, 'status.json')
-  end
-
-  def claude_dir
-    @claude_dir ||= (c = File.expand_path('.claude', @cwd); @fs.dir_exist?(c) ? c : @cwd)
-  end
-
-  def dude_dir
-    File.join(claude_dir, 'dudes')
-  end
-
-  def root_dude_dir
-    File.join(File.expand_path('~/.claude'), 'dudes')
+  def shell_parent_pid(pid)
+    output = `ps -o ppid= -p #{pid} 2>/dev/null`.strip
+    output.to_i
   end
 end
+end
+
+require_relative './home'
+require_relative './tasks'
+require_relative './inbox'
+require_relative './dude'
