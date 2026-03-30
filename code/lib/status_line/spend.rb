@@ -12,7 +12,7 @@ module StatusLine
 
     def to_s
       pct, min = spend_pct
-      blocks = [pct * 9 / 100, min].max
+      blocks = [(pct * 9 / 100.0).round, min].max
       "#{color_for_pct(pct)}💰 #{'█' * blocks}#{'░' * (9 - blocks)}#{COLORS[:reset]}"
     end
 

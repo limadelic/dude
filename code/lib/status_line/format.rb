@@ -52,5 +52,9 @@ module StatusLine
     rounded[[a, b, c].index([a, b, c].max)] += 100 - rounded.sum
     rounded
   end
+
+  def self.strip(str)
+    str.gsub(/\033\[[^m]*m/, '')
+  end
   end
 end

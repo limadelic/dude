@@ -15,7 +15,7 @@ describe Dude::Dudes::Dude do
       name: 'rec',
       registry: registry_mock
     }
-    described_class.new(**defaults.merge(overrides))
+    described_class.new(defaults.merge(overrides))
   end
 
 

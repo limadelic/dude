@@ -115,19 +115,19 @@ describe Dude::Dudes do
   describe '#is_current?' do
     before do
       allow(File).to receive(:exist?).and_return(false)
-      allow_any_instance_of(Dude::Dudes).to receive(:shell_parent_pid)
+      allow_any_instance_of(Dude::Dudes::ProcessTree).to receive(:shell_parent_pid)
     end
 
     it 'returns true when pid is in ancestor chain' do
       allow(Process).to receive(:ppid).and_return(200)
-      allow_any_instance_of(Dude::Dudes).to receive(:shell_parent_pid).and_return(100, 1)
+      allow_any_instance_of(Dude::Dudes::ProcessTree).to receive(:shell_parent_pid).and_return(100, 1)
       allow(Dude::Dudes).to receive(:pids).and_return({ 100 => '/proj/.claude' })
       expect(dudes.is_current?(100)).to be true
     end
 
     it 'returns false when pid not in ancestor chain' do
       allow(Process).to receive(:ppid).and_return(200)
-      allow_any_instance_of(Dude::Dudes).to receive(:shell_parent_pid).and_return(999, 1)
+      allow_any_instance_of(Dude::Dudes::ProcessTree).to receive(:shell_parent_pid).and_return(999, 1)
       allow(Dude::Dudes).to receive(:pids).and_return({})
       expect(dudes.is_current?(100)).to be false
     end

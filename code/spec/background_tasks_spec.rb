@@ -1,21 +1,28 @@
 require_relative './spec_helper'
 require_relative '../lib/helpers/background_tasks'
+require_relative '../lib/helpers/process_tree_walker'
 
 describe BackgroundTasks do
   describe '.list' do
+    let(:walker_mock) { instance_double('Helpers::ProcessTreeWalker') }
+
     before do
-      allow(BackgroundTasks).to receive(:`).and_return("")
+      allow(Helpers::ProcessTreeWalker).to receive(:new).and_return(walker_mock)
+      # Reset the cached walker in BackgroundTasks
+      BackgroundTasks.instance_variable_set(:@walker, nil)
     end
 
     it 'returns empty array when no live dudes' do
+      allow(Dude::Dudes).to receive(:pids).and_return({})
       result = BackgroundTasks.list
       expect(result).to eq([])
     end
 
     it 'returns process hashes with pid, parent_pid, and command' do
       allow(Dude::Dudes).to receive(:pids).and_return({ 1000 => '/proj/.claude' })
-      allow(BackgroundTasks).to receive(:`).with('pgrep -P 1000').and_return("2000\n")
-      allow(BackgroundTasks).to receive(:`).with('ps -o command= -p 2000').and_return("dude abide\n")
+      allow(walker_mock).to receive(:descendants_with_parents).with([1000])
+        .and_return([[2000], { 2000 => 1000 }])
+      allow(walker_mock).to receive(:command_for).with(2000).and_return("dude abide")
 
       result = BackgroundTasks.list
       expect(result).to contain_exactly({ pid: 2000, parent_pid: 1000, command: "dude abide" })
@@ -23,9 +30,10 @@ describe BackgroundTasks do
 
     it 'returns multiple children with commands' do
       allow(Dude::Dudes).to receive(:pids).and_return({ 1000 => '/proj/.claude' })
-      allow(BackgroundTasks).to receive(:`).with('pgrep -P 1000').and_return("2000\n2001\n")
-      allow(BackgroundTasks).to receive(:`).with('ps -o command= -p 2000').and_return("dude abide\n")
-      allow(BackgroundTasks).to receive(:`).with('ps -o command= -p 2001').and_return("dude watch\n")
+      allow(walker_mock).to receive(:descendants_with_parents).with([1000])
+        .and_return([[2000, 2001], { 2000 => 1000, 2001 => 1000 }])
+      allow(walker_mock).to receive(:command_for).with(2000).and_return("dude abide")
+      allow(walker_mock).to receive(:command_for).with(2001).and_return("dude watch")
 
       result = BackgroundTasks.list
       expect(result).to contain_exactly(
@@ -36,10 +44,10 @@ describe BackgroundTasks do
 
     it 'returns grandchildren with commands and correct parent_pid' do
       allow(Dude::Dudes).to receive(:pids).and_return({ 1000 => '/proj/.claude' })
-      allow(BackgroundTasks).to receive(:`).with('pgrep -P 1000').and_return("2000\n")
-      allow(BackgroundTasks).to receive(:`).with('pgrep -P 2000').and_return("3000\n")
-      allow(BackgroundTasks).to receive(:`).with('ps -o command= -p 2000').and_return("ruby -e dude\n")
-      allow(BackgroundTasks).to receive(:`).with('ps -o command= -p 3000').and_return("dude watch\n")
+      allow(walker_mock).to receive(:descendants_with_parents).with([1000])
+        .and_return([[2000, 3000], { 2000 => 1000, 3000 => 2000 }])
+      allow(walker_mock).to receive(:command_for).with(2000).and_return("ruby -e dude")
+      allow(walker_mock).to receive(:command_for).with(3000).and_return("dude watch")
 
       result = BackgroundTasks.list
       expect(result).to contain_exactly(
@@ -50,7 +58,8 @@ describe BackgroundTasks do
 
     it 'handles no descendants (leaf process)' do
       allow(Dude::Dudes).to receive(:pids).and_return({ 1000 => '/proj/.claude' })
-      allow(BackgroundTasks).to receive(:`).with('pgrep -P 1000').and_return("")
+      allow(walker_mock).to receive(:descendants_with_parents).with([1000])
+        .and_return([[], {}])
 
       result = BackgroundTasks.list
       expect(result).to eq([])
@@ -58,8 +67,9 @@ describe BackgroundTasks do
 
     it 'handles whitespace in commands' do
       allow(Dude::Dudes).to receive(:pids).and_return({ 1000 => '/proj/.claude' })
-      allow(BackgroundTasks).to receive(:`).with('pgrep -P 1000').and_return("2000\n")
-      allow(BackgroundTasks).to receive(:`).with('ps -o command= -p 2000').and_return("  dude abide  \n")
+      allow(walker_mock).to receive(:descendants_with_parents).with([1000])
+        .and_return([[2000], { 2000 => 1000 }])
+      allow(walker_mock).to receive(:command_for).with(2000).and_return("dude abide")
 
       result = BackgroundTasks.list
       expect(result).to contain_exactly({ pid: 2000, parent_pid: 1000, command: "dude abide" })
@@ -69,10 +79,10 @@ describe BackgroundTasks do
       allow(Dude::Dudes).to receive(:pids).and_return(
         { 1000 => '/proj1/.claude', 2000 => '/proj2/.claude' }
       )
-      allow(BackgroundTasks).to receive(:`).with('pgrep -P 1000').and_return("1001\n")
-      allow(BackgroundTasks).to receive(:`).with('pgrep -P 2000').and_return("2001\n")
-      allow(BackgroundTasks).to receive(:`).with('ps -o command= -p 1001').and_return("dude abide\n")
-      allow(BackgroundTasks).to receive(:`).with('ps -o command= -p 2001').and_return("dude watch\n")
+      allow(walker_mock).to receive(:descendants_with_parents).with([1000, 2000])
+        .and_return([[1001, 2001], { 1001 => 1000, 2001 => 2000 }])
+      allow(walker_mock).to receive(:command_for).with(1001).and_return("dude abide")
+      allow(walker_mock).to receive(:command_for).with(2001).and_return("dude watch")
 
       result = BackgroundTasks.list
       expect(result).to contain_exactly(
@@ -95,13 +105,4 @@ describe BackgroundTasks do
     end
   end
 
-  describe '.command_for_pid (integration)' do
-    it 'uses command keyword instead of cmd for cross-platform support' do
-      # macOS and Linux both support 'command' keyword
-      # This test ensures we're not using 'cmd' which fails on macOS
-      allow(BackgroundTasks).to receive(:`).with('ps -o command= -p 2000').and_return("dude abide\n")
-      result = BackgroundTasks.send(:command_for_pid, 2000)
-      expect(result).to eq("dude abide")
-    end
-  end
 end
