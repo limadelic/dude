@@ -1,0 +1,41 @@
+AllCops:
+  TargetRubyVersion: 3.0
+  NewCops: disable
+  SuggestExtensions: false
+  Exclude:
+    - 'spec/**/*'
+    - 'features/**/*'
+    - 'bin/**/*'
+    - '*.gemspec'
+
+# The ones we care about
+Metrics/MethodLength:
+  Max: 5
+
+Metrics/ClassLength:
+  Max: 100
+
+Metrics/ModuleLength:
+  Max: 100
+
+# Disable everything else
+Layout:
+  Enabled: false
+
+Lint:
+  Enabled: false
+
+Naming:
+  Enabled: false
+
+Style:
+  Enabled: false
+
+Bundler:
+  Enabled: false
+
+Gemspec:
+  Enabled: false
+
+Security:
+  Enabled: false

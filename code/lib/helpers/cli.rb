@@ -40,6 +40,12 @@ module Dude
       StatusLine::Runner.new(input, dudes: Dude::Dudes.new.all).run
     end
 
+    desc "pomo", "Render pomo timer"
+    def pomo
+      require_relative '../pomo/pomo'
+      puts Pomo::Timer.new.to_s
+    end
+
     desc "pub [NAME]", "Register as a pub dude"
     def pub(name = nil)
       require_relative '../dudes/dudes'
@@ -69,50 +75,32 @@ module Dude
 
     desc "tell NAME MESSAGE", "Tell a dude something"
     def tell(name, *words)
-      require_relative '../dudes/dudes'
-      dude = dudes.current
-      raise "No dude running" unless dude
-      dude.tell(name, words.join(' '))
+      current_dude.tell(name, words.join(' '))
       puts "tell → #{name}"
     end
 
     desc "ask NAME MESSAGE", "Ask a dude something"
     def ask(name, *words)
-      require_relative '../dudes/dudes'
-      dude = dudes.current
-      raise "No dude running" unless dude
-      dude.ask(name, words.join(' '))
+      current_dude.ask(name, words.join(' '))
       puts "ask → #{name}"
     end
 
     desc "abide", "Watch inbox and return first message"
     def abide
-      require_relative 'background_tasks'
-      require_relative '../dudes/dudes'
-      require_relative 'wait'
-
-      others = BackgroundTasks.list
-        .reject { |t| t[:pid] == Process.pid }
-        .select { |t| t[:command].include?('dude abide') }
-
-      if others.any?
-        others.each { |t| BackgroundTasks.kill(t[:pid]) }
-        return
-      end
-
-      dude = dudes.current
-      raise "No dude running" unless dude
-      msg = nil
-      Helpers::Wait.new.until { msg = dude.watch }
-      puts msg.to_json
+      require 'json'
+      puts current_dude.abide
     end
 
     desc "abided [FROM] [REPLY]", "Dequeue wip, optionally reply"
     def abided(from = nil, reply = nil)
-      require_relative '../dudes/dudes'
-      dude = dudes.current
-      raise "No dude running" unless dude
-      dude.abided(from: from, reply: reply)
+      current_dude.abided(from: from, reply: reply)
+    end
+
+    desc "tcr FILES", "Test && commit || revert"
+    def tcr(*files)
+      require_relative '../dudes/tcr'
+      result = Dude::Dudes::Tcr.new(files).run
+      exit(result ? 0 : 1)
     end
 
     desc "dudes", "Manage dudes"
@@ -122,6 +110,11 @@ module Dude
     subcommand :background_tasks, BackgroundTasksCommand
 
     private
+
+    def current_dude
+      require_relative '../dudes/dudes'
+      dudes.current or raise "No dude running"
+    end
 
     def dudes
       @dudes ||= Dude::Dudes.new

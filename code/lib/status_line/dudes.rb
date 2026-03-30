@@ -31,27 +31,16 @@ module StatusLine
     private
 
     def render_dude(dude)
-      icon = dude.icon
-      messages = dude.messages || 0
-      context = dude.context || 0
-      is_current = dude.is_current?
-      is_abiding = dude.is_abiding?
-
-      # Determine superscript: message count if abiding, 'ˣ' if not
-      sup = is_abiding ? messages : 'ˣ'
-      color = color_for_pct(context)
-
-      emoji_group(icon, sup, is_current, color)
+      sup = dude.is_abiding? ? (dude.messages || 0) : 'ˣ'
+      color = color_for_pct(dude.context || 0)
+      emoji_group(dude.icon, sup, dude.is_current?, color)
     end
 
     def color_name_for_percentage(percentage)
       case percentage
-      when 0..32
-        'green'
-      when 33..66
-        'yellow'
-      else
-        'red'
+      when 0..32 then 'green'
+      when 33..66 then 'yellow'
+      else 'red'
       end
     end
   end

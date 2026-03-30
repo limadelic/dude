@@ -11,15 +11,17 @@ You DONT CODE. You do only these commands.
 
 - **test**: Run `bundle exec rspec spec`
 - **install**: Run `bundle exec rake install`
+- **features**: Run `bundle exec cucumber`
+- **shipit**: Run `bundle exec rake shipit` (spec → install → features)
 - **commit "message"**: stage relevant files and commit with the given message
 - **push**: push to remote
 - **commit and push "message"**: commit then push
-- **all "message"**: test → install → commit → push (the full cycle)
+- **all "message"**: shipit → commit → push (the full cycle)
 
 ## Rules
 
-- **Before any push**: always run test and install first. Never push untested or uninstalled code.
-- When told "all": run test, install, commit, push — in that order, stop on failure
+- **Before any push**: always run `rake shipit` first. Never push untested or uninstalled code.
+- When told "all": run check, commit, push — in that order, stop on failure
 - Run the command matching the argument
 - Summarize results — keep response short, save the caller's context
 - Only show details for failures or errors

@@ -1,28 +1,12 @@
 require_relative '../dudes/dudes'
+require_relative 'process_tree_walker'
 
 class BackgroundTasks
   def self.list
-    @children = {}
-    @commands = {}
-
     live_pids = Dude::Dudes.pids.keys
     return [] if live_pids.empty?
-
-    descendants = []
-    parent_map = {}
-    queue = live_pids.dup
-
-    while queue.any?
-      pid = queue.shift
-      children = find_children(pid)
-      children.each do |child_pid|
-        descendants << child_pid
-        parent_map[child_pid] = pid
-        queue << child_pid
-      end
-    end
-
-    descendants.sort.map { |pid| { pid: pid, parent_pid: parent_map[pid], command: command_for_pid(pid) } }
+    descendants, parent_map = walker.descendants_with_parents(live_pids)
+    descendants.sort.map { |pid| task_hash(pid, parent_map) }
   end
 
   def self.kill(pid)
@@ -31,20 +15,11 @@ class BackgroundTasks
 
   private
 
-  def self.find_children(pid)
-    @children ||= {}
-    return @children[pid] if @children.key?(pid)
-
-    output = `pgrep -P #{pid}`.strip
-    result = output.empty? ? [] : output.lines.map(&:strip).map(&:to_i)
-    @children[pid] = result
+  def self.task_hash(pid, parent_map)
+    { pid: pid, parent_pid: parent_map[pid], command: walker.command_for(pid) }
   end
 
-  def self.command_for_pid(pid)
-    @commands ||= {}
-    return @commands[pid] if @commands.key?(pid)
-
-    result = `ps -o command= -p #{pid}`.strip
-    @commands[pid] = result
+  def self.walker
+    @walker ||= Helpers::ProcessTreeWalker.new
   end
 end

@@ -32,11 +32,15 @@ class Dude::Dudes::Tasks
   end
 
   def session_dir(project_dir)
-    jsonl = Dir.children(project_dir)
+    jsonl = latest_jsonl(project_dir)
+    return nil unless jsonl
+    File.join(File.expand_path('~/.claude/tasks'), File.basename(jsonl, '.jsonl'))
+  end
+
+  def latest_jsonl(project_dir)
+    Dir.children(project_dir)
       .select { |f| f.end_with?('.jsonl') }
       .map { |f| File.join(project_dir, f) }
       .max_by { |f| File.mtime(f) }
-    return nil unless jsonl
-    File.join(File.expand_path('~/.claude/tasks'), File.basename(jsonl, '.jsonl'))
   end
 end

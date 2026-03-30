@@ -1,5 +1,6 @@
 require_relative '../helpers/json'
 require_relative './inbox'
+require_relative './path_resolver'
 
 class Dude::Dudes::Home
   include Helpers::Json
@@ -13,37 +14,34 @@ class Dude::Dudes::Home
   def read_dude_link(dudes_dir, name)
     link_path = File.join(dudes_dir, name)
     return nil unless File.symlink?(link_path)
-    target = expand_target(File.readlink(link_path), dudes_dir)
+    target = path_resolver.expand_target(File.readlink(link_path), dudes_dir)
     is_accessible?(target) ? target : nil
   end
 
   def read_dude_data(target)
     icon = read_icon(File.join(target, 'CLAUDE.md'))
     return nil unless icon
-    status = read_json(File.join(target, 'dudes', 'status.json')) || {}
-    inbox_path = File.join(target, 'dudes', 'inbox.json')
-    inbox = Dude::Dudes::Inbox.new(inbox_path)
-    { icon: icon, target: target, status: status, inbox: inbox, dude_dir: File.join(target, 'dudes') }
+    compose_dude_data(icon, target)
   end
 
   private
 
-  def expand_target(readlink_result, dudes_dir)
-    path = readlink_result.chomp('/')
-    return path if path.start_with?('/')
+  def compose_dude_data(icon, target)
+    dude_dir = File.join(target, 'dudes')
+    { icon: icon, target: target, status: read_status(dude_dir),
+      inbox: Dude::Dudes::Inbox.new(File.join(dude_dir, 'inbox.json')), dude_dir: dude_dir }
+  end
 
-    parts = dudes_dir.split('/').reject(&:empty?)
-    path.split('/').each do |component|
-      if component == '..'
-        parts.pop
-      elsif component != '.'
-        parts << component
-      end
-    end
-    '/' + parts.join('/')
+  def read_status(dude_dir)
+    read_json(File.join(dude_dir, 'status.json')) || {}
+  end
+
+  def path_resolver
+    @path_resolver ||= Dude::Dudes::PathResolver.new
   end
 
   def is_accessible?(target)
     Dude::Dudes.pids.any? { |_pid, cwd| cwd == target || File.dirname(target) == cwd }
   end
+
 end

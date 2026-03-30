@@ -83,7 +83,7 @@ module StatusLine
 
     def activity_url
       today = Date.today.strftime('%Y-%m-%d')
-      "https://sdlc-llm.ukg.int/user/daily/activity?start_date=#{today}&end_date=#{today}"
+      ENV['CLAUDE_ACTIVITY_URL'] || "https://sdlc-llm.ukg.int/user/daily/activity?start_date=#{today}&end_date=#{today}"
     end
 
     def fetch_json(url)

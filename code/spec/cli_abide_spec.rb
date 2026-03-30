@@ -1,6 +1,4 @@
 require_relative './spec_helper'
-require_relative '../lib/helpers/background_tasks'
-require_relative '../lib/helpers/wait'
 require_relative '../lib/helpers/cli'
 
 describe Dude::CLI do
@@ -21,7 +19,7 @@ end
         allow(BackgroundTasks).to receive(:list).and_return([])
 
         dude_mock = instance_double('Dude::Dudes::Dude')
-        allow(dude_mock).to receive(:watch).and_return('result message')
+        allow(dude_mock).to receive(:abide).and_return('"result message"')
         dudes_mock = instance_double('Dude::Dudes')
         allow(dudes_mock).to receive(:current).and_return(dude_mock)
         allow(Dude::Dudes).to receive(:new).and_return(dudes_mock)
@@ -39,8 +37,24 @@ end
           { pid: 3, parent_pid: 1000, command: 'dude other' }
         ])
         allow(Process).to receive(:pid).and_return(1)
-
         expect(BackgroundTasks).to receive(:kill).with(2)
+
+        # Create real Dude with mocked inbox and registry
+        inbox_mock = instance_double('Dude::Dudes::Inbox')
+        allow(inbox_mock).to receive(:first_new).and_return(nil)
+
+        dude = Dude::Dudes::Dude.new(
+          inbox: inbox_mock,
+          status: {},
+          dude_dir: '/tmp/test_dude',
+          target: '/tmp/test_dude',
+          name: 'test',
+          registry: instance_double('Registry')
+        )
+
+        dudes_mock = instance_double('Dude::Dudes')
+        allow(dudes_mock).to receive(:current).and_return(dude)
+        allow(Dude::Dudes).to receive(:new).and_return(dudes_mock)
 
         capture_output { cli.abide }
       end
@@ -51,8 +65,24 @@ end
           { pid: 2, parent_pid: 1000, command: 'dude abide' }
         ])
         allow(Process).to receive(:pid).and_return(1)
-
         expect(BackgroundTasks).to receive(:kill).with(2)
+
+        # Create real Dude with mocked inbox and registry
+        inbox_mock = instance_double('Dude::Dudes::Inbox')
+        allow(inbox_mock).to receive(:first_new).and_return(nil)
+
+        dude = Dude::Dudes::Dude.new(
+          inbox: inbox_mock,
+          status: {},
+          dude_dir: '/tmp/test_dude',
+          target: '/tmp/test_dude',
+          name: 'test',
+          registry: instance_double('Registry')
+        )
+
+        dudes_mock = instance_double('Dude::Dudes')
+        allow(dudes_mock).to receive(:current).and_return(dude)
+        allow(Dude::Dudes).to receive(:new).and_return(dudes_mock)
 
         capture_output { cli.abide }
       end

@@ -8,4 +8,6 @@ Gem::Specification.new do |s|
   s.bindir      = 'bin'
   s.required_ruby_version = '>= 3.0'
   s.add_dependency 'thor'
+  s.add_development_dependency 'rubocop'
+  s.add_development_dependency 'cucumber'
 end

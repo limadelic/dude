@@ -10,4 +10,12 @@ task :install do
   end
 end
 
+desc 'Run cucumber features'
+task :features do
+  sh 'bundle exec cucumber'
+end
+
+desc 'Full check: spec → install → features'
+task shipit: [:spec, :install, :features]
+
 task default: :spec

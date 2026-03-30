@@ -4,7 +4,6 @@ module Pomo
   class Timer
     include StatusLine::Format
 
-    POMO_FILE = '/tmp/pomo.status'
     POMO_TYPES = {
       'long break' => [900, '🍏', :green],
       'break' => [300, '🍏', :green],
@@ -25,8 +24,9 @@ module Pomo
     private
 
     def read_pomo_file
-      return nil unless File.exist?(POMO_FILE)
-      parts = File.read(POMO_FILE).split('|')
+      path = ENV.fetch('POMO_STATUS_FILE', '/tmp/pomo.status')
+      return nil unless File.exist?(path)
+      parts = File.read(path).split('|')
       parts[0] != 'transitioning' && [parts[0], parts[1].to_i]
     end
 

@@ -7,10 +7,15 @@ class Dude::Dudes::Dude
   attr_reader :icon, :inbox, :status, :name, :target
   attr_accessor :pid
 
-  def initialize(icon:, inbox:, status:, dude_dir:, target:, name:, registry: nil)
-    @icon, @inbox, @status, @dude_dir, @target, @name = icon, inbox, status, dude_dir, target, name
+  def initialize(opts = {})
+    @icon = opts[:icon]
+    @inbox = opts[:inbox]
+    @status = opts[:status]
+    @dude_dir = opts[:dude_dir]
+    @target = opts[:target]
+    @name = opts[:name]
     @pid = nil
-    @registry = registry
+    @registry = opts[:registry]
     @abide = Dude::Dudes::Abide.new(inbox: @inbox, dude_dir: @dude_dir, name: @name)
     @pub = Dude::Dudes::Pub.new(target: @target)
   end
@@ -75,6 +80,10 @@ class Dude::Dudes::Dude
 
   def dequeue_wip
     @inbox.dequeue_wip
+  end
+
+  def abide
+    @abide.launch
   end
 
   def watch

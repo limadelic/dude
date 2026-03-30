@@ -70,12 +70,14 @@ class Dude::Dudes::Pub
   end
 
   def remove_dudes
-    Dir.children(::Dude::GLOBAL_DIR).each do |name|
-      path = File.join(::Dude::GLOBAL_DIR, name)
-      next unless File.symlink?(path)
-      target = File.readlink(path).chomp('/')
-      FileUtils.rm_rf(File.join(target, 'dudes'))
-      File.delete(path)
-    end
+    Dir.children(::Dude::GLOBAL_DIR).each { |name| remove_dude(name) }
+  end
+
+  def remove_dude(name)
+    path = File.join(::Dude::GLOBAL_DIR, name)
+    return unless File.symlink?(path)
+    target = File.readlink(path).chomp('/')
+    FileUtils.rm_rf(File.join(target, 'dudes'))
+    File.delete(path)
   end
 end
