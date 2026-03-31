@@ -1,5 +1,5 @@
 require_relative '../spec_helper'
-require_relative '../../lib/dudes/pub'
+require_relative '../../lib/dude/dudes/pub'
 
 describe Dude::Dudes::Pub do
   let(:target) { '/proj/.claude' }
@@ -189,6 +189,36 @@ describe Dude::Dudes::Pub do
       result = pub.sub('/some/path/code', nil)
 
       expect(result).to eq('dude_code')
+    end
+  end
+
+  describe '#claude_dir' do
+    it 'returns the path itself when it IS a .claude directory' do
+      pub = build
+      result = pub.send(:claude_dir, '/home/user/.claude')
+      expect(result).to eq('/home/user/.claude')
+    end
+
+    it 'returns .claude subdirectory when it exists' do
+      pub = build
+      allow(Dir).to receive(:exist?).with('/projects/myapp/.claude').and_return(true)
+      result = pub.send(:claude_dir, '/projects/myapp')
+      expect(result).to eq('/projects/myapp/.claude')
+    end
+
+    it 'returns the path itself when .claude subdirectory does not exist' do
+      pub = build
+      allow(Dir).to receive(:exist?).and_return(false)
+      result = pub.send(:claude_dir, '/some/path')
+      expect(result).to eq('/some/path')
+    end
+
+    it 'avoids nested .claude/.claude even if it exists' do
+      pub = build
+      allow(Dir).to receive(:exist?).and_return(true)
+      result = pub.send(:claude_dir, '/home/user/.claude')
+      expect(result).to eq('/home/user/.claude')
+      expect(result).not_to eq('/home/user/.claude/.claude')
     end
   end
 end

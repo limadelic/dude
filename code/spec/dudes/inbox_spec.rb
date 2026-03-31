@@ -1,5 +1,5 @@
 require_relative '../spec_helper'
-require_relative '../../lib/dudes/inbox'
+require_relative '../../lib/dude/dudes/inbox'
 
 describe Dude::Dudes::Inbox do
   let(:path) { '/root/.claude/dudes/inbox.json' }

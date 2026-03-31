@@ -1,8 +1,8 @@
 require_relative '../spec_helper'
-require_relative '../../lib/status_line/dudes'
-require_relative '../helpers/shared_examples'
+require_relative '../../lib/dude/status_line/dudes'
+require_relative '../examples/shared'
 
-describe StatusLine::Dudes do
+describe Dude::StatusLine::Dudes do
   include_context 'StatusLine helpers'
 
   def mock_dude(name:, icon:, messages:, context:, current:, abiding: true)
@@ -96,7 +96,7 @@ describe StatusLine::Dudes do
 
   describe '#write_status' do
     let(:pct) { 50 }
-    let(:dudes) { StatusLine::Dudes.new({}, nil, '/tmp', pct) }
+    let(:dudes) { Dude::StatusLine::Dudes.new({}, nil, '/tmp', pct) }
 
     before do
       allow(Dir).to receive(:exist?).and_return(true)
@@ -107,7 +107,7 @@ describe StatusLine::Dudes do
     context 'context color' do
       { 0 => 'green', 32 => 'green', 33 => 'yellow', 66 => 'yellow', 67 => 'red', 100 => 'red' }.each do |p, c|
         it "writes #{c} at #{p}%" do
-          d = StatusLine::Dudes.new({}, nil, '/tmp', p)
+          d = Dude::StatusLine::Dudes.new({}, nil, '/tmp', p)
           allow(Dir).to receive(:exist?).and_return(true)
           allow(JSON).to receive(:load_file) { {} }
           allow(File).to receive(:write)

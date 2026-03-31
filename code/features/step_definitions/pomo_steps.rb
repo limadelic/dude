@@ -1,4 +1,4 @@
-require_relative '../../lib/status_line/format'
+require_relative '../../lib/dude/status_line/format'
 require 'tempfile'
 require 'time'
 
@@ -28,8 +28,8 @@ end
 
 Then('the "Pomo" bar shows {string} in {word}') do |bar, color_name|
   output = dude('pomo').strip
-  expected_color = StatusLine::Format::COLORS[color_name.to_sym]
-  cleaned = StatusLine::Format.strip(output)
+  expected_color = Dude::StatusLine::Format::COLORS[color_name.to_sym]
+  cleaned = Dude::StatusLine::Format.strip(output)
   raise "Expected bar '#{bar}' in output, got: #{cleaned}" unless cleaned.include?(bar)
   raise "Expected color #{color_name} in output" unless output.include?(expected_color)
 end

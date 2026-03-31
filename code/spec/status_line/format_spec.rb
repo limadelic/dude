@@ -1,8 +1,8 @@
 require_relative '../spec_helper'
-require_relative '../../lib/status_line/format'
+require_relative '../../lib/dude/status_line/format'
 
-describe StatusLine::Format do
-  let(:dummy_class) { Class.new { include StatusLine::Format } }
+describe Dude::StatusLine::Format do
+  let(:dummy_class) { Class.new { include Dude::StatusLine::Format } }
   let(:formatter) { dummy_class.new }
 
   describe '#clamp' do
@@ -21,15 +21,15 @@ describe StatusLine::Format do
 
   describe '#color_for_pct' do
     it 'returns green for low percentage' do
-      expect(formatter.color_for_pct(25)).to eq(StatusLine::Format::COLORS[:green])
+      expect(formatter.color_for_pct(25)).to eq(Dude::StatusLine::Format::COLORS[:green])
     end
 
     it 'returns yellow for mid percentage' do
-      expect(formatter.color_for_pct(50)).to eq(StatusLine::Format::COLORS[:yellow])
+      expect(formatter.color_for_pct(50)).to eq(Dude::StatusLine::Format::COLORS[:yellow])
     end
 
     it 'returns red for high percentage' do
-      expect(formatter.color_for_pct(75)).to eq(StatusLine::Format::COLORS[:red])
+      expect(formatter.color_for_pct(75)).to eq(Dude::StatusLine::Format::COLORS[:red])
     end
   end
 
@@ -47,7 +47,7 @@ describe StatusLine::Format do
     end
 
     it 'uses provided color instead of calculated' do
-      result = formatter.bar(25, '💰', color: StatusLine::Format::COLORS[:red])
+      result = formatter.bar(25, '💰', color: Dude::StatusLine::Format::COLORS[:red])
       expect(result).to include("\e[31m")
     end
   end
@@ -86,7 +86,7 @@ describe StatusLine::Format do
 
   describe '#emoji_str' do
     it 'formats emoji with color and superscript' do
-      result = formatter.emoji_str('🎭', StatusLine::Format::COLORS[:green], '³', '')
+      result = formatter.emoji_str('🎭', Dude::StatusLine::Format::COLORS[:green], '³', '')
       expect(result).to include('🎭')
       expect(result).to include('³')
       expect(result).to include("\e[32m")
@@ -95,23 +95,23 @@ describe StatusLine::Format do
 
   describe '#emoji_group' do
     it 'formats inactive emoji' do
-      result = formatter.emoji_group('🎭', 5, false, StatusLine::Format::COLORS[:green])
+      result = formatter.emoji_group('🎭', 5, false, Dude::StatusLine::Format::COLORS[:green])
       expect(result).to include('🎭')
       expect(result).to include('⁵')
     end
 
     it 'adds background for active emoji' do
-      result = formatter.emoji_group('🎭', 5, true, StatusLine::Format::COLORS[:green])
+      result = formatter.emoji_group('🎭', 5, true, Dude::StatusLine::Format::COLORS[:green])
       expect(result).to include("\e[42m")
     end
 
     it 'uses black text on yellow' do
-      result = formatter.emoji_group('🎭', 5, true, StatusLine::Format::COLORS[:yellow])
+      result = formatter.emoji_group('🎭', 5, true, Dude::StatusLine::Format::COLORS[:yellow])
       expect(result).to include("\e[30m")
     end
 
     it 'uses white text on other colors' do
-      result = formatter.emoji_group('🎭', 5, true, StatusLine::Format::COLORS[:green])
+      result = formatter.emoji_group('🎭', 5, true, Dude::StatusLine::Format::COLORS[:green])
       expect(result).to include("\e[97m")
     end
   end

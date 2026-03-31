@@ -1,9 +1,9 @@
 require_relative '../spec_helper'
-require_relative '../../lib/pomo/pomo'
+require_relative '../../lib/dude/pomo/pomo'
 
-describe Pomo::Timer do
+describe Dude::Pomo::Pomo do
   let(:future) { Time.now.to_i + 100 }
-  let(:timer) { Pomo::Timer.new }
+  let(:timer) { Dude::Pomo::Pomo.new }
 
   def strip(s)
     s.gsub(/\e\[[0-9;]*m/, '')

@@ -1,13 +1,13 @@
 require_relative '../spec_helper'
-require_relative '../../lib/status_line/models'
-require_relative '../../lib/dudes/dudes'
-require_relative '../helpers/shared_examples'
+require_relative '../../lib/dude/status_line/models'
+require_relative '../../lib/dude/dudes/dudes'
+require_relative '../examples/shared'
 
-describe StatusLine::Models do
+describe Dude::StatusLine::Models do
   include_context 'StatusLine helpers'
 
   before do
-    allow(Dude::Dudes).to receive(:new).and_return(instance_double(Dude::Dudes, all: []))
+    allow(Dude::Dudes::Dudes).to receive(:new).and_return(instance_double(Dude::Dudes::Dudes, all: []))
   end
 
   describe 'Active model background' do

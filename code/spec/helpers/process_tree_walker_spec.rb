@@ -1,7 +1,7 @@
 require_relative '../spec_helper'
-require_relative '../../lib/helpers/process_tree_walker'
+require_relative '../../lib/dude/helpers/process_tree_walker'
 
-describe Helpers::ProcessTreeWalker do
+describe Dude::Helpers::ProcessTreeWalker do
   let(:walker) { described_class.new }
 
   describe '#command_for' do
