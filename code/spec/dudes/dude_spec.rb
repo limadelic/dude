@@ -1,11 +1,11 @@
 require_relative '../spec_helper'
-require_relative '../../lib/dudes/dude'
+require_relative '../../lib/dude/dudes/dude'
 
 describe Dude::Dudes::Dude do
   let(:dude_dir) { '/proj/.claude/dudes' }
 
   def build(overrides = {})
-    registry_mock = instance_double('Dude::Dudes') unless overrides[:registry]
+    registry_mock = instance_double('Dude::Dudes::Dudes') unless overrides[:registry]
     defaults = {
       icon: '🔴',
       inbox: [],
@@ -21,7 +21,7 @@ describe Dude::Dudes::Dude do
 
   describe '#is_current?' do
     it 'returns false when pid is nil' do
-      registry_mock = instance_double('Dude::Dudes')
+      registry_mock = instance_double('Dude::Dudes::Dudes')
       expect(registry_mock).not_to receive(:is_current?)
       dude = build(registry: registry_mock)
       dude.pid = nil
@@ -29,7 +29,7 @@ describe Dude::Dudes::Dude do
     end
 
     it 'returns true when registry says current' do
-      registry_mock = instance_double('Dude::Dudes')
+      registry_mock = instance_double('Dude::Dudes::Dudes')
       expect(registry_mock).to receive(:is_current?).with(999).and_return(true)
       dude = build(registry: registry_mock)
       dude.pid = 999
@@ -136,7 +136,7 @@ describe Dude::Dudes::Dude do
 
   describe '#is_abiding?' do
     it 'returns true when registry says abiding' do
-      registry_mock = instance_double('Dude::Dudes')
+      registry_mock = instance_double('Dude::Dudes::Dudes')
       expect(registry_mock).to receive(:is_abiding?).with(888, '/proj/.claude/dudes', '/proj/.claude').and_return(true)
       dude = build(registry: registry_mock)
       dude.pid = 888
@@ -198,7 +198,7 @@ describe Dude::Dudes::Dude do
 
   describe '#pids_for_target' do
     it 'returns pids from registry' do
-      registry_mock = instance_double('Dude::Dudes')
+      registry_mock = instance_double('Dude::Dudes::Dudes')
       expect(registry_mock).to receive(:pids_for_target).with('/proj/.claude').and_return([111, 222])
       dude = build(registry: registry_mock, target: '/proj/.claude')
       result = dude.pids_for_target

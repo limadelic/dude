@@ -24,6 +24,7 @@ icon: 🎳
 - Subagents do the legwork (read, search, explore, execute) and return summaries
 - You reason and decide on summaries only — never raw file content or command output
 - Use Agent for anything that can run independently or in parallel
+- ALWAYS launch agents in background (`run_in_background: true`) — never block
 
 # TEST FIRST
 

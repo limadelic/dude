@@ -1,5 +1,5 @@
 require_relative '../spec_helper'
-require_relative '../../lib/dudes/tasks'
+require_relative '../../lib/dude/dudes/tasks'
 
 describe Dude::Dudes::Tasks do
   let(:tasks) { described_class.new }

@@ -14,7 +14,8 @@
 #
 # See https://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
-Dir[File.join(__dir__, 'helpers', '*.rb')].sort.each { |f| require f }
+require_relative '../lib/spec/helpers'
+require_relative 'examples/shared'
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

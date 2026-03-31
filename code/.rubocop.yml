@@ -2,11 +2,10 @@ AllCops:
   TargetRubyVersion: 3.0
   NewCops: disable
   SuggestExtensions: false
+  Include:
+    - 'lib/**/*'
   Exclude:
-    - 'spec/**/*'
-    - 'features/**/*'
     - 'bin/**/*'
-    - '*.gemspec'
 
 # The ones we care about
 Metrics/MethodLength:
@@ -28,8 +27,19 @@ Lint:
 Naming:
   Enabled: false
 
+Naming/FileName:
+  Enabled: true
+  ExpectMatchingDefinition: true
+  CheckDefinitionPathHierarchy: true
+  CheckDefinitionPathHierarchyRoots:
+    - lib
+
 Style:
   Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: true
+  EnforcedStyle: nested
 
 Bundler:
   Enabled: false

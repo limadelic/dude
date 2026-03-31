@@ -1,5 +1,5 @@
 require_relative '../spec_helper'
-require_relative '../../lib/dudes/home'
+require_relative '../../lib/dude/dudes/home'
 
 describe Dude::Dudes::Home do
   let(:home) { described_class.new }
@@ -7,7 +7,7 @@ describe Dude::Dudes::Home do
 
   before do
     allow(File).to receive(:symlink?).and_return(true)
-    allow(Dude::Dudes).to receive(:pids).and_return({ 12345 => '/root/.claude' })
+    allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 12345 => '/root/.claude' })
     allow(File).to receive(:exist?).and_return(true)
     allow(File).to receive(:read).and_return('')
   end

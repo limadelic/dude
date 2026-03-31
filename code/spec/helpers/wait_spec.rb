@@ -1,7 +1,7 @@
 require_relative '../spec_helper'
-require_relative '../../lib/helpers/wait'
+require_relative '../../lib/dude/helpers/wait'
 
-describe Helpers::Wait do
+describe Dude::Helpers::Wait do
   describe '#until' do
     it 'returns immediately when condition is true' do
       result = described_class.new(interval: 0.01).until { true }
@@ -20,7 +20,7 @@ describe Helpers::Wait do
     it 'raises on timeout' do
       expect {
         described_class.new(interval: 0.01, timeout: 0.03).until { false }
-      }.to raise_error(Helpers::Wait::Timeout)
+      }.to raise_error(Dude::Helpers::Wait::Timeout)
     end
   end
 end

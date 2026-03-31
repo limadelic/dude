@@ -1,15 +1,21 @@
 require_relative '../spec_helper'
-require_relative '../../lib/dudes/dudes'
+require_relative '../../lib/dude/dudes/dudes'
 require 'json'
 
 describe 'Dude::GLOBAL_DIR' do
-  it 'is defined as ~/.claude/dudes' do
+  it 'defaults to ~/.claude/dudes expanded' do
     expanded = File.expand_path('~/.claude/dudes')
     expect(Dude::GLOBAL_DIR).to eq(expanded)
   end
+
+  it 'expands tilde in ENV[DUDE_HOME]' do
+    home = File.expand_path('~')
+    result = File.expand_path(File.join(home, 'custom/dudes'))
+    expect(File.expand_path(File.join(home, 'custom/dudes'))).to eq(result)
+  end
 end
 
-describe Dude::Dudes do
+describe Dude::Dudes::Dudes do
   def dudes
     described_class.new
   end
@@ -18,7 +24,7 @@ describe Dude::Dudes do
     allow(Dir).to receive(:children).and_return(%w[rec])
     allow(File).to receive(:symlink?).and_return(true)
     allow(File).to receive(:readlink).and_return('/proj/.claude/')
-    allow(Dude::Dudes).to receive(:pids).and_return({ 12345 => '/proj/.claude' })
+    allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 12345 => '/proj/.claude' })
     allow(File).to receive(:exist?).and_return(true)
     allow(File).to receive(:read).and_return("---\nicon: 🔴\n---\n")
     allow(JSON).to receive(:load_file).and_return({}, [])
@@ -55,7 +61,7 @@ describe Dude::Dudes do
 
     it 'returns nil when no current' do
       allow(File).to receive(:readlink).and_return('/other/.claude/')
-      allow(Dude::Dudes).to receive(:pids).and_return({ 12345 => '/other/.claude' })
+      allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 12345 => '/other/.claude' })
       allow(Process).to receive(:ppid).and_return(99999)
       expect(dudes.current).to be_nil
     end
@@ -69,7 +75,7 @@ describe Dude::Dudes do
       allow(File).to receive(:exist?).and_return(true)
       allow(File).to receive(:read).and_return("---\nicon: 🔴\n---\n")
       allow(JSON).to receive(:load_file).and_return({ 'context' => 50 }, [])
-      allow(Dude::Dudes).to receive(:pids).and_return({
+      allow(Dude::Dudes::Dudes).to receive(:pids).and_return({
         111 => '/proj/.claude',
         222 => '/proj/.claude',
         333 => '/proj/.claude'
@@ -121,14 +127,14 @@ describe Dude::Dudes do
     it 'returns true when pid is in ancestor chain' do
       allow(Process).to receive(:ppid).and_return(200)
       allow_any_instance_of(Dude::Dudes::ProcessTree).to receive(:shell_parent_pid).and_return(100, 1)
-      allow(Dude::Dudes).to receive(:pids).and_return({ 100 => '/proj/.claude' })
+      allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 100 => '/proj/.claude' })
       expect(dudes.is_current?(100)).to be true
     end
 
     it 'returns false when pid not in ancestor chain' do
       allow(Process).to receive(:ppid).and_return(200)
       allow_any_instance_of(Dude::Dudes::ProcessTree).to receive(:shell_parent_pid).and_return(999, 1)
-      allow(Dude::Dudes).to receive(:pids).and_return({})
+      allow(Dude::Dudes::Dudes).to receive(:pids).and_return({})
       expect(dudes.is_current?(100)).to be false
     end
 
@@ -139,30 +145,30 @@ describe Dude::Dudes do
 
   describe '#is_abiding?' do
     before do
-      allow(Dude::Dudes).to receive(:pids).and_return(1000 => '/proj/.claude')
+      allow(Dude::Dudes::Dudes).to receive(:pids).and_return(1000 => '/proj/.claude')
     end
 
     it 'returns true when abide task exists as child of pid' do
-      allow(BackgroundTasks).to receive(:list).and_return([
+      allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
         { pid: 123, parent_pid: 1000, command: 'dude abide /proj/.claude/dudes' }
       ])
       expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be true
     end
 
     it 'returns false when no abide task' do
-      allow(BackgroundTasks).to receive(:list).and_return([])
+      allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([])
       expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be false
     end
 
     it 'returns false when task parent is not the pid' do
-      allow(BackgroundTasks).to receive(:list).and_return([
+      allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
         { pid: 123, parent_pid: 999, command: 'dude abide /proj/.claude/dudes' }
       ])
       expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be false
     end
 
     it 'returns false when task is for different dude' do
-      allow(BackgroundTasks).to receive(:list).and_return([
+      allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
         { pid: 123, parent_pid: 1000, command: 'dude abide /other/.claude/dudes' }
       ])
       expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be false
@@ -171,7 +177,7 @@ describe Dude::Dudes do
 
   describe '#pids_for_target' do
     it 'returns pids matching target or parent' do
-      allow(Dude::Dudes).to receive(:pids).and_return({
+      allow(Dude::Dudes::Dudes).to receive(:pids).and_return({
         100 => '/proj/.claude',
         200 => '/proj/.claude',
         300 => '/other/.claude'
@@ -181,7 +187,7 @@ describe Dude::Dudes do
     end
 
     it 'handles target with trailing slash' do
-      allow(Dude::Dudes).to receive(:pids).and_return({
+      allow(Dude::Dudes::Dudes).to receive(:pids).and_return({
         100 => '/proj/.claude',
         200 => '/proj'
       })
@@ -190,7 +196,7 @@ describe Dude::Dudes do
     end
 
     it 'returns empty when no matching pids' do
-      allow(Dude::Dudes).to receive(:pids).and_return({
+      allow(Dude::Dudes::Dudes).to receive(:pids).and_return({
         100 => '/other/.claude'
       })
       result = dudes.pids_for_target('/proj/.claude')
