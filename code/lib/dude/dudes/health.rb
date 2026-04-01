@@ -21,7 +21,8 @@ module Dude
 
       def resolve_pid(pids, dude_dir, status)
         pid_alive = first_alive(pids)
-        update_pid(dude_dir, status, pid_alive) if pid_changed?(pid_alive, status)
+        update_pid(dude_dir, status, pid_alive) if
+          pid_changed?(pid_alive, status)
         pid_alive
       end
 
@@ -36,7 +37,8 @@ module Dude
       end
 
       def pgrep_all(pattern)
-        `pgrep -f "#{pattern}"`.strip.split("\n").map(&:to_i).select(&:positive?)
+        result = `pgrep -f "#{pattern}"`.strip.split("\n")
+        result.map(&:to_i).select(&:positive?)
       end
 
       def orphaned?(pid)
@@ -53,7 +55,8 @@ module Dude
 
       def update_pid(dude_dir, status, pid_alive)
         path = File.join(dude_dir, 'status.json')
-        File.write(path, status.merge('abide_pid' => pid_alive).to_json) rescue nil
+        data = status.merge('abide_pid' => pid_alive)
+        File.write(path, data.to_json) rescue nil
       end
     end
   end

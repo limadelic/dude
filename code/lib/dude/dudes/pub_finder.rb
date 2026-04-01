@@ -18,7 +18,8 @@ module Dude
       private
 
       def self.walk_up_from(current)
-        check_for_pub_in(current) || (parent = parent_dir(current)) && walk_up_from(parent)
+        check_for_pub_in(current) || (parent = parent_dir(current)) &&
+          walk_up_from(parent)
       end
 
       def self.check_for_pub_in(dir)
@@ -26,7 +27,11 @@ module Dude
         return nil unless Dir.exist?(claude_dir)
 
         pub_name = find_pub_name_for_target(claude_dir)
-        pub_name ? { name: pub_name, path: File.join(claude_dir, 'dudes') } : nil
+        if pub_name
+          { name: pub_name, path: File.join(claude_dir, 'dudes') }
+        else
+          nil
+        end
       end
 
       def self.parent_dir(current)
@@ -53,7 +58,9 @@ module Dude
 
         def matches?(name, target)
           link = File.join(::Dude::GLOBAL_DIR, name)
-          File.symlink?(link) && File.readlink(link).chomp('/') == target.chomp('/')
+          return false unless File.symlink?(link)
+
+          File.readlink(link).chomp('/') == target.chomp('/')
         end
       end
     end
