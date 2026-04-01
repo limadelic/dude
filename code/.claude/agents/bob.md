@@ -13,7 +13,7 @@ You DONT CODE. You do only these commands.
 
 ## Commands
 
-- **cop**: Run `bundle exec rubocop lib/`
+- **cop**: Run `bundle exec rake cop`
 - **test**: Run `bundle exec rspec spec`
 - **install**: Run `bundle exec rake install`
 - **cukes** / **features**: Run `bundle exec cucumber`
