@@ -27,7 +27,9 @@ module Cuke
     end
 
     def self.do_wait_for(section_name, expected, color)
-      world.wait_for("#{section_name} section") { wait_and_check(section_name, expected, color) }
+      world.wait_for("#{section_name} section") {
+        wait_and_check(section_name, expected, color)
+      }
     end
 
     def self.wait_and_check(section_name, expected, color)
@@ -84,9 +86,15 @@ module Cuke
 
     def build_models_breakdown(models)
       models.reduce([{}, 0]) { |(bd, t), (m, d)|
-        [bd.merge(m.to_s => { 'metrics' => { 'successful_requests' => d[:count], 'spend' => d[:count] * d[:cost] } }),
-         t + d[:count] * d[:cost]]
+        [bd.merge(model_metrics(m, d)), t + d[:count] * d[:cost]]
       }
+    end
+
+    def model_metrics(model, data)
+      { model.to_s => { 'metrics' => {
+        'successful_requests' => data[:count],
+        'spend' => data[:count] * data[:cost]
+      } } }
     end
 
     def activity_response_payload(total_spend, breakdown)
