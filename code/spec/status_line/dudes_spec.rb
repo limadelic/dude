@@ -7,10 +7,8 @@ describe Dude::StatusLine::Dudes do
 
   def mock_dude(name:, icon:, messages:, context:, current:, abiding: true)
     d = double(name)
-    allow(d).to receive_messages(
-      name: name, icon: icon, messages: messages, context: context,
-      is_current?: current, is_abiding?: abiding
-    )
+    allow(d).to receive_messages(name: name, icon: icon, messages: messages,
+      context: context, is_current?: current, is_abiding?: abiding)
     d
   end
 

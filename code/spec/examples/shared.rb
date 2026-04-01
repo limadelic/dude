@@ -27,18 +27,15 @@ module Examples
         }
       end
 
-      def mock_activity(spend: 10.0, models: nil)
-        models ||= {
-          'claude-haiku-4-5' => { 'metrics' => { 'successful_requests' => 50, 'spend' => 0.5 } },
+      def default_models
+        { 'claude-haiku-4-5' => { 'metrics' => { 'successful_requests' => 50, 'spend' => 0.5 } },
           'claude-opus-4-6' => { 'metrics' => { 'successful_requests' => 30, 'spend' => 15.0 } },
-          'claude-sonnet-4-6' => { 'metrics' => { 'successful_requests' => 20, 'spend' => 4.0 } }
-        }
-        {
-          'results' => [{
-            'metrics' => { 'spend' => spend },
-            'breakdown' => { 'models' => models }
-          }]
-        }
+          'claude-sonnet-4-6' => { 'metrics' => { 'successful_requests' => 20, 'spend' => 4.0 } } }
+      end
+
+      def mock_activity(spend: 10.0, models: nil)
+        m = models || default_models
+        { 'results' => [{ 'metrics' => { 'spend' => spend }, 'breakdown' => { 'models' => m } }] }
       end
 
       def out(session_data, activity_data = activity, dudes_data = nil)
