@@ -81,9 +81,9 @@ module Dude
 
       def kill_duplicate_abides
         ::Dude::Helpers::BackgroundTasks.list
-                                        .reject { |t| t[:pid] == Process.pid }
-                                        .select { |t| t[:command].include?('dude abide') }
-                                        .each { |t| ::Dude::Helpers::BackgroundTasks.kill(t[:pid]) }
+          .reject { |t| t[:pid] == Process.pid }
+          .select { |t| t[:command].include?('dude abide') }
+          .each { |t| ::Dude::Helpers::BackgroundTasks.kill(t[:pid]) }
       end
     end
   end

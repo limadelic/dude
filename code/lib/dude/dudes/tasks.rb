@@ -44,9 +44,9 @@ module Dude
 
       def latest_jsonl(project_dir)
         Dir.children(project_dir)
-           .select { |f| f.end_with?('.jsonl') }
-           .map { |f| File.join(project_dir, f) }
-           .max_by { |f| File.mtime(f) }
+          .select { |f| f.end_with?('.jsonl') }
+          .map { |f| File.join(project_dir, f) }
+          .max_by { |f| File.mtime(f) }
       end
     end
   end

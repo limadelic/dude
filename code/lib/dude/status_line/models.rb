@@ -48,7 +48,7 @@ module Dude
 
       def sum_metric(groups, model_name, key)
         groups.select { |k, _| k.include?(model_name) }
-              .sum { |_, v| v.dig('metrics', key).to_f }
+          .sum { |_, v| v.dig('metrics', key).to_f }
       end
     end
   end

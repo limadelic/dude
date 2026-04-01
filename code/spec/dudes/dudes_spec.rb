@@ -76,10 +76,10 @@ describe Dude::Dudes::Dudes do
       allow(File).to receive(:read).and_return("---\nicon: 🔴\n---\n")
       allow(JSON).to receive(:load_file).and_return({ 'context' => 50 }, [])
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return({
-                                                               111 => '/proj/.claude',
-                                                               222 => '/proj/.claude',
-                                                               333 => '/proj/.claude'
-                                                             })
+        111 => '/proj/.claude',
+        222 => '/proj/.claude',
+        333 => '/proj/.claude'
+      })
     end
 
     it 'creates one dude per PID' do
@@ -150,9 +150,9 @@ describe Dude::Dudes::Dudes do
 
     it 'returns true when abide task exists as child of pid' do
       allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
-                                                                           { pid: 123, parent_pid: 1000,
-                                                                             command: 'dude abide /proj/.claude/dudes' }
-                                                                         ])
+        { pid: 123, parent_pid: 1000,
+          command: 'dude abide /proj/.claude/dudes' }
+      ])
       expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be true
     end
 
@@ -163,17 +163,17 @@ describe Dude::Dudes::Dudes do
 
     it 'returns false when task parent is not the pid' do
       allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
-                                                                           { pid: 123, parent_pid: 999,
-                                                                             command: 'dude abide /proj/.claude/dudes' }
-                                                                         ])
+        { pid: 123, parent_pid: 999,
+          command: 'dude abide /proj/.claude/dudes' }
+      ])
       expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be false
     end
 
     it 'returns false when task is for different dude' do
       allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
-                                                                           { pid: 123, parent_pid: 1000,
-                                                                             command: 'dude abide /other/.claude/dudes' }
-                                                                         ])
+        { pid: 123, parent_pid: 1000,
+          command: 'dude abide /other/.claude/dudes' }
+      ])
       expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be false
     end
   end
@@ -181,27 +181,27 @@ describe Dude::Dudes::Dudes do
   describe '#pids_for_target' do
     it 'returns pids matching target or parent' do
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return({
-                                                               100 => '/proj/.claude',
-                                                               200 => '/proj/.claude',
-                                                               300 => '/other/.claude'
-                                                             })
+        100 => '/proj/.claude',
+        200 => '/proj/.claude',
+        300 => '/other/.claude'
+      })
       result = dudes.pids_for_target('/proj/.claude')
       expect(result).to match_array([100, 200])
     end
 
     it 'handles target with trailing slash' do
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return({
-                                                               100 => '/proj/.claude',
-                                                               200 => '/proj'
-                                                             })
+        100 => '/proj/.claude',
+        200 => '/proj'
+      })
       result = dudes.pids_for_target('/proj/.claude/')
       expect(result).to match_array([100, 200])
     end
 
     it 'returns empty when no matching pids' do
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return({
-                                                               100 => '/other/.claude'
-                                                             })
+        100 => '/other/.claude'
+      })
       result = dudes.pids_for_target('/proj/.claude')
       expect(result).to eq([])
     end
