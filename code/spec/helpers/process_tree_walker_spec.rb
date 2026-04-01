@@ -6,7 +6,8 @@ describe Dude::Helpers::ProcessTreeWalker do
 
   describe '#command_for' do
     it 'uses command keyword instead of cmd for cross-platform support' do
-      allow(walker).to receive(:`).with('ps -o command= -p 2000').and_return("dude abide\n")
+      allow(walker).to receive(:`).with('ps -o command= -p 2000')
+        .and_return("dude abide\n")
       result = walker.command_for(2000)
       expect(result).to eq("dude abide")
     end

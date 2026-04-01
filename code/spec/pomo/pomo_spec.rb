@@ -64,7 +64,8 @@ describe Dude::Pomo::Pomo do
 
   describe 'progress' do
     it 'empty bar at start' do
-      allow(File).to receive(:read).and_return("default|#{Time.now.to_i + 1500}")
+      future = Time.now.to_i + 1500
+      allow(File).to receive(:read).and_return("default|#{future}")
       expect(strip(timer.to_s)).to match(/░{9}/)
     end
 

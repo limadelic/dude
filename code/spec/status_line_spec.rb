@@ -51,8 +51,9 @@ describe Dude::StatusLine::Runner do
     it 'fetches JSON from API when activity not passed' do
       runner = Dude::StatusLine::Runner.new('{}')
       runner.send(:activity_data)
-      expect(Open3).to have_received(:capture3).with('curl', '-s', '-L', anything, anything, anything, anything,
-        anything)
+      expect(Open3).to have_received(:capture3).with(
+        'curl', '-s', '-L', anything, anything, anything, anything, anything
+      )
     end
 
     it 'uses passed activity without API call' do
