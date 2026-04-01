@@ -35,6 +35,38 @@ module Cuke
       full_cmd = cmd.include?('&') ? "exec -a dude_test sh -c '#{escaped_cmd}'" : "exec -a dude_test #{cmd}"
       @sessions ||= {}
       @sessions[home] = spawn(full_cmd, chdir: home, pgroup: true, **DEV_NULL)
+      wait_for_process_startup(home) if replace
+    end
+
+    def wait_for_process_startup(home)
+      wait_for("process startup for #{home}", timeout: 10, interval: 0.05) do
+        process_visible_with_cwd?(home)
+      end
+    end
+
+    def process_visible_with_cwd?(home)
+      real_home = begin
+        File.realpath(File.expand_path(home))
+      rescue
+        File.expand_path(home)
+      end
+      pgrep_output = `pgrep -a dude_test 2>/dev/null`.strip
+      return false if pgrep_output.empty?
+
+      pgrep_output.split("\n").each do |line|
+        pid = line.split.first&.to_i
+        next unless pid&.positive?
+
+        lsof_output = `lsof -p #{pid} 2>/dev/null`
+        cwd = lsof_output[/cwd\s+DIR\s+\S+\s+\S+\s+\S+\s+(.+)/, 1]
+        real_cwd = begin
+          cwd ? File.realpath(cwd) : nil
+        rescue
+          cwd ? File.expand_path(cwd) : nil
+        end
+        return true if real_cwd && real_cwd.chomp('/') == real_home.chomp('/')
+      end
+      false
     end
 
     def run(home, command)
