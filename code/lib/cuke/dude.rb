@@ -24,10 +24,10 @@ module Cuke
     DEFAULT_RUNNER = [->(c) { "dude #{c} & wait" }, false]
 
     RUNNERS = {
-      'abide'  => [->(_) { ABIDE }, true],
-      'tell'   => [->(c) { "dude #{c}; #{ABIDE}" }, true],
-      'ask'    => [->(c) { "dude #{c}; #{ABIDE}" }, true],
-      'reply'  => [->(c) { "dude #{c}; #{ABIDE}" }, true],
+      'abide' => [->(_) { ABIDE }, true],
+      'tell' => [->(c) { "dude #{c}; #{ABIDE}" }, true],
+      'ask' => [->(c) { "dude #{c}; #{ABIDE}" }, true],
+      'reply' => [->(c) { "dude #{c}; #{ABIDE}" }, true],
       'abided' => [->(c) { "dude #{c}; #{ABIDE}" }, true]
     }
 
@@ -62,12 +62,14 @@ module Cuke
       opts = { stdin_data: stdin.to_s, chdir: chdir }.compact
       output, _, status = Open3.capture3(cmd, **opts)
       raise "CLI failed: #{cmd}" unless status.success?
+
       output
     end
 
     def wait_for(description, timeout: 10, interval: 0.2)
       deadline = Time.now + timeout
       return if poll_until_deadline(deadline, interval) { yield }
+
       raise "Timed out waiting for #{description}"
     end
 
@@ -88,6 +90,7 @@ module Cuke
       @sessions ||= {}
       pid = @sessions.delete(home)
       return unless pid
+
       Process.kill('TERM', -pid) rescue nil
       Process.wait(pid) rescue nil
     end
@@ -95,6 +98,7 @@ module Cuke
     def poll_until_deadline(deadline, interval)
       until Time.now > deadline
         return true if yield
+
         sleep interval
       end
       false

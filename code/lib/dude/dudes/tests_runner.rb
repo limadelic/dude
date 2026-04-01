@@ -1,6 +1,6 @@
 module Dude
   module Dudes
-      class TestsRunner
+    class TestsRunner
       def initialize(files)
         @files = files
       end
@@ -8,6 +8,6 @@ module Dude
       def pass?
         system("bundle exec rspec #{@files.join(' ')} > /dev/null 2>&1")
       end
-      end
+    end
   end
 end

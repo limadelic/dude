@@ -42,7 +42,9 @@ module Cuke
 
     def self.verify_content(section, expected)
       parts = expected.split(' ')
-      raise "Expected '#{expected}' in section, got: #{section.cleaned}" unless parts.all? { |part| section.cleaned.include?(part) }
+      raise "Expected '#{expected}' in section, got: #{section.cleaned}" unless parts.all? { |part|
+        section.cleaned.include?(part)
+      }
     end
 
     def self.verify_color(section, color)
@@ -61,7 +63,8 @@ module Cuke
 
     def build_models_from_counts(counts)
       h, hc, s, sc, o, oc = counts
-      { haiku: { count: h.to_i, cost: hc.to_i }, sonnet: { count: s.to_i, cost: sc.to_i }, opus: { count: o.to_i, cost: oc.to_i } }
+      { haiku: { count: h.to_i, cost: hc.to_i }, sonnet: { count: s.to_i, cost: sc.to_i },
+        opus: { count: o.to_i, cost: oc.to_i } }
     end
 
     def set_activity_response(models)

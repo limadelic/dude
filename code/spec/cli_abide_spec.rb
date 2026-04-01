@@ -12,7 +12,7 @@ describe Dude::Helpers::Cli do
         1000 => '/tmp/test_dude'
       )
       allow(Process).to receive(:kill)
-end
+    end
 
     context 'when no other abide processes exist' do
       it 'watches and returns first message' do
@@ -32,10 +32,13 @@ end
     context 'when other abide processes exist' do
       it 'kills duplicate processes and returns early' do
         allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
-          { pid: 1, parent_pid: 1000, command: 'dude abide' },
-          { pid: 2, parent_pid: 1000, command: 'dude abide' },
-          { pid: 3, parent_pid: 1000, command: 'dude other' }
-        ])
+                                                                             { pid: 1, parent_pid: 1000,
+                                                                               command: 'dude abide' },
+                                                                             { pid: 2, parent_pid: 1000,
+                                                                               command: 'dude abide' },
+                                                                             { pid: 3, parent_pid: 1000,
+                                                                               command: 'dude other' }
+                                                                           ])
         allow(Process).to receive(:pid).and_return(1)
         expect(Dude::Helpers::BackgroundTasks).to receive(:kill).with(2)
 
@@ -61,9 +64,11 @@ end
 
       it 'does not kill the current process' do
         allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
-          { pid: 1, parent_pid: 1000, command: 'dude abide' },
-          { pid: 2, parent_pid: 1000, command: 'dude abide' }
-        ])
+                                                                             { pid: 1, parent_pid: 1000,
+                                                                               command: 'dude abide' },
+                                                                             { pid: 2, parent_pid: 1000,
+                                                                               command: 'dude abide' }
+                                                                           ])
         allow(Process).to receive(:pid).and_return(1)
         expect(Dude::Helpers::BackgroundTasks).to receive(:kill).with(2)
 
@@ -119,5 +124,4 @@ end
       expect { cli.sub('myapp') }.to raise_error('No dude running')
     end
   end
-
 end

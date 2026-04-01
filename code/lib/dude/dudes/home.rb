@@ -16,6 +16,7 @@ module Dude
       def read_dude_link(dudes_dir, name)
         link_path = File.join(dudes_dir, name)
         return nil unless File.symlink?(link_path)
+
         target = path_resolver.expand_target(File.readlink(link_path), dudes_dir)
         is_accessible?(target) ? target : nil
       end
@@ -23,6 +24,7 @@ module Dude
       def read_dude_data(target)
         icon = read_icon(File.join(target, 'CLAUDE.md'))
         return nil unless icon
+
         compose_dude_data(icon, target)
       end
 

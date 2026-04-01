@@ -18,7 +18,6 @@ describe Dude::Dudes::Dude do
     described_class.new(defaults.merge(overrides))
   end
 
-
   describe '#is_current?' do
     it 'returns false when pid is nil' do
       registry_mock = instance_double('Dude::Dudes::Dudes')
@@ -37,7 +36,6 @@ describe Dude::Dudes::Dude do
     end
   end
 
-
   describe '#messages' do
     it 'returns inbox count' do
       expect(build(inbox: [{}, {}, {}]).messages).to eq(3)
@@ -48,7 +46,6 @@ describe Dude::Dudes::Dude do
     end
   end
 
-
   describe '#context' do
     it 'returns context from status' do
       expect(build(status: { 'context' => 50 }).context).to eq(50)
@@ -58,7 +55,6 @@ describe Dude::Dudes::Dude do
       expect(build.context).to eq(0)
     end
   end
-
 
   describe '#tell' do
     it 'raises when target dude not found' do
@@ -88,7 +84,6 @@ describe Dude::Dudes::Dude do
       expect(result).to eq('rec')
     end
   end
-
 
   describe '#append' do
     it 'appends message to own inbox' do
@@ -255,5 +250,4 @@ describe Dude::Dudes::Dude do
       expect(result).to eq('dude_claude')
     end
   end
-
 end

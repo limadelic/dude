@@ -5,7 +5,7 @@ require_relative 'git_revert'
 
 module Dude
   module Dudes
-      class Tcr
+    class Tcr
       def initialize(files)
         @files = files
       end
@@ -33,6 +33,6 @@ module Dude
       def revert
         GitRevert.new(@files).execute
       end
-      end
+    end
   end
 end

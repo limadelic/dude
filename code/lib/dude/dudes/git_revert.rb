@@ -1,6 +1,6 @@
 module Dude
   module Dudes
-      class GitRevert
+    class GitRevert
       def initialize(files)
         @files = files
       end
@@ -8,6 +8,6 @@ module Dude
       def execute
         @files.each { |f| system("git checkout #{f}") }
       end
-      end
+    end
   end
 end

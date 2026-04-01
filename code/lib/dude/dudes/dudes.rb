@@ -10,12 +10,15 @@ module Dude
   module Dudes
     class Dudes
       def self.pids
-        @pids ||= `pgrep -a #{ENV['DUDE_PROCESS'] || 'claude'}`.strip.split("\n").map { |line| extract_pid_cwd(line) }.compact.to_h
+        @pids ||= `pgrep -a #{ENV['DUDE_PROCESS'] || 'claude'}`.strip.split("\n").map { |line|
+          extract_pid_cwd(line)
+        }.compact.to_h
       end
 
       def self.extract_pid_cwd(line)
         pid = line.split.first&.to_i
         return nil unless pid&.positive?
+
         cwd = `lsof -p #{pid} 2>/dev/null`[/cwd\s+DIR\s+\S+\s+\S+\s+\S+\s+(.+)/, 1]
         [pid, cwd] if cwd
       end
@@ -70,7 +73,9 @@ module Dude
 
       def expand_dudes_by_pid(templates)
         require_relative './dude'
-        templates.group_by(&:target).flat_map { |target, group| pids_for_target(target).empty? ? group : build_pids_dudes(group, target) }
+        templates.group_by(&:target).flat_map { |target, group|
+          pids_for_target(target).empty? ? group : build_pids_dudes(group, target)
+        }
       end
 
       def build_pids_dudes(templates, target)
@@ -82,6 +87,7 @@ module Dude
       def add_dudes_for_pids(templates, target, result)
         data = @home.read_dude_data(target)
         return unless data
+
         pids_for_target(target).each { |pid| result << new_dude_for_pid(templates, data, pid) }
       end
 

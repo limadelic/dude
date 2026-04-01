@@ -7,7 +7,8 @@ describe Dude::StatusLine::Dudes do
 
   def mock_dude(name:, icon:, messages:, context:, current:, abiding: true)
     d = double(name)
-    allow(d).to receive_messages(name: name, icon: icon, messages: messages, context: context, is_current?: current, is_abiding?: abiding)
+    allow(d).to receive_messages(name: name, icon: icon, messages: messages, context: context, is_current?: current,
+                                 is_abiding?: abiding)
     d
   end
 
@@ -52,7 +53,8 @@ describe Dude::StatusLine::Dudes do
 
     it 'highlights current yellow dude with black text' do
       yellow_dudes = [mock_dude(name: 'dude', icon: '🎳', messages: 0, context: 50, current: true)]
-      session_data = { 'model' => { 'id' => 'claude-opus-4-6' }, 'context_window' => { 'used_percentage' => 50 } }.to_json
+      session_data = { 'model' => { 'id' => 'claude-opus-4-6' },
+                       'context_window' => { 'used_percentage' => 50 } }.to_json
       output = out(session_data, activity, yellow_dudes)
       expect(output).to include("\e[48;5;226m\e[30m🎳")
     end
@@ -116,6 +118,5 @@ describe Dude::StatusLine::Dudes do
         end
       end
     end
-
   end
 end
