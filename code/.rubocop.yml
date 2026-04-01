@@ -2,10 +2,6 @@ AllCops:
   TargetRubyVersion: 3.0
   NewCops: disable
   SuggestExtensions: false
-  Include:
-    - 'lib/**/*'
-  Exclude:
-    - 'bin/**/*'
 
 # The ones we care about
 Metrics/MethodLength:

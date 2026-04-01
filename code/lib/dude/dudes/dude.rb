@@ -97,12 +97,7 @@ module Dude
       private
 
       def init(opts)
-        @name = opts[:name]
-        @icon = opts[:icon]
-        @inbox = opts[:inbox]
-        @status = opts[:status]
-        @dude_dir = opts[:dude_dir]
-        @target = opts[:target]
+        @name, @icon, @inbox, @status, @dude_dir, @target = opts.values_at(:name, :icon, :inbox, :status, :dude_dir, :target)
         @pid = nil
       end
     end

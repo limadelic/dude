@@ -1,8 +1,8 @@
 require 'tmpdir'
 require 'fileutils'
-require_relative '../../lib/cuke/dude_test_process'
+require_relative '../../lib/cuke/dude'
 
-World(Cuke::DudeTestProcess)
+World(Cuke::Dude)
 
 Before('@dudes') do
   @temp_dir = Dir.mktmpdir('dude_test_')
@@ -20,11 +20,7 @@ After('@dudes') do
 end
 
 Given(/^dudes$/) do |table|
-  table.hashes.each do |row|
-    @home = resolve_home(row['home'])
-    setup_dude(@home, row['icon'])
-    dude('pub', row['home'], chdir: @home) if row['pub'] == 'yes'
-  end
+  table.hashes.each { |row| setup_from_row(row) }
 end
 
 When(/^> \/(.+)$/) do |command|

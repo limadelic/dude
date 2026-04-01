@@ -1,8 +1,8 @@
 Feature: Status line
 
-  Scenario Outline: Context bar
+  Scenario Outline: Context section
     Given <percent>% context usage
-    Then the "Context" bar shows "<🧠 bar>" in <color>
+    Then the "Context" section shows "<🧠 bar>" in <color>
 
     Examples:
       | percent | 🧠 bar       | color  |
@@ -11,10 +11,10 @@ Feature: Status line
       | 50      | 🧠 █████░░░░ | yellow |
       | 90      | 🧠 ████████░ | red    |
 
-  Scenario Outline: Spend bar
+  Scenario Outline: Spend section
     Given daily allowance is $100
     And $<spend> spent
-    Then the "Spend" bar shows "<💰 bar>" in <color>
+    Then the "Spend" section shows "<💰 bar>" in <color>
 
     Examples:
       | spend | 💰 bar       | color  |
@@ -22,7 +22,7 @@ Feature: Status line
       | 40    | 💰 ████░░░░░ | yellow |
       | 80    | 💰 ███████░░ | red    |
 
-  Scenario Outline: Models
+  Scenario Outline: Models section
     Given the <active> model
     And <🐸> haiku at $1, <🎸> sonnet at $3, <🎭> opus at 5$ requests
     Then the "Models" section shows "<icons>" in <color>
