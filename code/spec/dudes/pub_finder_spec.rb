@@ -14,7 +14,8 @@ describe Dude::Dudes::PubFinder do
       allow(File).to receive(:exist?).with(start_path).and_return(true)
       allow(Dir).to receive(:exist?).and_call_original
       allow(Dir).to receive(:exist?).with(proj_claude).and_return(true)
-      allow(described_class).to receive(:find_pub_name_for_target).with(proj_claude).and_return('myproj')
+      stub = allow(described_class).to receive(:find_pub_name_for_target)
+      stub.with(proj_claude).and_return('myproj')
 
       result = described_class.find_nearest_pub(start_path)
 
@@ -30,7 +31,8 @@ describe Dude::Dudes::PubFinder do
       allow(File).to receive(:exist?).with(start_path).and_return(true)
       allow(Dir).to receive(:exist?).and_call_original
       allow(Dir).to receive(:exist?).with(abc_claude).and_return(true)
-      allow(described_class).to receive(:find_pub_name_for_target).with(abc_claude).and_return('abc')
+      stub = allow(described_class).to receive(:find_pub_name_for_target)
+      stub.with(abc_claude).and_return('abc')
 
       result = described_class.find_nearest_pub(start_path)
 
@@ -44,7 +46,8 @@ describe Dude::Dudes::PubFinder do
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with(start_path).and_return(true)
       allow(Dir).to receive(:exist?).and_call_original
-      allow(described_class).to receive(:find_pub_name_for_target).and_return(nil)
+      stub = allow(described_class).to receive(:find_pub_name_for_target)
+      stub.and_return(nil)
 
       result = described_class.find_nearest_pub(start_path)
 
@@ -60,7 +63,8 @@ describe Dude::Dudes::PubFinder do
       allow(File).to receive(:exist?).with(start_path).and_return(true)
       allow(Dir).to receive(:exist?).and_call_original
       allow(Dir).to receive(:exist?).with(b_claude).and_return(true)
-      allow(described_class).to receive(:find_pub_name_for_target).with(b_claude).and_return('b')
+      stub = allow(described_class).to receive(:find_pub_name_for_target)
+      stub.with(b_claude).and_return('b')
 
       result = described_class.find_nearest_pub(start_path)
 
@@ -86,8 +90,10 @@ describe Dude::Dudes::PubFinder do
       allow(File).to receive(:exist?).and_call_original
       allow(File).to receive(:exist?).with(home_claude).and_return(true)
       allow(Dir).to receive(:exist?).and_call_original
-      allow(Dir).to receive(:exist?).with(File.join(home_claude, '.claude')).and_return(false)
-      allow(described_class).to receive(:find_pub_name_for_target).and_return(nil)
+      nested_claude = File.join(home_claude, '.claude')
+      allow(Dir).to receive(:exist?).with(nested_claude).and_return(false)
+      stub = allow(described_class).to receive(:find_pub_name_for_target)
+      stub.and_return(nil)
 
       result = described_class.find_nearest_pub(home_claude)
 
@@ -103,7 +109,8 @@ describe Dude::Dudes::PubFinder do
       allow(File).to receive(:exist?).with('/proj/src/feature').and_return(true)
       allow(Dir).to receive(:exist?).and_call_original
       allow(Dir).to receive(:exist?).with(proj_claude).and_return(true)
-      allow(described_class).to receive(:find_pub_name_for_target).with(proj_claude).and_return('myproj')
+      stub = allow(described_class).to receive(:find_pub_name_for_target)
+      stub.with(proj_claude).and_return('myproj')
 
       result = described_class.find_nearest_pub(start_path)
 
@@ -121,7 +128,8 @@ describe Dude::Dudes::PubFinder do
       allow(File).to receive(:exist?).with(start_path).and_return(true)
       allow(Dir).to receive(:exist?).and_call_original
       allow(Dir).to receive(:exist?).with(proj_claude).and_return(true)
-      allow(described_class).to receive(:find_pub_name_for_target).with(proj_claude).and_return('myproj')
+      stub = allow(described_class).to receive(:find_pub_name_for_target)
+      stub.with(proj_claude).and_return('myproj')
 
       result = described_class.find_pub_walking_up(start_path)
 
@@ -135,7 +143,8 @@ describe Dude::Dudes::PubFinder do
       allow(File).to receive(:exist?).with(start_path).and_return(true)
       allow(Dir).to receive(:exist?).and_call_original
       allow(Dir).to receive(:exist?).and_return(false)
-      allow(described_class).to receive(:find_pub_name_for_target).and_return(nil)
+      stub = allow(described_class).to receive(:find_pub_name_for_target)
+      stub.and_return(nil)
 
       result = described_class.find_pub_walking_up(start_path)
 
