@@ -12,7 +12,10 @@ describe Dude::Dudes::Health do
   end
 
   it 'returns alive pid' do
-    allow_any_instance_of(Dude::Dudes::Health).to receive(:`).with(/pgrep -f/).and_return("123\n")
+    pgrep_pattern = /pgrep -f/
+    allow_any_instance_of(Dude::Dudes::Health).to(
+      receive(:`).with(pgrep_pattern).and_return("123\n")
+    )
     expect(health.check(dir, { 'abide_pid' => 123 })[:pid_alive]).to eq(123)
   end
 
@@ -21,22 +24,40 @@ describe Dude::Dudes::Health do
   end
 
   it 'kills orphaned process' do
-    allow_any_instance_of(Dude::Dudes::Health).to receive(:`).with(/pgrep -f/).and_return("456\n")
-    allow_any_instance_of(Dude::Dudes::Health).to receive(:`).with(/ps -p/).and_return("1\n")
+    pgrep_pattern = /pgrep -f/
+    ps_pattern = /ps -p/
+    allow_any_instance_of(Dude::Dudes::Health).to(
+      receive(:`).with(pgrep_pattern).and_return("456\n")
+    )
+    allow_any_instance_of(Dude::Dudes::Health).to(
+      receive(:`).with(ps_pattern).and_return("1\n")
+    )
     expect(health.check(dir, {})[:pid_alive]).to be_nil
     expect(Process).to have_received(:kill).with('TERM', 456)
   end
 
   it 'updates status when pid changed' do
-    allow_any_instance_of(Dude::Dudes::Health).to receive(:`).with(/pgrep -f/).and_return("789\n")
-    allow_any_instance_of(Dude::Dudes::Health).to receive(:`).with(/ps -p/).and_return("999\n")
+    pgrep_pattern = /pgrep -f/
+    ps_pattern = /ps -p/
+    allow_any_instance_of(Dude::Dudes::Health).to(
+      receive(:`).with(pgrep_pattern).and_return("789\n")
+    )
+    allow_any_instance_of(Dude::Dudes::Health).to(
+      receive(:`).with(ps_pattern).and_return("999\n")
+    )
     health.check(dir, { 'abide_pid' => 111 })
     expect(File).to have_received(:write)
   end
 
   it 'skips update when pid unchanged' do
-    allow_any_instance_of(Dude::Dudes::Health).to receive(:`).with(/pgrep -f/).and_return("123\n")
-    allow_any_instance_of(Dude::Dudes::Health).to receive(:`).with(/ps -p/).and_return("999\n")
+    pgrep_pattern = /pgrep -f/
+    ps_pattern = /ps -p/
+    allow_any_instance_of(Dude::Dudes::Health).to(
+      receive(:`).with(pgrep_pattern).and_return("123\n")
+    )
+    allow_any_instance_of(Dude::Dudes::Health).to(
+      receive(:`).with(ps_pattern).and_return("999\n")
+    )
     health.check(dir, { 'abide_pid' => 123 })
     expect(File).not_to have_received(:write)
   end
