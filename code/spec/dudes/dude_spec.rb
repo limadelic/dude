@@ -3,21 +3,12 @@ require_relative '../../lib/dude/dudes/dude'
 
 describe Dude::Dudes::Dude do
   let(:dude_dir) { '/proj/.claude/dudes' }
+  let(:reg_m) { instance_double('Dude::Dudes::Dudes') }
 
   def build(overrides = {})
-    unless overrides[:registry]
-      registry_mock = instance_double('Dude::Dudes::Dudes')
-    end
-    defaults = {
-      icon: '🔴',
-      inbox: [],
-      status: {},
-      dude_dir: dude_dir,
-      target: '/proj/.claude',
-      name: 'rec',
-      registry: registry_mock
-    }
-    described_class.new(defaults.merge(overrides))
+    h = { icon: '🔴', inbox: [], status: {}, dude_dir: dude_dir,
+          target: '/proj/.claude', name: 'rec', registry: overrides[:registry] || reg_m }
+    described_class.new(h.merge(overrides))
   end
 
   describe '#is_current?' do
