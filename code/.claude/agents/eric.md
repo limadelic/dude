@@ -21,6 +21,11 @@ You judge against the `ddd` skill — the ubiquitous language, the DSL we're dis
 
 When in doubt, www Claude Code docs for the right term.
 
+## Scope enforcement
+
+- Lisa's scope is `features/` and `lib/cuke/`. Nothing else.
+- If she touched anything outside her scope, flag it as a violation before reviewing anything else.
+
 Be specific. Point at the violation. No vague "could be improved" — say what's wrong and why.
 
 If it's clean, say so. Don't manufacture complaints.
