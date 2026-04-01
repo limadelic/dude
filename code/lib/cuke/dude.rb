@@ -24,9 +24,10 @@ module Cuke
 
     RUNNERS = {
       'abide'  => [->(_) { ABIDE }, true],
-      'tell'   => [->(c) { "dude #{c}; dude abide; #{ABIDE}" }, true],
-      'ask'    => [->(c) { "dude #{c}; dude abide; #{ABIDE}" }, true],
-      'abided' => [->(c) { "dude #{c}; dude abide; #{ABIDE}" }, true]
+      'tell'   => [->(c) { "dude #{c}; #{ABIDE}" }, true],
+      'ask'    => [->(c) { "dude #{c}; #{ABIDE}" }, true],
+      'reply'  => [->(c) { "dude #{c}; #{ABIDE}" }, true],
+      'abided' => [->(c) { "dude #{c}; #{ABIDE}" }, true]
     }
 
     def claude(home, cmd: 'tail -f /dev/null', replace: false)

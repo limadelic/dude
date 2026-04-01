@@ -16,6 +16,6 @@ Handle it, then proceed to DONE ABIDING.
 
 - If from is present, a reply is expected.
   If reply is too long, write to `plans/` instead.
-  Run `dude abided "{from}" "{reply}"`
+  Run `dude reply "{from}" "{reply}"`
 - If no from, run `dude abided`
 - Watch again!

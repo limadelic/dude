@@ -35,5 +35,6 @@ Claude Code (CC) — AI agents writing software. Sessions, tools, prompts, conte
 - **ask** — send a message, reply expected
 - **inbox** — where messages land for a dude
 - **watch** — listen for new messages in an inbox
-- **finish** — complete a message, optionally reply
+- **reply** — respond to an ask, continues the conversation
+- **abided** — done with a message, clear inbox
 
