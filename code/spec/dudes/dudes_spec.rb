@@ -24,7 +24,8 @@ describe Dude::Dudes::Dudes do
     allow(Dir).to receive(:children).and_return(%w[rec])
     allow(File).to receive(:symlink?).and_return(true)
     allow(File).to receive(:readlink).and_return('/proj/.claude/')
-    allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 12345 => '/proj/.claude' })
+    pids_map = { 12345 => '/proj/.claude' }
+    allow(Dude::Dudes::Dudes).to receive(:pids).and_return(pids_map)
     allow(File).to receive(:exist?).and_return(true)
     allow(File).to receive(:read).and_return("---\nicon: 🔴\n---\n")
     allow(JSON).to receive(:load_file).and_return({}, [])
@@ -61,7 +62,8 @@ describe Dude::Dudes::Dudes do
 
     it 'returns nil when no current' do
       allow(File).to receive(:readlink).and_return('/other/.claude/')
-      allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 12345 => '/other/.claude' })
+      pids_map = { 12345 => '/other/.claude' }
+      allow(Dude::Dudes::Dudes).to receive(:pids).and_return(pids_map)
       allow(Process).to receive(:ppid).and_return(99999)
       expect(dudes.current).to be_nil
     end
@@ -92,7 +94,6 @@ describe Dude::Dudes::Dudes do
 
   describe '#resolve_inbox' do
     it 'returns inbox path from symlink target' do
-      # Before hook already mocks File.symlink? to true and File.readlink to /proj/.claude/
       allow(File).to receive(:readlink).and_return('/projects/rec/.claude/')
       result = dudes.resolve_inbox('rec')
       expect(result).to eq('/projects/rec/.claude/dudes/inbox.json')
@@ -100,7 +101,8 @@ describe Dude::Dudes::Dudes do
 
     it 'raises when symlink not found' do
       allow(File).to receive(:symlink?).and_return(false)
-      expect { dudes.resolve_inbox('missing') }.to raise_error("dude 'missing' not found")
+      error_msg = "dude 'missing' not found"
+      expect { dudes.resolve_inbox('missing') }.to raise_error(error_msg)
     end
 
     it 'handles symlink trailing slash' do
@@ -112,7 +114,9 @@ describe Dude::Dudes::Dudes do
 
   describe '#read_self_name' do
     it 'reads name from status.json' do
-      allow(JSON).to receive(:load_file).with('/proj/.claude/dudes/status.json').and_return({ 'name' => 'smith' })
+      status_file = '/proj/.claude/dudes/status.json'
+      allow(JSON).to receive(:load_file).with(status_file)
+        .and_return({ 'name' => 'smith' })
       result = dudes.read_self_name('/proj/.claude/dudes')
       expect(result).to eq('smith')
     end
@@ -121,19 +125,25 @@ describe Dude::Dudes::Dudes do
   describe '#is_current?' do
     before do
       allow(File).to receive(:exist?).and_return(false)
-      allow_any_instance_of(Dude::Dudes::ProcessTree).to receive(:shell_parent_pid)
+      process_tree_class = Dude::Dudes::ProcessTree
+      allow_any_instance_of(process_tree_class).to receive(:shell_parent_pid)
     end
 
     it 'returns true when pid is in ancestor chain' do
       allow(Process).to receive(:ppid).and_return(200)
-      allow_any_instance_of(Dude::Dudes::ProcessTree).to receive(:shell_parent_pid).and_return(100, 1)
-      allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 100 => '/proj/.claude' })
+      process_tree_class = Dude::Dudes::ProcessTree
+      allow_any_instance_of(process_tree_class).to receive(:shell_parent_pid)
+        .and_return(100, 1)
+      pids_map = { 100 => '/proj/.claude' }
+      allow(Dude::Dudes::Dudes).to receive(:pids).and_return(pids_map)
       expect(dudes.is_current?(100)).to be true
     end
 
     it 'returns false when pid not in ancestor chain' do
       allow(Process).to receive(:ppid).and_return(200)
-      allow_any_instance_of(Dude::Dudes::ProcessTree).to receive(:shell_parent_pid).and_return(999, 1)
+      process_tree_class = Dude::Dudes::ProcessTree
+      allow_any_instance_of(process_tree_class).to receive(:shell_parent_pid)
+        .and_return(999, 1)
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return({})
       expect(dudes.is_current?(100)).to be false
     end
@@ -145,36 +155,47 @@ describe Dude::Dudes::Dudes do
 
   describe '#is_abiding?' do
     before do
-      allow(Dude::Dudes::Dudes).to receive(:pids).and_return(1000 => '/proj/.claude')
+      pids_map = { 1000 => '/proj/.claude' }
+      allow(Dude::Dudes::Dudes).to receive(:pids).and_return(pids_map)
     end
 
     it 'returns true when abide task exists as child of pid' do
-      allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
+      task_list = [
         { pid: 123, parent_pid: 1000,
           command: 'dude abide /proj/.claude/dudes' }
-      ])
-      expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be true
+      ]
+      stub = allow(Dude::Helpers::BackgroundTasks).to receive(:list)
+      stub.and_return(task_list)
+      result = dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')
+      expect(result).to be true
     end
 
     it 'returns false when no abide task' do
       allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([])
-      expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be false
+      result = dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')
+      expect(result).to be false
     end
 
     it 'returns false when task parent is not the pid' do
-      allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
+      task_list = [
         { pid: 123, parent_pid: 999,
           command: 'dude abide /proj/.claude/dudes' }
-      ])
-      expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be false
+      ]
+      stub = allow(Dude::Helpers::BackgroundTasks).to receive(:list)
+      stub.and_return(task_list)
+      result = dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')
+      expect(result).to be false
     end
 
     it 'returns false when task is for different dude' do
-      allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
+      task_list = [
         { pid: 123, parent_pid: 1000,
           command: 'dude abide /other/.claude/dudes' }
-      ])
-      expect(dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')).to be false
+      ]
+      stub = allow(Dude::Helpers::BackgroundTasks).to receive(:list)
+      stub.and_return(task_list)
+      result = dudes.is_abiding?(1000, '/proj/.claude/dudes', '/proj/.claude')
+      expect(result).to be false
     end
   end
 
