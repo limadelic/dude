@@ -26,7 +26,7 @@ module Cuke
       'abide'  => [->(_) { ABIDE }, true],
       'tell'   => [->(c) { "dude #{c}; dude abide; #{ABIDE}" }, true],
       'ask'    => [->(c) { "dude #{c}; dude abide; #{ABIDE}" }, true],
-      'abided' => [->(c) { "dude #{c}; #{ABIDE}" }, true]
+      'abided' => [->(c) { "dude #{c}; dude abide; #{ABIDE}" }, true]
     }
 
     def claude(home, cmd: 'tail -f /dev/null', replace: false)
