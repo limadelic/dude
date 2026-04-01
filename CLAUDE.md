@@ -28,6 +28,7 @@ icon: 🎳
 - ALWAYS launch agents in background (`run_in_background: true`) — never block
 - Break task to delegate in simple chunks smaller the better
 - ALWAYS add a Todo/Task when delegating so you can track it until done
+- You MUST tell them WHAT to do not HOW
 
 # SHORTCUTS
 
