@@ -7,7 +7,11 @@ module Cuke
     POLLS = %w[Dudes]
 
     def self.verify(section_name, expected, color)
-      POLLS.include?(section_name) ? poll(section_name, expected, color) : snap(section_name, expected, color)
+      if POLLS.include?(section_name)
+        poll(section_name, expected, color)
+      else
+        snap(section_name, expected, color)
+      end
     end
 
     def self.snap(section_name, expected, color)
@@ -17,9 +21,15 @@ module Cuke
 
     def self.poll(section_name, expected, color)
       @last_error = nil
-      world.wait_for("#{section_name} section") { wait_and_check(section_name, expected, color) }
+      do_wait_for(section_name, expected, color)
     rescue RuntimeError
       raise @last_error || $!
+    end
+
+    def self.do_wait_for(section_name, expected, color)
+      world.wait_for("#{section_name} section") {
+        wait_and_check(section_name, expected, color)
+      }
     end
 
     def self.wait_and_check(section_name, expected, color)
@@ -42,7 +52,9 @@ module Cuke
 
     def self.verify_content(section, expected)
       parts = expected.split(' ')
-      raise "Expected '#{expected}' in section, got: #{section.cleaned}" unless parts.all? { |part| section.cleaned.include?(part) }
+      all_present = parts.all? { |part| section.cleaned.include?(part) }
+      msg = "Expected '#{expected}' in section, got: #{section.cleaned}"
+      raise msg unless all_present
     end
 
     def self.verify_color(section, color)
@@ -61,22 +73,41 @@ module Cuke
 
     def build_models_from_counts(counts)
       h, hc, s, sc, o, oc = counts
-      { haiku: { count: h.to_i, cost: hc.to_i }, sonnet: { count: s.to_i, cost: sc.to_i }, opus: { count: o.to_i, cost: oc.to_i } }
+      {
+        haiku: { count: h.to_i, cost: hc.to_i },
+        sonnet: { count: s.to_i, cost: sc.to_i },
+        opus: { count: o.to_i, cost: oc.to_i }
+      }
     end
 
     def set_activity_response(models)
       breakdown, total_spend = build_models_breakdown(models)
-      Cuke::ActivityServer.set_response(activity_response_payload(total_spend, breakdown))
+      payload = activity_response_payload(total_spend, breakdown)
+      Cuke::ActivityServer.set_response(payload)
     end
 
     def build_models_breakdown(models)
-      breakdown, total = {}, 0
-      models.each { |m, d| spend = d[:count] * d[:cost]; total += spend; breakdown[m.to_s] = { 'metrics' => { 'successful_requests' => d[:count], 'spend' => spend } } }
-      [breakdown, total]
+      models.reduce([{}, 0]) { |(bd, t), (m, d)|
+        [bd.merge(model_metrics(m, d)), t + d[:count] * d[:cost]]
+      }
+    end
+
+    def model_metrics(model, data)
+      {
+        model.to_s => {
+          'metrics' => {
+            'successful_requests' => data[:count],
+            'spend' => data[:count] * data[:cost]
+          }
+        }
+      }
     end
 
     def activity_response_payload(total_spend, breakdown)
-      { 'results' => [{ 'metrics' => { 'spend' => total_spend }, 'breakdown' => { 'models' => breakdown } }] }
+      metrics = { 'spend' => total_spend }
+      breakdown_data = { 'models' => breakdown }
+      result = { 'metrics' => metrics, 'breakdown' => breakdown_data }
+      { 'results' => [result] }
     end
   end
 end

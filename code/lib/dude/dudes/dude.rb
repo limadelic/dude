@@ -12,12 +12,16 @@ module Dude
       def initialize(opts = {})
         init(opts)
         @registry = opts[:registry]
-        @abide = ::Dude::Dudes::Abide.new(inbox: @inbox, dude_dir: @dude_dir, name: @name)
+        @abide = ::Dude::Dudes::Abide.new(
+          inbox: @inbox, dude_dir: @dude_dir,
+          name: @name
+        )
         @pub = ::Dude::Dudes::Pub.new(target: @target)
       end
 
       def is_current?
         return false unless @pid
+
         @registry.is_current?(@pid)
       end
 
@@ -34,7 +38,11 @@ module Dude
       end
 
       def to_h
-        { name: @name, icon: @icon, pid: @pid, current: is_current?, abiding: is_abiding?, target: @target, messages: messages, context: context }
+        {
+          name: @name, icon: @icon, pid: @pid, current: is_current?,
+          abiding: is_abiding?, target: @target,
+          messages: messages, context: context
+        }
       end
 
       def pids_for_target
@@ -101,7 +109,9 @@ module Dude
       private
 
       def init(opts)
-        @name, @icon, @inbox, @status, @dude_dir, @target = opts.values_at(:name, :icon, :inbox, :status, :dude_dir, :target)
+        keys = %i[name icon inbox status dude_dir target]
+        vals = opts.values_at(*keys)
+        @name, @icon, @inbox, @status, @dude_dir, @target = vals
         @pid = nil
       end
     end

@@ -7,7 +7,11 @@ describe Dude::StatusLine::Models do
   include_context 'StatusLine helpers'
 
   before do
-    allow(Dude::Dudes::Dudes).to receive(:new).and_return(instance_double(Dude::Dudes::Dudes, all: []))
+    allow(Dude::Dudes::Dudes).to receive(:new).and_return(
+      instance_double(
+        Dude::Dudes::Dudes, all: []
+      )
+    )
   end
 
   describe 'Active model background' do
@@ -34,9 +38,24 @@ describe Dude::StatusLine::Models do
     it 'has black text on yellow for readability' do
       session_data = mock_session('opus', 50)
       models = {
-        'claude-haiku-4-5' => { 'metrics' => { 'successful_requests' => 40, 'spend' => 5.0 } },
-        'claude-opus-4-6' => { 'metrics' => { 'successful_requests' => 30, 'spend' => 5.0 } },
-        'claude-sonnet-4-6' => { 'metrics' => { 'successful_requests' => 30, 'spend' => 5.0 } }
+        'claude-haiku-4-5' => {
+          'metrics' => {
+            'successful_requests' => 40,
+            'spend' => 5.0
+          }
+        },
+        'claude-opus-4-6' => {
+          'metrics' => {
+            'successful_requests' => 30,
+            'spend' => 5.0
+          }
+        },
+        'claude-sonnet-4-6' => {
+          'metrics' => {
+            'successful_requests' => 30,
+            'spend' => 5.0
+          }
+        }
       }
       activity_data = mock_activity(models: models)
       output = out(session_data.to_json, activity_data)
@@ -58,7 +77,13 @@ describe Dude::StatusLine::Models do
     end
 
     it 'shows ¹⁰ for model with 1 request' do
-      models = { 'claude-opus-4-6' => { 'metrics' => { 'successful_requests' => 1, 'spend' => 1.0 } } }
+      models = {
+        'claude-opus-4-6' => {
+          'metrics' => {
+            'successful_requests' => 1, 'spend' => 1.0
+          }
+        }
+      }
       output = output_with_models(models)
       expect(output).to match(/🎭 ?¹⁰/)
     end
@@ -70,7 +95,13 @@ describe Dude::StatusLine::Models do
     end
 
     it 'shows all models with superscripts for single model' do
-      models = { 'claude-opus-4-6' => { 'metrics' => { 'successful_requests' => 50, 'spend' => 5.0 } } }
+      models = {
+        'claude-opus-4-6' => {
+          'metrics' => {
+            'successful_requests' => 50, 'spend' => 5.0
+          }
+        }
+      }
       output = output_with_models(models)
       expect(output).to match(/🎭 ?¹⁰/)
       expect(output).to match(/🐸 ?⁰/)

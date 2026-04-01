@@ -60,6 +60,7 @@ module Dude
         require_relative '../dudes/dudes'
         dude = dudes.current
         raise "No dude running" unless dude
+
         result = dude.sub(name)
         puts result
       end
@@ -69,6 +70,7 @@ module Dude
         require_relative '../dudes/dudes'
         dude = dudes.current
         raise "No dude running" unless dude
+
         dude.unpub
         puts "clean"
       end

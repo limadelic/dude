@@ -20,18 +20,21 @@ module Dude
 
       def mark_wip
         return if items.empty?
+
         items[0]['status'] = 'wip'
         flush
       end
 
       def dequeue_wip
         return unless items[0]&.[]('status') == 'wip'
+
         items.shift
         flush
       end
 
       def first_new
         return nil unless File.exist?(@path)
+
         items.find { |i| i['status'] == 'new' }
       end
 

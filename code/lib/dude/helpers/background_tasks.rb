@@ -7,6 +7,7 @@ module Dude
       def self.list
         live_pids = Dude::Dudes::Dudes.pids.keys
         return [] if live_pids.empty?
+
         descendants, parent_map = walker.descendants_with_parents(live_pids)
         descendants.sort.map { |pid| task_hash(pid, parent_map) }
       end
@@ -18,7 +19,10 @@ module Dude
       private
 
       def self.task_hash(pid, parent_map)
-        { pid: pid, parent_pid: parent_map[pid], command: walker.command_for(pid) }
+        {
+          pid: pid, parent_pid: parent_map[pid],
+          command: walker.command_for(pid)
+        }
       end
 
       def self.walker

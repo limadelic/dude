@@ -3,21 +3,15 @@ require_relative '../../lib/dude/dudes/dude'
 
 describe Dude::Dudes::Dude do
   let(:dude_dir) { '/proj/.claude/dudes' }
+  let(:reg_m) { instance_double('Dude::Dudes::Dudes') }
 
   def build(overrides = {})
-    registry_mock = instance_double('Dude::Dudes::Dudes') unless overrides[:registry]
-    defaults = {
-      icon: '🔴',
-      inbox: [],
-      status: {},
-      dude_dir: dude_dir,
-      target: '/proj/.claude',
-      name: 'rec',
-      registry: registry_mock
+    h = {
+      icon: '🔴', inbox: [], status: {}, dude_dir: dude_dir,
+      target: '/proj/.claude', name: 'rec', registry: overrides[:registry] || reg_m
     }
-    described_class.new(defaults.merge(overrides))
+    described_class.new(h.merge(overrides))
   end
-
 
   describe '#is_current?' do
     it 'returns false when pid is nil' do
@@ -37,7 +31,6 @@ describe Dude::Dudes::Dude do
     end
   end
 
-
   describe '#messages' do
     it 'returns inbox count' do
       expect(build(inbox: [{}, {}, {}]).messages).to eq(3)
@@ -48,7 +41,6 @@ describe Dude::Dudes::Dude do
     end
   end
 
-
   describe '#context' do
     it 'returns context from status' do
       expect(build(status: { 'context' => 50 }).context).to eq(50)
@@ -58,7 +50,6 @@ describe Dude::Dudes::Dude do
       expect(build.context).to eq(0)
     end
   end
-
 
   describe '#tell' do
     it 'raises when target dude not found' do
@@ -79,7 +70,10 @@ describe Dude::Dudes::Dude do
   describe '#pub' do
     it 'uses name as default icon' do
       pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:pub).with('/proj/.claude', 'rec').and_return('rec')
+      expect(pub_mock).to receive(:pub).with(
+        '/proj/.claude',
+        'rec'
+      ).and_return('rec')
       allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
 
       dude = build(target: '/proj/.claude', name: 'rec')
@@ -88,7 +82,6 @@ describe Dude::Dudes::Dude do
       expect(result).to eq('rec')
     end
   end
-
 
   describe '#append' do
     it 'appends message to own inbox' do
@@ -137,7 +130,10 @@ describe Dude::Dudes::Dude do
   describe '#is_abiding?' do
     it 'returns true when registry says abiding' do
       registry_mock = instance_double('Dude::Dudes::Dudes')
-      expect(registry_mock).to receive(:is_abiding?).with(888, '/proj/.claude/dudes', '/proj/.claude').and_return(true)
+      expect(registry_mock).to receive(:is_abiding?).with(
+        888,
+        '/proj/.claude/dudes', '/proj/.claude'
+      ).and_return(true)
       dude = build(registry: registry_mock)
       dude.pid = 888
       expect(dude).to be_is_abiding
@@ -148,8 +144,11 @@ describe Dude::Dudes::Dude do
     it 'sends a message that arrives in target inbox' do
       target_inbox_path = '/projects/rec/.claude/dudes/inbox.json'
       target_inbox_mock = instance_double('Dude::Dudes::Inbox')
-      expect(target_inbox_mock).to receive(:append).with({ 'text' => 'hello', 'status' => 'new' })
-      expect(Dude::Dudes::Inbox).to receive(:new).with(target_inbox_path).and_return(target_inbox_mock)
+      msg = { 'text' => 'hello', 'status' => 'new' }
+      expect(target_inbox_mock).to receive(:append).with(msg)
+      expect(Dude::Dudes::Inbox).to(
+        receive(:new).with(target_inbox_path).and_return(target_inbox_mock)
+      )
       allow(File).to receive(:symlink?).and_return(true)
       allow(File).to receive(:readlink).and_return('/projects/rec/.claude/')
 
@@ -162,8 +161,11 @@ describe Dude::Dudes::Dude do
     it 'sends a message with from field to target inbox' do
       target_inbox_path = '/projects/rec/.claude/dudes/inbox.json'
       target_inbox_mock = instance_double('Dude::Dudes::Inbox')
-      expect(target_inbox_mock).to receive(:append).with({ 'from' => 'smith', 'text' => 'whatup', 'status' => 'new' })
-      expect(Dude::Dudes::Inbox).to receive(:new).with(target_inbox_path).and_return(target_inbox_mock)
+      msg = { 'from' => 'smith', 'text' => 'whatup', 'status' => 'new' }
+      expect(target_inbox_mock).to receive(:append).with(msg)
+      expect(Dude::Dudes::Inbox).to(
+        receive(:new).with(target_inbox_path).and_return(target_inbox_mock)
+      )
       allow(File).to receive(:symlink?).and_return(true)
       allow(File).to receive(:readlink).and_return('/projects/rec/.claude/')
 
@@ -175,7 +177,10 @@ describe Dude::Dudes::Dude do
   describe '#pub' do
     it 'calls pub and returns icon' do
       pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:pub).with('/proj/.claude', 'custom_icon').and_return('custom_icon')
+      expect(pub_mock).to receive(:pub).with(
+        '/proj/.claude',
+        'custom_icon'
+      ).and_return('custom_icon')
       allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
 
       dude = build(target: '/proj/.claude')
@@ -199,11 +204,14 @@ describe Dude::Dudes::Dude do
   describe '#pids_for_target' do
     it 'returns pids from registry' do
       registry_mock = instance_double('Dude::Dudes::Dudes')
-      expect(registry_mock).to receive(:pids_for_target).with('/proj/.claude').and_return([111, 222])
+      pids = [111, 222]
+      expect(registry_mock).to(
+        receive(:pids_for_target).with('/proj/.claude').and_return(pids)
+      )
       dude = build(registry: registry_mock, target: '/proj/.claude')
       result = dude.pids_for_target
 
-      expect(result).to eq([111, 222])
+      expect(result).to eq(pids)
     end
   end
 
@@ -235,7 +243,10 @@ describe Dude::Dudes::Dude do
   describe '#sub' do
     it 'delegates to pub.sub with target and name' do
       pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:sub).with('/proj/.claude', 'code').and_return('dude_code')
+      expect(pub_mock).to receive(:sub).with(
+        '/proj/.claude',
+        'code'
+      ).and_return('dude_code')
       allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
 
       dude = build(target: '/proj/.claude')
@@ -246,7 +257,10 @@ describe Dude::Dudes::Dude do
 
     it 'defaults name to target basename when not provided' do
       pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:sub).with('/proj/.claude', nil).and_return('dude_claude')
+      expect(pub_mock).to receive(:sub).with(
+        '/proj/.claude',
+        nil
+      ).and_return('dude_claude')
       allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
 
       dude = build(target: '/proj/.claude')
@@ -255,5 +269,4 @@ describe Dude::Dudes::Dude do
       expect(result).to eq('dude_claude')
     end
   end
-
 end

@@ -6,6 +6,7 @@ module Dude
       def has_abide?(dude_dir)
         tasks_dir = find_tasks_dir(dude_dir)
         return false unless tasks_dir && Dir.exist?(tasks_dir)
+
         any_abide_task?(tasks_dir)
       rescue
         false
@@ -25,6 +26,7 @@ module Dude
       def find_tasks_dir(dude_dir)
         project_dir = project_dir_for(dude_dir)
         return nil unless Dir.exist?(project_dir)
+
         session_dir(project_dir)
       end
 
@@ -36,7 +38,11 @@ module Dude
       def session_dir(project_dir)
         jsonl = latest_jsonl(project_dir)
         return nil unless jsonl
-        File.join(File.expand_path('~/.claude/tasks'), File.basename(jsonl, '.jsonl'))
+
+        File.join(
+          File.expand_path('~/.claude/tasks'),
+          File.basename(jsonl, '.jsonl')
+        )
       end
 
       def latest_jsonl(project_dir)
