@@ -5,10 +5,8 @@ module Cuke
     DUDE_HOMES = {
       dude: ->(dh) { File.join(dh, '..') },
       elita: ->(dh) { File.join(dh, '..', 'elita') }
-    }.freeze
-
-    DEV_NULL = { out: '/dev/null', err: '/dev/null' }.freeze
-
+    }
+    DEV_NULL = { out: '/dev/null', err: '/dev/null' }
     def home(label)
       resolver = DUDE_HOMES[label.to_sym]
       resolver ? resolver.call(@dude_home) : label
@@ -20,13 +18,38 @@ module Cuke
       claude(home)
     end
 
-    def claude(home, cmd: 'tail -f /dev/null')
+    ABIDE = 'dude abide & tail -f /dev/null'
+
+    DEFAULT_RUNNER = [->(c) { "dude #{c} & wait" }, false]
+
+    RUNNERS = {
+      'abide'  => [->(_) { ABIDE }, true],
+      'tell'   => [->(c) { "dude #{c} & wait" }, false],
+      'abided' => [->(c) { "dude #{c}; #{ABIDE}" }, true]
+    }
+
+    def claude(home, cmd: 'tail -f /dev/null', replace: false)
+      kill_for(home) if replace
       full_cmd = cmd.include?('&') ? "exec -a dude_test sh -c '#{cmd}'" : "exec -a dude_test #{cmd}"
-      @session_pids ||= []
-      @session_pids << spawn(full_cmd, chdir: home, **DEV_NULL)
+      @sessions ||= {}
+      @sessions[home] = spawn(full_cmd, chdir: home, **DEV_NULL)
     end
 
-    def wait_for(description, timeout: 5, interval: 0.2)
+    def run(home, command)
+      verb = command.split.first
+      builder, replace = RUNNERS[verb] || DEFAULT_RUNNER
+      claude(home, cmd: builder.call(command), replace: replace)
+    end
+
+    def kill_for(home)
+      @sessions ||= {}
+      pid = @sessions.delete(home)
+      return unless pid
+      Process.kill('TERM', pid) rescue nil
+      Process.wait(pid) rescue nil
+    end
+
+    def wait_for(description, timeout: 10, interval: 0.2)
       deadline = Time.now + timeout
       return if poll_until_deadline(deadline, interval) { yield }
       raise "Timed out waiting for #{description}"
@@ -41,7 +64,7 @@ module Cuke
     end
 
     def cleanup
-      (@session_pids || []).each do |pid|
+      (@sessions || {}).each_value do |pid|
         Process.kill('TERM', pid) rescue nil
         Process.wait(pid) rescue nil
       end
@@ -56,7 +79,7 @@ module Cuke
       FileUtils.mkdir_p(@home)
       File.write(File.join(@home, 'CLAUDE.md'), "---\nicon: #{row['icon']}\n---\n")
       dude('pub', row['home'], chdir: @home)
-      claude(@home, cmd: "dude abide & wait")
+      claude(@home, cmd: "dude abide & tail -f /dev/null")
     end
 
     def setup_without_abide(row)
