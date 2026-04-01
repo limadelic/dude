@@ -9,7 +9,7 @@ module Dude
         'long break' => [900, '🍏', :green],
         'break' => [300, '🍏', :green],
         'default' => [1500, '🍅', :red]
-      }.freeze
+      }
 
       def to_s
         label, end_time = read_pomo_file

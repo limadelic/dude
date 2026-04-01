@@ -21,3 +21,4 @@ plugins/
 .mcp.json
 dudes/
 sessions/
+status.json

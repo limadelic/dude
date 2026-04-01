@@ -1,6 +1,6 @@
 module Cuke
   class StatusLineResult
-    ANCHORS = { '🧠' => 'Context', '💰' => 'Spend', '🍅' => 'Pomo', '🍏' => 'Pomo', '🐸' => 'Models', '🎭' => 'Models', '🎸' => 'Models' }.freeze
+    ANCHORS = { '🧠' => 'Context', '💰' => 'Spend', '🍅' => 'Pomo', '🍏' => 'Pomo', '🐸' => 'Models', '🎭' => 'Models', '🎸' => 'Models' }
 
     Section = Struct.new(:raw, :cleaned)
 

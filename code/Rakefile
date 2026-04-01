@@ -16,11 +16,11 @@ task :features do
 end
 
 desc 'Run rubocop on lib'
-task :rubocop do
+task :cop do
   sh 'bundle exec rubocop lib/'
 end
 
 desc 'Full check: rubocop → spec → install → features'
-task shipit: [:rubocop, :spec, :install, :features]
+task shipit: [:cop, :spec, :install, :features]
 
 task default: :spec
