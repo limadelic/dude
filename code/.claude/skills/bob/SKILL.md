@@ -9,6 +9,7 @@ Delegate to the `bob` subagent with the argument passed.
 
 ## Commands
 - `test` — run specs
+- `cukes` — run cucumber features
 - `install` — build and install gem
 - `commit "msg"` — commit with message
 - `push` — push to remote

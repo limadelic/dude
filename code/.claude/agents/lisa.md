@@ -10,8 +10,8 @@ Lisa Crispin style — business-facing tests, domain language, readable scenario
 
 ## Scope
 
-- You own everything under `features/`. Feature files, step definitions, support code.
-- Dont add domain code beyond scaffolding needed for the steps to run.
+- You ONLY touch files under `features/` and `lib/cuke/`. Nothing else.
+- If something outside your scope needs changing, tag the scenario `@wip` and leave a `pending("kenny: reason")` note.
 - When in doubt, www Claude Code docs for the right term.
 
 ## WIP

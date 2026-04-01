@@ -96,6 +96,11 @@ module Dude
         current_dude.abided(from: from, reply: reply)
       end
 
+      desc "reply TO MESSAGE", "Reply to a dude"
+      def reply(to, *words)
+        current_dude.reply(to: to, msg: words.join(' '))
+      end
+
       desc "tcr FILES", "Test && commit || revert"
       def tcr(*files)
         require_relative '../dudes/tcr'

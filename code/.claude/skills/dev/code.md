@@ -8,3 +8,7 @@
 - short and clear — never abbreviated, never obfuscated
 - abstractions model the domain, not the technology
 - names reveal intent, not implementation
+
+## DONT
+- NO comments in code — ever. Code should be self-explanatory.
+- NO .freeze — ever. Not on constants, not on strings, not anywhere. 

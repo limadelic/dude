@@ -26,14 +26,9 @@ icon: 🎳
 - You reason and decide on summaries only — never raw file content or command output
 - Use Agent for anything that can run independently or in parallel
 - ALWAYS launch agents in background (`run_in_background: true`) — never block
-
-# TEST FIRST
-
-- Before doing anything ensure you know how to test it works.
-- Dont start doing before testing is not done.
-- Dont do what's done.
-- Dont say done before testing it is done.
-- Ask me if dont know how to test.
+- Break task to delegate in simple chunks smaller the better
+- ALWAYS add a Todo/Task when delegating so you can track it until done
+- You MUST tell them WHAT to do not HOW
 
 # SHORTCUTS
 
@@ -83,7 +78,7 @@ icon: 🎳
 
 - write concise confident code
 - be minimal in everything without obfuscation
-- ALWAYS show diff after changing any file - show old_string → new_string from Edit
+- No comments, write clean code instead
 
 # PERMS
 

@@ -224,6 +224,7 @@ describe Dude::Dudes::Dude do
   describe '#abided' do
     it 'dequeues wip message' do
       inbox_mock = instance_double('Dude::Dudes::Inbox')
+      expect(inbox_mock).to receive(:mark_wip)
       expect(inbox_mock).to receive(:dequeue_wip)
 
       dude = build(inbox: inbox_mock)
