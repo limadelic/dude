@@ -25,3 +25,11 @@ Feature: Dudes
       | dude | 🎳   | yes |
     When > /abide
     Then the "Dudes" section shows "🎳⁰"
+
+  Scenario: Another dude abides
+    Given dudes
+      | home  | icon | pub | abide |
+      | dude  | 🎳   | yes | yes   |
+      | elita | 🐶   | yes | no    |
+    When > /abide
+    Then the "Dudes" section shows "🎳⁰ 🐶⁰"

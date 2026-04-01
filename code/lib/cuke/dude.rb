@@ -1,7 +1,7 @@
 require 'open3'
 
 module Cuke
-  module DudeTestProcess
+  module Dude
     DUDE_HOMES = {
       dude: ->(dh) { File.join(dh, '..') },
       elita: ->(dh) { File.join(dh, '..', 'elita') }
@@ -9,12 +9,12 @@ module Cuke
 
     DEV_NULL = { out: '/dev/null', err: '/dev/null' }.freeze
 
-    def resolve_home(label)
+    def home(label)
       resolver = DUDE_HOMES[label.to_sym]
       resolver ? resolver.call(@dude_home) : label
     end
 
-    def setup_dude(home, icon)
+    def setup(home, icon)
       FileUtils.mkdir_p(home)
       File.write(File.join(home, 'CLAUDE.md'), "---\nicon: #{icon}\n---\n")
       claude(home)
@@ -45,6 +45,41 @@ module Cuke
         Process.kill('TERM', pid) rescue nil
         Process.wait(pid) rescue nil
       end
+    end
+
+    def setup_from_row(row)
+      @home = home(row['home'])
+      row['abide'] == 'yes' ? setup_with_abide(row) : setup_without_abide(row)
+    end
+
+    def setup_with_abide(row)
+      FileUtils.mkdir_p(@home)
+      File.write(File.join(@home, 'CLAUDE.md'), "---\nicon: #{row['icon']}\n---\n")
+      dude('pub', row['home'], chdir: @home)
+      claude(@home, cmd: "dude abide & wait")
+    end
+
+    def setup_without_abide(row)
+      setup(@home, row["icon"])
+      dude('pub', row['home'], chdir: @home) if row['pub'] == 'yes'
+    end
+
+    def dude(*args, stdin: nil, chdir: nil)
+      cmd = "dude #{args.join(' ')}"
+      opts = build_command_options(stdin, chdir)
+      execute_dude_command(cmd, opts)
+    end
+
+    def build_command_options(stdin, chdir)
+      opts = { stdin_data: stdin.to_s }
+      opts[:chdir] = chdir if chdir
+      opts
+    end
+
+    def execute_dude_command(cmd, opts)
+      output, _, status = Open3.capture3(cmd, **opts)
+      raise "CLI failed: #{cmd}" unless status.success?
+      output
     end
   end
 end

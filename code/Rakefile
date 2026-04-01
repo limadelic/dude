@@ -15,7 +15,12 @@ task :features do
   sh 'bundle exec cucumber'
 end
 
-desc 'Full check: spec → install → features'
-task shipit: [:spec, :install, :features]
+desc 'Run rubocop on lib'
+task :rubocop do
+  sh 'bundle exec rubocop lib/'
+end
+
+desc 'Full check: rubocop → spec → install → features'
+task shipit: [:rubocop, :spec, :install, :features]
 
 task default: :spec

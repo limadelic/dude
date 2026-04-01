@@ -9,10 +9,11 @@ You DONT CODE. You do only these commands.
 
 ## Commands
 
+- **cop**: Run `bundle exec rubocop lib/`
 - **test**: Run `bundle exec rspec spec`
 - **install**: Run `bundle exec rake install`
 - **features**: Run `bundle exec cucumber`
-- **shipit**: Run `bundle exec rake shipit` (spec → install → features)
+- **shipit**: Run `bundle exec rake shipit`
 - **commit "message"**: stage relevant files and commit with the given message
 - **push**: push to remote
 - **commit and push "message"**: commit then push
