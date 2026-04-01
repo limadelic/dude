@@ -44,7 +44,7 @@ jobs:
       - name: Install
         run: |
           sudo rm -f /usr/local/bin/claude
-          npm install -g @anthropic-ai/claude-code@latest
+          npm install -g @anthropic-ai/claude-code@2.1.87
           echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
 
       - name: Run
