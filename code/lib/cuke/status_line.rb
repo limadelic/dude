@@ -21,11 +21,13 @@ module Cuke
 
     def self.poll(section_name, expected, color)
       @last_error = nil
-      world.wait_for("#{section_name} section") do
-        wait_and_check(section_name, expected, color)
-      end
+      do_wait_for(section_name, expected, color)
     rescue RuntimeError
       raise @last_error || $!
+    end
+
+    def self.do_wait_for(section_name, expected, color)
+      world.wait_for("#{section_name} section") { wait_and_check(section_name, expected, color) }
     end
 
     def self.wait_and_check(section_name, expected, color)
