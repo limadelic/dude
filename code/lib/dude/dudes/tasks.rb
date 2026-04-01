@@ -39,7 +39,8 @@ module Dude
         jsonl = latest_jsonl(project_dir)
         return nil unless jsonl
 
-        File.join(File.expand_path('~/.claude/tasks'), File.basename(jsonl, '.jsonl'))
+        File.join(File.expand_path('~/.claude/tasks'),
+          File.basename(jsonl, '.jsonl'))
       end
 
       def latest_jsonl(project_dir)

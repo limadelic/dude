@@ -14,15 +14,16 @@ module Dude
       def to_s
         pct, min = spend_pct
         blocks = [(pct * 9 / 100.0).round, min].max
-        "#{color_for_pct(pct)}💰 #{'█' * blocks}#{'░' * (9 - blocks)}#{COLORS[:reset]}"
+        bars = "#{'█' * blocks}#{'░' * (9 - blocks)}"
+        "#{color_for_pct(pct)}💰 #{bars}#{COLORS[:reset]}"
       end
 
       private
 
       def spend_pct
-        spend = @activity_data.dig('results', 0, 'metrics', 'spend').to_f rescue 0
+        spend = @activity_data.dig('results', 0, 'metrics', 'spend')&.to_f || 0
         [clamp((spend / SPEND_CAP * 100).round), spend > 0 ? 1 : 0]
-      end
+end
     end
   end
 end

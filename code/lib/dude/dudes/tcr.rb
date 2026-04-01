@@ -11,7 +11,7 @@ module Dude
       end
 
       def run
-        pass = rspec_pass? && rubocop_pass?
+        pass = rubocop_pass? && rspec_pass?
         pass ? commit : revert
         pass
       end

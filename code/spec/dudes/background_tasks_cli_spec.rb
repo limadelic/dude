@@ -13,7 +13,8 @@ describe Dude::Dudes::BackgroundTasksCli do
           command: 'dude watch' }
       ])
 
-      expect { cli.list }.to output("1234 dude abide\n5678 dude watch\n").to_stdout
+      expect {
+ cli.list }.to output("1234 dude abide\n5678 dude watch\n").to_stdout
     end
 
     it 'shows message when no processes found' do

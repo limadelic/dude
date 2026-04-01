@@ -16,13 +16,20 @@ module Dude
         stats = fetch_model_stats
         return "" if stats.empty? || model_counts(stats).sum.zero?
 
-        build_model_groups(stats).sort_by { |g| -g[0] }.map { |g| emoji_group(*g[1..]) }.join(' ')
+        build_model_groups(stats).sort_by { |g|
+          -g[0]
+        }.map { |g| emoji_group(*g[1..]) }.join(' ')
       end
 
       private
 
-      def model_counts(stats) = MODELS.map { |m, _| sum_metric(stats, m, 'successful_requests').to_i }
-      def model_costs(stats) = MODELS.map { |m, _| sum_metric(stats, m, 'spend') }
+      def model_counts(stats) = MODELS.map { |m, _|
+        sum_metric(stats, m, 'successful_requests').to_i
+      }
+
+      def model_costs(stats) = MODELS.map { |m, _|
+        sum_metric(stats, m, 'spend')
+      }
 
       def cost_pcts(costs)
         costs.map { |c| costs.sum.zero? ? 0 : (c * 100 / costs.sum).round }
@@ -31,12 +38,14 @@ module Dude
       def build_model_groups(stats)
         counts, costs = model_counts(stats), model_costs(stats)
         pcts = normalize_to_100(*counts.map { |c| percentage(c, counts.sum) })
-        build_group_array(counts, pcts, cost_pcts(costs), @session.dig('model', 'id') || '')
+        build_group_array(counts, pcts, cost_pcts(costs),
+          @session.dig('model', 'id') || '')
       end
 
       def build_group_array(counts, pcts, cpcts, current)
         MODELS.each_with_index.map { |(m, e), i|
-          [counts[i], e, pcts[i] / 10, current.include?(m), color_for_pct(cpcts[i])]
+          [counts[i], e, pcts[i] / 10, current.include?(m),
+            color_for_pct(cpcts[i])]
         }
       end
 

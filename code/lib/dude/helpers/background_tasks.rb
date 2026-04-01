@@ -19,7 +19,8 @@ module Dude
       private
 
       def self.task_hash(pid, parent_map)
-        { pid: pid, parent_pid: parent_map[pid], command: walker.command_for(pid) }
+        { pid: pid, parent_pid: parent_map[pid],
+          command: walker.command_for(pid) }
       end
 
       def self.walker

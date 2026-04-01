@@ -33,12 +33,9 @@ module Dude
 
       def compose_dude_data(icon, target)
         dude_dir = File.join(target, 'dudes')
-        inbox_path = File.join(dude_dir, 'inbox.json')
-        {
-          icon: icon, target: target, status: read_status(dude_dir),
-          inbox: ::Dude::Dudes::Inbox.new(inbox_path), dude_dir: dude_dir
-        }
-      end
+        { icon: icon, target: target, status: read_status(dude_dir),
+          inbox: ::Dude::Dudes::Inbox.new(File.join(dude_dir, 'inbox.json')), dude_dir: dude_dir }
+end
 
       def read_status(dude_dir)
         read_json(File.join(dude_dir, 'status.json')) || {}
