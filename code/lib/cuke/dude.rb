@@ -1,4 +1,5 @@
 require 'open3'
+require_relative 'process_detector'
 
 module Cuke
   module Dude
@@ -32,70 +33,16 @@ module Cuke
 
     def claude(home, cmd: 'tail -f /dev/null', replace: false)
       kill_for(home) if replace
-      escaped_cmd = cmd.gsub("'", "'\\\\''")
-      full_cmd = cmd.include?('&') ? "exec -a dude_test sh -c '#{escaped_cmd}'" : "exec -a dude_test #{cmd}"
+      full_cmd = build_spawn_command(cmd)
       @sessions ||= {}
       @sessions[home] = spawn(full_cmd, chdir: home, pgroup: true, **DEV_NULL)
       wait_for_process_startup(home) if replace
-    end
-
-    def wait_for_process_startup(home)
-      wait_for("process startup for #{home}", timeout: 10, interval: 0.05) do
-        process_visible_with_cwd?(home)
-      end
-    end
-
-    def process_visible_with_cwd?(home)
-      real_home = begin
-        File.realpath(File.expand_path(home))
-      rescue
-        File.expand_path(home)
-      end
-      pgrep_output = `pgrep -a dude_test 2>/dev/null`.strip
-      return false if pgrep_output.empty?
-
-      pgrep_output.split("\n").each do |line|
-        pid = line.split.first&.to_i
-        next unless pid&.positive?
-
-        lsof_output = `lsof -p #{pid} 2>/dev/null`
-        cwd = lsof_output[/cwd\s+DIR\s+\S+\s+\S+\s+\S+\s+(.+)/, 1]
-        real_cwd = begin
-          cwd ? File.realpath(cwd) : nil
-        rescue
-          cwd ? File.expand_path(cwd) : nil
-        end
-        return true if real_cwd && real_cwd.chomp('/') == real_home.chomp('/')
-      end
-      false
     end
 
     def run(home, command)
       verb = command.split.first
       builder, replace = RUNNERS[verb] || DEFAULT_RUNNER
       claude(home, cmd: builder.call(command), replace: replace)
-    end
-
-    def kill_for(home)
-      @sessions ||= {}
-      pid = @sessions.delete(home)
-      return unless pid
-      Process.kill('TERM', -pid) rescue nil
-      Process.wait(pid) rescue nil
-    end
-
-    def wait_for(description, timeout: 10, interval: 0.2)
-      deadline = Time.now + timeout
-      return if poll_until_deadline(deadline, interval) { yield }
-      raise "Timed out waiting for #{description}"
-    end
-
-    def poll_until_deadline(deadline, interval)
-      until Time.now > deadline
-        return true if yield
-        sleep interval
-      end
-      false
     end
 
     def cleanup
@@ -110,6 +57,49 @@ module Cuke
       row['abide'] == 'yes' ? setup_with_abide(row) : setup_without_abide(row)
     end
 
+    def dude(*args, stdin: nil, chdir: nil)
+      cmd = "dude #{args.join(' ')}"
+      opts = { stdin_data: stdin.to_s, chdir: chdir }.compact
+      output, _, status = Open3.capture3(cmd, **opts)
+      raise "CLI failed: #{cmd}" unless status.success?
+      output
+    end
+
+    def wait_for(description, timeout: 10, interval: 0.2)
+      deadline = Time.now + timeout
+      return if poll_until_deadline(deadline, interval) { yield }
+      raise "Timed out waiting for #{description}"
+    end
+
+    private
+
+    def build_spawn_command(cmd)
+      escaped_cmd = cmd.gsub("'", "'\\\\''")
+      cmd.include?('&') ? "exec -a dude_test sh -c '#{escaped_cmd}'" : "exec -a dude_test #{cmd}"
+    end
+
+    def wait_for_process_startup(home)
+      wait_for("process startup for #{home}", timeout: 10, interval: 0.05) do
+        ProcessDetector.visible_with_cwd?(home)
+      end
+    end
+
+    def kill_for(home)
+      @sessions ||= {}
+      pid = @sessions.delete(home)
+      return unless pid
+      Process.kill('TERM', -pid) rescue nil
+      Process.wait(pid) rescue nil
+    end
+
+    def poll_until_deadline(deadline, interval)
+      until Time.now > deadline
+        return true if yield
+        sleep interval
+      end
+      false
+    end
+
     def setup_with_abide(row)
       FileUtils.mkdir_p(@home)
       File.write(File.join(@home, 'CLAUDE.md'), "---\nicon: #{row['icon']}\n---\n")
@@ -120,24 +110,6 @@ module Cuke
     def setup_without_abide(row)
       setup(@home, row["icon"])
       dude('pub', row['home'], chdir: @home) if row['pub'] == 'yes'
-    end
-
-    def dude(*args, stdin: nil, chdir: nil)
-      cmd = "dude #{args.join(' ')}"
-      opts = build_command_options(stdin, chdir)
-      execute_dude_command(cmd, opts)
-    end
-
-    def build_command_options(stdin, chdir)
-      opts = { stdin_data: stdin.to_s }
-      opts[:chdir] = chdir if chdir
-      opts
-    end
-
-    def execute_dude_command(cmd, opts)
-      output, _, status = Open3.capture3(cmd, **opts)
-      raise "CLI failed: #{cmd}" unless status.success?
-      output
     end
   end
 end

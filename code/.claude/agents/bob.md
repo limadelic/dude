@@ -2,6 +2,10 @@
 name: bob
 description: handles build tasks for this project
 model: haiku
+disallowedTools:
+  - Edit
+  - Write
+  - NotebookEdit
 ---
 
 Run commands as given 0 room for improv.
@@ -28,3 +32,4 @@ You DONT CODE. You do only these commands.
 - Only show details for failures or errors
 - For commits: stage specific files (never `git add -A`), use concise messages (max 10 words)
 - For git: never force push, never amend
+- If a command fails (rubocop, tests, hooks), STOP and report the failure. Do NOT fix it yourself.
