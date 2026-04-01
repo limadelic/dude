@@ -24,7 +24,7 @@ module Cuke
 
     RUNNERS = {
       'abide'  => [->(_) { ABIDE }, true],
-      'tell'   => [->(c) { "dude #{c} & wait" }, false],
+      'tell'   => [->(c) { "dude #{c}; dude abide; #{ABIDE}" }, true],
       'abided' => [->(c) { "dude #{c}; #{ABIDE}" }, true]
     }
 
@@ -32,7 +32,7 @@ module Cuke
       kill_for(home) if replace
       full_cmd = cmd.include?('&') ? "exec -a dude_test sh -c '#{cmd}'" : "exec -a dude_test #{cmd}"
       @sessions ||= {}
-      @sessions[home] = spawn(full_cmd, chdir: home, **DEV_NULL)
+      @sessions[home] = spawn(full_cmd, chdir: home, pgroup: true, **DEV_NULL)
     end
 
     def run(home, command)
@@ -45,7 +45,7 @@ module Cuke
       @sessions ||= {}
       pid = @sessions.delete(home)
       return unless pid
-      Process.kill('TERM', pid) rescue nil
+      Process.kill('TERM', -pid) rescue nil
       Process.wait(pid) rescue nil
     end
 
@@ -65,7 +65,7 @@ module Cuke
 
     def cleanup
       (@sessions || {}).each_value do |pid|
-        Process.kill('TERM', pid) rescue nil
+        Process.kill('TERM', -pid) rescue nil
         Process.wait(pid) rescue nil
       end
     end
