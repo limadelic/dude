@@ -10,7 +10,8 @@ module Dude
   module Dudes
     class Dudes
       def self.pids
-        @pids ||= `pgrep -a #{ENV['DUDE_PROCESS'] || 'claude'}`.strip.split("\n").map { |line|
+        cmd = `pgrep -a #{ENV['DUDE_PROCESS'] || 'claude'}`
+        @pids ||= cmd.strip.split("\n").map { |line|
           extract_pid_cwd(line)
         }.compact.to_h
       end
@@ -19,7 +20,8 @@ module Dude
         pid = line.split.first&.to_i
         return nil unless pid&.positive?
 
-        cwd = `lsof -p #{pid} 2>/dev/null`[/cwd\s+DIR\s+\S+\s+\S+\s+\S+\s+(.+)/, 1]
+        pattern = /cwd\s+DIR\s+\S+\s+\S+\s+\S+\s+(.+)/
+        cwd = `lsof -p #{pid} 2>/dev/null`[pattern, 1]
         [pid, cwd] if cwd
       end
 
@@ -55,12 +57,16 @@ module Dude
       end
 
       def is_abiding?(pid, dude_dir, target)
-        AbidingChecker.new(method(:pids_for_target)).is_abiding?(pid, dude_dir, target)
+        checker = AbidingChecker.new(method(:pids_for_target))
+        checker.is_abiding?(pid, dude_dir, target)
       end
 
       def pids_for_target(target)
         normalized = target.chomp('/')
-        pids.select { |_, cwd| cwd.chomp('/') == normalized || File.dirname(normalized) == cwd.chomp('/') }.keys
+        pids.select { |_, cwd|
+          cwd.chomp('/') == normalized ||
+            File.dirname(normalized) == cwd.chomp('/')
+        }.keys
       end
 
       private
@@ -74,7 +80,11 @@ module Dude
       def expand_dudes_by_pid(templates)
         require_relative './dude'
         templates.group_by(&:target).flat_map { |target, group|
-          pids_for_target(target).empty? ? group : build_pids_dudes(group, target)
+          if pids_for_target(target).empty?
+            group
+          else
+            build_pids_dudes(group, target)
+          end
         }
       end
 
@@ -88,11 +98,14 @@ module Dude
         data = @home.read_dude_data(target)
         return unless data
 
-        pids_for_target(target).each { |pid| result << new_dude_for_pid(templates, data, pid) }
+        pids_for_target(target).each { |pid|
+          result << new_dude_for_pid(templates, data, pid)
+        }
       end
 
       def new_dude_for_pid(templates, data, pid)
-        dude = ::Dude::Dudes::Dude.new(data.merge(name: templates.first.name, registry: self))
+        opts = data.merge(name: templates.first.name, registry: self)
+        dude = ::Dude::Dudes::Dude.new(opts)
         dude.pid = pid
         dude
       end

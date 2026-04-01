@@ -20,7 +20,8 @@ module Dude
 
       def render_bar(label, end_time)
         total, icon, color_key = pomo_config(label)
-        bar(pomo_pct(total, end_time), icon, color: COLORS[color_key]) rescue nil
+        color = COLORS[color_key]
+        bar(pomo_pct(total, end_time), icon, color: color) rescue nil
       end
 
       private
@@ -34,10 +35,15 @@ module Dude
       end
 
       def pomo_config(label)
-        POMO_TYPES[label] || POMO_TYPES[label&.match?(/break/) ? 'break' : 'default']
+        return POMO_TYPES[label] if POMO_TYPES[label]
+
+        key = label&.match?(/break/) ? 'break' : 'default'
+        POMO_TYPES[key]
       end
 
-      def pomo_pct(total, end_time) = ((total - (end_time - Time.now.to_i)) * 100 / total).round
+      def pomo_pct(total, end_time)
+        ((total - (end_time - Time.now.to_i)) * 100 / total).round
+      end
     end
   end
 end

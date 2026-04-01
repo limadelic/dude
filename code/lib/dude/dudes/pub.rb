@@ -33,8 +33,8 @@ module Dude
         name ||= File.basename(target)
         parent_pub = ::Dude::Dudes::PubFinder.find_nearest_pub(target)
         full_name = "#{parent_pub[:name]}_#{name}"
-        register(claude_dir(target), full_name, File.join(parent_pub[:path], 'dudes'),
-          File.join(parent_pub[:path], 'dudes'))
+        dudes_path = File.join(parent_pub[:path], 'dudes')
+        register(claude_dir(target), full_name, dudes_path, dudes_path)
       end
 
       private

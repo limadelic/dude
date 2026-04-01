@@ -7,7 +7,8 @@ module Dude
       end
 
       def self.pgrep_all(pattern)
-        `pgrep -f "#{pattern}"`.strip.split("\n").map(&:to_i).select(&:positive?)
+        result = `pgrep -f "#{pattern}"`.strip.split("\n")
+        result.map(&:to_i).select(&:positive?)
       end
 
       def self.kill_process(pid)
