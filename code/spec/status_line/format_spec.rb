@@ -86,7 +86,8 @@ describe Dude::StatusLine::Format do
 
   describe '#emoji_str' do
     it 'formats emoji with color and superscript' do
-      result = formatter.emoji_str('🎭', Dude::StatusLine::Format::COLORS[:green], '³', '')
+      result = formatter.emoji_str('🎭', 
+Dude::StatusLine::Format::COLORS[:green], '³', '')
       expect(result).to include('🎭')
       expect(result).to include('³')
       expect(result).to include("\e[32m")

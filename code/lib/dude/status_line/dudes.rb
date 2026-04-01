@@ -9,7 +9,8 @@ module Dude
       COLOR_NAMES = { 'green' => 'green', 'yellow' => 'yellow', 'red' => 'red' }
 
       def initialize(session_data, dudes_data, dude_dir, context_percentage)
-        @session = session_data.is_a?(String) ? JSON.parse(session_data) : session_data
+        @session = session_data.is_a?(String) ? JSON.parse(session_data) :
+                   session_data
         @dudes = dudes_data || []
         @dude_dir = dude_dir
         @context_percentage = context_percentage

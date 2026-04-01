@@ -80,13 +80,9 @@ module Dude
       def expand_dudes_by_pid(templates)
         require_relative './dude'
         templates.group_by(&:target).flat_map { |target, group|
-          if pids_for_target(target).empty?
-            group
-          else
-            build_pids_dudes(group, target)
-          end
+          pids_for_target(target).empty? ? group : build_pids_dudes(group, target)
         }
-      end
+end
 
       def build_pids_dudes(templates, target)
         result = []

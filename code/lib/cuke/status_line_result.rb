@@ -1,7 +1,9 @@
 module Cuke
   class StatusLineResult
-    ANCHORS = { '🧠' => 'Context', '💰' => 'Spend', '🍅' => 'Pomo', '🍏' => 'Pomo', '🐸' => 'Models', '🎭' => 'Models',
-                '🎸' => 'Models' }
+    ANCHORS = {
+      '🧠' => 'Context', '💰' => 'Spend', '🍅' => 'Pomo', '🍏' => 'Pomo',
+      '🐸' => 'Models', '🎭' => 'Models', '🎸' => 'Models'
+    }
 
     Section = Struct.new(:raw, :cleaned)
 
@@ -18,7 +20,8 @@ module Cuke
     private
 
     def group_atoms
-      atoms = @cleaned.scan(/\[?\p{Emoji_Presentation}[^\p{Emoji_Presentation}\[]*/)
+      pattern = /\[?\p{Emoji_Presentation}[^\p{Emoji_Presentation}\[]*/
+      atoms = @cleaned.scan(pattern)
       groups = group_by_emoji(atoms)
       groups.transform_values { |parts| build_section(parts) }
     end
@@ -35,7 +38,6 @@ module Cuke
       cleaned = parts.join.strip
       first_pos, last_pos = find_positions(parts)
       return Section.new('', cleaned) unless first_pos && last_pos
-
       Section.new(extract_raw_window(first_pos, last_pos), bracket_bg_emojis(parts, cleaned))
     end
 
@@ -53,7 +55,9 @@ module Cuke
       section_start = @raw.index(parts.first[0])
       return cleaned unless section_start
 
-      parts.inject(cleaned) { |result, part| apply_bracket_if_needed(result, part, section_start) }
+      parts.inject(cleaned) do |result, part|
+        apply_bracket_if_needed(result, part, section_start)
+      end
     end
 
     def apply_bracket_if_needed(result, part, section_start)

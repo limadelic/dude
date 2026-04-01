@@ -5,7 +5,8 @@ module Spec
     end
 
     def capture_output
-      old = [$stdout, $stderr]; $stdout = $stderr = StringIO.new; yield; $stdout.string
+      old = [$stdout, $stderr];
+      $stdout = $stderr = StringIO.new; yield; $stdout.string
     ensure
       $stdout, $stderr = old
     end

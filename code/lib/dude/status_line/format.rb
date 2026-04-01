@@ -12,10 +12,15 @@ module Dude
       }
 
       SUPERSCRIPTS = {
-        0 => '⁰', 1 => '¹', 2 => '²', 3 => '³', 4 => '⁴', 5 => '⁵', 6 => '⁶', 7 => '⁷', 8 => '⁸', 9 => '⁹',
+        0 => '⁰', 1 => '¹', 2 => '²', 3 => '³', 4 => '⁴', 5 => '⁵', 6 => '⁶',
+        7 => '⁷', 8 => '⁸', 9 => '⁹',
         10 => '¹⁰'
       }
-      BG_MAP = { "\033[32m" => "\033[42m", "\033[38;5;226m" => "\033[48;5;226m", "\033[31m" => "\033[41m" }
+      BG_MAP = {
+        "\033[32m" => "\033[42m",
+        "\033[38;5;226m" => "\033[48;5;226m",
+        "\033[31m" => "\033[41m"
+      }
       WHITE = "\033[97m"
       JETBRAINS = ENV['TERMINAL_EMULATOR'] == 'JetBrains-JediTerm'
 
@@ -30,7 +35,9 @@ module Dude
       def bar(pct, emoji, lo: 33, hi: 66, color: nil)
         pct = clamp(pct)
         filled = (pct * 9 / 100.0).round
-        "#{color || color_for_pct(pct, lo, hi)}#{emoji} #{'█' * filled}#{'░' * (9 - filled)}#{COLORS[:reset]}"
+        bars = "#{'█' * filled}#{'░' * (9 - filled)}"
+        col = color || color_for_pct(pct, lo, hi)
+        "#{col}#{emoji} #{bars}#{COLORS[:reset]}"
       end
 
       def emoji_str(emoji, color, sup, pad)
@@ -38,9 +45,11 @@ module Dude
       end
 
       def emoji_group(emoji, count, active, color)
-        sup, pad = (count.is_a?(String) ? count : SUPERSCRIPTS[count] || '⁹⁺'), JETBRAINS ? ' ' : ''
+        sup = count.is_a?(String) ? count : SUPERSCRIPTS[count] || '⁹⁺'
+        pad = JETBRAINS ? ' ' : ''
         fg = color == COLORS[:yellow] ? "\033[30m" : WHITE
-        active ? "#{BG_MAP[color]}#{fg}#{emoji}#{pad}#{sup}#{COLORS[:reset]}" : emoji_str(emoji, color, sup, pad)
+        active ? "#{BG_MAP[color]}#{fg}#{emoji}#{pad}#{sup}#{COLORS[:reset]}" :
+               emoji_str(emoji, color, sup, pad)
       end
 
       def percentage(part, total)

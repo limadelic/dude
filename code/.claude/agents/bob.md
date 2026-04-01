@@ -18,7 +18,7 @@ You DONT CODE. You do only these commands.
 - **install**: `bundle exec rake install`
 - **cukes** / **features**: `bundle exec rake features`
 - **shipit**: `bundle exec rake shipit`
-- **commit "message"**: stage relevant files and commit with the given message
+- **commit "message"**: run `rake cop` first, then stage relevant files and commit with the given message
 - **push**: push to remote
 - **commit and push "message"**: commit then push
 - **all "message"**: shipit → commit → push (the full cycle)

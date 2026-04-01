@@ -17,6 +17,9 @@ Metrics/ModuleLength:
 Layout:
   Enabled: true
 
+Layout/LineLength:
+  Max: 80
+
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 

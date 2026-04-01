@@ -77,7 +77,8 @@ module Cuke
 
     def build_spawn_command(cmd)
       escaped_cmd = cmd.gsub("'", "'\\\\''")
-      cmd.include?('&') ? "exec -a dude_test sh -c '#{escaped_cmd}'" : "exec -a dude_test #{cmd}"
+      wrapper = cmd.include?('&') ? "sh -c '#{escaped_cmd}'" : cmd
+      "exec -a dude_test #{wrapper}"
     end
 
     def wait_for_process_startup(home)
@@ -106,7 +107,8 @@ module Cuke
 
     def setup_with_abide(row)
       FileUtils.mkdir_p(@home)
-      File.write(File.join(@home, 'CLAUDE.md'), "---\nicon: #{row['icon']}\n---\n")
+      content = "---\nicon: #{row['icon']}\n---\n"
+      File.write(File.join(@home, 'CLAUDE.md'), content)
       dude('pub', row['home'], chdir: @home)
       claude(@home, cmd: "dude abide & tail -f /dev/null")
     end

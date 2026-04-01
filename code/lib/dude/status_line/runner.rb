@@ -22,7 +22,7 @@ module Dude
       JETBRAINS = Dude::StatusLine::Format::JETBRAINS
 
       def initialize(json_input, activity: nil, dudes: nil, cwd: Dir.pwd)
-        @session = (JSON.parse(json_input) rescue (warn "Error parsing JSON: #{$!.message}"; {}))
+        @session = (JSON.parse(json_input) rescue default_session)
         @activity, @dudes, @cwd = activity, dudes, cwd
       end
 
@@ -34,8 +34,15 @@ module Dude
 
       private
 
+      def default_session
+        warn "Error parsing JSON: #{$!.message}"
+        {}
+      end
+
       def create_dudes_instance
-        Dude::StatusLine::Dudes.new(@session, dudes_list, @cwd, context_percentage)
+        Dude::StatusLine::Dudes.new(
+          @session, dudes_list, @cwd, context_percentage
+        )
       end
 
       def dudes_list
@@ -48,7 +55,11 @@ module Dude
       end
 
       def build_status_line(dudes_instance)
-        [context_section, spend_section, pomo_section, models_section, dudes_instance.to_s].compact.join(' ')
+        sections = [
+          context_section, spend_section, pomo_section,
+          models_section, dudes_instance.to_s
+        ]
+        sections.compact.join(' ')
       end
 
       def context_section
@@ -93,8 +104,10 @@ module Dude
       end
 
       def run_curl(url)
-        Open3.capture3('curl', '-s', '-L', url, '-H', "x-litellm-api-key: #{ENV['ANTHROPIC_AUTH_TOKEN']}", '--cacert',
-          File.expand_path('~/.claude/ukg.pem'))
+        auth_header = "x-litellm-api-key: #{ENV['ANTHROPIC_AUTH_TOKEN']}"
+        cert_path = File.expand_path('~/.claude/ukg.pem')
+        Open3.capture3('curl', '-s', '-L', url, '-H', auth_header,
+          '--cacert', cert_path)
       end
     end
   end

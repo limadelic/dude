@@ -25,14 +25,9 @@ module Dude
       def self.check_for_pub_in(dir)
         claude_dir = File.join(dir, '.claude')
         return nil unless Dir.exist?(claude_dir)
-
         pub_name = find_pub_name_for_target(claude_dir)
-        if pub_name
-          { name: pub_name, path: File.join(claude_dir, 'dudes') }
-        else
-          nil
-        end
-      end
+        pub_name ? { name: pub_name, path: File.join(claude_dir, 'dudes') } : nil
+end
 
       def self.parent_dir(current)
         parent = File.dirname(current)
