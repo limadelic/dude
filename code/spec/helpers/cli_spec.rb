@@ -13,19 +13,28 @@ describe 'tcr command' do
     allow(tcr_instance).to receive(:run).and_return(true)
 
     cli = Dude::Helpers::Cli.new
-    expect { cli.invoke(:tcr, %w[file.rb]) }.to raise_error(SystemExit) { |error| expect(error.status).to eq(0) }
+    expect { cli.invoke(:tcr, %w[file.rb]) }.to(
+      raise_error(SystemExit) do |error|
+        expect(error.status).to eq(0)
+      end
+    )
   end
 
   it 'exits with code 1 on failure' do
     allow(tcr_instance).to receive(:run).and_return(false)
 
     cli = Dude::Helpers::Cli.new
-    expect { cli.invoke(:tcr, %w[file.rb]) }.to raise_error(SystemExit) { |error| expect(error.status).to eq(1) }
+    expect { cli.invoke(:tcr, %w[file.rb]) }.to(
+      raise_error(SystemExit) do |error|
+        expect(error.status).to eq(1)
+      end
+    )
   end
 
   it 'passes files to Tcr' do
     allow(tcr_instance).to receive(:run).and_return(true)
-    expect(Dude::Dudes::Tcr).to receive(:new).with(%w[lib/foo.rb]).and_return(tcr_instance)
+    expect(Dude::Dudes::Tcr).to receive(:new).with(%w[lib/foo.rb])
+      .and_return(tcr_instance)
 
     cli = Dude::Helpers::Cli.new
     expect { cli.invoke(:tcr, %w[lib/foo.rb]) }.to raise_error(SystemExit)
@@ -52,7 +61,9 @@ describe 'reply command' do
     allow(dudes_mock).to receive(:current).and_return(nil)
 
     cli = Dude::Helpers::Cli.new
-    expect { cli.invoke(:reply, ['sender', 'hello']) }.to raise_error('No dude running')
+    expect { cli.invoke(:reply, ['sender', 'hello']) }.to raise_error(
+      'No dude running'
+    )
   end
 end
 
@@ -67,7 +78,8 @@ describe 'pub command' do
     allow(pub_instance).to receive(:pub).and_return('myicon')
     allow(Dir).to receive(:pwd).and_return('/proj')
 
-    expect(Dude::Dudes::Pub).to receive(:new).with(target: '/proj').and_return(pub_instance)
+    expect(Dude::Dudes::Pub).to receive(:new).with(target: '/proj')
+      .and_return(pub_instance)
 
     cli = Dude::Helpers::Cli.new
     cli.invoke(:pub, ['myicon'])
@@ -77,7 +89,8 @@ describe 'pub command' do
     allow(Dir).to receive(:pwd).and_return('/proj')
     allow(pub_instance).to receive(:pub).and_return('myicon')
 
-    expect(pub_instance).to receive(:pub).with('/proj', 'myicon').and_return('myicon')
+    expect(pub_instance).to receive(:pub).with('/proj', 'myicon')
+      .and_return('myicon')
 
     cli = Dude::Helpers::Cli.new
     cli.invoke(:pub, ['myicon'])
