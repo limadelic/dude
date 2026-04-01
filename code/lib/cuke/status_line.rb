@@ -70,9 +70,10 @@ module Cuke
     end
 
     def build_models_breakdown(models)
-      breakdown, total = {}, 0
-      models.each { |m, d| spend = d[:count] * d[:cost]; total += spend; breakdown[m.to_s] = { 'metrics' => { 'successful_requests' => d[:count], 'spend' => spend } } }
-      [breakdown, total]
+      models.reduce([{}, 0]) { |(bd, t), (m, d)|
+        spend = d[:count] * d[:cost]
+        [bd.merge(m.to_s => { 'metrics' => { 'successful_requests' => d[:count], 'spend' => spend } }), t + spend]
+      }
     end
 
     def activity_response_payload(total_spend, breakdown)
