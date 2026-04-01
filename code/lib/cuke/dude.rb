@@ -25,12 +25,14 @@ module Cuke
     RUNNERS = {
       'abide'  => [->(_) { ABIDE }, true],
       'tell'   => [->(c) { "dude #{c}; dude abide; #{ABIDE}" }, true],
+      'ask'    => [->(c) { "dude #{c}; dude abide; #{ABIDE}" }, true],
       'abided' => [->(c) { "dude #{c}; #{ABIDE}" }, true]
     }
 
     def claude(home, cmd: 'tail -f /dev/null', replace: false)
       kill_for(home) if replace
-      full_cmd = cmd.include?('&') ? "exec -a dude_test sh -c '#{cmd}'" : "exec -a dude_test #{cmd}"
+      escaped_cmd = cmd.gsub("'", "'\\\\''")
+      full_cmd = cmd.include?('&') ? "exec -a dude_test sh -c '#{escaped_cmd}'" : "exec -a dude_test #{cmd}"
       @sessions ||= {}
       @sessions[home] = spawn(full_cmd, chdir: home, pgroup: true, **DEV_NULL)
     end
