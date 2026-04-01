@@ -12,7 +12,10 @@ module Dude
       def initialize(opts = {})
         init(opts)
         @registry = opts[:registry]
-        @abide = ::Dude::Dudes::Abide.new(inbox: @inbox, dude_dir: @dude_dir, name: @name)
+        @abide = ::Dude::Dudes::Abide.new(
+          inbox: @inbox, dude_dir: @dude_dir,
+          name: @name
+        )
         @pub = ::Dude::Dudes::Pub.new(target: @target)
       end
 

@@ -6,12 +6,23 @@ AllCops:
 # The ones we care about
 Metrics/MethodLength:
   Max: 5
+  CountAsOne:
+    - array
+    - hash
+    - heredoc
+    - method_call
 
 Metrics/ClassLength:
   Max: 100
 
 Metrics/ModuleLength:
   Max: 100
+
+Metrics/BlockLength:
+  Enabled: false
+
+Metrics/ParameterLists:
+  Enabled: false
 
 # Disable everything else
 Layout:
@@ -51,6 +62,24 @@ Layout/FirstHashElementIndentation:
 Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 
+Layout/MultilineHashBraceLayout:
+  EnforcedStyle: new_line
+
+Layout/MultilineArrayBraceLayout:
+  EnforcedStyle: new_line
+
+Layout/MultilineMethodCallBraceLayout:
+  EnforcedStyle: new_line
+
+Layout/FirstHashElementLineBreak:
+  Enabled: true
+
+Layout/FirstArrayElementLineBreak:
+  Enabled: true
+
+Layout/FirstMethodArgumentLineBreak:
+  Enabled: true
+
 Lint:
   Enabled: false
 
@@ -63,6 +92,9 @@ Naming/FileName:
   CheckDefinitionPathHierarchy: true
   CheckDefinitionPathHierarchyRoots:
     - lib
+  Exclude:
+    - 'spec/**/*'
+    - 'bin/**/*'
 
 Style:
   Enabled: false

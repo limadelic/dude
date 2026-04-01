@@ -73,9 +73,11 @@ module Cuke
 
     def build_models_from_counts(counts)
       h, hc, s, sc, o, oc = counts
-      { haiku: { count: h.to_i, cost: hc.to_i },
+      {
+        haiku: { count: h.to_i, cost: hc.to_i },
         sonnet: { count: s.to_i, cost: sc.to_i },
-        opus: { count: o.to_i, cost: oc.to_i } }
+        opus: { count: o.to_i, cost: oc.to_i }
+      }
     end
 
     def set_activity_response(models)
@@ -91,10 +93,14 @@ module Cuke
     end
 
     def model_metrics(model, data)
-      { model.to_s => { 'metrics' => {
-        'successful_requests' => data[:count],
-        'spend' => data[:count] * data[:cost]
-      } } }
+      {
+        model.to_s => {
+          'metrics' => {
+            'successful_requests' => data[:count],
+            'spend' => data[:count] * data[:cost]
+          }
+        }
+      }
     end
 
     def activity_response_payload(total_spend, breakdown)

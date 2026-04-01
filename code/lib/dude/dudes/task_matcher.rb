@@ -9,8 +9,14 @@ module Dude
         cmd = task[:command]
         return cmd.include?(dude_dir) if cmd.include?('/.claude/dudes')
         return @pids_resolver.call(target).any? if cmd.include?('dude abide')
-        cmd.include?("wait-until") && cmd.include?(File.join(dude_dir, 'inbox.json'))
-end
+
+        cmd.include?("wait-until") && cmd.include?(
+          File.join(
+            dude_dir,
+            'inbox.json'
+          )
+        )
+      end
     end
   end
 end

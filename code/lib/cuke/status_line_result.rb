@@ -38,7 +38,11 @@ module Cuke
       cleaned = parts.join.strip
       first_pos, last_pos = find_positions(parts)
       return Section.new('', cleaned) unless first_pos && last_pos
-      Section.new(extract_raw_window(first_pos, last_pos), bracket_bg_emojis(parts, cleaned))
+
+      Section.new(
+        extract_raw_window(first_pos, last_pos),
+        bracket_bg_emojis(parts, cleaned)
+      )
     end
 
     def find_positions(parts)

@@ -23,7 +23,7 @@ module Dude
       def spend_pct
         spend = @activity_data.dig('results', 0, 'metrics', 'spend')&.to_f || 0
         [clamp((spend / SPEND_CAP * 100).round), spend > 0 ? 1 : 0]
-end
+      end
     end
   end
 end
