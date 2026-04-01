@@ -32,6 +32,30 @@ describe 'tcr command' do
   end
 end
 
+describe 'reply command' do
+  let(:dude_mock) { instance_double('Dude::Dudes::Dude') }
+  let(:dudes_mock) { instance_double('Dude::Dudes::Dudes') }
+
+  before do
+    allow(dudes_mock).to receive(:current).and_return(dude_mock)
+    allow(Dude::Dudes::Dudes).to receive(:new).and_return(dudes_mock)
+  end
+
+  it 'calls reply on current dude with to and msg' do
+    expect(dude_mock).to receive(:reply).with(to: 'sender', msg: 'hello back')
+
+    cli = Dude::Helpers::Cli.new
+    cli.invoke(:reply, ['sender', 'hello back'])
+  end
+
+  it 'raises error when no dude is running' do
+    allow(dudes_mock).to receive(:current).and_return(nil)
+
+    cli = Dude::Helpers::Cli.new
+    expect { cli.invoke(:reply, ['sender', 'hello']) }.to raise_error('No dude running')
+  end
+end
+
 describe 'pub command' do
   let(:pub_instance) { instance_double(Dude::Dudes::Pub) }
 

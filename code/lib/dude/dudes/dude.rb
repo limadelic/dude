@@ -49,6 +49,10 @@ module Dude
         @abide.ask(name, text)
       end
 
+      def reply(to: nil, msg: nil)
+        @abide.reply(to: to, msg: msg)
+      end
+
       def pub(icon = nil)
         icon ||= @name
         @pub.pub(@target, icon)
