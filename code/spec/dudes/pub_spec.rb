@@ -154,7 +154,8 @@ describe Dude::Dudes::Pub do
       pub.sub('/code', 'dev')
 
       expect(File).to have_received(:write).with(
-'/home/.claude/dudes/dudes/inbox.json', '[]')
+        '/home/.claude/dudes/dudes/inbox.json', '[]'
+      )
     end
 
     it 'writes status with underscore-prefixed name in JSON' do
@@ -180,8 +181,10 @@ describe Dude::Dudes::Pub do
       pub = build(target: '/code/.claude')
       pub.sub('/code', 'dev')
 
-      expect(File).to have_received(:symlink).with('/code/.claude/', 
-File.join('/home/.claude/dudes/dudes', 'dude_dev'))
+      expect(File).to have_received(:symlink).with(
+        '/code/.claude/',
+        File.join('/home/.claude/dudes/dudes', 'dude_dev')
+      )
     end
 
     it 'returns underscore-prefixed full name' do

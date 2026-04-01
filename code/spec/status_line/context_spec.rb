@@ -7,8 +7,11 @@ describe Dude::StatusLine::Context do
   include_context 'StatusLine helpers'
 
   before do
-    allow(Dude::Dudes::Dudes).to receive(:new).and_return(instance_double(
-Dude::Dudes::Dudes, all: []))
+    allow(Dude::Dudes::Dudes).to receive(:new).and_return(
+      instance_double(
+        Dude::Dudes::Dudes, all: []
+      )
+    )
   end
 
   describe 'Context bar' do

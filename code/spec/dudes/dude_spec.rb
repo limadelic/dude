@@ -6,8 +6,10 @@ describe Dude::Dudes::Dude do
   let(:reg_m) { instance_double('Dude::Dudes::Dudes') }
 
   def build(overrides = {})
-    h = { icon: '🔴', inbox: [], status: {}, dude_dir: dude_dir,
-          target: '/proj/.claude', name: 'rec', registry: overrides[:registry] || reg_m }
+    h = {
+      icon: '🔴', inbox: [], status: {}, dude_dir: dude_dir,
+      target: '/proj/.claude', name: 'rec', registry: overrides[:registry] || reg_m
+    }
     described_class.new(h.merge(overrides))
   end
 
@@ -68,8 +70,10 @@ describe Dude::Dudes::Dude do
   describe '#pub' do
     it 'uses name as default icon' do
       pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:pub).with('/proj/.claude', 
-'rec').and_return('rec')
+      expect(pub_mock).to receive(:pub).with(
+        '/proj/.claude',
+        'rec'
+      ).and_return('rec')
       allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
 
       dude = build(target: '/proj/.claude', name: 'rec')
@@ -126,8 +130,10 @@ describe Dude::Dudes::Dude do
   describe '#is_abiding?' do
     it 'returns true when registry says abiding' do
       registry_mock = instance_double('Dude::Dudes::Dudes')
-      expect(registry_mock).to receive(:is_abiding?).with(888, 
-'/proj/.claude/dudes', '/proj/.claude').and_return(true)
+      expect(registry_mock).to receive(:is_abiding?).with(
+        888,
+        '/proj/.claude/dudes', '/proj/.claude'
+      ).and_return(true)
       dude = build(registry: registry_mock)
       dude.pid = 888
       expect(dude).to be_is_abiding
@@ -171,8 +177,10 @@ describe Dude::Dudes::Dude do
   describe '#pub' do
     it 'calls pub and returns icon' do
       pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:pub).with('/proj/.claude', 
-'custom_icon').and_return('custom_icon')
+      expect(pub_mock).to receive(:pub).with(
+        '/proj/.claude',
+        'custom_icon'
+      ).and_return('custom_icon')
       allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
 
       dude = build(target: '/proj/.claude')
@@ -235,8 +243,10 @@ describe Dude::Dudes::Dude do
   describe '#sub' do
     it 'delegates to pub.sub with target and name' do
       pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:sub).with('/proj/.claude', 
-'code').and_return('dude_code')
+      expect(pub_mock).to receive(:sub).with(
+        '/proj/.claude',
+        'code'
+      ).and_return('dude_code')
       allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
 
       dude = build(target: '/proj/.claude')
@@ -247,8 +257,10 @@ describe Dude::Dudes::Dude do
 
     it 'defaults name to target basename when not provided' do
       pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:sub).with('/proj/.claude', 
-nil).and_return('dude_claude')
+      expect(pub_mock).to receive(:sub).with(
+        '/proj/.claude',
+        nil
+      ).and_return('dude_claude')
       allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
 
       dude = build(target: '/proj/.claude')

@@ -38,14 +38,18 @@ module Dude
       def build_model_groups(stats)
         counts, costs = model_counts(stats), model_costs(stats)
         pcts = normalize_to_100(*counts.map { |c| percentage(c, counts.sum) })
-        build_group_array(counts, pcts, cost_pcts(costs),
-          @session.dig('model', 'id') || '')
+        build_group_array(
+          counts, pcts, cost_pcts(costs),
+          @session.dig('model', 'id') || ''
+        )
       end
 
       def build_group_array(counts, pcts, cpcts, current)
         MODELS.each_with_index.map { |(m, e), i|
-          [counts[i], e, pcts[i] / 10, current.include?(m),
-            color_for_pct(cpcts[i])]
+          [
+            counts[i], e, pcts[i] / 10, current.include?(m),
+            color_for_pct(cpcts[i])
+          ]
         }
       end
 

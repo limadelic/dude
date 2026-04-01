@@ -36,8 +36,11 @@ describe Dude::Helpers::BackgroundTasks do
       pids_map = { 1000 => '/proj/.claude' }
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return(pids_map)
       allow(walker_mock).to receive(:descendants_with_parents).with([1000])
-        .and_return([[2000, 2001],
-          { 2000 => 1000, 2001 => 1000 }])
+        .and_return([
+          [2000, 2001],
+          { 2000 => 1000, 2001 => 1000 }
+        ]
+                   )
       allow(walker_mock).to receive(:command_for).with(2000)
         .and_return("dude abide")
       allow(walker_mock).to receive(:command_for).with(2001)
@@ -54,8 +57,11 @@ describe Dude::Helpers::BackgroundTasks do
       pids_map = { 1000 => '/proj/.claude' }
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return(pids_map)
       allow(walker_mock).to receive(:descendants_with_parents).with([1000])
-        .and_return([[2000, 3000],
-          { 2000 => 1000, 3000 => 2000 }])
+        .and_return([
+          [2000, 3000],
+          { 2000 => 1000, 3000 => 2000 }
+        ]
+                   )
       allow(walker_mock).to receive(:command_for).with(2000)
         .and_return("ruby -e dude")
       allow(walker_mock).to receive(:command_for).with(3000)
@@ -97,8 +103,11 @@ describe Dude::Helpers::BackgroundTasks do
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return(pids_map)
       pids = [1000, 2000]
       allow(walker_mock).to receive(:descendants_with_parents).with(pids)
-        .and_return([[1001, 2001],
-          { 1001 => 1000, 2001 => 2000 }])
+        .and_return([
+          [1001, 2001],
+          { 1001 => 1000, 2001 => 2000 }
+        ]
+                   )
       allow(walker_mock).to receive(:command_for).with(1001)
         .and_return("dude abide")
       allow(walker_mock).to receive(:command_for).with(2001)
