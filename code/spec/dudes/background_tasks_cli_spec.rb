@@ -7,11 +7,11 @@ describe Dude::Dudes::BackgroundTasksCli do
   describe '#list' do
     it 'shows discovered processes' do
       allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([
-                                                                           { pid: 1234, parent_pid: 1000,
-                                                                             command: 'dude abide' },
-                                                                           { pid: 5678, parent_pid: 1000,
-                                                                             command: 'dude watch' }
-                                                                         ])
+        { pid: 1234, parent_pid: 1000,
+          command: 'dude abide' },
+        { pid: 5678, parent_pid: 1000,
+          command: 'dude watch' }
+      ])
 
       expect { cli.list }.to output("1234 dude abide\n5678 dude watch\n").to_stdout
     end

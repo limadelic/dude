@@ -7,7 +7,7 @@ describe Dude::StatusLine::Spend do
 
   before do
     allow(Dude::StatusLine::Dudes).to receive(:new).and_return(instance_double(Dude::StatusLine::Dudes, to_s: nil,
-                                                                                                        write_status: nil))
+      write_status: nil))
   end
 
   describe 'Spend section color coding' do

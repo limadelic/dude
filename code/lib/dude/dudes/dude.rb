@@ -104,7 +104,7 @@ module Dude
 
       def init(opts)
         @name, @icon, @inbox, @status, @dude_dir, @target = opts.values_at(:name, :icon, :inbox, :status, :dude_dir,
-                                                                           :target)
+          :target)
         @pid = nil
       end
     end

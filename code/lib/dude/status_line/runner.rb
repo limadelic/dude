@@ -94,7 +94,7 @@ module Dude
 
       def run_curl(url)
         Open3.capture3('curl', '-s', '-L', url, '-H', "x-litellm-api-key: #{ENV['ANTHROPIC_AUTH_TOKEN']}", '--cacert',
-                       File.expand_path('~/.claude/ukg.pem'))
+          File.expand_path('~/.claude/ukg.pem'))
       end
     end
   end

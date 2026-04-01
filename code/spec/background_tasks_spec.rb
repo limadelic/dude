@@ -21,7 +21,7 @@ describe Dude::Helpers::BackgroundTasks do
     it 'returns process hashes with pid, parent_pid, and command' do
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 1000 => '/proj/.claude' })
       allow(walker_mock).to receive(:descendants_with_parents).with([1000])
-                                                              .and_return([[2000], { 2000 => 1000 }])
+        .and_return([[2000], { 2000 => 1000 }])
       allow(walker_mock).to receive(:command_for).with(2000).and_return("dude abide")
 
       result = Dude::Helpers::BackgroundTasks.list
@@ -31,8 +31,8 @@ describe Dude::Helpers::BackgroundTasks do
     it 'returns multiple children with commands' do
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 1000 => '/proj/.claude' })
       allow(walker_mock).to receive(:descendants_with_parents).with([1000])
-                                                              .and_return([[2000, 2001],
-                                                                           { 2000 => 1000, 2001 => 1000 }])
+        .and_return([[2000, 2001],
+          { 2000 => 1000, 2001 => 1000 }])
       allow(walker_mock).to receive(:command_for).with(2000).and_return("dude abide")
       allow(walker_mock).to receive(:command_for).with(2001).and_return("dude watch")
 
@@ -46,8 +46,8 @@ describe Dude::Helpers::BackgroundTasks do
     it 'returns grandchildren with commands and correct parent_pid' do
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 1000 => '/proj/.claude' })
       allow(walker_mock).to receive(:descendants_with_parents).with([1000])
-                                                              .and_return([[2000, 3000],
-                                                                           { 2000 => 1000, 3000 => 2000 }])
+        .and_return([[2000, 3000],
+          { 2000 => 1000, 3000 => 2000 }])
       allow(walker_mock).to receive(:command_for).with(2000).and_return("ruby -e dude")
       allow(walker_mock).to receive(:command_for).with(3000).and_return("dude watch")
 
@@ -61,7 +61,7 @@ describe Dude::Helpers::BackgroundTasks do
     it 'handles no descendants (leaf process)' do
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 1000 => '/proj/.claude' })
       allow(walker_mock).to receive(:descendants_with_parents).with([1000])
-                                                              .and_return([[], {}])
+        .and_return([[], {}])
 
       result = Dude::Helpers::BackgroundTasks.list
       expect(result).to eq([])
@@ -70,7 +70,7 @@ describe Dude::Helpers::BackgroundTasks do
     it 'handles whitespace in commands' do
       allow(Dude::Dudes::Dudes).to receive(:pids).and_return({ 1000 => '/proj/.claude' })
       allow(walker_mock).to receive(:descendants_with_parents).with([1000])
-                                                              .and_return([[2000], { 2000 => 1000 }])
+        .and_return([[2000], { 2000 => 1000 }])
       allow(walker_mock).to receive(:command_for).with(2000).and_return("dude abide")
 
       result = Dude::Helpers::BackgroundTasks.list
@@ -82,8 +82,8 @@ describe Dude::Helpers::BackgroundTasks do
         { 1000 => '/proj1/.claude', 2000 => '/proj2/.claude' }
       )
       allow(walker_mock).to receive(:descendants_with_parents).with([1000, 2000])
-                                                              .and_return([[1001, 2001],
-                                                                           { 1001 => 1000, 2001 => 2000 }])
+        .and_return([[1001, 2001],
+          { 1001 => 1000, 2001 => 2000 }])
       allow(walker_mock).to receive(:command_for).with(1001).and_return("dude abide")
       allow(walker_mock).to receive(:command_for).with(2001).and_return("dude watch")
 
