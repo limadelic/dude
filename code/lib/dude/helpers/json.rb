@@ -9,6 +9,7 @@ module Dude
 
       def read_icon(path)
         return nil unless File.exist?(path)
+
         File.read(path)[/^---\s*\n(.*?\n)---\s*\n/m, 1]&.[](/^icon:\s*(.+)/, 1)&.strip
       end
     end

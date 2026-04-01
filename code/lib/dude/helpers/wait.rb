@@ -13,6 +13,7 @@ module Dude
         loop do
           return true if block.call
           raise Timeout if expired?
+
           sleep @interval
         end
       end

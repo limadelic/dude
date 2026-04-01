@@ -1,6 +1,7 @@
 module Cuke
   class StatusLineResult
-    ANCHORS = { '🧠' => 'Context', '💰' => 'Spend', '🍅' => 'Pomo', '🍏' => 'Pomo', '🐸' => 'Models', '🎭' => 'Models', '🎸' => 'Models' }
+    ANCHORS = { '🧠' => 'Context', '💰' => 'Spend', '🍅' => 'Pomo', '🍏' => 'Pomo', '🐸' => 'Models', '🎭' => 'Models',
+                '🎸' => 'Models' }
 
     Section = Struct.new(:raw, :cleaned)
 
@@ -34,6 +35,7 @@ module Cuke
       cleaned = parts.join.strip
       first_pos, last_pos = find_positions(parts)
       return Section.new('', cleaned) unless first_pos && last_pos
+
       Section.new(extract_raw_window(first_pos, last_pos), bracket_bg_emojis(parts, cleaned))
     end
 

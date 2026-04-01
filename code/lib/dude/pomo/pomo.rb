@@ -14,6 +14,7 @@ module Dude
       def to_s
         label, end_time = read_pomo_file
         return nil unless end_time&.> Time.now.to_i
+
         render_bar(label, end_time)
       end
 
@@ -27,6 +28,7 @@ module Dude
       def read_pomo_file
         path = ENV.fetch('POMO_STATUS_FILE', '/tmp/pomo.status')
         return nil unless File.exist?(path)
+
         parts = File.read(path).split('|')
         parts[0] != 'transitioning' && [parts[0], parts[1].to_i]
       end

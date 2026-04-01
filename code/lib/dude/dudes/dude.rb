@@ -18,6 +18,7 @@ module Dude
 
       def is_current?
         return false unless @pid
+
         @registry.is_current?(@pid)
       end
 
@@ -34,7 +35,8 @@ module Dude
       end
 
       def to_h
-        { name: @name, icon: @icon, pid: @pid, current: is_current?, abiding: is_abiding?, target: @target, messages: messages, context: context }
+        { name: @name, icon: @icon, pid: @pid, current: is_current?, abiding: is_abiding?, target: @target,
+          messages: messages, context: context }
       end
 
       def pids_for_target
@@ -101,7 +103,8 @@ module Dude
       private
 
       def init(opts)
-        @name, @icon, @inbox, @status, @dude_dir, @target = opts.values_at(:name, :icon, :inbox, :status, :dude_dir, :target)
+        @name, @icon, @inbox, @status, @dude_dir, @target = opts.values_at(:name, :icon, :inbox, :status, :dude_dir,
+                                                                           :target)
         @pid = nil
       end
     end

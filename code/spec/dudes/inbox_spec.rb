@@ -39,7 +39,9 @@ describe Dude::Dudes::Inbox do
 
   describe '#dequeue_wip' do
     it 'removes first item if wip' do
-      allow(JSON).to receive(:load_file) { [{ 'text' => 'hi', 'status' => 'wip' }, { 'text' => 'bye', 'status' => 'new' }] }
+      allow(JSON).to receive(:load_file) {
+        [{ 'text' => 'hi', 'status' => 'wip' }, { 'text' => 'bye', 'status' => 'new' }]
+      }
       inbox.dequeue_wip
       expect(File).to have_received(:write).with(path, '[{"text":"bye","status":"new"}]')
     end

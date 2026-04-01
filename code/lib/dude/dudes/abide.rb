@@ -23,6 +23,7 @@ module Dude
       def watch
         msg = @inbox.first_new
         return nil unless msg
+
         @inbox.mark_wip
         msg
       end
@@ -68,6 +69,7 @@ module Dude
       def inbox_path_for(name)
         link = File.join(::Dude::GLOBAL_DIR, name)
         raise "dude '#{name}' not found" unless File.symlink?(link)
+
         target = File.readlink(link).chomp('/')
         File.join(target, 'dudes', 'inbox.json')
       end
@@ -79,9 +81,9 @@ module Dude
 
       def kill_duplicate_abides
         ::Dude::Helpers::BackgroundTasks.list
-          .reject { |t| t[:pid] == Process.pid }
-          .select { |t| t[:command].include?('dude abide') }
-          .each { |t| ::Dude::Helpers::BackgroundTasks.kill(t[:pid]) }
+                                        .reject { |t| t[:pid] == Process.pid }
+                                        .select { |t| t[:command].include?('dude abide') }
+                                        .each { |t| ::Dude::Helpers::BackgroundTasks.kill(t[:pid]) }
       end
     end
   end

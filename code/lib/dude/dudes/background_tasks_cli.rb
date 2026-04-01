@@ -2,10 +2,11 @@ require_relative '../helpers/background_tasks'
 
 module Dude
   module Dudes
-      class BackgroundTasksCli
+    class BackgroundTasksCli
       def list
         tasks = ::Dude::Helpers::BackgroundTasks.list
         return puts "No background tasks" if tasks.empty?
+
         format_tasks(tasks)
       end
 
@@ -18,6 +19,6 @@ module Dude
       def format_tasks(tasks)
         tasks.each { |task| puts "#{task[:pid]} #{task[:command]}" }
       end
-      end
+    end
   end
 end

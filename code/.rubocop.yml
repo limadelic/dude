@@ -15,7 +15,7 @@ Metrics/ModuleLength:
 
 # Disable everything else
 Layout:
-  Enabled: false
+  Enabled: true
 
 Lint:
   Enabled: false

@@ -1,6 +1,6 @@
 module Dude
   module Dudes
-      class GitStageCommit
+    class GitStageCommit
       def initialize(files)
         @files = files
       end
@@ -9,6 +9,6 @@ module Dude
         @files.each { |f| system("git add #{f}") }
         system("git commit -m \"TCR: auto-commit\" 2>&1")
       end
-      end
+    end
   end
 end

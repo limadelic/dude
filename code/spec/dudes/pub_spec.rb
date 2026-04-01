@@ -120,7 +120,8 @@ describe Dude::Dudes::Pub do
 
   describe '#sub' do
     before do
-      allow(Dude::Dudes::PubFinder).to receive(:find_nearest_pub).and_return({ name: 'dude', path: '/home/.claude/dudes' })
+      allow(Dude::Dudes::PubFinder).to receive(:find_nearest_pub).and_return({ name: 'dude',
+                                                                               path: '/home/.claude/dudes' })
       allow(FileUtils).to receive(:mkdir_p)
       allow(File).to receive(:write)
       allow(JSON).to receive(:load_file).and_return({})
