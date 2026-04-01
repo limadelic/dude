@@ -44,7 +44,7 @@ jobs:
       - name: Install
         run: |
           sudo rm -f /usr/local/bin/claude
-          npm install -g @anthropic-ai/claude-code@2.1.87
+          npm install -g @anthropic-ai/claude-code@latest
           echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
 
       - name: Run
@@ -53,6 +53,7 @@ jobs:
         env:
           ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
           CLAUDE_CODE_MODEL: claude-sonnet-4-6
+          DISABLE_PROMPT_CACHING: "1"
         with:
           path_to_claude_code_executable: ${{ env.CLAUDE_PATH }}
           anthropic_api_key: ${{ secrets.LITELLM_KEY }}
