@@ -24,6 +24,7 @@ module Dude
 
       def unpub(target)
         return unless Dir.exist?(::Dude::GLOBAL_DIR)
+
         remove_dudes
         ::Dude::Dudes::ProcessManager.kill_watchers
       end
@@ -32,7 +33,8 @@ module Dude
         name ||= File.basename(target)
         parent_pub = ::Dude::Dudes::PubFinder.find_nearest_pub(target)
         full_name = "#{parent_pub[:name]}_#{name}"
-        register(claude_dir(target), full_name, File.join(parent_pub[:path], 'dudes'), File.join(parent_pub[:path], 'dudes'))
+        dudes_path = File.join(parent_pub[:path], 'dudes')
+        register(claude_dir(target), full_name, dudes_path, dudes_path)
       end
 
       private
@@ -47,6 +49,7 @@ module Dude
 
       def claude_dir(cwd)
         return cwd if File.basename(cwd) == '.claude'
+
         c = File.join(cwd, '.claude')
         Dir.exist?(c) ? c : cwd
       end
@@ -64,6 +67,7 @@ module Dude
 
       def load_existing(path)
         return {} unless File.exist?(path)
+
         JSON.load_file(path) rescue {}
       end
 
@@ -81,6 +85,7 @@ module Dude
       def remove_dude(name)
         path = File.join(::Dude::GLOBAL_DIR, name)
         return unless File.symlink?(path)
+
         target = File.readlink(path).chomp('/')
         FileUtils.rm_rf(File.join(target, 'dudes'))
         File.delete(path)

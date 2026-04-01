@@ -27,23 +27,47 @@ module Examples
         }
       end
 
-      def mock_activity(spend: 10.0, models: nil)
-        models ||= {
-          'claude-haiku-4-5' => { 'metrics' => { 'successful_requests' => 50, 'spend' => 0.5 } },
-          'claude-opus-4-6' => { 'metrics' => { 'successful_requests' => 30, 'spend' => 15.0 } },
-          'claude-sonnet-4-6' => { 'metrics' => { 'successful_requests' => 20, 'spend' => 4.0 } }
-        }
+      def default_models
         {
-          'results' => [{
-            'metrics' => { 'spend' => spend },
-            'breakdown' => { 'models' => models }
-          }]
+          'claude-haiku-4-5' => {
+            'metrics' => {
+              'successful_requests' => 50,
+              'spend' => 0.5
+            }
+          },
+          'claude-opus-4-6' => {
+            'metrics' => {
+              'successful_requests' => 30,
+              'spend' => 15.0
+            }
+          },
+          'claude-sonnet-4-6' => {
+            'metrics' => {
+              'successful_requests' => 20,
+              'spend' => 4.0
+            }
+          }
+        }
+      end
+
+      def mock_activity(spend: 10.0, models: nil)
+        m = models || default_models
+        {
+          'results' => [
+            {
+              'metrics' => { 'spend' => spend },
+              'breakdown' => { 'models' => m }
+            }
+          ]
         }
       end
 
       def out(session_data, activity_data = activity, dudes_data = nil)
         capture_output do
-          Dude::StatusLine::Runner.new(session_data, activity: activity_data, dudes: dudes_data).run
+          Dude::StatusLine::Runner.new(
+            session_data, activity: activity_data,
+            dudes: dudes_data
+          ).run
         end
       end
     end

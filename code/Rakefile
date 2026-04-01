@@ -15,9 +15,9 @@ task :features do
   sh 'bundle exec cucumber'
 end
 
-desc 'Run rubocop on lib'
+desc 'Run rubocop with auto-correct on lib'
 task :cop do
-  sh 'bundle exec rubocop lib/'
+  sh 'bundle exec rubocop -a lib/'
 end
 
 desc 'Full check: rubocop → spec → install → features'

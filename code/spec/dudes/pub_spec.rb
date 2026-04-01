@@ -120,7 +120,10 @@ describe Dude::Dudes::Pub do
 
   describe '#sub' do
     before do
-      allow(Dude::Dudes::PubFinder).to receive(:find_nearest_pub).and_return({ name: 'dude', path: '/home/.claude/dudes' })
+      pub_hash = { name: 'dude', path: '/home/.claude/dudes' }
+      allow(Dude::Dudes::PubFinder).to(
+        receive(:find_nearest_pub).and_return(pub_hash)
+      )
       allow(FileUtils).to receive(:mkdir_p)
       allow(File).to receive(:write)
       allow(JSON).to receive(:load_file).and_return({})
@@ -134,21 +137,25 @@ describe Dude::Dudes::Pub do
       pub = build(target: '/code/.claude')
       pub.sub('/code', 'dev')
 
-      expect(Dude::Dudes::PubFinder).to have_received(:find_nearest_pub).with('/code')
+      finder = Dude::Dudes::PubFinder
+      expect(finder).to have_received(:find_nearest_pub).with('/code')
     end
 
     it 'creates dudes/dudes directory inside parent pub' do
       pub = build(target: '/code/.claude')
       pub.sub('/code', 'dev')
 
-      expect(FileUtils).to have_received(:mkdir_p).with('/home/.claude/dudes/dudes')
+      path = '/home/.claude/dudes/dudes'
+      expect(FileUtils).to have_received(:mkdir_p).with(path)
     end
 
     it 'initializes inbox in the sub dudes directory' do
       pub = build(target: '/code/.claude')
       pub.sub('/code', 'dev')
 
-      expect(File).to have_received(:write).with('/home/.claude/dudes/dudes/inbox.json', '[]')
+      expect(File).to have_received(:write).with(
+        '/home/.claude/dudes/dudes/inbox.json', '[]'
+      )
     end
 
     it 'writes status with underscore-prefixed name in JSON' do
@@ -174,7 +181,10 @@ describe Dude::Dudes::Pub do
       pub = build(target: '/code/.claude')
       pub.sub('/code', 'dev')
 
-      expect(File).to have_received(:symlink).with('/code/.claude/', File.join('/home/.claude/dudes/dudes', 'dude_dev'))
+      expect(File).to have_received(:symlink).with(
+        '/code/.claude/',
+        File.join('/home/.claude/dudes/dudes', 'dude_dev')
+      )
     end
 
     it 'returns underscore-prefixed full name' do
@@ -201,9 +211,10 @@ describe Dude::Dudes::Pub do
 
     it 'returns .claude subdirectory when it exists' do
       pub = build
-      allow(Dir).to receive(:exist?).with('/projects/myapp/.claude').and_return(true)
+      path = '/projects/myapp/.claude'
+      allow(Dir).to receive(:exist?).with(path).and_return(true)
       result = pub.send(:claude_dir, '/projects/myapp')
-      expect(result).to eq('/projects/myapp/.claude')
+      expect(result).to eq(path)
     end
 
     it 'returns the path itself when .claude subdirectory does not exist' do

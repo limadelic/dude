@@ -19,6 +19,7 @@ plugins/blocklist.json
 image-cache/
 plugins/
 .mcp.json
-dudes/
+/dudes/
+code/.claude/dudes/
 sessions/
 status.json
