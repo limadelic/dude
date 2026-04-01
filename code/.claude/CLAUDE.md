@@ -4,7 +4,7 @@ icon: ✴️
 
 # Code
 
-- Follow /atdd for all code changes.
+- Follow /ddd for all code changes.
 - Follow /qa to add tests to existing code.
 
 # Agents
