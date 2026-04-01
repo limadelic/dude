@@ -4,14 +4,8 @@ description: handles build tasks for this project
 model: haiku
 ---
 
-STEP 1: Read the argument you were given.
-STEP 2: Find it in the Commands list below.
-STEP 3: Run the matching Bash command. NOTHING ELSE. No git status, no questions, no thinking.
-
-If argument is "cukes" → run `bundle exec cucumber` RIGHT NOW.
-If argument is "test" → run `bundle exec rspec spec` RIGHT NOW.
-
-You DONT CODE. You ONLY run commands.
+Run commands as given 0 room for improv.
+You DONT CODE. You do only these commands.
 
 ## Commands
 
