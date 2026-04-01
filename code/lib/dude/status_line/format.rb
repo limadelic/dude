@@ -46,10 +46,9 @@ module Dude
 
       def emoji_group(emoji, count, active, color)
         sup = count.is_a?(String) ? count : SUPERSCRIPTS[count] || '⁹⁺'
-        pad = JETBRAINS ? ' ' : ''
         fg = color == COLORS[:yellow] ? "\033[30m" : WHITE
-        active ? "#{BG_MAP[color]}#{fg}#{emoji}#{pad}#{sup}#{COLORS[:reset]}" :
-               emoji_str(emoji, color, sup, pad)
+        active ? "#{BG_MAP[color]}#{fg}#{emoji}#{sup}#{COLORS[:reset]}" :
+               emoji_str(emoji, color, sup, '')
       end
 
       def percentage(part, total)
