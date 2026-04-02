@@ -1,30 +1,69 @@
 ---
-name: three-amigos
-description: Discovery phase — Lisa, Eric, Dude define WHAT before code
+name: 3-amigos
+description: Discovery phase — Liz, Kent, Dude discover WHAT before code
 ---
 
 # Three Amigos
 
-Convene Lisa and Eric to define the feature before writing Gherkin.
+Deliberate Discovery session using Example Mapping. Three agents as a team, you as the lead.
 
-## When to use
+## Setup
 
-- Starting a new feature
-- Refining a user story into testable scenarios
-- Discovering new domain terms
-- Clarifying boundaries and edge cases
+- Use `/sup` to start the team with the cast below
+- Confirm each teammate replies before proceeding
+- Do NOT start the session until all three have said hello
+
+## The Cast
+
+Spawn each with EXACTLY these names and subagent types:
+
+| Name   | subagent_type | Role                                                    |
+|--------|---------------|---------------------------------------------------------|
+| liz    | liz           | hunts for ignorance, surfaces assumptions, drives examples |
+| kent   | kent          | checks feasibility, grounds in code, simplifies          |
+| dude   | dude          | guards ubiquitous language, knows both codebases, thinks as the user  |
+
+All three run as Agent Team teammates (Opus). You facilitate — you don't tell them what to think.
+Use these exact `name` values when spawning — no variations, no suffixes.
+
+## Example Mapping
+
+Think in terms of cards:
+
+- **Yellow (Story)**: the feature — you present this at the start
+- **Blue (Rules)**: business rules that emerge from discussion
+- **Green (Examples)**: concrete "when THIS, then THAT" under each rule
+- **Red (Questions)**: unknowns to resolve or park
 
 ## The Flow
 
-1. **Dude describes** the feature/story to Lisa and Eric
-2. **Lisa (QA)** — What edge cases? What could break? What scenarios matter? What data/state variations?
-3. **Eric (Domain)** — Right terms from the glossary? Domain boundaries? Hidden concepts? New terms to propose?
-4. **Dude mediates** — Synthesize into a scenario outline. Confirm terminology. Approve the list.
-5. **Output** — Scenario outline + confirmed terminology for step 1 of /ddd
+1. Pass the problem to all three
+2. Each writes to their own scratch pad: `~/.claude/plans/<feature>-<name>.md`
+3. Read their pads. You're the switchboard now:
+   - Decide who needs to hear what from whom
+   - Send targeted messages: "Liz raised X — Kent, is that feasible?"
+   - Challenge: "Claude says the term is Y, Liz you used Z — which is right?"
+   - Push back yourself — you have opinions too
+4. They update their pads. You read again. Repeat.
+5. All pads are visible to everyone — they can read each other's thinking
+6. When pads converge — or you're going in circles — call it
+7. YOU write the final plan to `~/.claude/plans/<feature>-examples.md`
 
-## Notes
+## Exit Criteria
 
-- Do NOT write Gherkin yet
-- Do NOT write step definitions
-- Focus on WHAT, not HOW
-- Glossary grows here — Eric flags new terms, dude decides if they belong
+- No unresolved red cards (or explicitly parked for later)
+- Examples cover happy path + edge cases
+- All three agree on the rules and examples
+- Glossary updated if new terms emerged
+- Examples are feasible (Kent confirmed) and use correct language (Dude confirmed)
+
+
+## Rules
+
+- NO touching code — read only, never edit
+- NO Gherkin — plain language examples only
+- NO solutions — discovery only
+- Each amigo writes ONLY to their own pad — never to another's
+- Only YOU write the final plan
+- The conversation IS the value
+- Independence first — let each amigo form their own take before cross-pollinating
