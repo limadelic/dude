@@ -39,12 +39,12 @@ describe Dude::StatusLine::Dudes do
 
     it 'shows message count superscript' do
       output = out(session, activity, dudes_data)
-      expect(strip(output)).to match(/🔴 ?³/)
+      expect(strip(output)).to match(/🔴³/)
     end
 
     it 'shows zero superscript' do
       output = out(session, activity, dudes_data)
-      expect(strip(output)).to match(/🎳 ?⁰/)
+      expect(strip(output)).to match(/🎳⁰/)
     end
 
     it 'appears after models' do
@@ -134,7 +134,7 @@ describe Dude::StatusLine::Dudes do
           )
         ]
         output = out(session, activity, dudes)
-        expect(strip(output)).to match(/🔴 ?³/)
+        expect(strip(output)).to match(/🔴³/)
       end
     end
   end
