@@ -9,9 +9,7 @@ module Dude
       COLOR_NAMES = { 'green' => 'green', 'yellow' => 'yellow', 'red' => 'red' }
 
       def initialize(session_data, dudes_data, dude_dir, context_percentage)
-        @session = session_data.is_a?(String) ?
-                   (JSON.parse(session_data) rescue {}) :
-                   session_data
+        @session = parse_session(session_data)
         @dudes = dudes_data || []
         @dude_dir = dude_dir
         @context_percentage = context_percentage
@@ -33,6 +31,12 @@ module Dude
       end
 
       private
+
+      def parse_session(session_data)
+        return session_data unless session_data.is_a?(String)
+
+        JSON.parse(session_data) rescue {}
+      end
 
       def render_dude(dude)
         sup = dude.is_abiding? ? (dude.messages || 0) : 'ˣ'
