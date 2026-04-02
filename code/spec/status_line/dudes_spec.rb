@@ -164,4 +164,21 @@ describe Dude::StatusLine::Dudes do
       end
     end
   end
+
+  describe 'initialization' do
+    it 'recovers from invalid JSON in session_data' do
+      original_parse = JSON.method(:parse)
+      allow(JSON).to receive(:parse) do |arg|
+        arg == '{"data": "value"}' ? raise(JSON::ParserError.new('test')) : original_parse.call(arg)
+      end
+      dudes = Dude::StatusLine::Dudes.new('{"data": "value"}', [], '/tmp', 50)
+      expect(dudes.to_s).to eq('')
+    end
+
+    it 'handles invalid JSON strings gracefully' do
+      invalid_json = '{invalid json'
+      dudes = Dude::StatusLine::Dudes.new(invalid_json, [], '/tmp', 50)
+      expect(dudes.to_s).to eq('')
+    end
+  end
 end

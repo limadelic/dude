@@ -23,3 +23,5 @@ plugins/
 code/.claude/dudes/
 sessions/
 status.json
+teams/
+*.local.md

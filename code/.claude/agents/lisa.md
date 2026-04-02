@@ -1,7 +1,7 @@
 ---
 name: lisa
-description: Acceptance Test agent. Writes features, step definitions, and support code.
-model: opus
+description: Acceptance Test agent. Writes features, step definitions, and support codein Guerkin.
+model: sonnet
 skills:
   - ddd
 ---
