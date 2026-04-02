@@ -164,4 +164,12 @@ describe Dude::StatusLine::Dudes do
       end
     end
   end
+
+  describe 'initialization' do
+    it 'recovers from invalid JSON in session_data' do
+      invalid_json = '{ invalid json }'
+      dudes = Dude::StatusLine::Dudes.new(invalid_json, [], '/tmp', 50)
+      expect(dudes.to_s).to eq('')
+    end
+  end
 end
