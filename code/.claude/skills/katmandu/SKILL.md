@@ -1,27 +1,42 @@
 ---
 name: katmandu
-description: The dev loop — kenny codes, cartman reviews, dude decides
+description: The dev loop — kent analyzes, kenny codes, cartman reviews
 ---
 
-# katmandu
+# Katmandu
 
-kenny → cartman → dude loop for coding tasks.
+## The Cast
 
-## kenny
-Delegate to the `kenny` subagent.
-- Describe the BEHAVIOR change, not the implementation
-- Pass ONE small task per invocation
-- NEVER dictate code, paths, commands, or flags — kenny knows
-- If kenny fails, simplify the ask — the task was too big or too vague
+All agents are ephemeral — no team, no `/sup`. Spawn fresh each time.
 
-## cartman
-After kenny finishes, pass his output to the `cartman` subagent for review. Give cartman:
-1. The original prompt you gave kenny
-2. What kenny produced
+| Name    | subagent_type | Model  | Role                                         |
+|---------|---------------|--------|----------------------------------------------|
+| kent    | kent          | sonnet | analyzes the problem, breaks it into tasks    |
+| kenny   | kenny         | sonnet | implements one task at a time                 |
+| cartman | cartman       | haiku  | reviews kenny's output                        |
 
-## dude
-YOU evaluate cartman's feedback:
-- If cartman raised real violations, send kenny back with the specific feedback
-- If cartman is nitpicking or repeating himself, the work is done
-- Use your judgment — you're the supervisor, not a relay
-- Commit after each task exits the loop
+## Tasks
+
+Kent's breakdown becomes the task list. Create one task per item kent identifies (all `pending`). Mark each `in_progress` when kenny starts it, `completed` when done.
+
+## The Loop
+
+### 1. Analyze (kent)
+
+Spawn kent with the problem — a failing scenario, a behavior description, whatever you have. Kent looks at the code and breaks the work into small tasks. You sanity-check the list and adjust if needed.
+
+### 2. Implement (kenny)
+
+Spawn kenny with the next task. One task per invocation. If kenny fails, simplify the ask — the task was too big or too vague.
+
+### 3. Review (cartman)
+
+Spawn cartman with the original prompt and kenny's output. If cartman flags real issues, send kenny back. If he's nitpicking, move on. Skip if the change is trivial. `/bob` commits when the task is done.
+
+## Input
+
+Whatever you have in context — a failing scenario from `/gherkin`, a behavior change, a bug. You frame it for kent.
+
+## Exit
+
+All tasks completed. If called from `/gherkin`, return control — lisa verifies. If standalone, `/bob` runs the tests.

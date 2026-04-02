@@ -10,6 +10,8 @@ Deliberate Discovery session using Example Mapping. Three agents as a team, you 
 ## Setup
 
 - Use `/sup` to start the team with the cast below
+- Include the FULL feature brief with all known constraints in each spawn prompt — do NOT rely on follow-up SendMessages for the brief
+- Idle notifications are normal — teammates go idle after every turn. Idle does NOT mean stuck. Wait for their reply, don't resend the brief.
 - Confirm each teammate replies before proceeding
 - Do NOT start the session until all three have said hello
 
