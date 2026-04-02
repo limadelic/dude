@@ -9,7 +9,8 @@ module Dude
       COLOR_NAMES = { 'green' => 'green', 'yellow' => 'yellow', 'red' => 'red' }
 
       def initialize(session_data, dudes_data, dude_dir, context_percentage)
-        @session = session_data.is_a?(String) ? (JSON.parse(session_data) rescue {}) :
+        @session = session_data.is_a?(String) ?
+                   (JSON.parse(session_data) rescue {}) :
                    session_data
         @dudes = dudes_data || []
         @dude_dir = dude_dir
@@ -26,7 +27,7 @@ module Dude
         return unless Dir.exist?(@dude_dir)
 
         status_file = File.join(@dude_dir, 'status.json')
-        status = (File.exist?(status_file) ? JSON.load_file(status_file) : {}) rescue {}
+        status = load_status(status_file)
         status['color'] = color_name_for_percentage(@context_percentage)
         File.write(status_file, JSON.generate(status))
       end
@@ -45,6 +46,12 @@ module Dude
         when 33..66 then 'yellow'
         else 'red'
         end
+      end
+
+      def load_status(status_file)
+        return {} unless File.exist?(status_file)
+
+        JSON.load_file(status_file) rescue {}
       end
     end
   end
