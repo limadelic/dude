@@ -5,50 +5,60 @@ description: The Gherkin loop — Lisa writes scenarios, Eric reviews, Dude appr
 
 # Gherkin
 
-## Team
+## Setup
 
-Spawn a team with YOU as lead and ONE member:
+- Use `/sup` to start the team with the cast below
+- Confirm lisa replies before proceeding
 
-- **lisa** — persistent agent (sonnet), keeps context across all scenarios in the feature
+## The Cast
 
-Eric is NOT a team member. Spawn him as a throwaway agent (haiku) per review — fresh eyes each time.
+Spawn with EXACTLY this name and subagent type:
+
+| Name | subagent_type | Model  | Role                                              |
+|------|---------------|--------|----------------------------------------------------|
+| lisa | lisa          | sonnet | writes scenarios and step definitions, keeps context |
+
+Lisa is the ONLY team member. She persists across all scenarios in the feature — context makes her better each round.
+
+**Eric is NOT in the team.** Spawn him as a plain `Agent` (subagent_type: `eric`, model: `sonnet`, no `team_name`) for each review. Fresh eyes, dies after returning feedback.
+
+## Tasks
+
+On start, create one task per scenario from the input (all `pending`). Mark each `in_progress` when you start it, `completed` when green. If you enter `/katmandu`, create a sub-task for it — keeps you anchored through the nested loops.
 
 ## The Loop
 
-Work ONE scenario at a time. Repeat for each scenario in the feature.
+One scenario at a time. Repeat until the feature is done.
 
 ### 1. Scenario (lisa)
 
-Tell lisa to write the next scenario. No step definitions yet.
+Pick the next scenario from the input (plan, list, or conversation) and tell lisa to write it. Scenario only — no step definitions yet. Lisa owns the format and file structure.
 
 ### 2. Review (eric)
 
-Spawn eric (haiku, ephemeral) to review the scenario for domain language. He dies after returning the review.
+Spawn eric to review the scenario for domain language and glossary.
 
-### 3. Approve (dude)
+### 3. Decide (dude)
 
-YOU review both lisa's scenario and eric's feedback. If good, proceed. If not, tell lisa to revise (she has context from prior rounds). If eric flagged glossary terms, decide now: add or reject.
+Review lisa's scenario and eric's feedback. If eric flagged issues, send lisa back. Glossary flags → add or reject. Otherwise, flow.
 
 ### 4. Step Definitions (lisa)
 
-Tell lisa to write step definitions for the approved scenario. Tag `@wip`, use `pending` for kenny.
+Tell lisa to write step definitions for the approved scenario. Lisa owns the `@wip` and `pending` conventions — just tell her which scenario.
 
 ### 5. Review Steps (eric)
 
-Spawn eric again (fresh, haiku) to review step defs for domain alignment.
+Spawn eric to review step defs for domain alignment. If he flags issues, send lisa back. Otherwise flow straight to verify.
 
-### 6. Katmandu
+### 6. Verify (lisa)
 
-Run `/katmandu` to make the steps pass.
+Tell lisa to run the `@wip` scenario. Green → remove tag, `/bob` commits, go to 7. Red → run `/katmandu` with the failing scenario as the behavior description, then re-verify.
 
-### 7. Verify (lisa)
 
-Tell lisa to run `@wip` scenarios. Green → remove tag, commit. Red → back to 6.
+## Input
 
-### 8. Next
+The prompt tells you what to gherkin on — a 3-amigos plan, a feature idea, whatever. No special format required.
 
-Loop back to 1 for the next scenario. Lisa keeps her context — she gets better each round.
+## Exit
 
-## Glossary
-
-Eric flags terms, Dude decides. Updates ship with the feature.
+All scenarios green, all `@wip` tags removed. Glossary updates ship with the feature.
