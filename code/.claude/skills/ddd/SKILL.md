@@ -47,36 +47,11 @@ Anything deterministic belongs in the Dude gem (Ruby). Shell scripts are fine fo
 
 ### 0. Three Amigos (optional, recommended)
 
-Run `/three-amigos` to discover WHAT before Lisa writes Gherkin.
+Run `/three-amigos` to discover WHAT before writing Gherkin.
 
-### 1. Scenarios (lisa)
+### 1. Gherkin
 
-Delegate to `lisa`: write scenarios from the outline. No step definitions yet.
-
-### 2. Review (eric)
-
-Delegate to `eric`: review scenarios for domain language. Flag new terms or glossary drift.
-
-### 3. Approve (dude)
-
-YOU review. If good, proceed. If not, send lisa back.
-If eric flagged new terms, decide now: add to glossary or reject.
-
-### 4. Step Definitions (lisa)
-
-Delegate to `lisa`: write step definitions, tag `@wip`, use `pending` for kenny.
-
-### 5. Review Steps (eric)
-
-Delegate to `eric`: review step defs for domain alignment and glossary adherence.
-
-### 6. Katmandu
-
-Run `/katmandu` to make the steps pass.
-
-### 7. Verify (lisa)
-
-Run `@wip` scenarios. Green → remove tag, commit. Red → back to 6.
+Run `/gherkin` — the full scenario-by-scenario loop with Lisa and Eric.
 
 ## Glossary Maintenance
 

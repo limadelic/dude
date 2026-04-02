@@ -17,13 +17,13 @@ Deliberate Discovery session using Example Mapping. Three agents as a team, you 
 
 Spawn each with EXACTLY these names and subagent types:
 
-| Name   | subagent_type | Role                                                    |
-|--------|---------------|---------------------------------------------------------|
-| liz    | liz           | hunts for ignorance, surfaces assumptions, drives examples |
-| kent   | kent          | checks feasibility, grounds in code, simplifies          |
-| dude   | dude          | guards ubiquitous language, knows both codebases, thinks as the user  |
+| Name   | subagent_type | Model | Role                                                    |
+|--------|---------------|-------|---------------------------------------------------------|
+| liz    | liz           | opus  | hunts for ignorance, surfaces assumptions, drives examples |
+| kent   | kent          | opus  | checks feasibility, grounds in code, simplifies          |
+| dude   | dude          | opus  | guards ubiquitous language, knows both codebases, thinks as the user  |
 
-All three run as Agent Team teammates (Opus). You facilitate — you don't tell them what to think.
+All three MUST run on Opus. You facilitate — you don't tell them what to think.
 Use these exact `name` values when spawning — no variations, no suffixes.
 
 ## Example Mapping
@@ -37,17 +37,21 @@ Think in terms of cards:
 
 ## The Flow
 
-1. Pass the problem to all three
-2. Each writes to their own scratch pad: `~/.claude/plans/<feature>-<name>.md`
-3. Read their pads. You're the switchboard now:
-   - Decide who needs to hear what from whom
-   - Send targeted messages: "Liz raised X — Kent, is that feasible?"
-   - Challenge: "Claude says the term is Y, Liz you used Z — which is right?"
+1. Pass the problem to all three — include known constraints upfront
+2. Each thinks and replies with their take — no pad files, just messages
+3. You're the switchboard:
+   - Route tensions: "Liz raised X — Kent, is that feasible?"
+   - Challenge: "Dude says the term is Y, Liz you used Z — which is right?"
    - Push back yourself — you have opinions too
-4. They update their pads. You read again. Repeat.
-5. All pads are visible to everyone — they can read each other's thinking
-6. When pads converge — or you're going in circles — call it
-7. YOU write the final plan to `~/.claude/plans/<feature>-examples.md`
+4. Repeat until converged or going in circles
+5. YOU write the final plan to `~/.claude/plans/<feature>-examples.md`
+
+## Time Limit
+
+- 25 minutes max — if not converged by then, the story is too big or the unknowns are too deep
+- Kick a `/pomo` at the start to track the clock
+- Shut down the team when time's up
+- Write the plan with whatever you have — parked questions are fine
 
 ## Exit Criteria
 
@@ -63,7 +67,7 @@ Think in terms of cards:
 - NO touching code — read only, never edit
 - NO Gherkin — plain language examples only
 - NO solutions — discovery only
-- Each amigo writes ONLY to their own pad — never to another's
+- NO pad files — amigos think and reply, you synthesize
 - Only YOU write the final plan
 - The conversation IS the value
 - Independence first — let each amigo form their own take before cross-pollinating
