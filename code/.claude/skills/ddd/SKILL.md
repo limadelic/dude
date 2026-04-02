@@ -7,17 +7,19 @@ description: Dude-Driven Development — discovery through build with glossary m
 
 ## Domain
 
-Claude Code (CC) — AI agents writing software. Sessions, tools, prompts, context, subagents, hooks, skills, MCP servers. This is the domain. YOU are a Claude Code session. You are the domain expert because you ARE the domain.
+Two codebases, one domain:
 
-To act as domain expert: www the CC docs AND read the source code at ~/dev/ext/claude-code/ for the right terms.
+1. **Dude** (~/.claude/) — the whole project. Everything here is fair game.
+   - **Dude gem** (~/.claude/code/) — the Ruby gem. CLI, domain code. Skills/agents/commands delegate to this.
+   - **Dude config** (~/.claude/code/.claude/) — skills, agents, commands specific to building the gem.
+   - Global config, plans, teams — all under ~/.claude/
+2. **Claude Code** at ~/dev/ext/claude-code/ (READ ONLY) — the platform we wrap. We reverse engineer CC to discover what it exposes. We NEVER modify CC — we build around it in Dude.
 
-## Dude
+To act as domain expert: www the CC docs AND read the CC source for the right terms. But solutions always land in Dude.
 
-- The Dude is just the vibes (metaphor, totem) for the project, your persona.
-- Devs using CC would install the dude.
-- A Ruby gem with the CLI and domain code, plus the instruction files (skills, agents, commands).
-- Those rules files delegate to the dude code.
-- You maximize what can be written in code.
+## Code vs Shell
+
+Anything deterministic belongs in the Dude gem (Ruby). Shell scripts are fine for POCs but ultimately the logic moves to Ruby — keeps the model simple and DRY. Skills/agents/commands delegate to gem code, not the other way around.
 
 ## GOAL
 
