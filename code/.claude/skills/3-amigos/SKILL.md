@@ -35,6 +35,13 @@ Think in terms of cards:
 - **Green (Examples)**: concrete "when THIS, then THAT" under each rule
 - **Red (Questions)**: unknowns to resolve or park
 
+## Tasks
+
+Create these two tasks when the session starts:
+
+1. **Amigos respond to discovery** — Facilitate the team discussion. Route tensions, cross-pollinate, resolve red questions. Mark complete when converged or time's up.
+2. **Write discovery plan** — Synthesize the amigos' output into `~/.claude/plans/<feature>-examples.md` with yellow/blue/green/red cards. Blocked by task 1.
+
 ## The Flow
 
 1. Pass the problem to all three — include known constraints upfront
