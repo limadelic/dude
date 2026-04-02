@@ -11,8 +11,8 @@ All agents are ephemeral — no team, no `/sup`. Spawn fresh each time.
 
 | Name    | subagent_type | Model  | Role                                         |
 |---------|---------------|--------|----------------------------------------------|
-| kent    | kent          | sonnet | analyzes the problem, breaks it into tasks    |
-| kenny   | kenny         | sonnet | implements one task at a time                 |
+| kent    | kent          | haiku  | analyzes the problem, breaks it into tasks    |
+| kenny   | kenny         | haiku  | implements one task at a time                 |
 | cartman | cartman       | haiku  | reviews kenny's output                        |
 
 ## Tasks

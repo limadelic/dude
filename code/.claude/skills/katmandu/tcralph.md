@@ -24,9 +24,9 @@ The name comes from Ralph Wiggum. The pattern is simple: loop forever, feed the 
 
 ## Applying Ralph to Katmandu
 
-Kenny is a Ralph loop. Each invocation: fresh context, one task from kent's breakdown, tests as the gate. Green means `/bob` commits and moves to the next task. Red means try again or simplify.
+Kenny is a Ralph loop. Each invocation: fresh context, one task from kent's breakdown, tests as the gate. Green means `/bob` commits and moves to the next task. Red means revert — oh my god, they killed kenny. Fresh kenny spawns, same task, tries again.
 
-This is where katmandu's small steps pay off. Because each change is tiny, revert is cheap — losing a kenny invocation costs almost nothing. And because kenny is ephemeral, he can't drift. No accumulated state, no "I was trying to do X but then I noticed Y." Just one task, one change, one verdict.
+That's the whole point. Kenny dies and comes back. Every time. No baggage, no "I was trying to do X but then I noticed Y." Just one task, one change, one verdict. If he fails, he dies cheap — the change was tiny, nothing of value was lost.
 
 The adversarial layer (cartman) adds what the original Ralph loop doesn't have — a reviewer between test and commit. TCR trusts tests alone. Katmandu trusts tests *and* a critic. Belt and suspenders for agent-generated code.
 
