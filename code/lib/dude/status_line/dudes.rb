@@ -26,7 +26,7 @@ module Dude
         return unless Dir.exist?(@dude_dir)
 
         status_file = File.join(@dude_dir, 'status.json')
-        status = File.exist?(status_file) ? JSON.load_file(status_file) : {}
+        status = (File.exist?(status_file) ? JSON.load_file(status_file) : {}) rescue {}
         status['color'] = color_name_for_percentage(@context_percentage)
         File.write(status_file, JSON.generate(status))
       end
