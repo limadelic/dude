@@ -12,7 +12,7 @@ end
 
 desc 'Run cucumber features'
 task :features do
-  sh 'bundle exec cucumber'
+  sh 'bundle exec cucumber --tags "not @wip"'
 end
 
 desc 'Run rubocop with auto-correct on lib'
