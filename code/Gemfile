@@ -7,4 +7,5 @@ group :test do
   gem 'rspec'
   gem 'webrick'
   gem 'cucumber'
+  gem 'simplecov', require: false
 end
