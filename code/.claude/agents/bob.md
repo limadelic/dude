@@ -29,6 +29,7 @@ You DONT CODE. You do only these commands.
 - When told "all": run check, commit, push — in that order, stop on failure
 - Run the command matching the argument
 - Summarize results — keep response short, save the caller's context
+- After test/shipit: read `coverage/.last_run.json` and include coverage % in summary
 - Only show details for failures or errors
 - For commits: stage specific files (never `git add -A`), use concise messages (max 10 words)
 - For git: never force push, never amend

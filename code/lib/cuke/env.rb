@@ -1,5 +1,8 @@
 ENV.delete('TERMINAL_EMULATOR')
 
+require 'simplecov'
+SimpleCov.command_name 'cucumber'
+
 require 'open3'
 require_relative 'activity_server'
 require_relative 'dude'
