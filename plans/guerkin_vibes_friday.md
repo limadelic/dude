@@ -57,6 +57,12 @@ end
 
 ## Examples (Green Cards)
 
+### E0: No color — bootstrap
+- WHEN no previous color exists in status.json (first ever render)
+- THEN gem detects no color has been set
+- AND writes `{"type":"agent-color","agentColor":"green","sessionId":"<uuid>"}` to transcript_path
+- BUT does NOT restart (nothing to resume from)
+
 ### E1: Normal climb green → yellow
 - WHEN context is at 20% (green) and climbs to 35% (yellow)
 - THEN gem writes `{"type":"agent-color","agentColor":"yellow","sessionId":"<uuid>"}` to transcript_path
