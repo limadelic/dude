@@ -33,22 +33,24 @@ module Dude
       end
 
       def bar(pct, emoji, lo: 33, hi: 66, color: nil)
-        pct = clamp(pct)
-        filled = (pct * 9 / 100.0).round
+        filled = (clamp(pct) * 9 / 100.0).round
+        col = color || color_for_pct(clamp(pct), lo, hi)
+        pad = JETBRAINS ? ' ' : ''
         bars = "#{'█' * filled}#{'░' * (9 - filled)}"
-        col = color || color_for_pct(pct, lo, hi)
-        "#{col}#{emoji} #{bars}#{COLORS[:reset]}"
+        "#{col}#{emoji}#{pad} #{bars}#{COLORS[:reset]}"
       end
 
-      def emoji_str(emoji, color, sup, pad)
+      def emoji_str(emoji, color, sup)
+        pad = JETBRAINS ? ' ' : ''
         "#{color}#{emoji}#{pad}#{sup}#{COLORS[:reset]}"
       end
 
       def emoji_group(emoji, count, active, color)
         sup = count.is_a?(String) ? count : SUPERSCRIPTS[count] || '⁹⁺'
+        pad = JETBRAINS ? ' ' : ''
         fg = color == COLORS[:yellow] ? "\033[30m" : WHITE
-        active ? "#{BG_MAP[color]}#{fg}#{emoji}#{sup}#{COLORS[:reset]}" :
-               emoji_str(emoji, color, sup, '')
+        active ? "#{BG_MAP[color]}#{fg}#{emoji}#{pad}#{sup}#{COLORS[:reset]}" :
+               emoji_str(emoji, color, sup)
       end
 
       def percentage(part, total)

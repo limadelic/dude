@@ -5,6 +5,10 @@ require_relative "../examples/shared"
 describe Dude::StatusLine::Dudes do
   include_context 'StatusLine helpers'
 
+  before do
+    stub_const('Dude::StatusLine::Format::JETBRAINS', false)
+  end
+
   def mock_dude(name:, icon:, messages:, context:, current:, abiding: true)
     d = double(name)
     allow(d).to receive_messages(
