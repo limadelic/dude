@@ -60,8 +60,10 @@ jobs:
 
       - name: Action registry
         run: |
-          ACTION_PATH=${{ runner.tool_cache }}/../_actions/anthropics/claude-code-action/v1
+          ACTION_PATH=$(find /home/runner -path "*/anthropics/claude-code-action/v1/bunfig.toml" 2>/dev/null | head -1 | xargs dirname)
           echo -e '\n[install]\nregistry = "https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/"' >> $ACTION_PATH/bunfig.toml
+          echo "--- bunfig.toml ---"
+          cat $ACTION_PATH/bunfig.toml
 
       - name: Run
         id: claude
