@@ -12,6 +12,12 @@ on:
       reaction:
         type: string
         required: false
+      version:
+        type: string
+        required: false
+      timeout:
+        type: number
+        required: false
     secrets:
       LITELLM_KEY:
         required: true
@@ -25,7 +31,7 @@ permissions:
 jobs:
   claude:
     runs-on: garm-dev-dlas1-vm-linux-mega-large
-    timeout-minutes: 30
+    timeout-minutes: ${{ inputs.timeout || 30 }}
     steps:
       - name: React
         if: inputs.reaction && (github.event.comment.id || github.event.issue.number)
@@ -44,7 +50,7 @@ jobs:
       - name: Install
         run: |
           sudo rm -f /usr/local/bin/claude
-          npm install -g @anthropic-ai/claude-code@2.1.87
+          npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
           echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
 
       - name: Registry
