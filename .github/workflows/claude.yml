@@ -55,8 +55,8 @@ jobs:
         run: |
           ACTION_DIR=/home/runner/actions-runner/_work/_actions/anthropics/claude-code-action/v1
           cd $ACTION_DIR && npm install --legacy-peer-deps --registry=https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
-          printf '#!/bin/bash\nif [[ "$1" == "install" ]]; then exit 0; fi\nexec /home/runner/.bun/bin/bun "$@"\n' > /usr/local/bin/bun-wrapper
-          chmod +x /usr/local/bin/bun-wrapper
+          printf '#!/bin/bash\nif [[ "$1" == "install" ]]; then exit 0; fi\nexec /home/runner/.bun/bin/bun "$@"\n' > /home/runner/bun-wrapper
+          chmod +x /home/runner/bun-wrapper
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -71,7 +71,7 @@ jobs:
           CLAUDE_CODE_MODEL: claude-sonnet-4-6
         with:
           path_to_claude_code_executable: ${{ env.CLAUDE_PATH }}
-          path_to_bun_executable: /usr/local/bin/bun-wrapper
+          path_to_bun_executable: /home/runner/bun-wrapper
           anthropic_api_key: ${{ secrets.LITELLM_KEY }}
           github_token: ${{ github.token }}
           trigger_phrase: ${{ inputs.trigger_phrase }}
