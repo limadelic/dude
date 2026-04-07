@@ -88,15 +88,104 @@ describe Dude::StatusLine::Format do
     it 'formats emoji with color and superscript' do
       result = formatter.emoji_str(
         '🎭',
-        Dude::StatusLine::Format::COLORS[:green], '³', ''
+        Dude::StatusLine::Format::COLORS[:green], '³'
       )
       expect(result).to include('🎭')
       expect(result).to include('³')
       expect(result).to include("\e[32m")
     end
+
+    context 'JetBrains emoji padding' do
+      it 'returns string WITHOUT space between emoji and superscript when NOT JetBrains' do
+        stub_const('Dude::StatusLine::Format::JETBRAINS', false)
+        result = formatter.emoji_str(
+          '🎭',
+          Dude::StatusLine::Format::COLORS[:green], '³'
+        )
+        stripped = result.gsub(/\033\[[^m]*m/, '')
+        expect(stripped).to eq('🎭³')
+      end
+
+      it 'returns string WITH space between emoji and superscript when IS JetBrains' do
+        stub_const('Dude::StatusLine::Format::JETBRAINS', true)
+        result = formatter.emoji_str(
+          '🎭',
+          Dude::StatusLine::Format::COLORS[:green], '³'
+        )
+        stripped = result.gsub(/\033\[[^m]*m/, '')
+        expect(stripped).to eq('🎭 ³')
+      end
+    end
+  end
+
+  describe '#bar' do
+    context 'emoji and bars spacing' do
+      it 'has no extra space between emoji and bars when NOT JetBrains' do
+        stub_const('Dude::StatusLine::Format::JETBRAINS', false)
+        result = formatter.bar(50, '🧠')
+        stripped = result.gsub(/\033\[[^m]*m/, '')
+        expect(stripped).to match(/^🧠 [█░]+$/)
+      end
+
+      it 'has extra space between emoji and bars when IS JetBrains' do
+        stub_const('Dude::StatusLine::Format::JETBRAINS', true)
+        result = formatter.bar(50, '🧠')
+        stripped = result.gsub(/\033\[[^m]*m/, '')
+        expect(stripped).to match(/^🧠  [█░]+$/)
+      end
+    end
+
+    it 'renders emoji with filled blocks' do
+      result = formatter.bar(50, '🧠')
+      expect(result).to include('🧠')
+      expect(result).to include('█')
+      expect(result).to include('░')
+    end
+
+    it 'uses custom lo and hi thresholds' do
+      green = formatter.bar(40, '🎯', lo: 50, hi: 75)
+      expect(green).to include("\e[32m")
+    end
+
+    it 'uses provided color instead of calculated' do
+      result = formatter.bar(25, '💰', color: Dude::StatusLine::Format::COLORS[:red])
+      expect(result).to include("\e[31m")
+    end
   end
 
   describe '#emoji_group' do
+    context 'inactive emoji spacing' do
+      it 'has no space when NOT JetBrains' do
+        stub_const('Dude::StatusLine::Format::JETBRAINS', false)
+        result = formatter.emoji_group('🎭', 5, false, Dude::StatusLine::Format::COLORS[:green])
+        stripped = result.gsub(/\033\[[^m]*m/, '')
+        expect(stripped).to eq('🎭⁵')
+      end
+
+      it 'has space when IS JetBrains' do
+        stub_const('Dude::StatusLine::Format::JETBRAINS', true)
+        result = formatter.emoji_group('🎭', 5, false, Dude::StatusLine::Format::COLORS[:green])
+        stripped = result.gsub(/\033\[[^m]*m/, '')
+        expect(stripped).to eq('🎭 ⁵')
+      end
+    end
+
+    context 'active emoji spacing' do
+      it 'has no space when NOT JetBrains' do
+        stub_const('Dude::StatusLine::Format::JETBRAINS', false)
+        result = formatter.emoji_group('🎭', 5, true, Dude::StatusLine::Format::COLORS[:green])
+        stripped = result.gsub(/\033\[[^m]*m/, '')
+        expect(stripped).to eq('🎭⁵')
+      end
+
+      it 'has space when IS JetBrains' do
+        stub_const('Dude::StatusLine::Format::JETBRAINS', true)
+        result = formatter.emoji_group('🎭', 5, true, Dude::StatusLine::Format::COLORS[:green])
+        stripped = result.gsub(/\033\[[^m]*m/, '')
+        expect(stripped).to eq('🎭 ⁵')
+      end
+    end
+
     it 'formats inactive emoji' do
       result = formatter.emoji_group('🎭', 5, false, Dude::StatusLine::Format::COLORS[:green])
       expect(result).to include('🎭')

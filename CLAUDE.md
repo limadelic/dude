@@ -45,6 +45,7 @@ icon: 🎳
 - open: use system open command
 - await: use await skill, dont block, dont sleep, dont loop
 - bob: use /bob for gem tasks (test, install) and git (commit, push). ALWAYS delegate to bob
+- log: conversation logs are in ~/.claude/projects/<encoded-project-path>/<session-id>.jsonl — search there
 
 # TAO OF THE DUDES
 
