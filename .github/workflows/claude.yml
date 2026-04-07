@@ -56,8 +56,12 @@ jobs:
       - name: Registry
         run: |
           npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
-          echo '[install]' > ~/.bunfig.toml
-          echo 'registry = "https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/"' >> ~/.bunfig.toml
+          cat >> /home/runner/actions-runner/_work/_actions/anthropics/claude-code-action/v1/bunfig.toml <<'TOML'
+
+          [install]
+          registry = "https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/"
+          TOML
+          cat /home/runner/actions-runner/_work/_actions/anthropics/claude-code-action/v1/bunfig.toml
 
       - name: Run
         id: claude
@@ -65,7 +69,6 @@ jobs:
         env:
           ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
           CLAUDE_CODE_MODEL: claude-sonnet-4-6
-          HOME: ${{ runner.home }}
         with:
           path_to_claude_code_executable: ${{ env.CLAUDE_PATH }}
           anthropic_api_key: ${{ secrets.LITELLM_KEY }}
