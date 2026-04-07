@@ -12,12 +12,6 @@ on:
       reaction:
         type: string
         required: false
-      version:
-        type: string
-        required: false
-      timeout:
-        type: number
-        required: false
     secrets:
       LITELLM_KEY:
         required: true
@@ -31,7 +25,7 @@ permissions:
 jobs:
   claude:
     runs-on: garm-dev-dlas1-vm-linux-mega-large
-    timeout-minutes: ${{ inputs.timeout || 30 }}
+    timeout-minutes: 30
     steps:
       - name: React
         if: inputs.reaction && (github.event.comment.id || github.event.issue.number)
@@ -42,11 +36,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Registry
-        run: |
-          npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
-          echo "registry = \"https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/\"" > ~/.bunfig.toml
-
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -55,15 +44,15 @@ jobs:
       - name: Install
         run: |
           sudo rm -f /usr/local/bin/claude
-          npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
+          npm install -g @anthropic-ai/claude-code@2.1.87
           echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
 
-      - name: Action registry
+      - name: Registry
         run: |
-          ACTION_PATH=$(find /home/runner -path "*/anthropics/claude-code-action/v1/bunfig.toml" 2>/dev/null | head -1 | xargs dirname)
-          echo -e '\n[install]\nregistry = "https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/"' >> $ACTION_PATH/bunfig.toml
-          echo "--- bunfig.toml ---"
-          cat $ACTION_PATH/bunfig.toml
+          ACTION_DIR=$(find /home/runner -path "*/anthropics/claude-code-action/v1/bunfig.toml" 2>/dev/null | head -1 | xargs dirname)
+          npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
+          echo -e '\n[install]\nregistry = "https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/"' >> $ACTION_DIR/bunfig.toml
+          rm -f $ACTION_DIR/bun.lockb
 
       - name: Run
         id: claude
