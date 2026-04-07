@@ -15,6 +15,10 @@ on:
         type: string
         description: "@dude"
         required: true
+      version:
+        type: string
+        description: "claude-code version"
+        required: false
 
 jobs:
   dude:
@@ -26,6 +30,7 @@ jobs:
     with:
       trigger_phrase: "@dude"
       prompt: ${{ inputs.prompt || '' }}
+      version: ${{ inputs.version || '' }}
       reaction: "+1"
     secrets:
       LITELLM_KEY: ${{ secrets.LITELLM_KEY }}

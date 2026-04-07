@@ -12,6 +12,9 @@ on:
       reaction:
         type: string
         required: false
+      version:
+        type: string
+        required: false
     secrets:
       LITELLM_KEY:
         required: true
@@ -44,7 +47,7 @@ jobs:
       - name: Install
         run: |
           sudo rm -f /usr/local/bin/claude
-          npm install -g @anthropic-ai/claude-code@2.1.87
+          npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
           echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
 
       - name: Run
