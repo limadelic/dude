@@ -58,13 +58,15 @@ jobs:
           npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
           echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
 
+      - name: Action deps
+        run: cd ${{ runner.tool_cache }}/../_actions/anthropics/claude-code-action/v1 && npm install --production
+
       - name: Run
         id: claude
         uses: anthropics/claude-code-action@v1
         env:
           ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
           CLAUDE_CODE_MODEL: claude-sonnet-4-6
-          BUN_CONFIG_REGISTRY: https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
         with:
           path_to_claude_code_executable: ${{ env.CLAUDE_PATH }}
           anthropic_api_key: ${{ secrets.LITELLM_KEY }}
