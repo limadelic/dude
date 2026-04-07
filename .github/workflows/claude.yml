@@ -55,8 +55,8 @@ jobs:
 
       - name: Registry
         run: |
-          ACTION_DIR=$(find /home/runner -path "*/anthropics/claude-code-action/v1/bunfig.toml" 2>/dev/null | head -1 | xargs dirname)
           npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
+          ACTION_DIR=/home/runner/actions-runner/_work/_actions/anthropics/claude-code-action/v1
           rm -f $ACTION_DIR/bun.lockb
           cd $ACTION_DIR && npm install --legacy-peer-deps --registry=https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
 
