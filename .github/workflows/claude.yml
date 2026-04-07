@@ -39,6 +39,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
+      - name: Registry
+        run: |
+          npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
+          BUNFIG=/home/runner/actions-runner/_work/_actions/anthropics/claude-code-action/v1/bunfig.toml
+          echo '[install]' >> $BUNFIG
+          echo 'registry = "https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/"' >> $BUNFIG
+
       - name: Run
         uses: UKGEPIC/actions/claude-code@main
         with:
