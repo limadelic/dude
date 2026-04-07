@@ -6,7 +6,7 @@ First, trigger the dude GHA to test the latest release:
 
 ```bash
 latest=$(gh release list -R anthropics/claude-code --limit 1 --json tagName -q '.[].tagName')
-gh workflow run dude.yml -R UKGEPIC/dude -f prompt="1 + 1" -f version="$latest"
+gh workflow run dude.yml -R UKGEPIC/dude -f prompt="1 + 1" -f version="$latest" -f timeout=5
 ```
 
 Then show the current installed version:
