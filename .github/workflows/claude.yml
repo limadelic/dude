@@ -58,8 +58,10 @@ jobs:
           npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
           echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
 
-      - name: Action deps
-        run: cd ${{ runner.tool_cache }}/../_actions/anthropics/claude-code-action/v1 && npm install --production --legacy-peer-deps --registry=https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
+      - name: Action registry
+        run: |
+          ACTION_PATH=${{ runner.tool_cache }}/../_actions/anthropics/claude-code-action/v1
+          echo -e '\n[install]\nregistry = "https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/"' >> $ACTION_PATH/bunfig.toml
 
       - name: Run
         id: claude
