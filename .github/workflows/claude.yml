@@ -42,9 +42,12 @@ jobs:
       - name: Registry
         run: |
           npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
-          BUNFIG=/home/runner/actions-runner/_work/_actions/anthropics/claude-code-action/v1/bunfig.toml
-          echo '[install]' >> $BUNFIG
-          echo 'registry = "https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/"' >> $BUNFIG
+          ACTION_DIR=/home/runner/actions-runner/_work/_actions/anthropics/claude-code-action/v1
+          echo '[install]' >> $ACTION_DIR/bunfig.toml
+          echo 'registry = "https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/"' >> $ACTION_DIR/bunfig.toml
+          rm -f $ACTION_DIR/bun.lockb
+          cat $ACTION_DIR/bunfig.toml
+          ls -la $ACTION_DIR/bun.lockb 2>&1 || true
 
       - name: Run
         uses: UKGEPIC/actions/claude-code@main
