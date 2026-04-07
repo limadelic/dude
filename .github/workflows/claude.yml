@@ -28,7 +28,7 @@ permissions:
 jobs:
   claude:
     runs-on: garm-dev-dlas1-vm-linux-mega-large
-    timeout-minutes: 2
+    timeout-minutes: 5
     steps:
       - name: React
         if: inputs.reaction && (github.event.comment.id || github.event.issue.number)
@@ -43,6 +43,11 @@ jobs:
         uses: oven-sh/setup-bun@v2
         with:
           no-cache: true
+
+      - name: Registry
+        run: |
+          echo "registry=https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/" > ~/.npmrc
+          echo "registry = \"https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/\"" > ~/.bunfig.toml
 
       - name: Install
         run: |
