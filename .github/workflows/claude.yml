@@ -51,17 +51,20 @@ jobs:
           npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
           echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
 
-      - name: Deps
-        run: |
-          ACTION_DIR=/home/runner/actions-runner/_work/_actions/anthropics/claude-code-action/v1
-          cd $ACTION_DIR && npm install --legacy-peer-deps --registry=https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
-          printf '#!/bin/bash\nif [[ "$1" == "install" ]]; then exit 0; fi\nexec /home/runner/.bun/bin/bun "$@"\n' > /home/runner/bun-wrapper
-          chmod +x /home/runner/bun-wrapper
-
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           no-cache: true
+
+      - name: Deps
+        run: |
+          ACTION_DIR=/home/runner/actions-runner/_work/_actions/anthropics/claude-code-action/v1
+          cd $ACTION_DIR && npm install --legacy-peer-deps --registry=https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
+          BUN_REAL=$(which bun)
+          WRAPPER_DIR=/home/runner/bun-skip
+          mkdir -p $WRAPPER_DIR
+          printf '#!/bin/bash\nif [[ "$1" == "install" ]]; then exit 0; fi\nexec %s "$@"\n' "$BUN_REAL" > $WRAPPER_DIR/bun
+          chmod +x $WRAPPER_DIR/bun
 
       - name: Run
         id: claude
@@ -71,7 +74,7 @@ jobs:
           CLAUDE_CODE_MODEL: claude-sonnet-4-6
         with:
           path_to_claude_code_executable: ${{ env.CLAUDE_PATH }}
-          path_to_bun_executable: /home/runner/bun-wrapper
+          path_to_bun_executable: /home/runner/bun-skip/bun
           anthropic_api_key: ${{ secrets.LITELLM_KEY }}
           github_token: ${{ github.token }}
           trigger_phrase: ${{ inputs.trigger_phrase }}
