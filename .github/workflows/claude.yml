@@ -59,7 +59,7 @@ jobs:
           echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
 
       - name: Action deps
-        run: cd ${{ runner.tool_cache }}/../_actions/anthropics/claude-code-action/v1 && npm install --production
+        run: cd ${{ runner.tool_cache }}/../_actions/anthropics/claude-code-action/v1 && npm install --production --registry=https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
 
       - name: Run
         id: claude
