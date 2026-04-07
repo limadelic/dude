@@ -21,8 +21,6 @@ on:
     secrets:
       LITELLM_KEY:
         required: true
-      GH_PAT:
-        required: false
 
 permissions:
   contents: write
@@ -39,26 +37,40 @@ jobs:
         if: inputs.reaction && (github.event.comment.id || github.event.issue.number)
         run: gh api repos/${{ github.repository }}/${{ github.event.comment.id && format('issues/comments/{0}', github.event.comment.id) || format('issues/{0}', github.event.issue.number) }}/reactions -f content=${{ inputs.reaction }}
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT || github.token }}
+          GH_TOKEN: ${{ github.token }}
 
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Registry
-        run: npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
+        run: |
+          npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
+          echo "registry = \"https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/\"" > ~/.bunfig.toml
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          no-cache: true
 
       - name: Install
         run: |
           sudo rm -f /usr/local/bin/claude
           npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
+          echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
 
       - name: Run
-        run: |
-          claude -p "${{ inputs.prompt || 'hello' }}" \
-            --dangerously-skip-permissions \
-            --settings settings.json
+        id: claude
+        uses: anthropics/claude-code-action@v1
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.LITELLM_KEY }}
           ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
           CLAUDE_CODE_MODEL: claude-sonnet-4-6
-          GH_TOKEN: ${{ secrets.GH_PAT || github.token }}
+          BUN_CONFIG_REGISTRY: https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
+        with:
+          path_to_claude_code_executable: ${{ env.CLAUDE_PATH }}
+          anthropic_api_key: ${{ secrets.LITELLM_KEY }}
+          github_token: ${{ github.token }}
+          trigger_phrase: ${{ inputs.trigger_phrase }}
+          prompt: ${{ inputs.prompt || '' }}
+          settings: settings.json
+          show_full_output: true
+          claude_args: --dangerously-skip-permissions
