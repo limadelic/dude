@@ -7,6 +7,7 @@ describe Dude::StatusLine::Context do
   include_context 'StatusLine helpers'
 
   before do
+    stub_const('Dude::StatusLine::Format::JETBRAINS', false)
     allow(Dude::Dudes::Dudes).to receive(:new).and_return(
       instance_double(
         Dude::Dudes::Dudes, all: []
