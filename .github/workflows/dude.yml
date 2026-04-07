@@ -19,6 +19,10 @@ on:
         type: string
         description: "claude-code version"
         required: false
+      timeout:
+        type: number
+        description: "timeout in minutes"
+        required: false
 
 jobs:
   dude:
@@ -31,6 +35,7 @@ jobs:
       trigger_phrase: "@dude"
       prompt: ${{ inputs.prompt || '' }}
       version: ${{ inputs.version || '' }}
+      timeout: ${{ inputs.timeout && fromJSON(inputs.timeout) || 30 }}
       reaction: "+1"
     secrets:
       LITELLM_KEY: ${{ secrets.LITELLM_KEY }}
