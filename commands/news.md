@@ -6,7 +6,7 @@ First, trigger the dude GHA to test the latest release:
 
 ```bash
 latest=$(gh release list -R anthropics/claude-code --limit 1 --json tagName -q '.[].tagName')
-gh workflow run dude.yml -R UKGEPIC/dude --ref cukes -f prompt="1 + 1" -f version="$latest" -f timeout=5
+gh workflow run dude.yml -R UKGEPIC/dude -f prompt="1 + 1" -f version="$latest" -f timeout=5
 echo "Triggered smoke test for $latest"
 ```
 
@@ -19,14 +19,14 @@ claude --version
 Then use /await to monitor the smoke test run in background. The check command:
 
 ```
-gh run list --repo UKGEPIC/dude --branch cukes --limit 1 --json status -q '.[0].status' | grep -q completed
+gh run list --repo UKGEPIC/dude --branch main --limit 1 --json status -q '.[0].status' | grep -q completed
 ```
 
 Once the run completes, check the result:
 
 ```bash
-conclusion=$(gh run list --repo UKGEPIC/dude --branch cukes --limit 1 --json conclusion -q '.[0].conclusion')
-run_id=$(gh run list --repo UKGEPIC/dude --branch cukes --limit 1 --json databaseId -q '.[0].databaseId')
+conclusion=$(gh run list --repo UKGEPIC/dude --branch main --limit 1 --json conclusion -q '.[0].conclusion')
+run_id=$(gh run list --repo UKGEPIC/dude --branch main --limit 1 --json databaseId -q '.[0].databaseId')
 echo "Smoke test: $conclusion (https://github.com/UKGEPIC/dude/actions/runs/$run_id)"
 ```
 
