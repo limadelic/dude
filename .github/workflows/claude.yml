@@ -39,23 +39,47 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Registry
+        run: npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
+
+      - name: Install
         run: |
-          npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
+          sudo rm -f /usr/local/bin/claude
+          npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
+          echo "CLAUDE_PATH=$(which claude)" >> $GITHUB_ENV
+
+      - name: Deps
+        run: |
           ACTION_DIR=/home/runner/actions-runner/_work/_actions/anthropics/claude-code-action/v1
-          echo '[install]' >> $ACTION_DIR/bunfig.toml
-          echo 'registry = "https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/"' >> $ACTION_DIR/bunfig.toml
-          rm -f $ACTION_DIR/bun.lockb
-          cat $ACTION_DIR/bunfig.toml
-          ls -la $ACTION_DIR/bun.lockb 2>&1 || true
+          cd $ACTION_DIR && npm install --legacy-peer-deps --registry=https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
+          cat > /usr/local/bin/bun-wrapper <<'SH'
+          #!/bin/bash
+          if [[ "$1" == "install" ]]; then exit 0; fi
+          exec /home/runner/.bun/bin/bun "$@"
+          SH
+          chmod +x /usr/local/bin/bun-wrapper
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          no-cache: true
 
       - name: Run
-        uses: UKGEPIC/actions/claude-code@main
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        env:
+          ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
+          CLAUDE_CODE_MODEL: claude-sonnet-4-6
         with:
+          path_to_claude_code_executable: ${{ env.CLAUDE_PATH }}
+          path_to_bun_executable: /usr/local/bin/bun-wrapper
           anthropic_api_key: ${{ secrets.LITELLM_KEY }}
           github_token: ${{ github.token }}
           trigger_phrase: ${{ inputs.trigger_phrase }}
           prompt: ${{ inputs.prompt || '' }}
-          claude_code_version: ${{ inputs.version || '2.1.87' }}
           settings: settings.json
+          show_full_output: true
           claude_args: --dangerously-skip-permissions
