@@ -59,3 +59,4 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.LITELLM_KEY }}
           ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
           CLAUDE_CODE_MODEL: claude-sonnet-4-6
+          GH_TOKEN: ${{ github.token }}
