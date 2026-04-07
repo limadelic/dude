@@ -1,4 +1,4 @@
-source 'https://rubygems.org'
+source 'https://ukgartifactory.pe.jfrog.io/artifactory/api/gems/rubygems/'
 gemspec
 
 gem 'rake'
