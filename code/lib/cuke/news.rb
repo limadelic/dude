@@ -108,7 +108,7 @@ module Cuke
         latest_version: @latest_version,
         releases: mock_releases_for(10),
         workflow_conclusion: @workflow_conclusion,
-        workflow_run_id: 12345
+        run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345'
       }
     end
 
