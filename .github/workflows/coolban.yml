@@ -32,7 +32,7 @@ jobs:
             (github.event.label.name == '🥒 gherkin' && '/gherkin') ||
             (github.event.label.name == '🏔️ katmandu' && '/katmandu') }}
         #${{ github.event.issue.number || inputs.issue || '' }}
-      reaction: "🪇"
+      reaction: "rocket"
       timeout: ${{ inputs.timeout && fromJSON(inputs.timeout) || 30 }}
     secrets:
       LITELLM_KEY: ${{ secrets.LITELLM_KEY }}
