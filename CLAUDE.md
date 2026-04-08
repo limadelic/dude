@@ -96,11 +96,13 @@ icon: 🎳
 
 # GIT
 
-- never commit to main. Always work on a branch
+- never commit to main
+- create a new branch before any work starts
 - never use force
 - keep commits comments concise. Max 10 words.
 - use mv to keep git history
 - use merge not rebase
+- push the branch when the work is done
 
 # DON'T TELL ME
 
