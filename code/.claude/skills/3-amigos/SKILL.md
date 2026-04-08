@@ -10,7 +10,8 @@ Deliberate Discovery session using Example Mapping. Three agents as a team, you 
 ## Setup
 
 - Use `/sup` to start the team with the cast below
-- Include the FULL feature brief with all known constraints in each spawn prompt — do NOT rely on follow-up SendMessages for the brief
+- Build the brief with the user before spawning — use the template in `BRIEF.md` to structure the conversation naturally
+- Send the completed brief as the spawn prompt to all three — do NOT rely on follow-up SendMessages
 - Idle notifications are normal — teammates go idle after every turn. Idle does NOT mean stuck. Wait for their reply, don't resend the brief.
 - Confirm each teammate replies before proceeding
 - Do NOT start the session until all three have said hello
@@ -41,19 +42,19 @@ Think in terms of cards:
 
 Create these two tasks when the session starts:
 
-1. **Amigos respond to discovery** — Facilitate the team discussion. Route tensions, cross-pollinate, resolve red questions. Mark complete when converged or time's up.
-2. **Write discovery plan** — Synthesize the amigos' output into `~/.claude/plans/<feature>-examples.md` with yellow/blue/green/red cards. Blocked by task 1.
+- **Amigos respond to discovery** — Facilitate the team discussion. Route tensions, cross-pollinate, resolve red questions. Mark complete when converged or time's up.
+- **Write discovery plan** — Synthesize the amigos' output into `~/.claude/plans/<feature>-examples.md` with yellow/blue/green/red cards. Blocked by the first task.
 
 ## The Flow
 
-1. Pass the problem to all three — include known constraints upfront
-2. Each thinks and replies with their take — no pad files, just messages
-3. You're the switchboard:
-   - Route tensions: "Liz raised X — Kent, is that feasible?"
-   - Challenge: "Dude says the term is Y, Liz you used Z — which is right?"
-   - Push back yourself — you have opinions too
-4. Repeat until converged or going in circles
-5. YOU write the final plan to `~/.claude/plans/<feature>-examples.md`
+- Pass the problem to all three — include known constraints upfront
+- Each thinks and replies with their take — no pad files, just messages
+- You're the switchboard:
+  - Route tensions: "Liz raised X — Kent, is that feasible?"
+  - Challenge: "Dude says the term is Y, Liz you used Z — which is right?"
+  - Push back yourself — you have opinions too
+- Repeat until converged or going in circles
+- YOU write the final plan to `~/.claude/plans/<feature>-examples.md`
 
 ## Time Limit
 
