@@ -1,3 +1,5 @@
+require 'json'
+
 module Dude
   module News
     class News
@@ -45,11 +47,10 @@ module Dude
       end
 
       def parse_mock_file
-        require 'json'
         file_path = ENV['DUDE_NEWS_MOCK_DATA'] || MOCK_DATA_PATH
-        return {} unless File.exist?(file_path)
-
         JSON.parse(File.read(file_path))
+      rescue Errno::ENOENT
+        {}
       end
     end
   end
