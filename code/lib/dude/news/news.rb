@@ -3,9 +3,9 @@ require_relative 'github_source'
 module Dude
   module News
     class News
-      def initialize(limit: 5, source: nil, gh: nil)
+      def initialize(limit: 5, source: GithubSource.new)
         @limit = limit
-        @source = source || GithubSource.new(gh: gh)
+        @source = source
       end
 
       def run
