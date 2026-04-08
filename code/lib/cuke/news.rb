@@ -1,3 +1,4 @@
+require 'json'
 require_relative 'activity_server'
 
 module Cuke
@@ -112,7 +113,6 @@ module Cuke
     end
 
     def write_mock_file(data)
-      require 'json'
       File.write(
         '/tmp/dude_news_mock_data.json',
         data.transform_keys(&:to_s).to_json
