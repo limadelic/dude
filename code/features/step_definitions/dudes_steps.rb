@@ -47,6 +47,7 @@ When(/^(\w+) > \/(.+)$/) do |name, command|
   run(@home, command)
 end
 
-When(/^> \/(?!news)(.+)$/) do |command|
-  run(@home, command)
+When(/^> \/(.+)$/) do |command|
+  @output = dude(command) rescue nil
+  run(@home, command) if @home
 end
