@@ -18,22 +18,27 @@ After('@wip') do
   ENV.delete('CC_VERSION')
 end
 
-Given('I have Claude Code version {string} installed') do |version|
+Given('CC is installed at {string}') do |version|
   setup_installed_version(version)
 end
 
-Given('the latest Claude Code version is {string}') do |version|
+Given('latest CC release is {string}') do |version|
   setup_latest_version(version)
 end
 
-Given('the GHA workflow will complete with conclusion {string}') do |conclusion|
+Given('GHA workflow conclusion is {string}') do |conclusion|
   setup_workflow_conclusion(conclusion)
 end
 
-When(/^I run dude news(?: --limit (\d+))?$/) do |limit|
+# Use regex with non-greedy match for news-specific commands to take precedence
+When(/^> \/news$/) do
   pending("kenny: implement dude news")
-  args = limit ? "--limit #{limit}" : ''
-  run_dude_news(args)
+  run_dude_news('')
+end
+
+When(/^> \/news --limit (\d+)$/) do |limit|
+  pending("kenny: implement dude news")
+  run_dude_news("--limit #{limit}")
 end
 
 Then('output shows {string}') do |text|
@@ -45,6 +50,10 @@ Then('output shows {string} at the top') do |text|
 end
 
 Then('output shows the last {int} release notes') do |count|
+  assert_releases_in_output(count)
+end
+
+Then('output shows only the last {int} release notes') do |count|
   assert_releases_in_output(count)
 end
 
