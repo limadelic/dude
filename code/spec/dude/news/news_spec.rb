@@ -4,7 +4,11 @@ require_relative '../../../lib/dude/news/news'
 describe Dude::News::News do
   let(:news) { described_class.new(limit: limit) }
   let(:limit) { 5 }
-  let(:mock_path) { '/tmp/dude_news_test_mock.json' }
+  let(:mock_data) do
+    { 'latest_version' => '1.2.3',
+      'workflow_conclusion' => 'success',
+      'releases' => %w[v1.0.0 v0.9.0 v0.8.0] }
+  end
 
   before do
     ENV.delete('DUDE_NEWS_MOCK')
@@ -15,24 +19,18 @@ describe Dude::News::News do
   after do
     ENV.delete('DUDE_NEWS_MOCK')
     ENV.delete('DUDE_NEWS_MOCK_DATA')
-    File.delete(mock_path) if File.exist?(mock_path)
   end
 
-  def write_mock(data)
+  def stub_mock(data = mock_data)
     ENV['DUDE_NEWS_MOCK'] = 'true'
-    ENV['DUDE_NEWS_MOCK_DATA'] = mock_path
-    File.write(mock_path, JSON.generate(data))
+    allow(news).to receive(:read_json).and_return(data)
   end
 
   describe '#run' do
     context 'with mock data' do
       before do
         ENV['CC_VERSION'] = '1.0.0'
-        write_mock(
-          'latest_version' => '1.2.3',
-          'workflow_conclusion' => 'success',
-          'releases' => %w[v1.0.0 v0.9.0 v0.8.0]
-        )
+        stub_mock
       end
 
       it 'outputs installed and latest versions' do
@@ -49,6 +47,7 @@ describe Dude::News::News do
 
       it 'respects limit parameter' do
         limited = described_class.new(limit: 1)
+        allow(limited).to receive(:read_json).and_return(mock_data)
         out = capture_stdout { limited.run }
         expect(out).to include('v1.0.0')
         expect(out).not_to include('v0.9.0')
@@ -62,7 +61,7 @@ describe Dude::News::News do
     context 'when smoke test fails' do
       before do
         ENV['CC_VERSION'] = '1.0.0'
-        write_mock(
+        stub_mock(
           'latest_version' => '1.2.3',
           'workflow_conclusion' => 'failure',
           'run_url' => 'https://github.com/UKGEPIC/dude/actions/runs/12345',
@@ -94,13 +93,7 @@ describe Dude::News::News do
     end
 
     context 'with missing CC_VERSION' do
-      before do
-        write_mock(
-          'latest_version' => '1.0.0',
-          'workflow_conclusion' => 'success',
-          'releases' => []
-        )
-      end
+      before { stub_mock('latest_version' => '1.0.0', 'workflow_conclusion' => 'success', 'releases' => []) }
 
       it 'defaults to unknown' do
         expect { news.run }.to output(include('Installed: unknown')).to_stdout
