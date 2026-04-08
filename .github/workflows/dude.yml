@@ -44,6 +44,7 @@ jobs:
     runs-on: garm-dev-dlas1-vm-linux-mega-large
     timeout-minutes: ${{ inputs.timeout || 30 }}
     env:
+      GH_TOKEN: ${{ github.token }}
       ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
       ANTHROPIC_AUTH_TOKEN: ${{ secrets.LITELLM_KEY }}
       ANTHROPIC_MODEL: opus
