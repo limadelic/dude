@@ -5,9 +5,11 @@ describe Dude::News::News do
   let(:news) { described_class.new(limit: limit) }
   let(:limit) { 5 }
   let(:mock_data) do
-    { 'latest_version' => '1.2.3',
+    {
+      'latest_version' => '1.2.3',
       'workflow_conclusion' => 'success',
-      'releases' => %w[v1.0.0 v0.9.0 v0.8.0] }
+      'releases' => %w[v1.0.0 v0.9.0 v0.8.0]
+    }
   end
 
   before do
@@ -34,7 +36,9 @@ describe Dude::News::News do
       end
 
       it 'outputs installed and latest versions' do
-        expect { news.run }.to output(include('Installed: 1.0.0, Latest: 1.2.3')).to_stdout
+        expect do
+          news.run
+        end.to output(include('Installed: 1.0.0, Latest: 1.2.3')).to_stdout
       end
 
       it 'outputs smoke test status' do
@@ -77,14 +81,34 @@ describe Dude::News::News do
     end
 
     context 'without mock data' do
-      before { ENV['CC_VERSION'] = '2.0.0' }
-
-      it 'defaults latest to unknown' do
-        expect { news.run }.to output(include('Installed: 2.0.0, Latest: unknown')).to_stdout
+      before do
+        ENV['CC_VERSION'] = '2.0.0'
+        allow(news).to receive(:gh) do |cmd|
+          case cmd
+          when /release list -R anthropics\/claude-code --limit 1/
+            'v2.1.96'
+          when /run list.*conclusion/
+            'success'
+          when /release list -R anthropics\/claude-code/
+            "v2.1.96\nv2.1.95"
+          when /run list.*databaseId/
+            '12345'
+          else
+            ''
+          end
+        end
       end
 
-      it 'defaults smoke test to unknown' do
-        expect { news.run }.to output(include('Smoke test: unknown')).to_stdout
+      it 'outputs latest version from gh' do
+        expect do
+          news.run
+        end.to output(include('Installed: 2.0.0, Latest: v2.1.96')).to_stdout
+      end
+
+      it 'outputs smoke test status from gh' do
+        expect do
+          news.run
+        end.to output(include('Smoke test: success')).to_stdout
       end
 
       it 'handles empty releases' do
@@ -92,8 +116,48 @@ describe Dude::News::News do
       end
     end
 
+    context 'without mock data verifies gh commands' do
+      before do
+        ENV['CC_VERSION'] = '2.0.0'
+        allow(news).to receive(:gh) do |cmd|
+          case cmd
+          when /release list -R anthropics\/claude-code --limit 1/
+            'v2.1.96'
+          when /run list.*conclusion/
+            'success'
+          when /release list -R anthropics\/claude-code/
+            "v2.1.96\nv2.1.95"
+          when /run list.*databaseId/
+            '12345'
+          else
+            ''
+          end
+        end
+      end
+
+      it 'calls gh release list for latest version' do
+        news.run
+        expect(news).to have_received(:gh).with(
+          include('release list -R anthropics/claude-code --limit 1')
+        )
+      end
+
+      it 'calls gh run list for workflow conclusion' do
+        news.run
+        expect(news).to have_received(:gh).with(
+          include('run list --repo UKGEPIC/dude --branch main')
+        )
+      end
+    end
+
     context 'with missing CC_VERSION' do
-      before { stub_mock('latest_version' => '1.0.0', 'workflow_conclusion' => 'success', 'releases' => []) }
+      before do
+        stub_mock(
+          'latest_version' => '1.0.0',
+          'workflow_conclusion' => 'success',
+          'releases' => []
+        )
+      end
 
       it 'defaults to unknown' do
         expect { news.run }.to output(include('Installed: unknown')).to_stdout
@@ -104,8 +168,7 @@ describe Dude::News::News do
   private
 
   def capture_stdout
-    out = StringIO.new
-    $stdout = out
+    out = $stdout = StringIO.new
     yield
     out.string
   ensure
