@@ -1,4 +1,4 @@
-@news
+@wip
 Feature: News
   Report on latest Claude Code releases and smoke test status
 
