@@ -1,34 +1,47 @@
-require 'json'
-require_relative 'activity_server'
+require_relative '../dude/news/news'
+require_relative '../dude/helpers/gh'
 
 module Cuke
+  class MockGh
+    def initialize(latest_version: nil, workflow_conclusion: nil, run_url: nil, releases: [])
+      @latest_version = latest_version
+      @workflow_conclusion = workflow_conclusion
+      @run_url = run_url
+      @releases = releases
+    end
+
+    def run(cmd)
+      case cmd
+      when /release list -R anthropics\/claude-code --limit 1/
+        @latest_version
+      when /run list.*conclusion/
+        @workflow_conclusion
+      when /run list.*databaseId/
+        @run_url.match(/\/(\d+)$/)&.captures&.first || ''
+      when /release list -R anthropics\/claude-code/
+        @releases.join("\n")
+      else
+        ''
+      end
+    end
+  end
+
   module News
     def setup_installed_version(version)
       @installed_version = version
       ENV['CC_VERSION'] = version
-      update_mock_endpoints
     end
 
     def setup_latest_version(version)
       @latest_version = version
-      update_mock_endpoints
     end
 
     def setup_workflow_conclusion(conclusion)
       @workflow_conclusion = conclusion
-      update_mock_endpoints
-    end
-
-    def run_dude_news(args = '')
-      ENV['DUDE_NEWS_MOCK'] = 'true'
-      output_file = "/tmp/dude_news_#{Time.now.to_i}.txt"
-      system(build_news_cmd(args, output_file))
-      @news_output = File.read(output_file)
-      File.delete(output_file) rescue nil
     end
 
     def news_output
-      @news_output ||= ''
+      @output ||= ''
     end
 
     def mock_releases_for(limit)
@@ -82,10 +95,9 @@ module Cuke
 
     private
 
-    def build_news_cmd(args, output_file)
-      version = ENV['CC_VERSION']
-      mock = 'DUDE_NEWS_MOCK=true'
-      "#{mock} CC_VERSION=#{version} dude news #{args} > #{output_file} 2>&1"
+    def extract_limit_from_args(args)
+      match = args.match(/--limit\s+(\d+)/)
+      match ? match[1].to_i : nil
     end
 
     def verify_releases(releases)
@@ -96,27 +108,12 @@ module Cuke
       end
     end
 
-    def update_mock_endpoints
-      response = mock_response
-      Cuke::ActivityServer.set_response(response)
-      write_mock_file(response)
-    end
-
-    def mock_response
-      {
-        installed_version: @installed_version,
-        latest_version: @latest_version,
-        releases: mock_releases_for(10),
-        workflow_conclusion: @workflow_conclusion,
-        run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345'
-      }
-    end
-
-    def write_mock_file(data)
-      File.write(
-        '/tmp/dude_news_mock_data.json',
-        data.transform_keys(&:to_s).to_json
-      )
+    def capture_output
+      out = $stdout = StringIO.new
+      yield
+      out.string
+    ensure
+      $stdout = STDOUT
     end
   end
 end
