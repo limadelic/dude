@@ -14,7 +14,6 @@ Before('@wip') do
 end
 
 After('@wip') do
-  Cuke::ActivityServer.stop
   ENV.delete('DUDE_NEWS_MOCK')
   ENV.delete('CC_VERSION')
 end
