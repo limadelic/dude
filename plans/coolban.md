@@ -1,60 +1,60 @@
 # Coolban
 
-Label-driven kanban for dude agents. Labels are the kanban cards.
+Label-driven kanban for dude agents. Labels are the kanban cards (Taiichi Ohno style).
 
 ## Trigger
 
-GHA workflow on `pull_request: labeled` with labels: `3-amigos`, `gherkin`, `katmandu`.
+- GHA workflow on `issues: labeled`
+- `workflow_dispatch` for manual/testing
+
+## Flow
+
+1. You label an issue with a loop label
+2. GHA fires, spins up a dude (Claude Code)
+3. Dude reads the issue for context
+4. Dude runs the matching skill
+5. Dude pushes results to the issue's linked branch
+6. Done → remove loop label, flag for review
+7. Timeout → document progress in issue comment, retry (up to 3 attempts)
 
 ## Setup
 
 - One branch, one PR per issue (covers all loops)
 - PR and branch created before labeling (manually or via alley-pr, separate from coolban)
-- Issue linked to PR — issue body is the work description
-
-## Flow
-
-1. You label the PR with a loop label (e.g. `katmandu`)
-2. GHA fires, spins up a dude (Claude Code)
-3. Dude reads the linked issue for context
-4. Dude runs the matching skill (3-amigos / gherkin / katmandu)
-5. Dude pushes to the PR branch
-6. Done → PR ready for review
-7. Timeout → document progress in the issue, retry (up to 3 attempts)
-8. You review, label next loop on same PR, repeat
+- Issue body is the work description
 
 ## Attempts
 
 - 30 min timeout per attempt
 - 3 attempts max per label
-- Each attempt documents what it did / where it got stuck in the issue
-- Next attempt reads previous notes, picks up from accumulated branch state
+- Each attempt documents what it did / where it got stuck in issue comment
+- Next attempt reads previous comments, picks up from accumulated branch state
 - After 3 failures → flag for human review
 
 ## Board
 
 - Single board: Tao (UKGEPIC/projects/156/views/1)
 - No column automation — labels drive everything
-- PR review flag when dude is done
 - You review the PR directly
 
 ## Labels
 
-| Label | Skill | Output |
-|-------|-------|--------|
-| 3-amigos | /3-amigos | Discovery artifacts |
-| gherkin | /gherkin | Feature files |
-| katmandu | /katmandu | Code + specs |
+| Label | Skill | Color |
+|-------|-------|-------|
+| 🪇 amigos | /3-amigos | orange |
+| 🥒 gherkin | /gherkin | green |
+| 🏔️ katmandu | /katmandu | white |
 
-## Attempt tracking
+## Architecture
 
-- GHA workflow manages attempt counter (1-3)
-- Each attempt documents progress/failure in issue comment
-- Next attempt reads previous comments for context
-- After 3 failures → remove loop label, flag for human
+- `coolban.yml` — thin wrapper, triggers on label or dispatch, maps label to skill
+- `claude.yml` — reusable base (30 min timeout, Claude Code setup)
+- Same pattern as benito.yml and dude.yml
+- Prompt includes issue number for context (like benito does)
 
-## What we need
+## Open
 
-- [ ] GHA workflow file (on PR labeled, attempt loop, 30 min timeout)
-- [ ] Label setup on repo (3-amigos, gherkin, katmandu)
-- [ ] Claude Code setup in GHA (clone repo, cd code, run skill)
+- [ ] Verify label trigger works from main
+- [ ] Skills need to be findable from repo root (code/ subdirectory issue)
+- [ ] Attempt counter and retry logic
+- [ ] Post Result step (comment output back to issue)
