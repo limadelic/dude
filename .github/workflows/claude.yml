@@ -18,6 +18,9 @@ on:
       timeout:
         type: number
         required: false
+      cwd:
+        type: string
+        required: false
     secrets:
       LITELLM_KEY:
         required: true
@@ -72,6 +75,7 @@ jobs:
         env:
           ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
           CLAUDE_CODE_MODEL: claude-sonnet-4-6
+          GITHUB_WORKSPACE: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
         with:
           path_to_claude_code_executable: ${{ env.CLAUDE_PATH }}
           path_to_bun_executable: /home/runner/bun-skip/bun
@@ -81,4 +85,4 @@ jobs:
           prompt: ${{ inputs.prompt || '' }}
           settings: settings.json
           show_full_output: true
-          claude_args: --dangerously-skip-permissions --cwd code
+          claude_args: --dangerously-skip-permissions

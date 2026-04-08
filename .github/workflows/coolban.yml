@@ -17,6 +17,10 @@ on:
         type: number
         description: "timeout in minutes"
         required: false
+      cwd:
+        type: string
+        description: "working directory for claude"
+        required: false
 
 jobs:
   coolban:
@@ -32,6 +36,7 @@ jobs:
             (github.event.label.name == '🥒 gherkin' && '/gherkin') ||
             (github.event.label.name == '🏔️ katmandu' && '/katmandu') }}
         #${{ github.event.issue.number || inputs.issue || '' }}
+      cwd: ${{ inputs.cwd || 'code' }}
       reaction: ""
       timeout: ${{ inputs.timeout && fromJSON(inputs.timeout) || 30 }}
     secrets:
