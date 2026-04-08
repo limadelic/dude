@@ -36,3 +36,15 @@ Then('shows') do |table|
     raise "Expected '#{text}' in output" unless @output&.include?(text)
   end
 end
+
+When(/^> \/news\s*(.*)$/) do |args|
+  ENV['DUDE_NEWS_MOCK'] = 'true'
+  ENV['DUDE_NEWS_MOCK_DATA'] = '/tmp/dude_news_mock_data.json'
+  output_file = "/tmp/dude_news_#{Time.now.to_i}.txt"
+  version = ENV['CC_VERSION']
+  cmd = "CC_VERSION=#{version} DUDE_NEWS_MOCK=true "
+  cmd += "DUDE_NEWS_MOCK_DATA=/tmp/dude_news_mock_data.json dude news #{args}"
+  system("#{cmd} > #{output_file} 2>&1")
+  @output = File.read(output_file)
+  File.delete(output_file) rescue nil
+end

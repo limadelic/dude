@@ -110,6 +110,12 @@ module Dude
         exit(result ? 0 : 1)
       end
 
+      desc "news [OPTIONS]", "Report on latest Claude Code releases"
+      option :limit, type: :numeric, default: 5, desc: "Number of releases to show"
+      def news
+        require_relative '../news/news'
+        Dude::News::News.new(limit: options[:limit]).run
+      end
       desc "dudes", "Manage dudes"
       subcommand :dudes, DudesCommand
 
