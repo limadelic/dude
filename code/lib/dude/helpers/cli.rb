@@ -111,7 +111,8 @@ module Dude
       end
 
       desc "news [OPTIONS]", "Report on latest Claude Code releases"
-      option :limit, type: :numeric, default: 5, desc: "Number of releases to show"
+      option :limit, type: :numeric, default: 5,
+        desc: "Number of releases to show"
       def news
         require_relative '../news/news'
         Dude::News::News.new(limit: options[:limit]).run
