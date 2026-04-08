@@ -1,9 +1,10 @@
 require_relative '../../spec_helper'
 require_relative '../../../lib/dude/news/news'
+require 'dude/news/github_source'
 
 describe Dude::News::News do
   let(:mock_gh) { instance_double(Dude::Helpers::Gh) }
-  let(:news) { described_class.new(limit: limit, gh: mock_gh) }
+  let(:news) { described_class.new(limit: limit, source: Dude::News::GithubSource.new(gh: mock_gh)) }
   let(:limit) { 5 }
 
   before do
@@ -47,7 +48,7 @@ describe Dude::News::News do
       end
 
       it 'respects limit parameter' do
-        limited = described_class.new(limit: 1, gh: mock_gh)
+        limited = described_class.new(limit: 1, source: Dude::News::GithubSource.new(gh: mock_gh))
         allow(mock_gh).to receive(:run).with(
           "release list -R anthropics/claude-code --limit 1 --json tagName -q '.[].tagName'"
         ).and_return('v1.0.0')
