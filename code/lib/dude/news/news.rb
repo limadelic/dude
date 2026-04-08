@@ -24,23 +24,55 @@ module Dude
       end
 
       def latest_version
-        @latest_version ||= fetch_if_mock('latest_version', 'unknown')
+        @latest_version ||= fetch_if_mock('latest_version') do
+          cmd = "release list -R anthropics/claude-code --limit 1 "
+          cmd += "--json tagName -q '.[0].tagName'"
+          gh(cmd)
+        end
       end
 
       def workflow_conclusion
-        @workflow_conclusion ||= fetch_if_mock('workflow_conclusion', 'unknown')
+        @workflow_conclusion ||= fetch_if_mock('workflow_conclusion') do
+          cmd = "run list --repo UKGEPIC/dude --branch main "
+          cmd += "--limit 1 --json conclusion -q '.[0].conclusion'"
+          gh(cmd)
+        end
       end
 
       def run_url
-        @run_url ||= fetch_if_mock('run_url', nil)
+        @run_url ||= fetch_if_mock('run_url') do
+          id = gh(run_id_cmd)
+          id.empty? ? nil : "https://github.com/UKGEPIC/dude/actions/runs/#{id}"
+        end
+      end
+
+      def run_id_cmd
+        "run list --repo UKGEPIC/dude --branch main --limit 1 " \
+          "--json databaseId -q '.[0].databaseId'"
       end
 
       def releases
-        @releases ||= fetch_if_mock('releases', [])
+        @releases ||= fetch_if_mock('releases') do
+          output = gh(releases_cmd)
+          output.split("\n").reject(&:empty?)
+        end
       end
 
-      def fetch_if_mock(key, default)
-        ENV['DUDE_NEWS_MOCK'] ? fetch_mock_data[key] : default
+      def releases_cmd
+        "release list -R anthropics/claude-code --limit #{@limit} " \
+          "--json tagName -q '.[].tagName'"
+      end
+
+      def gh(cmd)
+        `gh #{cmd}`.strip
+      end
+
+      def fetch_if_mock(key)
+        if ENV['DUDE_NEWS_MOCK']
+          fetch_mock_data[key]
+        else
+          yield
+        end
       end
 
       def fetch_mock_data
