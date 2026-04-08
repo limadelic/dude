@@ -1,38 +1,18 @@
 name: dude
 
 on:
-  workflow_dispatch:
-    inputs:
-      prompt:
-        type: string
-        required: true
-      version:
-        type: string
-        required: false
-      cwd:
-        type: string
-        required: false
-      timeout:
-        type: number
-        required: false
-      claude_args:
-        type: string
-        required: false
   workflow_call:
     inputs:
       prompt:
         type: string
-        required: true
-      version:
-        type: string
         required: false
-      cwd:
+      version:
         type: string
         required: false
       timeout:
         type: number
         required: false
-      claude_args:
+      cwd:
         type: string
         required: false
     secrets:
@@ -49,18 +29,6 @@ jobs:
   dude:
     runs-on: garm-dev-dlas1-vm-linux-mega-large
     timeout-minutes: ${{ inputs.timeout || 30 }}
-    env:
-      GH_TOKEN: ${{ github.token }}
-      ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
-      ANTHROPIC_AUTH_TOKEN: ${{ secrets.LITELLM_KEY }}
-      ANTHROPIC_MODEL: opus
-      ANTHROPIC_DEFAULT_HAIKU_MODEL: claude-haiku-4-5
-      ANTHROPIC_DEFAULT_OPUS_MODEL: claude-opus-4-6
-      ANTHROPIC_DEFAULT_SONNET_MODEL: claude-sonnet-4-6
-      CLAUDE_CODE_SUBAGENT_MODEL: haiku
-      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '0'
-      CLAUDE_CODE_ENABLE_TELEMETRY: '1'
-      CLAUDE_CODE_USE_VERTEX: '0'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -74,5 +42,12 @@ jobs:
           npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
 
       - name: Run
-        working-directory: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
-        run: claude -p --dangerously-skip-permissions "${{ inputs.prompt }}" ${{ inputs.claude_args }}
+        working-directory: ${{ inputs.cwd || '.' }}
+        run: |
+          claude --print --dangerously-skip-permissions "${{ inputs.prompt }}"
+        env:
+          ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
+          ANTHROPIC_API_KEY: ${{ secrets.LITELLM_KEY }}
+          CLAUDE_CODE_MODEL: claude-sonnet-4-6
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_TOKEN: ${{ github.token }}
