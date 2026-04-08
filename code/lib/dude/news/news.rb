@@ -1,8 +1,9 @@
-require 'json'
+require_relative '../helpers/json'
 
 module Dude
   module News
     class News
+      include Dude::Helpers::Json
       MOCK_DATA_PATH = '/tmp/dude_news_mock_data.json'
 
       def initialize(limit: 5)
@@ -47,10 +48,8 @@ module Dude
       end
 
       def parse_mock_file
-        file_path = ENV['DUDE_NEWS_MOCK_DATA'] || MOCK_DATA_PATH
-        JSON.parse(File.read(file_path))
-      rescue Errno::ENOENT
-        {}
+        path = ENV['DUDE_NEWS_MOCK_DATA'] || MOCK_DATA_PATH
+        read_json(path) || {}
       end
     end
   end
