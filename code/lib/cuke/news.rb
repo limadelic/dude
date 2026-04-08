@@ -96,15 +96,27 @@ module Cuke
     end
 
     def update_mock_endpoints
-      # High-level mock data — no API internals
-      response = {
+      response = mock_response
+      Cuke::ActivityServer.set_response(response)
+      write_mock_file(response)
+    end
+
+    def mock_response
+      {
         installed_version: @installed_version,
         latest_version: @latest_version,
         releases: mock_releases_for(10),
         workflow_conclusion: @workflow_conclusion,
         workflow_run_id: 12345
       }
-      Cuke::ActivityServer.set_response(response)
+    end
+
+    def write_mock_file(data)
+      require 'json'
+      File.write(
+        '/tmp/dude_news_mock_data.json',
+        data.transform_keys(&:to_s).to_json
+      )
     end
   end
 end
