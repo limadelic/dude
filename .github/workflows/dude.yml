@@ -73,6 +73,10 @@ jobs:
           sudo rm -f /usr/local/bin/claude
           npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
 
+      - name: CI mode
+        if: inputs.cwd
+        run: cp ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.ci.ud ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.md
+
       - name: Run
         working-directory: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
         run: claude -p --dangerously-skip-permissions "${{ inputs.prompt }}" ${{ inputs.claude_args }}
