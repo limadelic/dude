@@ -35,7 +35,7 @@ jobs:
             (github.event.label.name == '🪇 amigos' && '/3-amigos') ||
             (github.event.label.name == '🥒 gherkin' && '/gherkin') ||
             (github.event.label.name == '🏔️ katmandu' && '/katmandu') }}
-        #${{ github.event.issue.number || inputs.issue || '' }}
+        ${{ github.repository }}#${{ github.event.issue.number || inputs.issue || '' }}
       cwd: ${{ inputs.cwd || 'code' }}
       reaction: ""
       timeout: ${{ inputs.timeout && fromJSON(inputs.timeout) || 30 }}
