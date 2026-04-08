@@ -39,11 +39,18 @@ on:
       LITELLM_KEY:
         required: true
 
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: write
+
 jobs:
   dude:
     runs-on: garm-dev-dlas1-vm-linux-mega-large
     timeout-minutes: ${{ inputs.timeout || 30 }}
     env:
+      GH_TOKEN: ${{ github.token }}
       ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
       ANTHROPIC_AUTH_TOKEN: ${{ secrets.LITELLM_KEY }}
       ANTHROPIC_MODEL: opus
@@ -68,4 +75,4 @@ jobs:
 
       - name: Run
         working-directory: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
-        run: claude "${{ inputs.prompt }}" ${{ inputs.claude_args }}
+        run: claude -p --dangerously-skip-permissions "${{ inputs.prompt }}" ${{ inputs.claude_args }}
