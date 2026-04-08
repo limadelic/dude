@@ -3,16 +3,27 @@ name: coolban
 on:
   issues:
     types: [labeled]
+  workflow_dispatch:
+    inputs:
+      prompt:
+        type: string
+        description: "skill to run (e.g. /katmandu)"
+        required: true
+      timeout:
+        type: number
+        description: "timeout in minutes"
+        required: false
 
 jobs:
   coolban:
     if: >-
+      inputs.prompt ||
       contains(fromJSON('["🪇 amigos","🥒 gherkin","🏔️ katmandu"]'), github.event.label.name)
     uses: ./.github/workflows/claude.yml
     with:
       trigger_phrase: "@dude"
-      prompt: "/${{ github.event.label.name }}"
+      prompt: ${{ inputs.prompt || format('/{0}', github.event.label.name) }}
       reaction: "🪇"
-      timeout: 30
+      timeout: ${{ inputs.timeout && fromJSON(inputs.timeout) || 30 }}
     secrets:
       LITELLM_KEY: ${{ secrets.LITELLM_KEY }}
