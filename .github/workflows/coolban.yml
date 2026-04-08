@@ -1,7 +1,7 @@
 name: coolban
 
 on:
-  pull_request:
+  issues:
     types: [labeled]
 
 jobs:
