@@ -75,7 +75,7 @@ jobs:
 
       - name: CI mode
         if: inputs.cwd
-        run: cp ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.ci.ud ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.md
+        run: cp ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.ci.md ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.md
 
       - name: Run
         working-directory: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
