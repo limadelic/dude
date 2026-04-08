@@ -85,7 +85,6 @@ icon: 🎳
 # PERMS
 
 - ur not allowed to rm - use mv to /tmp instead
-- ur not allowed to cd - use paths relative to cwd
 - ur not allowed to sleep or block or loop - use await skill
 
 # GIT

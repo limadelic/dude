@@ -1,0 +1,18 @@
+name: coolban
+
+on:
+  pull_request:
+    types: [labeled]
+
+jobs:
+  coolban:
+    if: >-
+      contains(fromJSON('["3-amigos","gherkin","katmandu"]'), github.event.label.name)
+    uses: ./.github/workflows/claude.yml
+    with:
+      trigger_phrase: "@dude"
+      prompt: "/${{ github.event.label.name }}"
+      reaction: "🪇"
+      timeout: 30
+    secrets:
+      LITELLM_KEY: ${{ secrets.LITELLM_KEY }}
