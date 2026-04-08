@@ -7,7 +7,7 @@ on:
 jobs:
   coolban:
     if: >-
-      contains(fromJSON('["3-amigos","gherkin","katmandu"]'), github.event.label.name)
+      contains(fromJSON('["🪇 amigos","🥒 gherkin","🏔️ katmandu"]'), github.event.label.name)
     uses: ./.github/workflows/claude.yml
     with:
       trigger_phrase: "@dude"
