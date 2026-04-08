@@ -20,8 +20,10 @@ module Cuke
 
     def run_dude_news(args = '')
       ENV['DUDE_NEWS_MOCK'] = 'true'
-      cmd = "dude news #{args}".strip
-      @news_output = dude(*cmd.split(' '))
+      output_file = "/tmp/dude_news_#{Time.now.to_i}.txt"
+      system(build_news_cmd(args, output_file))
+      @news_output = File.read(output_file)
+      File.delete(output_file) rescue nil
     end
 
     def news_output
@@ -78,6 +80,12 @@ module Cuke
     end
 
     private
+
+    def build_news_cmd(args, output_file)
+      version = ENV['CC_VERSION']
+      mock = 'DUDE_NEWS_MOCK=true'
+      "#{mock} CC_VERSION=#{version} dude news #{args} > #{output_file} 2>&1"
+    end
 
     def verify_releases(releases)
       output = news_output

@@ -7,6 +7,7 @@ World(Cuke::News)
 
 Before('@wip') do
   Cuke::ActivityServer.start
+  @home = Dir.home
 end
 
 After('@wip') do
@@ -26,25 +27,12 @@ Given('GHA workflow conclusion is {string}') do |conclusion|
   setup_workflow_conclusion(conclusion)
 end
 
-
-Then('news shows {string}') do |text|
-  pending("kenny: implement dude news")
-  output = dude('news').strip
-  raise "Expected '#{text}' in output, got: #{output}" unless output.include?(text)
+Then('shows {string}') do |text|
+  raise "Expected '#{text}' in output" unless @output&.include?(text)
 end
 
-Then('news starts with {string}') do |text|
-  pending("kenny: implement dude news")
-  output = dude('news').strip
-  first_line = output.split("\n").first
-  raise "Expected '#{text}' at start, got: #{first_line}" unless first_line&.include?(text)
-end
-
-Then('news lists {int} releases') do |count|
-  pending("kenny: implement dude news")
-  output = dude('news').strip
-  releases = (1..count).map { |i| "v2.1.#{96 - i}" }
-  releases.each do |release|
-    raise "Expected release #{release} in output, got: #{output}" unless output.include?(release)
+Then('shows') do |table|
+  table.raw.flatten.each do |text|
+    raise "Expected '#{text}' in output" unless @output&.include?(text)
   end
 end
