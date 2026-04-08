@@ -52,9 +52,31 @@ Label-driven kanban for dude agents. Labels are the kanban cards (Taiichi Ohno s
 - Same pattern as benito.yml and dude.yml
 - Prompt includes issue number for context (like benito does)
 
+## Blocker: Skill Discovery
+
+Coolban runs in GHA isolation — Claude can't find skills (`Unknown skill: 3-amigos`).
+Skills live in the dude repo's skill directory but aren't available when Claude starts in GHA.
+
+Options to explore:
+1. `--add-dir` flag to mount skills path
+2. Install skills as part of GHA setup
+3. Explicit skill path in claude invocation
+
+This blocks all label-triggered skill runs.
+
+## Resolved
+
+- ~~Code subdirectory issue~~ — `cd` into code/ solves it once claude runs its own process
+- Andrew's `UKGEPIC/pay-calcs-workflows` validates direct CLI approach (no action wrapper)
+
+## Issues
+
+- #152 — GHA reusable workflow (amigos sign-off pending)
+- #142 — news (reopened, was test target for coolban)
+
 ## Open
 
-- [ ] Verify label trigger works from main
-- [ ] Skills need to be findable from repo root (code/ subdirectory issue)
+- [x] Verify label trigger works from main
+- [ ] **Skill discovery in GHA** (blocker, see above)
 - [ ] Attempt counter and retry logic
 - [ ] Post Result step (comment output back to issue)
