@@ -7,7 +7,6 @@
   "permissions": {
     "deny": [
       "Bash(rm *)",
-      "Bash(cd *)",
       "Bash(gh run watch*)",
       "Bash(*sleep*)",
       "Bash(python*)",
