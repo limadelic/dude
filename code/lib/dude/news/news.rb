@@ -9,11 +9,8 @@ module Dude
       end
 
       def run
-        puts "Installed: #{installed_version}, Latest: #{@source.latest_version}"
-        conclusion = @source.workflow_conclusion
-        puts "Smoke test: #{conclusion}"
-        url = @source.run_url
-        puts url if conclusion == 'failure' && url
+        print_installed_and_latest
+        print_smoke_test_status
         @source.releases(@limit).each { |release| puts release }
       end
 
@@ -21,6 +18,19 @@ module Dude
 
       def installed_version
         @installed_version ||= ENV.fetch('CC_VERSION', 'unknown')
+      end
+
+      def print_installed_and_latest
+        installed = installed_version
+        latest = @source.latest_version
+        puts "Installed: #{installed}, Latest: #{latest}"
+      end
+
+      def print_smoke_test_status
+        conclusion = @source.workflow_conclusion
+        puts "Smoke test: #{conclusion}"
+        url = @source.run_url
+        puts url if conclusion == 'failure' && url
       end
     end
   end
