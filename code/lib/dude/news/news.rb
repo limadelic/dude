@@ -10,6 +10,7 @@ module Dude
       def run
         puts "Installed: #{installed_version}, Latest: #{latest_version}"
         puts "Smoke test: #{workflow_conclusion}"
+        puts run_url if workflow_conclusion == 'failure' && run_url
         releases.take(@limit).each { |release| puts release }
       end
 
@@ -25,6 +26,10 @@ module Dude
 
       def workflow_conclusion
         @workflow_conclusion ||= fetch_if_mock('workflow_conclusion', 'unknown')
+      end
+
+      def run_url
+        @run_url ||= fetch_if_mock('run_url', nil)
       end
 
       def releases
