@@ -7,10 +7,6 @@ World(Cuke::News)
 
 Before('@wip') do
   Cuke::ActivityServer.start
-  @installed_version = nil
-  @latest_version = nil
-  @workflow_conclusion = nil
-  @news_output = nil
 end
 
 After('@wip') do
@@ -30,33 +26,25 @@ Given('GHA workflow conclusion is {string}') do |conclusion|
   setup_workflow_conclusion(conclusion)
 end
 
-# Use regex with non-greedy match for news-specific commands to take precedence
-When(/^> \/news$/) do
+
+Then('news shows {string}') do |text|
   pending("kenny: implement dude news")
-  run_dude_news('')
+  output = dude('news').strip
+  raise "Expected '#{text}' in output, got: #{output}" unless output.include?(text)
 end
 
-When(/^> \/news --limit (\d+)$/) do |limit|
+Then('news starts with {string}') do |text|
   pending("kenny: implement dude news")
-  run_dude_news("--limit #{limit}")
+  output = dude('news').strip
+  first_line = output.split("\n").first
+  raise "Expected '#{text}' at start, got: #{first_line}" unless first_line&.include?(text)
 end
 
-Then('output shows {string}') do |text|
-  assert_output_contains(text)
-end
-
-Then('output shows {string} at the top') do |text|
-  assert_output_starts_with(text)
-end
-
-Then('output shows the last {int} release notes') do |count|
-  assert_releases_in_output(count)
-end
-
-Then('output shows only the last {int} release notes') do |count|
-  assert_releases_in_output(count)
-end
-
-Then('output includes a link to the run logs') do
-  assert_link_to_run_logs
+Then('news lists {int} releases') do |count|
+  pending("kenny: implement dude news")
+  output = dude('news').strip
+  releases = (1..count).map { |i| "v2.1.#{96 - i}" }
+  releases.each do |release|
+    raise "Expected release #{release} in output, got: #{output}" unless output.include?(release)
+  end
 end

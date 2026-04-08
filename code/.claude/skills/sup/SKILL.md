@@ -6,7 +6,7 @@ description: Team supervising skill. Use when creating, managing, or tearing dow
 # Sup
 
 ## What
-Manage agent teams — spin up with exact names, tear down cleanly.
+Manage agent teams. Spin up with exact names, tear down cleanly.
 
 ## How
 
