@@ -1,0 +1,26 @@
+require 'rspec/core/rake_task'
+
+RSpec::Core::RakeTask.new(:spec)
+
+desc 'Build and install gem'
+task :install do
+  Dir.chdir(__dir__) do
+    sh 'gem build dude.gemspec'
+    sh 'gem install dude-*.gem && rm dude-*.gem'
+  end
+end
+
+desc 'Run cucumber features'
+task :features do
+  sh 'bundle exec cucumber --tags "not @wip"'
+end
+
+desc 'Run rubocop with auto-correct on lib'
+task :cop do
+  sh 'bundle exec rubocop -a lib/'
+end
+
+desc 'Full check: rubocop → spec → install → features'
+task shipit: [:cop, :spec, :install, :features]
+
+task default: :spec
