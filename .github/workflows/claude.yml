@@ -81,4 +81,4 @@ jobs:
           prompt: ${{ inputs.prompt || '' }}
           settings: settings.json
           show_full_output: true
-          claude_args: --dangerously-skip-permissions
+          claude_args: --dangerously-skip-permissions --cwd code
