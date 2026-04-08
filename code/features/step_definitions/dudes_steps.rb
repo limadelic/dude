@@ -42,12 +42,20 @@ Given(/^dudes "([^"]+)" abide$/) do |names|
   end
 end
 
-When(/^(\w+) > \/(.+)$/) do |name, command|
+When(/^(\w+) > \/(.+?) &$/) do |name, command|
   @home = home(name)
   run(@home, command)
 end
 
-When(/^> \/(.+)$/) do |command|
-  @output = dude(command) rescue nil
-  run(@home, command) if @home
+When(/^> \/(.+?) &$/) do |command|
+  run(@home, command)
+end
+
+When(/^(\w+) > \/(.+[^& ])$/) do |name, command|
+  @home = home(name)
+  @output = dude(command, chdir: @home)
+end
+
+When(/^> \/(.+[^& ])$/) do |command|
+  @output = dude(command, chdir: @home)
 end

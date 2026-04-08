@@ -23,7 +23,7 @@ Feature: Dudes
     Given dudes
       | home | icon | pub |
       | dude | 🎳   | yes |
-    When > /abide
+    When > /abide &
     Then the "Dudes" section shows "🎳⁰"
 
   Scenario: Another dude abides
@@ -31,5 +31,5 @@ Feature: Dudes
       | home  | icon | pub | abide |
       | dude  | 🎳   | yes | yes   |
       | elita | 🐶   | yes | no    |
-    When > /abide
+    When > /abide &
     Then the "Dudes" section shows "🎳⁰ 🐶⁰"
