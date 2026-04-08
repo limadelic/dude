@@ -61,6 +61,22 @@ module Cuke
       raise msg unless has_github && has_actions
     end
 
+    def assert_headline_contains(text)
+      assert_output_starts_with(text)
+    end
+
+    def assert_status_contains(text)
+      assert_output_contains(text)
+    end
+
+    def assert_status_has_logs
+      assert_link_to_run_logs
+    end
+
+    def assert_releases_count(count)
+      assert_releases_in_output(count)
+    end
+
     private
 
     def verify_releases(releases)
