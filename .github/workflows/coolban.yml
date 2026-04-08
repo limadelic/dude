@@ -35,7 +35,6 @@ jobs:
             (github.event.label.name == '🥒 gherkin' && '/gherkin') ||
             (github.event.label.name == '🏔️ katmandu' && '/katmandu') }}
         ${{ github.repository }}#${{ github.event.issue.number || inputs.issue || '' }}
-        — You are running autonomously in CI. Read the issue for context. Do not wait for user input. Build briefs from the issue body and proceed immediately. Post your final output as a comment on the issue using gh.
       cwd: ${{ inputs.cwd || 'code' }}
       timeout: ${{ inputs.timeout && fromJSON(inputs.timeout) || 30 }}
     secrets:

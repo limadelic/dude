@@ -44,9 +44,13 @@ end
 
 When(/^(\w+) > \/(.+)$/) do |name, command|
   @home = home(name)
-  run(@home, command)
+  verb = command.split.first
+  _, bg = Cuke::Dude::RUNNERS[verb]
+  bg ? run(@home, command) : @output = dude(command, chdir: @home)
 end
 
 When(/^> \/(.+)$/) do |command|
-  run(@home, command)
+  verb = command.split.first
+  _, bg = Cuke::Dude::RUNNERS[verb]
+  bg ? run(@home, command) : @output = dude(command, chdir: @home)
 end

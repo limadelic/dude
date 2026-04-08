@@ -5,13 +5,16 @@ require_relative '../../lib/cuke/activity_server'
 World(Cuke::Dude)
 World(Cuke::News)
 
-Before('@wip') do
+Before('@news') do
   Cuke::ActivityServer.start
   @home = Dir.home
+  ENV['DUDE_NEWS_MOCK'] = 'true'
+  ENV['DUDE_NEWS_MOCK_DATA'] = '/tmp/dude_news_mock_data.json'
 end
 
-After('@wip') do
+After('@news') do
   ENV.delete('DUDE_NEWS_MOCK')
+  ENV.delete('DUDE_NEWS_MOCK_DATA')
   ENV.delete('CC_VERSION')
 end
 
