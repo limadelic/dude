@@ -1,25 +1,34 @@
 Feature: Pomo
 
-  @wip
-  Scenario: Work session
-    * > /pomo work:
-      | 🍅 ░░░░░░░░░ |
-      | 🍅 ███░░░░░░ |
-      | 🍅 ██████░░░ |
-      | 🍅 █████████ |
+  Scenario Outline: Work session
+    Given <min> passed into a work session
+    Then the "Pomo" bar shows "<🍅 bar>" in red
 
-  @wip
-  Scenario: Break
-    * > /pomo break:
-      | 🍏 ░░░░░░░░░ |
-      | 🍏 ██░░░░░░░ |
-      | 🍏 ████░░░░░ |
-      | 🍏 ███████░░ |
+    Examples:
+      | min | 🍅 bar       |
+      | 0   | 🍅 ░░░░░░░░░ |
+      | 8   | 🍅 ███░░░░░░ |
+      | 16  | 🍅 ██████░░░ |
+      | 24  | 🍅 █████████ |
 
-  @wip
-  Scenario: Long break
-    * > /pomo long break:
-      | 🍏 ░░░░░░░░░ |
-      | 🍏 ██░░░░░░░ |
-      | 🍏 █████░░░░ |
-      | 🍏 ███████░░ |
+  Scenario Outline: Break
+    Given <min> passed into a break session
+    Then the "Pomo" bar shows "<🍏 bar>" in green
+
+    Examples:
+      | min | 🍏 bar       |
+      | 0   | 🍏 ░░░░░░░░░ |
+      | 1   | 🍏 ██░░░░░░░ |
+      | 2   | 🍏 ████░░░░░ |
+      | 4   | 🍏 ███████░░ |
+
+  Scenario Outline: Long break
+    Given <min> passed into a long break session
+    Then the "Pomo" bar shows "<🍏 bar>" in green
+
+    Examples:
+      | min | 🍏 bar       |
+      | 0   | 🍏 ░░░░░░░░░ |
+      | 4   | 🍏 ██░░░░░░░ |
+      | 8   | 🍏 █████░░░░ |
+      | 12  | 🍏 ███████░░ |
