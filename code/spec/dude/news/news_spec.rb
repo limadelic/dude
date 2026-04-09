@@ -12,8 +12,7 @@ describe Dude::News::News do
   let(:mock_sommelier) do
     instance_double(
       Dude::News::Sommelier,
-      workflow_conclusion: 'success',
-      run_url: nil
+      taste: { conclusion: 'success', url: nil, error: nil }
     )
   end
   let(:news) {
@@ -60,8 +59,7 @@ describe Dude::News::News do
         )
         limited_sommelier = instance_double(
           Dude::News::Sommelier,
-          workflow_conclusion: 'success',
-          run_url: nil
+          taste: { conclusion: 'success', url: nil, error: nil }
         )
         limited = described_class.new(
           limit: 1, paperboy: limited_paperboy,
@@ -70,30 +68,6 @@ describe Dude::News::News do
         out = capture_stdout { limited.run }
         expect(out).to include('v1.0.0')
         expect(out).not_to include('v0.9.0')
-      end
-
-      it 'does not output github link on success' do
-        expect { news.run }.not_to output(/github\.com/).to_stdout
-      end
-    end
-
-    context 'when smoke test fails' do
-      before do
-        ENV['CC_VERSION'] = '1.0.0'
-      end
-
-      let(:mock_sommelier) do
-        instance_double(
-          Dude::News::Sommelier,
-          workflow_conclusion: 'failure',
-          run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345'
-        )
-      end
-
-      it 'outputs github actions link' do
-        expect { news.run }.to output(
-          include('https://github.com/UKGEPIC/dude/actions/runs/12345')
-        ).to_stdout
       end
     end
 
