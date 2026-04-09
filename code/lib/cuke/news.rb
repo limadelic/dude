@@ -1,33 +1,25 @@
-require_relative 'activity_server'
+require 'rspec/mocks/standalone'
+require_relative '../dude/news/news'
+require_relative '../dude/helpers/gh'
 
 module Cuke
   module News
+    include RSpec::Mocks::ExampleMethods
     def setup_installed_version(version)
       @installed_version = version
       ENV['CC_VERSION'] = version
-      update_mock_endpoints
     end
 
     def setup_latest_version(version)
       @latest_version = version
-      update_mock_endpoints
     end
 
     def setup_workflow_conclusion(conclusion)
       @workflow_conclusion = conclusion
-      update_mock_endpoints
-    end
-
-    def run_dude_news(args = '')
-      ENV['DUDE_NEWS_MOCK'] = 'true'
-      output_file = "/tmp/dude_news_#{Time.now.to_i}.txt"
-      system(build_news_cmd(args, output_file))
-      @news_output = File.read(output_file)
-      File.delete(output_file) rescue nil
     end
 
     def news_output
-      @news_output ||= ''
+      @output ||= ''
     end
 
     def mock_releases_for(limit)
@@ -81,10 +73,9 @@ module Cuke
 
     private
 
-    def build_news_cmd(args, output_file)
-      version = ENV['CC_VERSION']
-      mock = 'DUDE_NEWS_MOCK=true'
-      "#{mock} CC_VERSION=#{version} dude news #{args} > #{output_file} 2>&1"
+    def extract_limit_from_args(args)
+      match = args.match(/--limit\s+(\d+)/)
+      match ? match[1].to_i : nil
     end
 
     def verify_releases(releases)
@@ -95,16 +86,42 @@ module Cuke
       end
     end
 
-    def update_mock_endpoints
-      # High-level mock data — no API internals
-      response = {
-        installed_version: @installed_version,
-        latest_version: @latest_version,
-        releases: mock_releases_for(10),
-        workflow_conclusion: @workflow_conclusion,
-        workflow_run_id: 12345
-      }
-      Cuke::ActivityServer.set_response(response)
+    def capture_output
+      out = $stdout = StringIO.new
+      yield
+      out.string
+    ensure
+      $stdout = STDOUT
+    end
+
+    def build_gh
+      gh = instance_double(::Dude::Helpers::Gh)
+      allow(gh).to receive(:run) { |cmd| run_command(cmd) }
+      gh
+    end
+
+    def run_command(cmd)
+      return @latest_version if latest_version_request?(cmd)
+      return mock_releases_for(10).join("\n") if releases_request?(cmd)
+      return workflow_command(cmd) if run_list_request?(cmd)
+    end
+
+    def latest_version_request?(cmd)
+      cmd.include?('release list -R anthropics/claude-code') &&
+        cmd.include?('--limit 1')
+    end
+
+    def releases_request?(cmd)
+      cmd.include?('release list -R anthropics/claude-code')
+    end
+
+    def run_list_request?(cmd)
+      cmd.include?('run list')
+    end
+
+    def workflow_command(cmd)
+      return @workflow_conclusion if cmd.include?('conclusion')
+      return '12345' if cmd.include?('databaseId')
     end
   end
 end
