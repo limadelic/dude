@@ -2,271 +2,222 @@ require_relative '../spec_helper'
 require_relative '../../lib/dude/dudes/dude'
 
 describe Dude::Dudes::Dude do
-  let(:dude_dir) { '/proj/.claude/dudes' }
-  let(:reg_m) { instance_double('Dude::Dudes::Dudes') }
+  include RR::DSL
 
-  def build(overrides = {})
-    h = {
-      icon: '🔴', inbox: [], status: {}, dude_dir: dude_dir,
-      target: '/proj/.claude', name: 'rec', registry: overrides[:registry] || reg_m
+  let(:sut) { described_class.new(defaults.merge(overrides)) }
+  let(:overrides) { {} }
+  let(:registry) { Object.new }
+  let(:inbox) { Object.new }
+  let(:pub) { Object.new }
+
+  let(:defaults) do
+    {
+      name: 'rec', icon: 'icon', status: {}, dude_dir: '/proj/.claude/dudes',
+      target: '/proj/.claude', registry: registry, inbox: inbox
     }
-    described_class.new(h.merge(overrides))
+  end
+
+  before do
+    stub(Dude::Dudes::Pub).new { pub }
   end
 
   describe '#is_current?' do
     it 'returns false when pid is nil' do
-      registry_mock = instance_double('Dude::Dudes::Dudes')
-      expect(registry_mock).not_to receive(:is_current?)
-      dude = build(registry: registry_mock)
-      dude.pid = nil
-      expect(dude).not_to be_is_current
+      sut.pid = nil
+
+      expect(sut).not_to be_is_current
     end
 
     it 'returns true when registry says current' do
-      registry_mock = instance_double('Dude::Dudes::Dudes')
-      expect(registry_mock).to receive(:is_current?).with(999).and_return(true)
-      dude = build(registry: registry_mock)
-      dude.pid = 999
-      expect(dude).to be_is_current
+      stub(registry).is_current?(999) { true }
+      sut.pid = 999
+
+      expect(sut).to be_is_current
     end
   end
 
   describe '#messages' do
-    it 'returns inbox count' do
-      expect(build(inbox: [{}, {}, {}]).messages).to eq(3)
+    it 'counts inbox items' do
+      stub(inbox).length { 3 }
+
+      expect(sut.messages).to eq(3)
     end
 
-    it 'zero when empty' do
-      expect(build.messages).to eq(0)
+    it 'returns zero when inbox empty' do
+      stub(inbox).length { 0 }
+
+      expect(sut.messages).to eq(0)
     end
   end
 
   describe '#context' do
-    it 'returns context from status' do
-      expect(build(status: { 'context' => 50 }).context).to eq(50)
+    it 'returns context from status hash' do
+      context_value = 50
+      expect(sut_with(status: { 'context' => context_value }).context)
+        .to eq(context_value)
     end
 
-    it 'defaults to 0' do
-      expect(build.context).to eq(0)
+    it 'defaults to 0 when context missing' do
+      expect(sut_with(status: {}).context).to eq(0)
     end
   end
 
   describe '#tell' do
     it 'raises when target dude not found' do
-      allow(File).to receive(:symlink?).and_return(false)
-      dude = build(name: 'smith', inbox: instance_double('Dudes::Inbox'))
-      expect { dude.tell('rec', 'hi') }.to raise_error("dude 'rec' not found")
+      stub(File).symlink?(/rec/) { false }
+
+      expect { sut_with(name: 'smith').tell('rec', 'hi') }
+        .to raise_error("dude 'rec' not found")
+    end
+
+    it 'delivers message to target inbox' do
+      target_inbox = Object.new
+      msg = { 'text' => 'hello', 'status' => 'new' }
+      stub(File).symlink?(/rec/) { true }
+      stub(File).readlink(/rec/) { '/projects/rec/.claude/' }
+      stub(Dude::Dudes::Inbox).new(/rec.*inbox\.json/) { target_inbox }
+      mock(target_inbox).append(msg)
+
+      sut_with(name: 'smith').tell('rec', 'hello')
     end
   end
 
   describe '#ask' do
     it 'raises when target dude not found' do
-      allow(File).to receive(:symlink?).and_return(false)
-      dude = build(name: 'smith', inbox: instance_double('Dudes::Inbox'))
-      expect { dude.ask('rec', 'hi') }.to raise_error("dude 'rec' not found")
-    end
-  end
+      stub(File).symlink?(/rec/) { false }
 
-  describe '#pub' do
-    it 'uses name as default icon' do
-      pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:pub).with(
-        '/proj/.claude',
-        'rec'
-      ).and_return('rec')
-      allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
-
-      dude = build(target: '/proj/.claude', name: 'rec')
-      result = dude.pub(nil)
-
-      expect(result).to eq('rec')
-    end
-  end
-
-  describe '#append' do
-    it 'appends message to own inbox' do
-      inbox_mock = instance_double('Dude::Dudes::Inbox')
-      expect(inbox_mock).to receive(:append).with({ 'text' => 'hi' })
-      dude = build(dude_dir: '/proj/.claude/dudes', inbox: inbox_mock)
-      dude.append({ 'text' => 'hi' })
-    end
-  end
-
-  describe '#first_new' do
-    it 'returns first new message from own inbox' do
-      inbox_mock = instance_double('Dude::Dudes::Inbox')
-      msg = { 'text' => 'hello', 'status' => 'new' }
-      expect(inbox_mock).to receive(:first_new).and_return(msg)
-      dude = build(dude_dir: '/proj/.claude/dudes', inbox: inbox_mock)
-      expect(dude.first_new).to eq(msg)
+      expect { sut_with(name: 'smith').ask('rec', 'hi') }
+        .to raise_error("dude 'rec' not found")
     end
 
-    it 'returns nil when no new messages' do
-      inbox_mock = instance_double('Dude::Dudes::Inbox')
-      expect(inbox_mock).to receive(:first_new).and_return(nil)
-      dude = build(dude_dir: '/proj/.claude/dudes', inbox: inbox_mock)
-      expect(dude.first_new).to be_nil
-    end
-  end
-
-  describe '#mark_wip' do
-    it 'marks first message as wip in own inbox' do
-      inbox_mock = instance_double('Dude::Dudes::Inbox')
-      expect(inbox_mock).to receive(:mark_wip)
-      dude = build(dude_dir: '/proj/.claude/dudes', inbox: inbox_mock)
-      dude.mark_wip
-    end
-  end
-
-  describe '#dequeue_wip' do
-    it 'dequeues wip message from own inbox' do
-      inbox_mock = instance_double('Dude::Dudes::Inbox')
-      expect(inbox_mock).to receive(:dequeue_wip)
-      dude = build(dude_dir: '/proj/.claude/dudes', inbox: inbox_mock)
-      dude.dequeue_wip
-    end
-  end
-
-  describe '#is_abiding?' do
-    it 'returns true when registry says abiding' do
-      registry_mock = instance_double('Dude::Dudes::Dudes')
-      expect(registry_mock).to receive(:is_abiding?).with(
-        888,
-        '/proj/.claude/dudes', '/proj/.claude'
-      ).and_return(true)
-      dude = build(registry: registry_mock)
-      dude.pid = 888
-      expect(dude).to be_is_abiding
-    end
-  end
-
-  describe '#tell' do
-    it 'sends a message that arrives in target inbox' do
-      target_inbox_path = '/projects/rec/.claude/dudes/inbox.json'
-      target_inbox_mock = instance_double('Dude::Dudes::Inbox')
-      msg = { 'text' => 'hello', 'status' => 'new' }
-      expect(target_inbox_mock).to receive(:append).with(msg)
-      expect(Dude::Dudes::Inbox).to(
-        receive(:new).with(target_inbox_path).and_return(target_inbox_mock)
-      )
-      allow(File).to receive(:symlink?).and_return(true)
-      allow(File).to receive(:readlink).and_return('/projects/rec/.claude/')
-
-      dude = build(name: 'smith')
-      dude.tell('rec', 'hello')
-    end
-  end
-
-  describe '#ask' do
-    it 'sends a message with from field to target inbox' do
-      target_inbox_path = '/projects/rec/.claude/dudes/inbox.json'
-      target_inbox_mock = instance_double('Dude::Dudes::Inbox')
+    it 'includes from field in message' do
+      target_inbox = Object.new
       msg = { 'from' => 'smith', 'text' => 'whatup', 'status' => 'new' }
-      expect(target_inbox_mock).to receive(:append).with(msg)
-      expect(Dude::Dudes::Inbox).to(
-        receive(:new).with(target_inbox_path).and_return(target_inbox_mock)
-      )
-      allow(File).to receive(:symlink?).and_return(true)
-      allow(File).to receive(:readlink).and_return('/projects/rec/.claude/')
+      stub(File).symlink?(/rec/) { true }
+      stub(File).readlink(/rec/) { '/projects/rec/.claude/' }
+      stub(Dude::Dudes::Inbox).new(/rec.*inbox\.json/) { target_inbox }
+      mock(target_inbox).append(msg)
 
-      dude = build(name: 'smith')
-      dude.ask('rec', 'whatup')
+      sut_with(name: 'smith').ask('rec', 'whatup')
     end
   end
 
   describe '#pub' do
-    it 'calls pub and returns icon' do
-      pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:pub).with(
-        '/proj/.claude',
-        'custom_icon'
-      ).and_return('custom_icon')
-      allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
+    it 'publishes with name when icon not provided' do
+      stub(pub).pub('/proj/.claude', 'rec') { 'rec' }
 
-      dude = build(target: '/proj/.claude')
-      result = dude.pub('custom_icon')
+      expect(sut.pub(nil)).to eq('rec')
+    end
 
-      expect(result).to eq('custom_icon')
+    it 'publishes with custom icon' do
+      stub(pub).pub('/proj/.claude', 'custom_icon') { 'custom_icon' }
+
+      expect(sut.pub('custom_icon')).to eq('custom_icon')
     end
   end
 
   describe '#unpub' do
-    it 'calls unpub' do
-      pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:unpub).with('/proj/.claude')
-      allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
+    it 'removes publication' do
+      mock(pub).unpub('/proj/.claude')
 
-      dude = build(target: '/proj/.claude')
-      dude.unpub
+      sut.unpub
+    end
+  end
+
+  describe '#append' do
+    it 'adds message to own inbox' do
+      msg = { 'text' => 'hi' }
+      mock(inbox).append(msg)
+
+      sut.append(msg)
+    end
+  end
+
+  describe '#first_new' do
+    it 'returns first new message' do
+      msg = { 'text' => 'hello', 'status' => 'new' }
+      stub(inbox).first_new { msg }
+
+      expect(sut.first_new).to eq(msg)
+    end
+
+    it 'returns nil when no new messages' do
+      stub(inbox).first_new { nil }
+
+      expect(sut.first_new).to be_nil
+    end
+  end
+
+  describe '#mark_wip' do
+    it 'marks first message as work in progress' do
+      mock(inbox).mark_wip
+
+      sut.mark_wip
+    end
+  end
+
+  describe '#dequeue_wip' do
+    it 'removes wip message from inbox' do
+      mock(inbox).dequeue_wip
+
+      sut.dequeue_wip
+    end
+  end
+
+  describe '#is_abiding?' do
+    it 'delegates to registry with pid and paths' do
+      stub(registry).is_abiding?(888, '/proj/.claude/dudes', '/proj/.claude') { true }
+      sut.pid = 888
+
+      expect(sut).to be_is_abiding
     end
   end
 
   describe '#pids_for_target' do
-    it 'returns pids from registry' do
-      registry_mock = instance_double('Dude::Dudes::Dudes')
+    it 'returns pids from registry for target' do
       pids = [111, 222]
-      expect(registry_mock).to(
-        receive(:pids_for_target).with('/proj/.claude').and_return(pids)
-      )
-      dude = build(registry: registry_mock, target: '/proj/.claude')
-      result = dude.pids_for_target
+      stub(registry).pids_for_target('/proj/.claude') { pids }
 
-      expect(result).to eq(pids)
+      expect(sut.pids_for_target).to eq(pids)
     end
   end
 
   describe '#watch' do
-    it 'returns first new message and marks it wip' do
+    it 'returns first new message and marks as wip' do
       msg = { 'text' => 'hello', 'status' => 'new' }
-      inbox_mock = instance_double('Dude::Dudes::Inbox')
-      expect(inbox_mock).to receive(:first_new).and_return(msg)
-      expect(inbox_mock).to receive(:mark_wip)
+      stub(inbox).first_new { msg }
+      stub(inbox).mark_wip
 
-      dude = build(inbox: inbox_mock)
-      result = dude.watch
-
-      expect(result).to eq(msg)
+      expect(sut.watch).to eq(msg)
     end
   end
 
   describe '#abided' do
-    it 'dequeues wip message' do
-      inbox_mock = instance_double('Dude::Dudes::Inbox')
-      expect(inbox_mock).to receive(:mark_wip)
-      expect(inbox_mock).to receive(:dequeue_wip)
+    it 'marks wip then dequeues it' do
+      mock(inbox).mark_wip
+      mock(inbox).dequeue_wip
 
-      dude = build(inbox: inbox_mock)
-      dude.abided
+      sut.abided
     end
   end
 
   describe '#sub' do
-    it 'delegates to pub.sub with target and name' do
-      pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:sub).with(
-        '/proj/.claude',
-        'code'
-      ).and_return('dude_code')
-      allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
+    it 'subscribes with provided name' do
+      stub(pub).sub('/proj/.claude', 'code') { 'dude_code' }
 
-      dude = build(target: '/proj/.claude')
-      result = dude.sub('code')
-
-      expect(result).to eq('dude_code')
+      expect(sut.sub('code')).to eq('dude_code')
     end
 
-    it 'defaults name to target basename when not provided' do
-      pub_mock = instance_double('Dude::Dudes::Pub')
-      expect(pub_mock).to receive(:sub).with(
-        '/proj/.claude',
-        nil
-      ).and_return('dude_claude')
-      allow(Dude::Dudes::Pub).to receive(:new).and_return(pub_mock)
+    it 'subscribes with nil when name not provided' do
+      stub(pub).sub('/proj/.claude', nil) { 'dude_claude' }
 
-      dude = build(target: '/proj/.claude')
-      result = dude.sub
-
-      expect(result).to eq('dude_claude')
+      expect(sut.sub).to eq('dude_claude')
     end
+  end
+
+  private
+
+  def sut_with(overrides = {})
+    described_class.new(defaults.merge(overrides))
   end
 end

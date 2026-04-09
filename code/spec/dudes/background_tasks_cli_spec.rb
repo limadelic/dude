@@ -2,46 +2,43 @@ require_relative '../spec_helper'
 require_relative "../../lib/dude/dudes/background_tasks_cli"
 
 describe Dude::Dudes::BackgroundTasksCli do
-  let(:cli) { described_class.new }
+  include RR::DSL
+
+  let(:sut) { described_class.new }
+  let(:bg_tasks) { Object.new }
+
+  before { stub(Dude::Helpers::BackgroundTasks).list { [] } }
 
   describe '#list' do
-    it 'shows discovered processes' do
-      allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return(
+    it 'formats and outputs running processes' do
+      stub(Dude::Helpers::BackgroundTasks).list do
         [
-          {
-            pid: 1234, parent_pid: 1000,
-            command: 'dude abide'
-          },
-          {
-            pid: 5678, parent_pid: 1000,
-            command: 'dude watch'
-          }
+          { pid: 1234, parent_pid: 1000, command: 'dude abide' },
+          { pid: 5678, parent_pid: 1000, command: 'dude watch' }
         ]
-      )
+      end
 
-      expect {
-        cli.list
-      }.to output("1234 dude abide\n5678 dude watch\n").to_stdout
+      expect { sut.list }
+        .to output("1234 dude abide\n5678 dude watch\n").to_stdout
     end
 
-    it 'shows message when no processes found' do
-      allow(Dude::Helpers::BackgroundTasks).to receive(:list).and_return([])
-
-      expect { cli.list }.to output("No background tasks\n").to_stdout
+    it 'outputs message when no processes running' do
+      expect { sut.list }
+        .to output("No background tasks\n").to_stdout
     end
   end
 
   describe '#kill' do
-    it 'kills a process by pid' do
-      expect(Dude::Helpers::BackgroundTasks).to receive(:kill).with(12345)
+    it 'terminates process by pid' do
+      mock(Dude::Helpers::BackgroundTasks).kill(12345)
 
-      cli.kill('12345')
+      sut.kill('12345')
     end
 
-    it 'converts pid string to integer' do
-      expect(Dude::Helpers::BackgroundTasks).to receive(:kill).with(12345)
+    it 'coerces pid argument to integer' do
+      mock(Dude::Helpers::BackgroundTasks).kill(12345)
 
-      cli.kill('12345')
+      sut.kill('12345')
     end
   end
 end
