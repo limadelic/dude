@@ -5,40 +5,55 @@ describe Dude::News::Sommelier do
   let(:mock_gh) { instance_double(Dude::Helpers::Gh) }
   let(:sommelier) { described_class.new(gh: mock_gh) }
 
-  describe '#workflow_conclusion' do
-    before do
-      allow(mock_gh).to receive(:run).with(
-        "run list --repo UKGEPIC/dude --branch main --limit 1 --json conclusion -q '.[0].conclusion'"
-      ).and_return('success')
-    end
-
-    it 'returns workflow conclusion from gh' do
-      expect(sommelier.workflow_conclusion).to eq('success')
+  before do
+    allow(mock_gh).to receive(:run) do |cmd|
+      case cmd
+      when /workflow run/
+        nil
+      when /run list.*status/
+        'completed'
+      when /run list.*conclusion/
+        conclusion_value
+      when /run list.*databaseId/
+        run_id_value
+      when /actions\/jobs/
+        job_logs
+      else
+        nil
+      end
     end
   end
 
-  describe '#run_url' do
-    context 'when run exists' do
-      before do
-        allow(mock_gh).to receive(:run).with(
-          "run list --repo UKGEPIC/dude --branch main --limit 1 --json databaseId -q '.[0].databaseId'"
-        ).and_return('12345')
-      end
+  describe '#taste' do
+    context 'success path' do
+      let(:conclusion_value) { 'success' }
+      let(:run_id_value) { '12345' }
+      let(:job_logs) { nil }
 
-      it 'returns formatted run url' do
-        expect(sommelier.run_url).to eq('https://github.com/UKGEPIC/dude/actions/runs/12345')
+      it 'returns success conclusion with url' do
+        result = sommelier.taste('v1.2.3')
+
+        expect(result).to eq({
+          conclusion: 'success',
+          url: 'https://github.com/UKGEPIC/dude/actions/runs/12345',
+          error: nil
+        })
       end
     end
 
-    context 'when run does not exist' do
-      before do
-        allow(mock_gh).to receive(:run).with(
-          "run list --repo UKGEPIC/dude --branch main --limit 1 --json databaseId -q '.[0].databaseId'"
-        ).and_return('')
-      end
+    context 'failure path' do
+      let(:conclusion_value) { 'failure' }
+      let(:run_id_value) { '67890' }
+      let(:job_logs) { 'Error: test failed' }
 
-      it 'returns nil' do
-        expect(sommelier.run_url).to be_nil
+      it 'returns failure conclusion with url and error' do
+        result = sommelier.taste('v1.2.3')
+
+        expect(result).to eq({
+          conclusion: 'failure',
+          url: 'https://github.com/UKGEPIC/dude/actions/runs/67890',
+          error: 'Error: test failed'
+        })
       end
     end
   end
