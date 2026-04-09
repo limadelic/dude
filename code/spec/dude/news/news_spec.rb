@@ -43,8 +43,8 @@ describe Dude::News::News do
         end.to output(include('Installed: 1.0.0, Latest: 1.2.3')).to_stdout
       end
 
-      it 'outputs smoke test status' do
-        expect { news.run }.to output(include('Smoke test: success')).to_stdout
+      it 'outputs vintage result' do
+        expect { news.run }.to output(include('Vintage 1.2.3: success')).to_stdout
       end
 
       it 'outputs releases up to limit' do

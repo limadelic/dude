@@ -15,7 +15,7 @@ module Dude
         print_installed_and_latest(latest)
         @paperboy.releases(@limit).each { |release| puts release }
         result = @sommelier.taste(latest)
-        print_smoke_test_result(result)
+        print_smoke_test_result(result, latest)
       end
 
       private
@@ -29,8 +29,9 @@ module Dude
         puts "Installed: #{installed}, Latest: #{latest}"
       end
 
-      def print_smoke_test_result(result)
-        puts "Smoke test: #{result[:conclusion]}"
+      def print_smoke_test_result(result, latest)
+        version = latest.start_with?('v') ? latest[1..-1] : latest
+        puts "Vintage #{version}: #{result[:conclusion]}"
         puts result[:url] if result[:url]
         puts result[:error] if result[:error]
       end

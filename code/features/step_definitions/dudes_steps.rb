@@ -62,7 +62,7 @@ When(/^(\w+) > \/(.+[^& ])$/) do |name, command|
   @output = dude(command, chdir: @home)
 end
 
-When(/^> \/(.+[^& ])$/) do |command|
+When(/^> \/(.+[^& :])$/) do |command|
   @output = dude(command, chdir: @home)
 end
 
