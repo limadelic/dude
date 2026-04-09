@@ -67,7 +67,15 @@ When(/^> \/(.+[^& :])$/) do |command|
 end
 
 Before('@news') do
-  @mocks = {}
+  @mocks = {
+    'claude --version' => '2.1.90',
+    'gh release list -R anthropics/claude-code --limit 1' => 'v2.1.96',
+    'gh run list --repo UKGEPIC/dude --json status' => 'completed',
+    'gh run list --repo UKGEPIC/dude --json conclusion' => 'success',
+    'gh release list -R anthropics/claude-code' => %w[
+      v2.1.96 v2.1.95 v2.1.94 v2.1.93 v2.1.92
+    ].join("\n")
+  }
 end
 
 After('@news') do
@@ -114,10 +122,17 @@ When(/^> \/(.+):$/) do |command, table|
     ).run
   end
 
-  table.raw.flatten.each do |expected|
-    expected = expected.strip
-    unless output.include?(expected)
-      raise "Expected '#{expected}' in output:\n#{output}"
+  table.raw.flatten.each do |row|
+    row = row.strip
+    if row.start_with?('(') && row.end_with?(')')
+      val = row[1..-2]
+      if output.include?(val)
+        raise "Not expected '#{val}' in output:\n#{output}"
+      end
+    else
+      unless output.include?(row)
+        raise "Expected '#{row}' in output:\n#{output}"
+      end
     end
   end
 end
