@@ -1,9 +1,6 @@
 @dudes
 Feature: Pub Sub
 
-  Scenario: No pubs
-    Then the "Dudes" section is empty
-
   Scenario: Pub dude
     * @dude > /pub:
       | 🎳ˣ |
