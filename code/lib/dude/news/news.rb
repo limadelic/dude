@@ -1,17 +1,19 @@
 require_relative 'paperboy'
+require_relative 'sommelier'
 
 module Dude
   module News
     class News
-      def initialize(limit: 5, source: Paperboy.new)
+      def initialize(limit: 5, paperboy: Paperboy.new, sommelier: Sommelier.new)
         @limit = limit
-        @source = source
+        @paperboy = paperboy
+        @sommelier = sommelier
       end
 
       def run
         print_installed_and_latest
         print_smoke_test_status
-        @source.releases(@limit).each { |release| puts release }
+        @paperboy.releases(@limit).each { |release| puts release }
       end
 
       private
@@ -22,14 +24,14 @@ module Dude
 
       def print_installed_and_latest
         installed = installed_version
-        latest = @source.latest_version
+        latest = @paperboy.latest_version
         puts "Installed: #{installed}, Latest: #{latest}"
       end
 
       def print_smoke_test_status
-        conclusion = @source.workflow_conclusion
+        conclusion = @sommelier.workflow_conclusion
         puts "Smoke test: #{conclusion}"
-        url = @source.run_url
+        url = @sommelier.run_url
         puts url if conclusion == 'failure' && url
       end
     end
