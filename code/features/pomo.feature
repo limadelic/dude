@@ -1,5 +1,29 @@
 Feature: Pomo
 
+  @wip
+  Scenario: Work session
+    * > /pomo work:
+      | 🍅 ░░░░░░░░░ |
+      | 🍅 ███░░░░░░ |
+      | 🍅 ██████░░░ |
+      | 🍅 █████████ |
+
+  @wip
+  Scenario: Break
+    * > /pomo break:
+      | 🍏 ░░░░░░░░░ |
+      | 🍏 ██░░░░░░░ |
+      | 🍏 ████░░░░░ |
+      | 🍏 ███████░░ |
+
+  @wip
+  Scenario: Long break
+    * > /pomo long break:
+      | 🍏 ░░░░░░░░░ |
+      | 🍏 ██░░░░░░░ |
+      | 🍏 █████░░░░ |
+      | 🍏 ███████░░ |
+
   Scenario Outline: Work session
     Given <min> passed into a work session
     Then the "Pomo" bar shows "<🍅 bar>" in red
