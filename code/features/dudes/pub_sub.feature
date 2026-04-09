@@ -8,7 +8,7 @@ Feature: Dudes
     Given dudes
       | home | icon |
       | dude | 🎳   |
-    * > /pub dude:
+    When > /pub dude:
       | 🎳ˣ |
 
   Scenario: Pub another dude
@@ -16,14 +16,14 @@ Feature: Dudes
       | home  | icon | pub |
       | dude  | 🎳   | yes |
       | elita | 🐶   | no  |
-    * > /pub:
+    When > /pub:
       | 🎳ˣ 🐶ˣ |
 
   Scenario: The Dude Abides
     Given dudes
       | home | icon | pub |
       | dude | 🎳   | yes |
-    * @dude > /abide:
+    When @dude > /abide:
       | 🎳⁰ |
 
   Scenario: Another dude abides
@@ -31,5 +31,5 @@ Feature: Dudes
       | home  | icon | pub | abide |
       | dude  | 🎳   | yes | yes   |
       | elita | 🐶   | yes | no    |
-    * @dude > /abide:
+    When @dude > /abide:
       | 🎳⁰ 🐶⁰ |
