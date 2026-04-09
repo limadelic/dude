@@ -49,7 +49,10 @@ Given(/^dudes "([^"]+)" abide$/) do |names|
 end
 
 When(/^@(\w+) > \/(.+):$/) do |name, command, table|
-  if command == 'abide'
+  case command
+  when 'pub'
+    setup_from_row('home' => name, 'icon' => ICONS.fetch(name), 'pub' => 'yes', 'abide' => 'no')
+  when 'abide'
     setup_from_row('home' => name, 'icon' => ICONS.fetch(name), 'pub' => 'yes', 'abide' => 'yes')
   else
     @home = home(name)
@@ -83,15 +86,11 @@ When(/^! (.+)$/) do |cmd, *rest|
   end
 end
 
-Before('@bg') do
-  @bg = true
-end
-
 When(/^> \/(.+):$/) do |command, table|
-  if @bg
-    run(@home, command)
-  else
+  if @mocks
     run_with_mocks(command)
+  else
+    run(@home, command)
   end
 
   verify_table(table)
@@ -140,22 +139,22 @@ def verify_table(table)
 end
 
 def verify_positive(expected)
-  if @bg
+  if @mocks
+    raise "Expected '#{expected}' in output:\n#{@output}" unless @output.include?(expected)
+  else
     wait_for("shows #{expected}") do
       output = dude('status_line').strip
       expected.split.all? { |part| output.include?(part) }
     end
-  else
-    raise "Expected '#{expected}' in output:\n#{@output}" unless @output.include?(expected)
   end
 end
 
 def verify_negative(val)
-  if @bg
+  if @mocks
+    raise "Not expected '#{val}' in output:\n#{@output}" if @output.include?(val)
+  else
     output = dude('status_line').strip
     raise "Not expected '#{val}' in status line:\n#{output}" if output.include?(val)
-  else
-    raise "Not expected '#{val}' in output:\n#{@output}" if @output.include?(val)
   end
 end
 

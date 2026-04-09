@@ -1,4 +1,4 @@
-@dudes @bg
+@dudes
 Feature: Talk
 
   Scenario: Tell dude dont talk to urself
