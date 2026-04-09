@@ -13,4 +13,9 @@ Who can get mad at the Dude, man. The Dude abides. The non-cursing counter laste
 
 ## Malkovich, Malkovich
 
+The first time I pondered the question was on the move from Windsurf to Claude Code. I had already started the brand and used it in my performances on Vibe Coding Fridays. So what is the dude? Did moving to Claude mean I would find a new persona? Was Windsurf the Dude?
+
+I think that was the inception. I was calling Windsurf the Dude and then I started calling Claude also the Dude. It was a pragmatic branding decision, by now the whole team was calling their agent Dude. However subconsciously I knew something was off, exactly two things. The ghost of the dude had spread to more people and it had survived the morph into the shell.
+
+
 ## Ghost in the Shell
