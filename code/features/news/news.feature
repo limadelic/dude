@@ -1,43 +1,60 @@
-@wip
+@news
 Feature: News
-  Report on latest Claude Code releases and smoke test status
 
-  Scenario: Happy path — smoke test passes
-    Given CC is installed at "2.1.87"
-    And latest CC release is "2.1.96"
-    And GHA workflow conclusion is "success"
-    When > /news
-    Then shows
-      | Installed: 2.1.87, Latest: 2.1.96 |
-      | Smoke test: success                |
+  Scenario: happy path
+
+    # Paperboy
+    * ! claude --version
+      | 2.1.90 |
+    * ! gh release list -R anthropics/claude-code --limit 1
+      | v2.1.96 |
+    * ! gh release list -R anthropics/claude-code
+      | v2.1.96 |
+      | v2.1.95 |
+      | v2.1.94 |
+      | v2.1.93 |
+      | v2.1.92 |
+
+    # Sommelier
+    * ! gh workflow run dude.yml prompt="1 + 1" version=$latest
+    * ! gh run list --repo UKGEPIC/dude --json status
+      | completed |
+    * ! gh run list --repo UKGEPIC/dude --json conclusion
+      | success |
+
+    * > /news:
+      | Installed: 2.1.90, Latest: v2.1.96 |
       | v2.1.96                            |
       | v2.1.95                            |
       | v2.1.94                            |
       | v2.1.93                            |
       | v2.1.92                            |
+      | Vintage 2.1.96: success            |
 
-  Scenario: Smoke test fails
-    Given CC is installed at "2.1.87"
-    And latest CC release is "2.1.96"
-    And GHA workflow conclusion is "failure"
-    When > /news
-    Then shows
-      | Smoke test: failure    |
-      | github.com             |
+  Scenario: vintage tasting fails
 
-  Scenario: Custom limit
-    Given CC is installed at "2.1.87"
-    And latest CC release is "2.1.96"
-    And GHA workflow conclusion is "success"
-    When > /news --limit 3
-    Then shows
+    * ! gh run list --repo UKGEPIC/dude --json conclusion
+      | failure |
+    * ! gh run list --repo UKGEPIC/dude --json databaseId
+      | 12345 |
+    * ! gh api repos/UKGEPIC/dude/actions/runs/12345/jobs
+      | 678 |
+    * ! gh api repos/UKGEPIC/dude/actions/jobs/678/logs
+      | Error: claude timed out after 5s |
+
+    * > /news:
+      | Vintage 2.1.96: failure                            |
+      | https://github.com/UKGEPIC/dude/actions/runs/12345 |
+      | Error: claude timed out after 5s                   |
+
+  Scenario: custom limit
+
+    * ! gh release list -R anthropics/claude-code limit=3
       | v2.1.96 |
       | v2.1.95 |
       | v2.1.94 |
 
-  Scenario: Version reporting
-    Given CC is installed at "2.1.87"
-    And latest CC release is "2.1.96"
-    And GHA workflow conclusion is "success"
-    When > /news
-    Then shows "Installed: 2.1.87, Latest: 2.1.96"
+    * > /news --limit 3:
+      | v2.1.96 |
+      | v2.1.95 |
+      | v2.1.94 |
