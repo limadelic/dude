@@ -3,8 +3,8 @@ require_relative '../helpers/gh'
 module Dude
   module News
     class Paperboy
-      def initialize(gh: Dude::Helpers::Gh.new)
-        @gh = gh
+      def initialize
+        @gh = Dude::Helpers::Gh.new
       end
 
       def latest_version

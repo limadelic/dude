@@ -2,114 +2,82 @@ require_relative '../../spec_helper'
 require_relative '../../../lib/dude/news/news'
 
 describe Dude::News::News do
-  let(:mock_paperboy) do
-    instance_double(
-      Dude::News::Paperboy,
-      latest_version: '1.2.3',
-      releases: %w[v1.0.0 v0.9.0 v0.8.0]
-    )
-  end
-  let(:mock_sommelier) do
-    instance_double(
-      Dude::News::Sommelier,
-      taste: { conclusion: 'success', url: nil, error: nil }
-    )
-  end
-  let(:news) {
-    described_class.new(
-      limit: limit, paperboy: mock_paperboy,
-      sommelier: mock_sommelier
-    )
-  }
-  let(:limit) { 5 }
+  include RR::DSL
+
+  let(:sut) { described_class.new }
+  let(:paperboy) { Object.new }
+  let(:sommelier) { Object.new }
 
   before do
-    ENV.delete('CC_VERSION')
+    stub(Dude::News::Paperboy).new { paperboy }
+    stub(Dude::News::Sommelier).new { sommelier }
+    ENV['CC_VERSION'] = '1.0.0'
   end
 
-  after do
-    ENV.delete('CC_VERSION')
-  end
+  after { ENV.delete('CC_VERSION') }
 
   describe '#fetch' do
-    context 'with mock source' do
-      before do
-        ENV['CC_VERSION'] = '1.0.0'
-      end
-
-      it 'outputs installed and latest versions' do
-        expect do
-          news.fetch
-        end.to output(include('Installed: 1.0.0, Latest: 1.2.3')).to_stdout
-      end
-
-      it 'outputs vintage result' do
-        expect { news.fetch }.to output(include('Vintage 1.2.3: success')).to_stdout
-      end
-
-      it 'outputs releases up to limit' do
-        expect { news.fetch }.to output(include('v1.0.0', 'v0.9.0')).to_stdout
-      end
-
-      it 'respects limit parameter' do
-        limited_paperboy = instance_double(
-          Dude::News::Paperboy,
-          latest_version: '1.2.3',
-          releases: %w[v1.0.0]
-        )
-        limited_sommelier = instance_double(
-          Dude::News::Sommelier,
-          taste: { conclusion: 'success', url: nil, error: nil }
-        )
-        limited = described_class.new(
-          limit: 1, paperboy: limited_paperboy,
-          sommelier: limited_sommelier
-        )
-        out = capture_stdout { limited.fetch }
-        expect(out).to include('v1.0.0')
-        expect(out).not_to include('v0.9.0')
-      end
+    before do
+      stub(paperboy).latest_version { '1.2.3' }
+      stub(paperboy).releases(5) { %w[v1.0.0 v0.9.0 v0.8.0] }
+      stub(sommelier).taste('1.2.3') \
+        { { conclusion: 'success', url: nil, error: nil } }
     end
 
-    context 'uses default Paperboy and Sommelier when none provided' do
-      let(:news) { described_class.new(limit: limit) }
-
-      before do
-        ENV['CC_VERSION'] = '2.0.0'
-      end
-
-      it 'initializes with Paperboy and Sommelier' do
-        expect(news.instance_variable_get(:@paperboy)).to be_a(Dude::News::Paperboy)
-        expect(news.instance_variable_get(:@sommelier)).to be_a(Dude::News::Sommelier)
-      end
+    it 'includes installed version in output' do
+      expect(fetch)
+        .to include('Installed: 1.0.0, Latest: 1.2.3')
     end
 
-    context 'with missing CC_VERSION' do
-      before do
-        ENV.delete('CC_VERSION')
-      end
+    it 'includes vintage result in output' do
+      expect(fetch)
+        .to include('Vintage 1.2.3: success')
+    end
 
-      let(:mock_paperboy) do
-        instance_double(
-          Dude::News::Paperboy,
-          latest_version: '1.0.0',
-          releases: []
-        )
-      end
-
-      it 'defaults to unknown' do
-        expect { news.fetch }.to output(include('Installed: unknown')).to_stdout
-      end
+    it 'includes releases up to limit in output' do
+      expect(fetch)
+        .to include('v1.0.0', 'v0.9.0')
     end
   end
 
-  private
+  context 'with limit 1' do
+    let(:sut) { described_class.new(limit: 1) }
 
-  def capture_stdout
-    out = $stdout = StringIO.new
-    yield
-    out.string
+    before do
+      stub(paperboy).latest_version { '1.2.3' }
+      stub(paperboy).releases(1) { %w[v1.0.0] }
+      stub(sommelier).taste('1.2.3') \
+        { { conclusion: 'success', url: nil, error: nil } }
+    end
+
+    it 'requests only specified releases' do
+      output = fetch
+      expect(output).to include('v1.0.0')
+      expect(output).not_to include('v0.9.0')
+    end
+  end
+
+  describe '#fetch with missing CC_VERSION' do
+    before do
+      ENV.delete('CC_VERSION')
+      stub(paperboy).latest_version { '1.0.0' }
+      stub(paperboy).releases(5) { [] }
+      stub(sommelier).taste('1.0.0') \
+        { { conclusion: 'success', url: nil, error: nil } }
+    end
+
+    it 'defaults installed version to unknown' do
+      expect(fetch)
+        .to include('Installed: unknown')
+    end
+  end
+
+  def fetch
+    old_stdout = $stdout
+    $stdout = StringIO.new
+    sut.fetch
+    $stdout.string
   ensure
-    $stdout = STDOUT
+    $stdout = old_stdout
   end
 end
