@@ -28,7 +28,7 @@ end
 When(/^> \/news$/) do
   limit = 5
   source = RSpec::Mocks::Double.new(
-    'GithubSource',
+    'Paperboy',
     latest_version: @latest_version,
     workflow_conclusion: @workflow_conclusion,
     run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345',
@@ -42,7 +42,7 @@ end
 When(/^> \/news --limit (\d+)$/) do |limit_str|
   limit = limit_str.to_i
   source = RSpec::Mocks::Double.new(
-    'GithubSource',
+    'Paperboy',
     latest_version: @latest_version,
     workflow_conclusion: @workflow_conclusion,
     run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345',

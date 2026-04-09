@@ -1,7 +1,7 @@
 require_relative '../../spec_helper'
-require_relative '../../../lib/dude/news/github_source'
+require_relative '../../../lib/dude/news/paperboy'
 
-describe Dude::News::GithubSource do
+describe Dude::News::Paperboy do
   let(:mock_gh) { instance_double(Dude::Helpers::Gh) }
   let(:source) { described_class.new(gh: mock_gh) }
 

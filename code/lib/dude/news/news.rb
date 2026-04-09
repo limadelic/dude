@@ -1,9 +1,9 @@
-require_relative 'github_source'
+require_relative 'paperboy'
 
 module Dude
   module News
     class News
-      def initialize(limit: 5, source: GithubSource.new)
+      def initialize(limit: 5, source: Paperboy.new)
         @limit = limit
         @source = source
       end

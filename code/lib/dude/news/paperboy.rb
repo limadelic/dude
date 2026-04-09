@@ -2,7 +2,7 @@ require_relative '../helpers/gh'
 
 module Dude
   module News
-    class GithubSource
+    class Paperboy
       def initialize(gh: Dude::Helpers::Gh.new)
         @gh = gh
       end

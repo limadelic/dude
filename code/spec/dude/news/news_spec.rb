@@ -3,7 +3,7 @@ require_relative '../../../lib/dude/news/news'
 
 describe Dude::News::News do
   let(:mock_source) do
-    instance_double(Dude::News::GithubSource,
+    instance_double(Dude::News::Paperboy,
       latest_version: '1.2.3',
       workflow_conclusion: 'success',
       run_url: nil,
@@ -42,7 +42,7 @@ describe Dude::News::News do
       end
 
       it 'respects limit parameter' do
-        limited_source = instance_double(Dude::News::GithubSource,
+        limited_source = instance_double(Dude::News::Paperboy,
           latest_version: '1.2.3',
           workflow_conclusion: 'success',
           run_url: nil,
@@ -65,7 +65,7 @@ describe Dude::News::News do
       end
 
       let(:mock_source) do
-        instance_double(Dude::News::GithubSource,
+        instance_double(Dude::News::Paperboy,
           latest_version: '1.2.3',
           workflow_conclusion: 'failure',
           run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345',
@@ -88,7 +88,7 @@ describe Dude::News::News do
       end
 
       it 'initializes with GithubSource' do
-        expect(news.instance_variable_get(:@source)).to be_a(Dude::News::GithubSource)
+        expect(news.instance_variable_get(:@source)).to be_a(Dude::News::Paperboy)
       end
     end
 
@@ -98,7 +98,7 @@ describe Dude::News::News do
       end
 
       let(:mock_source) do
-        instance_double(Dude::News::GithubSource,
+        instance_double(Dude::News::Paperboy,
           latest_version: '1.0.0',
           workflow_conclusion: 'success',
           run_url: nil,
