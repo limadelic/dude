@@ -14,7 +14,7 @@ module Dude
 
       def releases(limit)
         output = @gh.run(releases_cmd(limit))
-        output.split("\n").reject(&:empty?)
+        output.split("\n").reject(&:empty?).take(limit)
       end
 
       private
