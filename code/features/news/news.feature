@@ -1,4 +1,4 @@
-@news @wip
+@news
 Feature: News
 
   Scenario: happy path
