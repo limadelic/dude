@@ -1,48 +1,6 @@
 require_relative '../dude/news/news'
-require_relative '../dude/helpers/gh'
 
 module Cuke
-  class MockGh
-    def initialize(latest_version: nil, workflow_conclusion: nil, run_url: nil,
-      releases: [])
-      @latest_version = latest_version
-      @workflow_conclusion = workflow_conclusion
-      @run_url = run_url
-      @releases = releases
-    end
-
-    def run(cmd)
-      return @latest_version if latest_version_cmd?(cmd)
-      return @workflow_conclusion if conclusion_cmd?(cmd)
-      return extract_run_id if run_id_cmd?(cmd)
-      return @releases.join("\n") if releases_cmd?(cmd)
-
-      ''
-    end
-
-    private
-
-    def latest_version_cmd?(cmd)
-      cmd.match?(/release list -R anthropics\/claude-code --limit 1/)
-    end
-
-    def conclusion_cmd?(cmd)
-      cmd.match?(/run list.*conclusion/)
-    end
-
-    def run_id_cmd?(cmd)
-      cmd.match?(/run list.*databaseId/)
-    end
-
-    def releases_cmd?(cmd)
-      cmd.match?(/release list -R anthropics\/claude-code/)
-    end
-
-    def extract_run_id
-      @run_url.match(/\/(\d+)$/)&.captures&.first || ''
-    end
-  end
-
   module News
     def setup_installed_version(version)
       @installed_version = version
