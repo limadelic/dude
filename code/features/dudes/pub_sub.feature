@@ -1,5 +1,5 @@
 @dudes
-Feature: Dudes
+Feature: Pub Sub
 
   Scenario: No pubs
     Then the "Dudes" section is empty
