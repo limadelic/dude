@@ -1,10 +1,16 @@
 require_relative '../../spec_helper'
 require_relative '../../../lib/dude/news/news'
-require 'dude/news/github_source'
 
 describe Dude::News::News do
-  let(:mock_gh) { instance_double(Dude::Helpers::Gh) }
-  let(:news) { described_class.new(limit: limit, source: Dude::News::GithubSource.new(gh: mock_gh)) }
+  let(:mock_source) do
+    instance_double(Dude::News::GithubSource,
+      latest_version: '1.2.3',
+      workflow_conclusion: 'success',
+      run_url: nil,
+      releases: %w[v1.0.0 v0.9.0 v0.8.0]
+    )
+  end
+  let(:news) { described_class.new(limit: limit, source: mock_source) }
   let(:limit) { 5 }
 
   before do
@@ -16,21 +22,9 @@ describe Dude::News::News do
   end
 
   describe '#run' do
-    context 'with mock gh' do
+    context 'with mock source' do
       before do
         ENV['CC_VERSION'] = '1.0.0'
-        allow(mock_gh).to receive(:run).with(
-          "release list -R anthropics/claude-code --limit 1 --json tagName -q '.[0].tagName'"
-        ).and_return('1.2.3')
-        allow(mock_gh).to receive(:run).with(
-          "run list --repo UKGEPIC/dude --branch main --limit 1 --json conclusion -q '.[0].conclusion'"
-        ).and_return('success')
-        allow(mock_gh).to receive(:run).with(
-          "run list --repo UKGEPIC/dude --branch main --limit 1 --json databaseId -q '.[0].databaseId'"
-        ).and_return('')
-        allow(mock_gh).to receive(:run).with(
-          "release list -R anthropics/claude-code --limit 5 --json tagName -q '.[].tagName'"
-        ).and_return("v1.0.0\nv0.9.0\nv0.8.0")
       end
 
       it 'outputs installed and latest versions' do
@@ -48,13 +42,13 @@ describe Dude::News::News do
       end
 
       it 'respects limit parameter' do
-        limited = described_class.new(limit: 1, source: Dude::News::GithubSource.new(gh: mock_gh))
-        allow(mock_gh).to receive(:run).with(
-          "release list -R anthropics/claude-code --limit 1 --json tagName -q '.[].tagName'"
-        ).and_return('v1.0.0')
-        allow(mock_gh).to receive(:run).with(
-          "run list --repo UKGEPIC/dude --branch main --limit 1 --json databaseId -q '.[0].databaseId'"
-        ).and_return('')
+        limited_source = instance_double(Dude::News::GithubSource,
+          latest_version: '1.2.3',
+          workflow_conclusion: 'success',
+          run_url: nil,
+          releases: %w[v1.0.0]
+        )
+        limited = described_class.new(limit: 1, source: limited_source)
         out = capture_stdout { limited.run }
         expect(out).to include('v1.0.0')
         expect(out).not_to include('v0.9.0')
@@ -68,18 +62,15 @@ describe Dude::News::News do
     context 'when smoke test fails' do
       before do
         ENV['CC_VERSION'] = '1.0.0'
-        allow(mock_gh).to receive(:run).with(
-          "release list -R anthropics/claude-code --limit 1 --json tagName -q '.[0].tagName'"
-        ).and_return('1.2.3')
-        allow(mock_gh).to receive(:run).with(
-          "run list --repo UKGEPIC/dude --branch main --limit 1 --json conclusion -q '.[0].conclusion'"
-        ).and_return('failure')
-        allow(mock_gh).to receive(:run).with(
-          "run list --repo UKGEPIC/dude --branch main --limit 1 --json databaseId -q '.[0].databaseId'"
-        ).and_return('12345')
-        allow(mock_gh).to receive(:run).with(
-          "release list -R anthropics/claude-code --limit 5 --json tagName -q '.[].tagName'"
-        ).and_return('')
+      end
+
+      let(:mock_source) do
+        instance_double(Dude::News::GithubSource,
+          latest_version: '1.2.3',
+          workflow_conclusion: 'failure',
+          run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345',
+          releases: []
+        )
       end
 
       it 'outputs github actions link' do
@@ -89,7 +80,7 @@ describe Dude::News::News do
       end
     end
 
-    context 'uses default GithubSource when no gh provided' do
+    context 'uses default GithubSource when no source provided' do
       let(:news) { described_class.new(limit: limit) }
 
       before do
@@ -103,18 +94,16 @@ describe Dude::News::News do
 
     context 'with missing CC_VERSION' do
       before do
-        allow(mock_gh).to receive(:run).with(
-          "release list -R anthropics/claude-code --limit 1 --json tagName -q '.[0].tagName'"
-        ).and_return('1.0.0')
-        allow(mock_gh).to receive(:run).with(
-          "run list --repo UKGEPIC/dude --branch main --limit 1 --json conclusion -q '.[0].conclusion'"
-        ).and_return('success')
-        allow(mock_gh).to receive(:run).with(
-          "run list --repo UKGEPIC/dude --branch main --limit 1 --json databaseId -q '.[0].databaseId'"
-        ).and_return('')
-        allow(mock_gh).to receive(:run).with(
-          "release list -R anthropics/claude-code --limit 5 --json tagName -q '.[].tagName'"
-        ).and_return('')
+        ENV.delete('CC_VERSION')
+      end
+
+      let(:mock_source) do
+        instance_double(Dude::News::GithubSource,
+          latest_version: '1.0.0',
+          workflow_conclusion: 'success',
+          run_url: nil,
+          releases: []
+        )
       end
 
       it 'defaults to unknown' do

@@ -1,6 +1,6 @@
 require_relative '../../lib/cuke/dude'
 require_relative '../../lib/cuke/news'
-require_relative '../../lib/dude/news/github_source'
+require 'rspec/mocks/standalone'
 
 World(Cuke::Dude)
 World(Cuke::News)
@@ -27,13 +27,13 @@ end
 
 When(/^> \/news$/) do
   limit = 5
-  gh = Cuke::MockGh.new(
+  source = RSpec::Mocks::Double.new(
+    'GithubSource',
     latest_version: @latest_version,
     workflow_conclusion: @workflow_conclusion,
     run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345',
     releases: mock_releases_for(10)
   )
-  source = Dude::News::GithubSource.new(gh: gh)
   @output = capture_output do
     Dude::News::News.new(limit: limit, source: source).run
   end
@@ -41,13 +41,13 @@ end
 
 When(/^> \/news --limit (\d+)$/) do |limit_str|
   limit = limit_str.to_i
-  gh = Cuke::MockGh.new(
+  source = RSpec::Mocks::Double.new(
+    'GithubSource',
     latest_version: @latest_version,
     workflow_conclusion: @workflow_conclusion,
     run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345',
     releases: mock_releases_for(10)
   )
-  source = Dude::News::GithubSource.new(gh: gh)
   @output = capture_output do
     Dude::News::News.new(limit: limit, source: source).run
   end
