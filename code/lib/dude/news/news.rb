@@ -13,9 +13,9 @@ module Dude
       def run
         latest = @paperboy.latest_version
         print_installed_and_latest(latest)
+        @paperboy.releases(@limit).each { |release| puts release }
         result = @sommelier.taste(latest)
         print_smoke_test_result(result)
-        @paperboy.releases(@limit).each { |release| puts release }
       end
 
       private
