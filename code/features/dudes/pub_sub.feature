@@ -1,35 +1,29 @@
-@dudes @bg
+@dudes
 Feature: Dudes
 
   Scenario: No pubs
     Then the "Dudes" section is empty
 
   Scenario: Pub dude
-    Given dudes
-      | home | icon |
-      | dude | 🎳   |
-    When > /pub dude:
+    * @dude > /pub:
       | 🎳ˣ |
 
   Scenario: Pub another dude
-    Given dudes
-      | home  | icon | pub |
-      | dude  | 🎳   | yes |
-      | elita | 🐶   | no  |
-    When > /pub:
+    * @dude > /pub:
+      | 🎳ˣ |
+    * @elita > /pub:
       | 🎳ˣ 🐶ˣ |
 
   Scenario: The Dude Abides
-    Given dudes
-      | home | icon | pub |
-      | dude | 🎳   | yes |
-    When @dude > /abide:
+    * @dude > /pub:
+      | 🎳ˣ |
+    * @dude > /abide:
       | 🎳⁰ |
 
   Scenario: Another dude abides
-    Given dudes
-      | home  | icon | pub | abide |
-      | dude  | 🎳   | yes | yes   |
-      | elita | 🐶   | yes | no    |
-    When @dude > /abide:
+    * @dude > /pub:
+      | 🎳ˣ |
+    * @elita > /pub:
+      | 🎳ˣ 🐶ˣ |
+    * @dude > /abide:
       | 🎳⁰ 🐶⁰ |
