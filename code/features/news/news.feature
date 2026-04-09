@@ -19,12 +19,12 @@ Feature: News
       | v2.1.92 |
     * > /news:
       | Installed: 2.1.90, Latest: v2.1.96 |
-      | v2.1.96                             |
-      | v2.1.95                             |
-      | v2.1.94                             |
-      | v2.1.93                             |
-      | v2.1.92                             |
-      | Vintage 2.1.96: success             |
+      | v2.1.96                            |
+      | v2.1.95                            |
+      | v2.1.94                            |
+      | v2.1.93                            |
+      | v2.1.92                            |
+      | Vintage 2.1.96: success            |
 
   Scenario: vintage tasting fails
     * ! gh run list --repo UKGEPIC/dude --json conclusion
@@ -36,17 +36,15 @@ Feature: News
     * ! gh api repos/UKGEPIC/dude/actions/jobs/678/logs
       | Error: claude timed out after 5s |
     * > /news:
-      | Vintage 2.1.96: failure                               |
-      | https://github.com/UKGEPIC/dude/actions/runs/12345    |
-      | Error: claude timed out after 5s                       |
+      | Vintage 2.1.96: failure                            |
+      | https://github.com/UKGEPIC/dude/actions/runs/12345 |
+      | Error: claude timed out after 5s                   |
 
   Scenario: custom limit
     * ! gh release list -R anthropics/claude-code limit=3
       | v2.1.96 |
       | v2.1.95 |
       | v2.1.94 |
-      | v2.1.93 |
-      | v2.1.92 |
     * > /news --limit 3:
       | v2.1.96 |
       | v2.1.95 |

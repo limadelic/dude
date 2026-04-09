@@ -48,22 +48,14 @@ Given(/^dudes "([^"]+)" abide$/) do |names|
   end
 end
 
-When(/^(\w+) > \/(.+?) &$/) do |name, command|
-  @home = home(name)
-  run(@home, command)
-end
-
-When(/^> \/(.+?) &$/) do |command|
-  run(@home, command)
-end
-
-When(/^(\w+) > \/(.+[^& ])$/) do |name, command|
-  @home = home(name)
-  @output = dude(command, chdir: @home)
-end
-
-When(/^> \/(.+[^& :])$/) do |command|
-  @output = dude(command, chdir: @home)
+When(/^@(\w+) > \/(.+):$/) do |name, command, table|
+  if command == 'abide'
+    setup_from_row('home' => name, 'icon' => ICONS.fetch(name), 'pub' => 'yes', 'abide' => 'yes')
+  else
+    @home = home(name)
+    run(@home, command)
+  end
+  verify_table(table)
 end
 
 Before('@news') do
@@ -91,9 +83,22 @@ When(/^! (.+)$/) do |cmd, *rest|
   end
 end
 
-When(/^> \/(.+):$/) do |command, table|
-  @mocks ||= {}
+Before('@bg') do
+  @bg = true
+end
 
+When(/^> \/(.+):$/) do |command, table|
+  if @bg
+    run(@home, command)
+  else
+    run_with_mocks(command)
+  end
+
+  verify_table(table)
+end
+
+def run_with_mocks(command)
+  @mocks ||= {}
   @mocks.each do |cmd, val|
     ENV['CC_VERSION'] = val if cmd.include?('claude --version')
   end
@@ -114,26 +119,43 @@ When(/^> \/(.+):$/) do |command, table|
   paperboy = Dude::News::Paperboy.new(gh: gh)
   sommelier = Dude::News::Sommelier.new(gh: gh)
 
-  output = capture_output do
+  @output = capture_output do
     Dude::News::News.new(
       limit: limit,
       paperboy: paperboy,
       sommelier: sommelier
     ).run
   end
+end
 
+def verify_table(table)
   table.raw.flatten.each do |row|
     row = row.strip
     if row.start_with?('(') && row.end_with?(')')
-      val = row[1..-2]
-      if output.include?(val)
-        raise "Not expected '#{val}' in output:\n#{output}"
-      end
+      verify_negative(row[1..-2])
     else
-      unless output.include?(row)
-        raise "Expected '#{row}' in output:\n#{output}"
-      end
+      verify_positive(row)
     end
+  end
+end
+
+def verify_positive(expected)
+  if @bg
+    wait_for("shows #{expected}") do
+      output = dude('status_line').strip
+      expected.split.all? { |part| output.include?(part) }
+    end
+  else
+    raise "Expected '#{expected}' in output:\n#{@output}" unless @output.include?(expected)
+  end
+end
+
+def verify_negative(val)
+  if @bg
+    output = dude('status_line').strip
+    raise "Not expected '#{val}' in status line:\n#{output}" if output.include?(val)
+  else
+    raise "Not expected '#{val}' in output:\n#{@output}" if @output.include?(val)
   end
 end
 
