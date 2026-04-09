@@ -41,15 +41,13 @@ Feature: News
       | Error: claude timed out after 5s                       |
 
   Scenario: custom limit
-    * ! gh release list -R anthropics/claude-code
+    * ! gh release list -R anthropics/claude-code limit=3
       | v2.1.96 |
       | v2.1.95 |
       | v2.1.94 |
       | v2.1.93 |
       | v2.1.92 |
     * > /news --limit 3:
-      | v2.1.96   |
-      | v2.1.95   |
-      | v2.1.94   |
-      | (v2.1.93) |
-      | (v2.1.92) |
+      | v2.1.96 |
+      | v2.1.95 |
+      | v2.1.94 |
