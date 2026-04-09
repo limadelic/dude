@@ -31,7 +31,7 @@ describe Dude::News::News do
     ENV.delete('CC_VERSION')
   end
 
-  describe '#run' do
+  describe '#fetch' do
     context 'with mock source' do
       before do
         ENV['CC_VERSION'] = '1.0.0'
@@ -39,16 +39,16 @@ describe Dude::News::News do
 
       it 'outputs installed and latest versions' do
         expect do
-          news.run
+          news.fetch
         end.to output(include('Installed: 1.0.0, Latest: 1.2.3')).to_stdout
       end
 
       it 'outputs vintage result' do
-        expect { news.run }.to output(include('Vintage 1.2.3: success')).to_stdout
+        expect { news.fetch }.to output(include('Vintage 1.2.3: success')).to_stdout
       end
 
       it 'outputs releases up to limit' do
-        expect { news.run }.to output(include('v1.0.0', 'v0.9.0')).to_stdout
+        expect { news.fetch }.to output(include('v1.0.0', 'v0.9.0')).to_stdout
       end
 
       it 'respects limit parameter' do
@@ -65,7 +65,7 @@ describe Dude::News::News do
           limit: 1, paperboy: limited_paperboy,
           sommelier: limited_sommelier
         )
-        out = capture_stdout { limited.run }
+        out = capture_stdout { limited.fetch }
         expect(out).to include('v1.0.0')
         expect(out).not_to include('v0.9.0')
       end
@@ -98,7 +98,7 @@ describe Dude::News::News do
       end
 
       it 'defaults to unknown' do
-        expect { news.run }.to output(include('Installed: unknown')).to_stdout
+        expect { news.fetch }.to output(include('Installed: unknown')).to_stdout
       end
     end
   end

@@ -10,15 +10,23 @@ module Dude
         @sommelier = sommelier
       end
 
-      def run
+      def fetch
         latest = @paperboy.latest_version
         print_installed_and_latest(latest)
-        @paperboy.releases(@limit).each { |release| puts release }
-        result = @sommelier.taste(latest)
-        print_smoke_test_result(result, latest)
+        content
+        fact_check(latest)
       end
 
       private
+
+      def content
+        @paperboy.releases(@limit).each { |release| puts release }
+      end
+
+      def fact_check(latest)
+        result = @sommelier.taste(latest)
+        print_smoke_test_result(result, latest)
+      end
 
       def installed_version
         @installed_version ||= ENV.fetch('CC_VERSION', 'unknown')
