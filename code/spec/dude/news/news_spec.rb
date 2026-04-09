@@ -3,18 +3,25 @@ require_relative '../../../lib/dude/news/news'
 
 describe Dude::News::News do
   let(:mock_paperboy) do
-    instance_double(Dude::News::Paperboy,
+    instance_double(
+      Dude::News::Paperboy,
       latest_version: '1.2.3',
       releases: %w[v1.0.0 v0.9.0 v0.8.0]
     )
   end
   let(:mock_sommelier) do
-    instance_double(Dude::News::Sommelier,
+    instance_double(
+      Dude::News::Sommelier,
       workflow_conclusion: 'success',
       run_url: nil
     )
   end
-  let(:news) { described_class.new(limit: limit, paperboy: mock_paperboy, sommelier: mock_sommelier) }
+  let(:news) {
+    described_class.new(
+      limit: limit, paperboy: mock_paperboy,
+      sommelier: mock_sommelier
+    )
+  }
   let(:limit) { 5 }
 
   before do
@@ -46,15 +53,20 @@ describe Dude::News::News do
       end
 
       it 'respects limit parameter' do
-        limited_paperboy = instance_double(Dude::News::Paperboy,
+        limited_paperboy = instance_double(
+          Dude::News::Paperboy,
           latest_version: '1.2.3',
           releases: %w[v1.0.0]
         )
-        limited_sommelier = instance_double(Dude::News::Sommelier,
+        limited_sommelier = instance_double(
+          Dude::News::Sommelier,
           workflow_conclusion: 'success',
           run_url: nil
         )
-        limited = described_class.new(limit: 1, paperboy: limited_paperboy, sommelier: limited_sommelier)
+        limited = described_class.new(
+          limit: 1, paperboy: limited_paperboy,
+          sommelier: limited_sommelier
+        )
         out = capture_stdout { limited.run }
         expect(out).to include('v1.0.0')
         expect(out).not_to include('v0.9.0')
@@ -71,7 +83,8 @@ describe Dude::News::News do
       end
 
       let(:mock_sommelier) do
-        instance_double(Dude::News::Sommelier,
+        instance_double(
+          Dude::News::Sommelier,
           workflow_conclusion: 'failure',
           run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345'
         )
@@ -103,7 +116,8 @@ describe Dude::News::News do
       end
 
       let(:mock_paperboy) do
-        instance_double(Dude::News::Paperboy,
+        instance_double(
+          Dude::News::Paperboy,
           latest_version: '1.0.0',
           releases: []
         )
