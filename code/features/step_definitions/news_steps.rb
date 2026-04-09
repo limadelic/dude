@@ -7,6 +7,7 @@ World(Cuke::News)
 
 Before('@news') do
   @home = Dir.home
+  @gh = build_gh
 end
 
 After('@news') do
@@ -27,16 +28,8 @@ end
 
 When(/^> \/news$/) do
   limit = 5
-  paperboy = RSpec::Mocks::Double.new(
-    'Paperboy',
-    latest_version: @latest_version,
-    releases: mock_releases_for(10)
-  )
-  sommelier = RSpec::Mocks::Double.new(
-    'Sommelier',
-    workflow_conclusion: @workflow_conclusion,
-    run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345'
-  )
+  paperboy = Dude::News::Paperboy.new(gh: @gh)
+  sommelier = Dude::News::Sommelier.new(gh: @gh)
   @output = capture_output do
     Dude::News::News.new(limit: limit, paperboy: paperboy, sommelier: sommelier).run
   end
@@ -44,16 +37,8 @@ end
 
 When(/^> \/news --limit (\d+)$/) do |limit_str|
   limit = limit_str.to_i
-  paperboy = RSpec::Mocks::Double.new(
-    'Paperboy',
-    latest_version: @latest_version,
-    releases: mock_releases_for(10)
-  )
-  sommelier = RSpec::Mocks::Double.new(
-    'Sommelier',
-    workflow_conclusion: @workflow_conclusion,
-    run_url: 'https://github.com/UKGEPIC/dude/actions/runs/12345'
-  )
+  paperboy = Dude::News::Paperboy.new(gh: @gh)
+  sommelier = Dude::News::Sommelier.new(gh: @gh)
   @output = capture_output do
     Dude::News::News.new(limit: limit, paperboy: paperboy, sommelier: sommelier).run
   end

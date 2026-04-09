@@ -1,7 +1,10 @@
+require 'rspec/mocks/standalone'
 require_relative '../dude/news/news'
+require_relative '../dude/helpers/gh'
 
 module Cuke
   module News
+    include RSpec::Mocks::ExampleMethods
     def setup_installed_version(version)
       @installed_version = version
       ENV['CC_VERSION'] = version
@@ -89,6 +92,36 @@ module Cuke
       out.string
     ensure
       $stdout = STDOUT
+    end
+
+    def build_gh
+      gh = instance_double(::Dude::Helpers::Gh)
+      allow(gh).to receive(:run) { |cmd| run_command(cmd) }
+      gh
+    end
+
+    def run_command(cmd)
+      return @latest_version if latest_version_request?(cmd)
+      return mock_releases_for(10).join("\n") if releases_request?(cmd)
+      return workflow_command(cmd) if run_list_request?(cmd)
+    end
+
+    def latest_version_request?(cmd)
+      cmd.include?('release list -R anthropics/claude-code') &&
+        cmd.include?('--limit 1')
+    end
+
+    def releases_request?(cmd)
+      cmd.include?('release list -R anthropics/claude-code')
+    end
+
+    def run_list_request?(cmd)
+      cmd.include?('run list')
+    end
+
+    def workflow_command(cmd)
+      return @workflow_conclusion if cmd.include?('conclusion')
+      return '12345' if cmd.include?('databaseId')
     end
   end
 end
