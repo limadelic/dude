@@ -17,7 +17,7 @@ Feature: News
       | v2.1.94 |
       | v2.1.93 |
       | v2.1.92 |
-    * > /news
+    * > /news:
       | Installed: 2.1.90, Latest: v2.1.96 |
       | Smoke test: success                 |
       | v2.1.96                             |
@@ -48,7 +48,7 @@ Feature: News
       | v2.1.94 |
       | v2.1.93 |
       | v2.1.92 |
-    * > /news
+    * > /news:
       | Installed: 2.1.90, Latest: v2.1.96                    |
       | Smoke test: failure                                    |
       | https://github.com/UKGEPIC/dude/actions/runs/12345    |
@@ -73,7 +73,7 @@ Feature: News
       | v2.1.96 |
       | v2.1.95 |
       | v2.1.94 |
-    * > /news --limit 3
+    * > /news --limit 3:
       | Installed: 2.1.90, Latest: v2.1.96 |
       | Smoke test: success                 |
       | v2.1.96                             |
