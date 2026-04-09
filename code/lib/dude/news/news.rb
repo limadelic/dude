@@ -11,8 +11,10 @@ module Dude
       end
 
       def run
-        print_installed_and_latest
-        print_smoke_test_status
+        latest = @paperboy.latest_version
+        print_installed_and_latest(latest)
+        result = @sommelier.taste(latest)
+        print_smoke_test_result(result)
         @paperboy.releases(@limit).each { |release| puts release }
       end
 
@@ -22,17 +24,15 @@ module Dude
         @installed_version ||= ENV.fetch('CC_VERSION', 'unknown')
       end
 
-      def print_installed_and_latest
+      def print_installed_and_latest(latest)
         installed = installed_version
-        latest = @paperboy.latest_version
         puts "Installed: #{installed}, Latest: #{latest}"
       end
 
-      def print_smoke_test_status
-        conclusion = @sommelier.workflow_conclusion
-        puts "Smoke test: #{conclusion}"
-        url = @sommelier.run_url
-        puts url if conclusion == 'failure' && url
+      def print_smoke_test_result(result)
+        puts "Smoke test: #{result[:conclusion]}"
+        puts result[:url] if result[:url]
+        puts result[:error] if result[:error]
       end
     end
   end
