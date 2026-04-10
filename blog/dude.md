@@ -9,9 +9,11 @@ I don't particularly like Neo. For me the Matrix is the abstract virtual world. 
 
 After a month dodging bullets it was time for a vibe change. At the same time my frustrations with the parrot were getting out of control. I seldom like to curse, but damn this thing is frustrating af! Worried about my psyche and ashamed of myself I came up with the Dude.
 
-Who can get mad at the Dude, man. The Dude abides. The non-cursing counter lasted for a whole week of honeymoon. The carpet was eventually meant to be pissed. And the rug analogies wore thin faster than the air I think I am breathing. So the Dude flopped for its original purpose but something kept on rolling like tumbleweed.
+Who can get mad at the Dude, man. The Dude abides. The non-cursing counter lasted for a whole week of honeymoon. The carpet was eventually meant to be pissed. And the rug analogies wore thin faster than the air I think I am breathing. The Dude flopped for its original purpose but something kept it on rolling, like a tumbleweed.
 
 ## Malkovich, Malkovich
+
+The Dude caught up like wildfire. I started a Vibe Coding Friday show with the Dude as the vibe. It could blend into anything, every session could be Dude related or Matrix mashed. 
 
 The first time I pondered the question was on the move from Windsurf to Claude Code. I had already started the brand and used it in my performances on Vibe Coding Fridays. So REDACTED? Did moving to Claude mean I would find a new persona? Was Windsurf the Dude?
 
