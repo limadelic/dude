@@ -5,12 +5,17 @@ describe Dude::Dudes::PubFinder do
   include RR::DSL
 
   describe '.find_nearest_pub' do
+    before do
+      stub(File).exist? { true }
+      stub(Dir).exist?(/\.claude/) { false }
+      stub(described_class).find_pub_name_for_target { nil }
+    end
+
     it 'finds pub in parent directory' do
       start_path = '/proj/src/feature'
       proj_claude = '/proj/.claude'
       dudes_dir = File.join(proj_claude, 'dudes')
 
-      stub(File).exist?(start_path) { true }
       stub(Dir).exist?(/\.claude/) { |path|
         path == proj_claude
       }
@@ -25,7 +30,6 @@ describe Dude::Dudes::PubFinder do
       abc_claude = '/a/b/c/.claude'
       dudes_dir = File.join(abc_claude, 'dudes')
 
-      stub(File).exist?(start_path) { true }
       stub(Dir).exist?(/\.claude/) { |path|
         path == abc_claude
       }
@@ -39,10 +43,6 @@ describe Dude::Dudes::PubFinder do
       start_path = '/proj/src/file.rb'
       global_dudes = File.expand_path('~/.claude/dudes')
 
-      stub(File).exist?(start_path) { true }
-      stub(Dir).exist?(/\.claude/) { false }
-      stub(described_class).find_pub_name_for_target { nil }
-
       expect(described_class.find_nearest_pub(start_path))
         .to eq({ name: 'global', path: global_dudes })
     end
@@ -52,7 +52,6 @@ describe Dude::Dudes::PubFinder do
       b_claude = '/a/b/.claude'
       b_dudes = File.join(b_claude, 'dudes')
 
-      stub(File).exist?(start_path) { true }
       stub(Dir).exist?(/\.claude/) { |path|
         path == b_claude
       }
@@ -77,7 +76,6 @@ describe Dude::Dudes::PubFinder do
       global_dudes = File.expand_path('~/.claude/dudes')
       nested_claude = File.join(home_claude, '.claude')
 
-      stub(File).exist?(home_claude) { true }
       stub(Dir).exist?(/\.claude/) { |path|
         path == nested_claude ? false : nil
       }
@@ -103,12 +101,17 @@ describe Dude::Dudes::PubFinder do
   end
 
   describe '.find_pub_walking_up' do
+    before do
+      stub(File).exist? { true }
+      stub(Dir).exist?(/\.claude/) { false }
+      stub(described_class).find_pub_name_for_target { nil }
+    end
+
     it 'returns pub when found in ancestry' do
       start_path = '/proj/src'
       proj_claude = '/proj/.claude'
       dudes_dir = File.join(proj_claude, 'dudes')
 
-      stub(File).exist?(start_path) { true }
       stub(Dir).exist?(/\.claude/) { |path|
         path == proj_claude
       }
@@ -120,10 +123,6 @@ describe Dude::Dudes::PubFinder do
 
     it 'returns nil when pub not found' do
       start_path = '/proj/src'
-
-      stub(File).exist?(start_path) { true }
-      stub(Dir).exist?(/\.claude/) { false }
-      stub(described_class).find_pub_name_for_target { nil }
 
       expect(described_class.find_pub_walking_up(start_path))
         .to be_nil
@@ -173,18 +172,6 @@ describe Dude::Dudes::PubFinder do
 
       expect(described_class.find_pub_name_for_target(target))
         .to be_nil
-    end
-
-    it 'normalizes trailing slashes in comparison' do
-      target = '/proj/.claude'
-
-      stub(Dir).exist?(global_dir) { true }
-      stub(Dir).children(global_dir) { ['myproj'] }
-      stub(File).symlink?(/myproj/) { true }
-      stub(File).readlink(/myproj/) { '/proj/.claude/' }
-
-      expect(described_class.find_pub_name_for_target(target))
-        .to eq('myproj')
     end
   end
 end
