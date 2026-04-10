@@ -2,219 +2,189 @@ require_relative '../spec_helper'
 require_relative "../../lib/dude/dudes/pub_finder"
 
 describe Dude::Dudes::PubFinder do
-  describe '.find_nearest_pub' do
-    let(:global_dudes_dir) { File.expand_path('~/.claude/dudes') }
+  include RR::DSL
 
-    it 'returns pub name and dudes dir for nearest matching pub walking up' do
+  describe '.find_nearest_pub' do
+    it 'finds pub in parent directory' do
       start_path = '/proj/src/feature'
       proj_claude = '/proj/.claude'
       dudes_dir = File.join(proj_claude, 'dudes')
 
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with(start_path).and_return(true)
-      allow(Dir).to receive(:exist?).and_call_original
-      allow(Dir).to receive(:exist?).with(proj_claude).and_return(true)
-      stub = allow(described_class).to receive(:find_pub_name_for_target)
-      stub.with(proj_claude).and_return('myproj')
+      stub(File).exist?(start_path) { true }
+      stub(Dir).exist?(/\.claude/) { |path|
+        path == proj_claude
+      }
+      stub(described_class).find_pub_name_for_target(proj_claude) { 'myproj' }
 
-      result = described_class.find_nearest_pub(start_path)
-
-      expect(result).to eq({ name: 'myproj', path: dudes_dir })
+      expect(described_class.find_nearest_pub(start_path))
+        .to eq({ name: 'myproj', path: dudes_dir })
     end
 
-    it 'walks up directories to find matching pub' do
+    it 'walks up multiple directory levels' do
       start_path = '/a/b/c/d/e/f'
       abc_claude = '/a/b/c/.claude'
       dudes_dir = File.join(abc_claude, 'dudes')
 
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with(start_path).and_return(true)
-      allow(Dir).to receive(:exist?).and_call_original
-      allow(Dir).to receive(:exist?).with(abc_claude).and_return(true)
-      stub = allow(described_class).to receive(:find_pub_name_for_target)
-      stub.with(abc_claude).and_return('abc')
+      stub(File).exist?(start_path) { true }
+      stub(Dir).exist?(/\.claude/) { |path|
+        path == abc_claude
+      }
+      stub(described_class).find_pub_name_for_target(abc_claude) { 'abc' }
 
-      result = described_class.find_nearest_pub(start_path)
-
-      expect(result).to eq({ name: 'abc', path: dudes_dir })
+      expect(described_class.find_nearest_pub(start_path))
+        .to eq({ name: 'abc', path: dudes_dir })
     end
 
-    it 'returns global pub when no matching pub found walking up' do
+    it 'returns global pub when walking up finds nothing' do
       start_path = '/proj/src/file.rb'
       global_dudes = File.expand_path('~/.claude/dudes')
 
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with(start_path).and_return(true)
-      allow(Dir).to receive(:exist?).and_call_original
-      stub = allow(described_class).to receive(:find_pub_name_for_target)
-      stub.and_return(nil)
+      stub(File).exist?(start_path) { true }
+      stub(Dir).exist?(/\.claude/) { false }
+      stub(described_class).find_pub_name_for_target { nil }
 
-      result = described_class.find_nearest_pub(start_path)
-
-      expect(result).to eq({ name: 'global', path: global_dudes })
+      expect(described_class.find_nearest_pub(start_path))
+        .to eq({ name: 'global', path: global_dudes })
     end
 
-    it 'prefers nearest pub over distant one' do
+    it 'chooses nearest pub over distant' do
       start_path = '/a/b/c'
       b_claude = '/a/b/.claude'
       b_dudes = File.join(b_claude, 'dudes')
 
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with(start_path).and_return(true)
-      allow(Dir).to receive(:exist?).and_call_original
-      allow(Dir).to receive(:exist?).with(b_claude).and_return(true)
-      stub = allow(described_class).to receive(:find_pub_name_for_target)
-      stub.with(b_claude).and_return('b')
+      stub(File).exist?(start_path) { true }
+      stub(Dir).exist?(/\.claude/) { |path|
+        path == b_claude
+      }
+      stub(described_class).find_pub_name_for_target(b_claude) { 'b' }
 
-      result = described_class.find_nearest_pub(start_path)
-
-      expect(result).to eq({ name: 'b', path: b_dudes })
+      expect(described_class.find_nearest_pub(start_path))
+        .to eq({ name: 'b', path: b_dudes })
     end
 
-    it 'returns global pub when start_path does not exist' do
+    it 'returns global pub when start path does not exist' do
       start_path = '/nonexistent/path'
       global_dudes = File.expand_path('~/.claude/dudes')
 
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with(start_path).and_return(false)
+      stub(File).exist?(start_path) { false }
 
-      result = described_class.find_nearest_pub(start_path)
-
-      expect(result).to eq({ name: 'global', path: global_dudes })
+      expect(described_class.find_nearest_pub(start_path))
+        .to eq({ name: 'global', path: global_dudes })
     end
 
-    it 'returns global pub when start_path IS ~/.claude itself' do
+    it 'returns global pub for ~/.claude itself' do
       home_claude = File.expand_path('~/.claude')
       global_dudes = File.expand_path('~/.claude/dudes')
-
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with(home_claude).and_return(true)
-      allow(Dir).to receive(:exist?).and_call_original
       nested_claude = File.join(home_claude, '.claude')
-      allow(Dir).to receive(:exist?).with(nested_claude).and_return(false)
-      stub = allow(described_class).to receive(:find_pub_name_for_target)
-      stub.and_return(nil)
 
-      result = described_class.find_nearest_pub(home_claude)
+      stub(File).exist?(home_claude) { true }
+      stub(Dir).exist?(/\.claude/) { |path|
+        path == nested_claude ? false : nil
+      }
 
-      expect(result).to eq({ name: 'global', path: global_dudes })
+      expect(described_class.find_nearest_pub(home_claude))
+        .to eq({ name: 'global', path: global_dudes })
     end
 
-    it 'normalizes trailing slashes on start_path' do
+    it 'strips trailing slashes from start path' do
       start_path = '/proj/src/feature/'
       proj_claude = '/proj/.claude'
       dudes_dir = File.join(proj_claude, 'dudes')
 
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with('/proj/src/feature').and_return(true)
-      allow(Dir).to receive(:exist?).and_call_original
-      allow(Dir).to receive(:exist?).with(proj_claude).and_return(true)
-      stub = allow(described_class).to receive(:find_pub_name_for_target)
-      stub.with(proj_claude).and_return('myproj')
+      stub(File).exist?('/proj/src/feature') { true }
+      stub(Dir).exist?(/\.claude/) { |path|
+        path == proj_claude
+      }
+      stub(described_class).find_pub_name_for_target(proj_claude) { 'myproj' }
 
-      result = described_class.find_nearest_pub(start_path)
-
-      expect(result).to eq({ name: 'myproj', path: dudes_dir })
+      expect(described_class.find_nearest_pub(start_path))
+        .to eq({ name: 'myproj', path: dudes_dir })
     end
   end
 
   describe '.find_pub_walking_up' do
-    it 'returns pub name and dudes dir when found' do
+    it 'returns pub when found in ancestry' do
       start_path = '/proj/src'
       proj_claude = '/proj/.claude'
       dudes_dir = File.join(proj_claude, 'dudes')
 
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with(start_path).and_return(true)
-      allow(Dir).to receive(:exist?).and_call_original
-      allow(Dir).to receive(:exist?).with(proj_claude).and_return(true)
-      stub = allow(described_class).to receive(:find_pub_name_for_target)
-      stub.with(proj_claude).and_return('myproj')
+      stub(File).exist?(start_path) { true }
+      stub(Dir).exist?(/\.claude/) { |path|
+        path == proj_claude
+      }
+      stub(described_class).find_pub_name_for_target(proj_claude) { 'myproj' }
 
-      result = described_class.find_pub_walking_up(start_path)
-
-      expect(result).to eq({ name: 'myproj', path: dudes_dir })
+      expect(described_class.find_pub_walking_up(start_path))
+        .to eq({ name: 'myproj', path: dudes_dir })
     end
 
-    it 'returns nil when no pub found' do
+    it 'returns nil when pub not found' do
       start_path = '/proj/src'
 
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with(start_path).and_return(true)
-      allow(Dir).to receive(:exist?).and_call_original
-      allow(Dir).to receive(:exist?).and_return(false)
-      stub = allow(described_class).to receive(:find_pub_name_for_target)
-      stub.and_return(nil)
+      stub(File).exist?(start_path) { true }
+      stub(Dir).exist?(/\.claude/) { false }
+      stub(described_class).find_pub_name_for_target { nil }
 
-      result = described_class.find_pub_walking_up(start_path)
-
-      expect(result).to be_nil
+      expect(described_class.find_pub_walking_up(start_path))
+        .to be_nil
     end
 
-    it 'returns nil when start_path does not exist' do
+    it 'returns nil for nonexistent path' do
       start_path = '/nonexistent'
 
-      allow(File).to receive(:exist?).and_call_original
-      allow(File).to receive(:exist?).with(start_path).and_return(false)
+      stub(File).exist?(start_path) { false }
 
-      result = described_class.find_pub_walking_up(start_path)
-
-      expect(result).to be_nil
+      expect(described_class.find_pub_walking_up(start_path))
+        .to be_nil
     end
   end
 
   describe '.find_pub_name_for_target' do
-    it 'returns pub name when symlink matches target' do
+    let(:global_dir) { File.expand_path('~/.claude/dudes') }
+
+    it 'returns pub name when symlink matches' do
       target = '/proj/.claude'
-      global_dir = File.expand_path('~/.claude')
 
-      allow(Dir).to receive(:exist?).and_return(true)
-      allow(Dir).to receive(:children).and_return(['myproj'])
-      allow(File).to receive(:symlink?).and_return(true)
-      allow(File).to receive(:readlink).and_return('/proj/.claude/')
+      stub(Dir).exist?(global_dir) { true }
+      stub(Dir).children(global_dir) { ['myproj'] }
+      stub(File).symlink?(/myproj/) { true }
+      stub(File).readlink(/myproj/) { '/proj/.claude/' }
 
-      result = described_class.find_pub_name_for_target(target)
-
-      expect(result).to eq('myproj')
+      expect(described_class.find_pub_name_for_target(target))
+        .to eq('myproj')
     end
 
-    it 'returns nil when no matching symlink found' do
+    it 'returns nil when no symlink matches' do
       target = '/proj/.claude'
-      global_dir = File.expand_path('~/.claude')
 
-      allow(Dir).to receive(:exist?).and_return(true)
-      allow(Dir).to receive(:children).and_return(['other'])
-      allow(File).to receive(:symlink?).and_return(true)
-      allow(File).to receive(:readlink).and_return('/other/path/')
+      stub(Dir).exist?(global_dir) { true }
+      stub(Dir).children(global_dir) { ['other'] }
+      stub(File).symlink?(/other/) { true }
+      stub(File).readlink(/other/) { '/other/path/' }
 
-      result = described_class.find_pub_name_for_target(target)
-
-      expect(result).to be_nil
+      expect(described_class.find_pub_name_for_target(target))
+        .to be_nil
     end
 
-    it 'returns nil when global dir does not exist' do
+    it 'returns nil when global dir missing' do
       target = '/proj/.claude'
-      global_dir = File.expand_path('~/.claude')
 
-      allow(Dir).to receive(:exist?).and_return(false)
+      stub(Dir).exist?(global_dir) { false }
 
-      result = described_class.find_pub_name_for_target(target)
-
-      expect(result).to be_nil
+      expect(described_class.find_pub_name_for_target(target))
+        .to be_nil
     end
 
-    it 'normalizes trailing slashes when comparing targets' do
+    it 'normalizes trailing slashes in comparison' do
       target = '/proj/.claude'
-      global_dir = File.expand_path('~/.claude')
 
-      allow(Dir).to receive(:exist?).and_return(true)
-      allow(Dir).to receive(:children).and_return(['myproj'])
-      allow(File).to receive(:symlink?).and_return(true)
-      allow(File).to receive(:readlink).and_return('/proj/.claude/')
+      stub(Dir).exist?(global_dir) { true }
+      stub(Dir).children(global_dir) { ['myproj'] }
+      stub(File).symlink?(/myproj/) { true }
+      stub(File).readlink(/myproj/) { '/proj/.claude/' }
 
-      result = described_class.find_pub_name_for_target(target)
-
-      expect(result).to eq('myproj')
+      expect(described_class.find_pub_name_for_target(target))
+        .to eq('myproj')
     end
   end
 end
