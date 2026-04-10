@@ -11,9 +11,11 @@ After a month dodging bullets it was time for a vibe change. At the same time my
 
 Who can get mad at the Dude, man. The Dude abides. The non-cursing counter lasted for a whole week of honeymoon. The carpet was eventually meant to be pissed. And the rug analogies wore thin faster than the air I think I am breathing. The Dude flopped for its original purpose but something kept it on rolling, like a tumbleweed.
 
-## Malkovich, Malkovich
+## Vertigo
 
-The Dude caught up like wildfire. I started a Vibe Coding Friday show with the Dude as the vibe. It could blend into anything, every session could be Dude related or Matrix mashed. 
+The Dude caught on like wildfire. I started a Vibe Coding Friday show with the Dude as the vibe. It could blend into anything, every session could be Dude related. In the very first session I prompted the Dude "make me an MCP". He didn't know what an MCP was, neither did I. 
+
+He made a Tron themed multiplayer console. Which I obviously asked to be turned into a Matrix themed MCP. Then I learned what an MCP really is and felt embarrassed of the total deceit of that session. Then I was watching the original Tron movie because the Dude is in it. And discovered they started saying MCP all over the movie and the original hallucinated Tron themed MCP clicked.
 
 The first time I pondered the question was on the move from Windsurf to Claude Code. I had already started the brand and used it in my performances on Vibe Coding Fridays. So REDACTED? Did moving to Claude mean I would find a new persona? Was Windsurf the Dude?
 
