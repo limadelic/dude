@@ -90,53 +90,75 @@ describe Dude::StatusLine::Dudes do
 
   describe 'Abide watcher status' do
     context 'not abiding' do
-      it 'shows ˣ with context color' do
-        rec = build_dude(
-          name: 'rec', icon: '🔴', messages: 3, context: 50, current: false, abiding: false
+      let(:rec) do
+        build_dude(
+          name: 'rec', icon: '🔴', messages: 0, context: 50, current: false, abiding: false
         )
-        sut_rec = described_class.new('', [rec], '/tmp', 0)
-        result = sut_rec.to_s
+      end
+      let(:sut_rec) { described_class.new('', [rec], '/tmp', 0) }
 
-        expect(result).to include("\e[38;5;226m🔴", "ˣ")
+      context 'with messages' do
+        let(:rec) do
+          build_dude(
+            name: 'rec', icon: '🔴', messages: 3, context: 50, current: false, abiding: false
+          )
+        end
+
+        it 'shows ˣ with context color' do
+          result = sut_rec.to_s
+          expect(result).to include("\e[38;5;226m🔴", "ˣ")
+        end
       end
 
-      it 'shows green ˣ with low context' do
-        rec = build_dude(
-          name: 'rec', icon: '🔴', messages: 0, context: 10, current: false, abiding: false
-        )
-        sut_rec = described_class.new('', [rec], '/tmp', 0)
-        result = sut_rec.to_s
+      context 'with low context' do
+        let(:rec) do
+          build_dude(
+            name: 'rec', icon: '🔴', messages: 0, context: 10, current: false, abiding: false
+          )
+        end
 
-        expect(result).to include("\e[32m🔴", "ˣ")
+        it 'shows green ˣ with low context' do
+          result = sut_rec.to_s
+          expect(result).to include("\e[32m🔴", "ˣ")
+        end
       end
 
-      it 'has background highlight for current not-abiding dude' do
-        rec = build_dude(
-          name: 'rec', icon: '🔴', messages: 0, context: 25, current: true, abiding: false
-        )
-        sut_rec = described_class.new('', [rec], '/tmp', 0)
-        result = sut_rec.to_s
+      context 'current' do
+        let(:rec) do
+          build_dude(
+            name: 'rec', icon: '🔴', messages: 0, context: 25, current: true, abiding: false
+          )
+        end
 
-        expect(result).to include("\e[42m\e[97m🔴", "ˣ")
+        it 'has background highlight for current not-abiding dude' do
+          result = sut_rec.to_s
+          expect(result).to include("\e[42m\e[97m🔴", "ˣ")
+        end
       end
 
-      it 'shows red ˣ with high context' do
-        rec = build_dude(
-          name: 'rec', icon: '🔴', messages: 0, context: 80, current: false, abiding: false
-        )
-        sut_rec = described_class.new('', [rec], '/tmp', 0)
-        result = sut_rec.to_s
+      context 'with high context' do
+        let(:rec) do
+          build_dude(
+            name: 'rec', icon: '🔴', messages: 0, context: 80, current: false, abiding: false
+          )
+        end
 
-        expect(result).to include("\e[31m🔴", "ˣ")
+        it 'shows red ˣ with high context' do
+          result = sut_rec.to_s
+          expect(result).to include("\e[31m🔴", "ˣ")
+        end
       end
     end
 
     context 'abiding' do
-      it 'shows message count' do
-        rec = build_dude(
+      let(:rec) do
+        build_dude(
           name: 'rec', icon: '🔴', messages: 3, context: 50, current: false, abiding: true
         )
-        sut_rec = described_class.new('', [rec], '/tmp', 0)
+      end
+      let(:sut_rec) { described_class.new('', [rec], '/tmp', 0) }
+
+      it 'shows message count' do
         result = sut_rec.to_s
         stripped = Dude::StatusLine::Format.strip(result)
 

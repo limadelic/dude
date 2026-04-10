@@ -9,13 +9,13 @@ describe Dude::Dudes::GitRevert do
 
   describe '#execute' do
     it 'reverts each file with git checkout' do
-      stub(Kernel).system("git checkout lib/foo.rb") { true }
+      mock(Kernel).system("git checkout lib/foo.rb") { true }
 
       sut.execute
     end
 
     it 'reverts multiple files' do
-      stub(Kernel).system(/git checkout /) { true }
+      mock(Kernel).system(/git checkout /) { true }
 
       sut_multi = described_class.new(%w[lib/foo.rb lib/bar.rb])
       sut_multi.execute
