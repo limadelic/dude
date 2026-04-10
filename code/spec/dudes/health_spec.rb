@@ -8,12 +8,10 @@ describe Dude::Dudes::Health do
   let(:dir) { '/proj/.claude/dudes' }
 
   describe '#check' do
-    before do
+    it 'returns alive pid when process is running' do
       stub(sut).`(/pgrep -f.*/) { "123\n" }
       stub(sut).`(/ps -p.*/) { "999\n" }
-    end
 
-    it 'returns alive pid when process is running' do
       result = sut.check(dir, { 'abide_pid' => 123 })
 
       expect(result[:pid_alive]).to eq(123)
@@ -27,7 +25,7 @@ describe Dude::Dudes::Health do
       expect(result[:pid_alive]).to be_nil
     end
 
-    it 'kills orphaned process and returns nil' do
+    it 'returns nil for orphaned process' do
       stub(sut).`(/pgrep -f.*/) { "456\n" }
       stub(sut).`(/ps -p.*/) { "1\n" }
       mock(Process).kill('TERM', 456)

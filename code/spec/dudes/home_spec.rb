@@ -2,55 +2,74 @@ require_relative '../spec_helper'
 require_relative '../../lib/dude/dudes/home'
 
 describe Dude::Dudes::Home do
-  let(:home) { described_class.new }
-  let(:dir) { '/root/.claude/dudes' }
+  include RR::DSL
 
-  before do
-    allow(File).to receive(:symlink?).and_return(true)
-    allow(Dude::Dudes::Dudes).to receive(:pids).and_return(
-      { 12345 => '/root/.claude' }
-    )
-    allow(File).to receive(:exist?).and_return(true)
-    allow(File).to receive(:read).and_return('')
-  end
+  let(:sut) { described_class.new }
+  let(:path_resolver) { Object.new }
+  let(:inbox) { Object.new }
+  let(:dudes_dir) { '/root/.claude/dudes' }
+  let(:target) { '/root/.claude' }
+
+  before { stub(Dude::Dudes::PathResolver).new { path_resolver } }
 
   describe '#list_dude_names' do
     it 'returns symlinked children' do
-      allow(Dir).to receive(:children).and_return(%w[rec tmp])
-      allow(File).to receive(:symlink?).with("#{dir}/tmp").and_return(false)
-      expect(home.list_dude_names(dir)).to eq(%w[rec])
+      stub(Dir).children(dudes_dir) { %w[rec tmp] }
+      stub(File).symlink?("#{dudes_dir}/rec") { true }
+      stub(File).symlink?("#{dudes_dir}/tmp") { false }
+
+      expect(sut.list_dude_names(dudes_dir)).to eq(%w[rec])
     end
 
     it 'returns empty on error' do
-      allow(Dir).to receive(:children).and_raise(Errno::ENOENT)
-      expect(home.list_dude_names(dir)).to eq([])
+      stub(Dir).children(dudes_dir) { raise Errno::ENOENT }
+
+      expect(sut.list_dude_names(dudes_dir)).to eq([])
     end
   end
 
   describe '#read_dude_link' do
     it 'resolves absolute symlink' do
-      allow(File).to receive(:readlink).and_return('/root/.claude/')
-      expect(home.read_dude_link(dir, 'dude')).to eq('/root/.claude')
+      link_path = "#{dudes_dir}/dude"
+      stub(File).symlink?(link_path) { true }
+      stub(File).readlink(link_path) { '/root/.claude/' }
+      stub(path_resolver).expand_target('/root/.claude/', dudes_dir) { target }
+      stub(Dude::Dudes::Dudes).pids { { 12345 => target } }
+
+      expect(sut.read_dude_link(dudes_dir, 'dude')).to eq(target)
     end
 
     it 'returns nil when not accessible' do
-      allow(File).to receive(:readlink).and_return('/unknown/')
-      expect(home.read_dude_link(dir, 'x')).to be_nil
+      link_path = "#{dudes_dir}/x"
+      stub(File).symlink?(link_path) { true }
+      stub(File).readlink(link_path) { '/unknown/' }
+      stub(path_resolver).expand_target('/unknown/', dudes_dir) { '/unknown' }
+      stub(Dude::Dudes::Dudes).pids { { 12345 => '/root/.claude' } }
+
+      expect(sut.read_dude_link(dudes_dir, 'x')).to be_nil
     end
   end
 
   describe '#read_dude_data' do
     it 'returns data hash with icon and inbox with path' do
-      allow(File).to receive(:read).and_return("---\nicon: 🔴\n---\n")
-      allow(JSON).to receive(:load_file).and_return({ 'context' => 50 })
-      result = home.read_dude_data('/proj/.claude')
+      claude_path = '/proj/.claude/CLAUDE.md'
+      stub(File).exist?(claude_path) { true }
+      stub(File).read(claude_path) { "---\nicon: 🔴\n---\n" }
+      stub(Dude::Dudes::Inbox).new { inbox }
+      stub(File).exist?(/status\.json/) { true }
+      stub(File).read(/status\.json/) { '{}' }
+
+      result = sut.read_dude_data('/proj/.claude')
+
       expect(result[:icon]).to eq('🔴')
-      expect(result[:inbox]).to be_a(Dude::Dudes::Inbox)
+      expect(result[:inbox]).to be(inbox)
     end
 
     it 'returns nil without icon' do
-      allow(File).to receive(:exist?).and_return(false)
-      expect(home.read_dude_data('/proj/.claude')).to be_nil
+      claude_path = '/proj/.claude/CLAUDE.md'
+      stub(File).exist?(claude_path) { false }
+
+      expect(sut.read_dude_data('/proj/.claude')).to be_nil
     end
   end
 end

@@ -14,7 +14,6 @@ describe Dude::Dudes::Inbox do
 
   describe '#append' do
     it 'persists message to file' do
-      stub(JSON).load_file(path) { [] }
       mock(File).write(path, /hi/) { nil }
 
       sut.append({ 'text' => 'hi' })
@@ -37,7 +36,6 @@ describe Dude::Dudes::Inbox do
     end
 
     it 'skips empty inbox' do
-      stub(JSON).load_file(path) { [] }
       dont_allow(File).write
 
       sut.mark_wip
