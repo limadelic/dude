@@ -40,6 +40,7 @@
 - keep it DRY by extracting common Setup 
 - keep Setup that helps explaining the Test
 - hide Setup that must exist but its tmi
+- never copy-paste a before block, override only what differs
 
 ## Stub
 

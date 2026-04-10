@@ -77,11 +77,6 @@ describe Dude::Dudes::Dudes do
 
   describe 'multiple PIDs same target' do
     before do
-      stub(Dir).children { %w[rec] }
-      stub(File).symlink? { true }
-      stub(File).readlink { '/proj/.claude/' }
-      stub(File).exist? { true }
-      stub(File).read { "---\nicon: 🔴\n---\n" }
       stub(JSON).load_file { { 'context' => 50 } }
       stub(Dude::Dudes::Dudes).pids do
         { 111 => '/proj/.claude', 222 => '/proj/.claude', 333 => '/proj/.claude' }
