@@ -186,7 +186,7 @@ describe Dude::Dudes::Dude do
     it 'returns first new message and marks as wip' do
       msg = { 'text' => 'hello', 'status' => 'new' }
       stub(inbox).first_new { msg }
-      stub(inbox).mark_wip
+      mock(inbox).mark_wip
 
       expect(sut.watch).to eq(msg)
     end
