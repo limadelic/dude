@@ -1,27 +1,44 @@
 require_relative '../spec_helper'
 require_relative "../../lib/dude/dudes/tcr"
 
-describe 'Dude::Dudes::Tcr' do
-  let(:tcr) { Dude::Dudes::Tcr.new(%w[file.rb]) }
-  let(:tests_runner) { instance_double(Dude::Dudes::TestsRunner) }
-  let(:linter) { instance_double(Dude::Dudes::Linter) }
+describe Dude::Dudes::Tcr do
+  include RR::DSL
+
+  let(:files) { %w[file.rb] }
+  let(:sut) { described_class.new(files) }
+  let(:tests_runner) { Object.new }
+  let(:linter) { Object.new }
+  let(:commit) { Object.new }
+  let(:revert) { Object.new }
+
   before do
-    allow(Dude::Dudes::TestsRunner).to receive(:new).and_return(tests_runner)
-    allow(Dude::Dudes::Linter).to receive(:new).and_return(linter)
-    allow(Dude::Dudes::GitStageCommit).to receive(:new)
-      .and_return(instance_double(Dude::Dudes::GitStageCommit, execute: nil))
-    allow(Dude::Dudes::GitRevert).to receive(:new)
-      .and_return(instance_double(Dude::Dudes::GitRevert, execute: nil))
-    allow(tests_runner).to receive(:pass?).and_return(true)
-    allow(linter).to receive(:pass?).and_return(true)
+    stub(Dude::Dudes::TestsRunner).new(files) { tests_runner }
+    stub(Dude::Dudes::Linter).new(files) { linter }
+    stub(Dude::Dudes::GitStageCommit).new(files) { commit }
+    stub(Dude::Dudes::GitRevert).new(files) { revert }
+    stub(tests_runner).pass? { true }
+    stub(linter).pass? { true }
   end
-  it { expect(tcr.run).to eq(true) }
-  it 'returns false when tests fail' do
-    allow(tests_runner).to receive(:pass?).and_return(false)
-    expect(tcr.run).to eq(false)
-  end
-  it 'returns false when lint fails' do
-    allow(linter).to receive(:pass?).and_return(false)
-    expect(tcr.run).to eq(false)
+
+  describe '#run' do
+    it 'returns true when tests and lint pass' do
+      mock(commit).execute
+
+      expect(sut.run).to eq(true)
+    end
+
+    it 'returns false when tests fail' do
+      stub(tests_runner).pass? { false }
+      mock(revert).execute
+
+      expect(sut.run).to eq(false)
+    end
+
+    it 'returns false when lint fails' do
+      stub(linter).pass? { false }
+      mock(revert).execute
+
+      expect(sut.run).to eq(false)
+    end
   end
 end
