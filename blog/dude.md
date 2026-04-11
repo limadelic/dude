@@ -15,7 +15,7 @@ Who can get mad at the Dude, man. The Dude abides. The non-cursing counter laste
 
 The first time I pondered the question was on the move from Windsurf to Claude Code. I had already started the Dude brand and used it in my performances on Vibe Coding Fridays. In those, the Dude was the vibe, the theme, the lenses through which the concepts were shown. Would moving to Claude mean the Dude was dead? Is Windsurf the Dude? What is it then?
 
-I think that was the inception. I was calling Windsurf the Dude and then I started calling Claude also the Dude. It was a pragmatic branding decision, by now the whole team was calling their agent Dude. However, subconsciously, I knew something was off, exactly two things. The ghost of the dude had spread into more people and the ghost had just survived the move into another shell.
+I think that was the inception. I was calling Windsurf the Dude and then I started calling Claude also the Dude. It was a pragmatic branding decision, by now the whole team was calling their agent Dude. However, subconsciously, I knew something was off, exactly two things. The ghost of the Dude had spread into more people and the ghost had just survived the move into another shell.
 
 Once in Claude's shell the Dude flourished. It was a spring of skills, commands, agents, the kitchen sink of orchestrated artifacts. All that automation started making obvious the forces at play. What's deterministic should be coded and the fuzzy bits would be left to the Dude.
 
