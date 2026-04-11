@@ -17,9 +17,9 @@ The first time I pondered the question was on the move from Windsurf to Claude C
 
 I think that was the inception. I was calling Windsurf the Dude and then I started calling Claude also the Dude. It was a pragmatic branding decision, by now the whole team was calling their agent Dude. However, subconsciously, I knew something was off, exactly two things. The ghost of the dude had spread into more people and the ghost had just survived the move into another shell.
 
-Once in Claude's shell the Dude flourished. It was a spring of skills, commands, agents, the kitchen sink of orchestrated artifacts. All that automation started making obvious the forces at play were between what was deterministic and should be coded, and leaving the fuzzy bits to the Dude.
+Once in Claude's shell the Dude flourished. It was a spring of skills, commands, agents, the kitchen sink of orchestrated artifacts. All that automation started making obvious the forces at play. What's deterministic should be coded and the fuzzy bits would be left to the Dude.
 
-Then I went to the extreme. I decided that everything that could be coded should be coded. I started making the skills as deterministic as possible. The spaghetti of shell code boiled up quickly and my devops PTSD kicked in automatically. This is not meant to be shell code.
+Then I went to the extreme. I decided that everything that could be coded should become code. I started making the skills as deterministic as possible. The spaghetti of shell code boiled up quickly and my devops PTSD kicked in automatically. This is not meant to be shell code.
 
 Moving from shell into Ruby awoke my programmer ghost. This new project would be called the Dude. It is the Dude's code! Suddenly the Dude lenses were pointing at itself and it felt like Malkovich had tripped into his own mind. It was the code that was needed for the Dude in order to write its own code. It is a virtuous machine that feeds on its own needs to grow.
 
@@ -29,4 +29,4 @@ Now I know what I am building. It is a coding machine, the Dude is a machine tha
 
 And this is the scary part. If I succeed I would have a machine puppeteered by my own programming ghost. I would have achieved a dream I frankly never had. I wrote myself, I automated myself, I have transcended into another shell. And then I wonder, what would be left for my human ghost.
 
-Once I'm stripped away of my programming ghost, I would need something else to feed my human soul. As I code myself away I find hope in new layers that I can't code. However I fear I can soon also code those. Then, when all is set and done, I look at my human shell in the mirror and wonder. What would I use you for?
+Once I'm stripped away of my programming ghost, I would need something else to feed my human soul. As I code myself away I find hope in new layers that I can't code. However I fear I can soon also code those. Then, when all is set and done, I'll look at my human shell in the mirror and wonder. What would I use you for?
