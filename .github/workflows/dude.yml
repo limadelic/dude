@@ -62,6 +62,15 @@ jobs:
       CLAUDE_CODE_ENABLE_TELEMETRY: '1'
       CLAUDE_CODE_USE_VERTEX: '0'
     steps:
+      - name: Disable problem matchers
+        run: |
+          echo "::remove-matcher owner=checkout-git::"
+          echo "::remove-matcher owner=node::"
+          echo "::remove-matcher owner=npm::"
+          echo "::remove-matcher owner=tsc::"
+          echo "::remove-matcher owner=eslint-compact::"
+          echo "::remove-matcher owner=eslint-stylish::"
+
       - name: Checkout
         uses: actions/checkout@v5
 
