@@ -118,13 +118,11 @@ def run_with_mocks(command)
   paperboy = Dude::News::Paperboy.new(gh: gh)
   sommelier = Dude::News::Sommelier.new(gh: gh)
 
-  @output = capture_output do
-    Dude::News::News.new(
-      limit: limit,
-      paperboy: paperboy,
-      sommelier: sommelier
-    ).run
-  end
+  @output = Dude::News::News.new(
+    limit: limit,
+    paperboy: paperboy,
+    sommelier: sommelier
+  ).fetch
 end
 
 def verify_table(table)
