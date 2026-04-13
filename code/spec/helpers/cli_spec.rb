@@ -68,6 +68,7 @@ describe Dude::Helpers::Cli do
     before do
       stub(Dude::Dudes::Pub).new { pub_instance }
       stub(Dir).pwd { '/proj' }
+      stub($stdout).puts
     end
 
     it 'calls Pub.new with current working directory' do

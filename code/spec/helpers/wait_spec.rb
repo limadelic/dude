@@ -4,16 +4,19 @@ require_relative '../../lib/dude/helpers/wait'
 describe Dude::Helpers::Wait do
   include RR::DSL
 
+  before do
+    stub(Kernel).sleep
+  end
+
   describe '#until' do
     it 'returns immediately when condition is true' do
       sut = described_class.new(interval: 0.01)
-      mock(sut).sleep.times(0)
       sut.until { true }
     end
 
     it 'polls until condition becomes true' do
+      mock(Kernel).sleep.times(2)
       sut = described_class.new(interval: 0.01)
-      mock(sut).sleep.times(2)
 
       calls = 0
       sut.until do
@@ -23,11 +26,7 @@ describe Dude::Helpers::Wait do
     end
 
     it 'raises on timeout' do
-      current_time = 0
-      mock(Time).now.times(any_times) { Time.at(current_time) }
-      mock(Kernel).sleep { |interval| current_time += interval }
-
-      sut = described_class.new(interval: 0.01, timeout: 0.03)
+      sut = described_class.new(interval: 0.001, timeout: 0.001)
       expect {
         sut.until { false }
       }.to raise_error(Dude::Helpers::Wait::Timeout)
