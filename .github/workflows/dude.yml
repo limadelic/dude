@@ -18,61 +18,9 @@ on:
       claude_args:
         type: string
         required: false
-  workflow_call:
-    inputs:
-      prompt:
-        type: string
-        required: true
-      version:
-        type: string
-        required: false
-      cwd:
-        type: string
-        required: false
-      timeout:
-        type: number
-        required: false
-      claude_args:
-        type: string
-        required: false
-    secrets:
-      LITELLM_KEY:
-        required: true
-
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-  actions: write
-
 jobs:
   dude:
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.timeout || 30 }}
-    env:
-      GH_TOKEN: ${{ github.token }}
-      ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
-      ANTHROPIC_AUTH_TOKEN: ${{ secrets.LITELLM_KEY }}
-      ANTHROPIC_MODEL: opus
-      ANTHROPIC_DEFAULT_HAIKU_MODEL: claude-haiku-4-5
-      ANTHROPIC_DEFAULT_OPUS_MODEL: claude-opus-4-6
-      ANTHROPIC_DEFAULT_SONNET_MODEL: claude-sonnet-4-6
-      CLAUDE_CODE_SUBAGENT_MODEL: haiku
-      CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '0'
-      CLAUDE_CODE_ENABLE_TELEMETRY: '1'
-      CLAUDE_CODE_USE_VERTEX: '0'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Registry
-        run: npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
-
-      - name: Install
-        run: |
-          sudo rm -f /usr/local/bin/claude
-          npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
-
-      - name: Run
-        working-directory: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
-        run: claude -p --dangerously-skip-permissions "${{ inputs.prompt }}" ${{ inputs.claude_args }}
+      - name: Test
+        run: echo "hello"
