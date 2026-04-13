@@ -63,7 +63,7 @@ jobs:
       CLAUDE_CODE_USE_VERTEX: '0'
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Registry
         run: npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
