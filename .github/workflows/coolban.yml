@@ -27,9 +27,8 @@ jobs:
     if: >-
       inputs.prompt ||
       contains(fromJSON('["🪇 amigos","🥒 gherkin","🏔️ katmandu"]'), github.event.label.name)
-    uses: ./.github/workflows/claude.yml
+    uses: ./.github/workflows/dude.yml
     with:
-      trigger_phrase: "@dude"
       prompt: >-
         ${{ inputs.prompt ||
             (github.event.label.name == '🪇 amigos' && '/3-amigos') ||
@@ -37,7 +36,6 @@ jobs:
             (github.event.label.name == '🏔️ katmandu' && '/katmandu') }}
         ${{ github.repository }}#${{ github.event.issue.number || inputs.issue || '' }}
       cwd: ${{ inputs.cwd || 'code' }}
-      reaction: ""
       timeout: ${{ inputs.timeout && fromJSON(inputs.timeout) || 30 }}
     secrets:
       LITELLM_KEY: ${{ secrets.LITELLM_KEY }}

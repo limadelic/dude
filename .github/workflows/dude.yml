@@ -57,7 +57,7 @@ jobs:
       ANTHROPIC_DEFAULT_HAIKU_MODEL: claude-haiku-4-5
       ANTHROPIC_DEFAULT_OPUS_MODEL: claude-opus-4-6
       ANTHROPIC_DEFAULT_SONNET_MODEL: claude-sonnet-4-6
-      CLAUDE_CODE_SUBAGENT_MODEL: haiku
+      CLAUDE_CODE_SUBAGENT_MODEL: sonnet
       CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '0'
       CLAUDE_CODE_ENABLE_TELEMETRY: '1'
       CLAUDE_CODE_USE_VERTEX: '0'
@@ -74,6 +74,10 @@ jobs:
         run: |
           sudo rm -f /usr/local/bin/claude
           npm install -g @anthropic-ai/claude-code@${{ inputs.version || 'latest' }} 2>/dev/null
+
+      - name: CI mode
+        if: inputs.cwd
+        run: cp ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.ci.md ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.md
 
       - name: Run
         working-directory: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
