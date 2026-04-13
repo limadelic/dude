@@ -59,10 +59,6 @@ describe Dude::StatusLine::Dudes do
       expect(stripped).to match(/🎳⁰/)
     end
 
-    it 'appears after models' do
-      skip "calls runner, not renderer directly"
-    end
-
     it 'highlights current dude with background' do
       result = sut.to_s
 

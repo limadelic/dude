@@ -9,8 +9,7 @@ describe Dude::Dudes::GitRevert do
 
   describe '#execute' do
     before do
-      mock(Kernel).system(/git.*lib\/foo\.rb/) { true }
-      mock(Kernel).system(/git.*lib\/bar\.rb/) { true }
+      mock(sut).system(/git checkout/).at_least(1)
     end
 
     it 'restores single file to HEAD' do

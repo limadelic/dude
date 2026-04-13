@@ -13,6 +13,7 @@ describe Dude::News::Sommelier do
     stub(gh).run(/status/) { 'completed' }
     stub(gh).run(/databaseId/) { '12345' }
     stub(gh).run(/conclusion/) { 'success' }
+    stub(sut).sleep
   end
 
   describe '#taste' do
