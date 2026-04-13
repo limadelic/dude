@@ -18,27 +18,25 @@ describe Dude::Dudes::Tcr do
     stub(Dude::Dudes::GitRevert).new(files) { revert }
     stub(tests_runner).pass? { true }
     stub(linter).pass? { true }
+    stub(commit).execute
+    stub(revert).execute
   end
 
   describe '#run' do
     it 'returns true when tests and lint pass' do
-      mock(commit).execute
-
-      expect(sut.run).to eq(true)
+      expect(sut.run).to eq true
     end
 
     it 'returns false when tests fail' do
       stub(tests_runner).pass? { false }
-      mock(revert).execute
 
-      expect(sut.run).to eq(false)
+      expect(sut.run).to eq false
     end
 
     it 'returns false when lint fails' do
       stub(linter).pass? { false }
-      mock(revert).execute
 
-      expect(sut.run).to eq(false)
+      expect(sut.run).to eq false
     end
   end
 end
