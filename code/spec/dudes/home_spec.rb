@@ -5,12 +5,8 @@ describe Dude::Dudes::Home do
   include RR::DSL
 
   let(:sut) { described_class.new }
-  let(:path_resolver) { Object.new }
   let(:inbox) { Object.new }
   let(:dudes_dir) { '/root/.claude/dudes' }
-  let(:target) { '/root/.claude' }
-
-  before { stub(Dude::Dudes::PathResolver).new { path_resolver } }
 
   describe '#list_dude_names' do
     it 'returns symlinked children' do
@@ -29,6 +25,11 @@ describe Dude::Dudes::Home do
   end
 
   describe '#read_dude_link' do
+    let(:path_resolver) { Object.new }
+    let(:target) { '/root/.claude' }
+
+    before { stub(Dude::Dudes::PathResolver).new { path_resolver } }
+
     it 'resolves absolute symlink' do
       link_path = "#{dudes_dir}/dude"
       stub(File).symlink?(link_path) { true }
@@ -51,18 +52,20 @@ describe Dude::Dudes::Home do
   end
 
   describe '#read_dude_data' do
-    it 'returns data hash with icon and inbox with path' do
+    it 'returns data hash with icon, inbox and status' do
       claude_path = '/proj/.claude/CLAUDE.md'
+      status_path = '/proj/.claude/dudes/status.json'
       stub(File).exist?(claude_path) { true }
       stub(File).read(claude_path) { "---\nicon: 🔴\n---\n" }
       stub(Dude::Dudes::Inbox).new { inbox }
-      stub(File).exist?(/status\.json/) { true }
-      stub(File).read(/status\.json/) { '{}' }
+      stub(File).exist?(status_path) { true }
+      stub(File).read(status_path) { '{}' }
 
       result = sut.read_dude_data('/proj/.claude')
 
       expect(result[:icon]).to eq('🔴')
       expect(result[:inbox]).to be(inbox)
+      expect(result[:status]).to eq({})
     end
 
     it 'returns nil without icon' do

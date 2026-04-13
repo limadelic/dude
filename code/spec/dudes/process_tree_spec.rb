@@ -8,13 +8,13 @@ describe Dude::Dudes::ProcessTree do
 
   before do
     stub(File).exist? { false }
+    stub(Process).ppid { 200 }
+    stub(sut).shell_parent_pid(200) { 100 }
+    stub(sut).shell_parent_pid(100) { 1 }
   end
 
   describe '.is_current?' do
-    it 'delegates to instance method' do
-      stub(Process).ppid { 200 }
-      stub(sut).shell_parent_pid(200) { 100 }
-      stub(sut).shell_parent_pid(100) { 1 }
+    it 'returns true when pid is in ancestor chain' do
       stub(described_class).new { sut }
 
       expect(described_class.is_current?(100)).to be true
@@ -23,15 +23,10 @@ describe Dude::Dudes::ProcessTree do
 
   describe '#is_current?' do
     it 'returns true when pid is in ancestor chain' do
-      stub(Process).ppid { 200 }
-      stub(sut).shell_parent_pid(200) { 100 }
-      stub(sut).shell_parent_pid(100) { 1 }
-
       expect(sut.is_current?(100)).to be true
     end
 
     it 'returns false when pid not in ancestor chain' do
-      stub(Process).ppid { 200 }
       stub(sut).shell_parent_pid(200) { 999 }
       stub(sut).shell_parent_pid(999) { 1 }
 
@@ -44,11 +39,13 @@ describe Dude::Dudes::ProcessTree do
   end
 
   describe '#has_ancestor?' do
-    it 'returns true when target_pid is ancestor' do
+    before do
       stub(sut).shell_parent_pid(300) { 200 }
       stub(sut).shell_parent_pid(200) { 100 }
       stub(sut).shell_parent_pid(100) { 1 }
+    end
 
+    it 'returns true when target_pid is ancestor' do
       expect(sut.has_ancestor?(300, 100)).to be true
     end
 

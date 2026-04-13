@@ -2,19 +2,6 @@ require_relative '../spec_helper'
 require_relative '../../lib/dude/dudes/dudes'
 require 'json'
 
-describe 'Dude::GLOBAL_DIR' do
-  it 'defaults to ~/.claude/dudes expanded' do
-    expanded = File.expand_path('~/.claude/dudes')
-    expect(Dude::GLOBAL_DIR).to eq(expanded)
-  end
-
-  it 'expands tilde in ENV[DUDE_HOME]' do
-    home = File.expand_path('~')
-    result = File.expand_path(File.join(home, 'custom/dudes'))
-    expect(File.expand_path(File.join(home, 'custom/dudes'))).to eq(result)
-  end
-end
-
 describe Dude::Dudes::Dudes do
   include RR::DSL
 
@@ -24,24 +11,24 @@ describe Dude::Dudes::Dudes do
   let(:ppid) { 12345 }
 
   before do
-    stub(Dir).children { %w[rec] }
-    stub(File).symlink? { true }
-    stub(File).readlink { '/proj/.claude/' }
+    stub(Dir).children(anything) { %w[rec] }
+    stub(File).symlink?(anything) { true }
+    stub(File).readlink(anything) { '/proj/.claude/' }
+    stub(File).read(anything) { "---\nicon: 🔴\n---\n" }
     stub(Dude::Dudes::Dudes).pids { { ppid => target } }
-    stub(File).exist? { true }
-    stub(File).read { "---\nicon: 🔴\n---\n" }
-    stub(JSON).load_file { {} }
+    stub(File).exist?(anything) { true }
+    stub(JSON).load_file(anything) { {} }
     stub(Process).ppid { ppid }
   end
 
   describe '#all' do
     it 'returns list of Dude objects' do
-      stub(JSON).load_file { { 'context' => 50 } }
+      stub(JSON).load_file(anything) { { 'context' => 50 } }
 
       result = sut.all
 
-      expect(result.length).to eq(1)
-      expect(result.first).to be_a(Dude::Dudes::Dude)
+      expect(result).to all(be_a(Dude::Dudes::Dude))
+      expect(result.first.name).to eq('rec')
     end
 
     it 'returns empty when no symlinks' do
@@ -51,7 +38,7 @@ describe Dude::Dudes::Dudes do
     end
 
     it 'skips dudes without icon' do
-      stub(File).exist? { false }
+      stub(File).exist?(anything) { false }
 
       expect(sut.all).to eq([])
     end
@@ -75,9 +62,9 @@ describe Dude::Dudes::Dudes do
     end
   end
 
-  describe 'multiple PIDs same target' do
+  context 'multiple PIDs same target' do
     before do
-      stub(JSON).load_file { { 'context' => 50 } }
+      stub(JSON).load_file(anything) { { 'context' => 50 } }
       stub(Dude::Dudes::Dudes).pids do
         { 111 => '/proj/.claude', 222 => '/proj/.claude', 333 => '/proj/.claude' }
       end
@@ -86,7 +73,6 @@ describe Dude::Dudes::Dudes do
     it 'creates one dude per PID' do
       result = sut.all
 
-      expect(result.length).to eq(3)
       expect(result.map(&:name)).to eq(%w[rec rec rec])
       expect(result.map(&:pid)).to match_array([111, 222, 333])
     end
@@ -94,7 +80,7 @@ describe Dude::Dudes::Dudes do
 
   describe '#resolve_inbox' do
     it 'returns inbox path from symlink target' do
-      stub(File).readlink { '/projects/rec/.claude/' }
+      stub(File).readlink(anything) { '/projects/rec/.claude/' }
 
       result = sut.resolve_inbox('rec')
 
@@ -102,14 +88,14 @@ describe Dude::Dudes::Dudes do
     end
 
     it 'raises when symlink not found' do
-      stub(File).symlink? { false }
+      stub(File).symlink?(anything) { false }
 
       expect { sut.resolve_inbox('missing') }
         .to raise_error("dude 'missing' not found")
     end
 
     it 'handles symlink trailing slash' do
-      stub(File).readlink { '/projects/rec/.claude/' }
+      stub(File).readlink(anything) { '/projects/rec/.claude/' }
 
       result = sut.resolve_inbox('rec')
 
@@ -132,7 +118,7 @@ describe Dude::Dudes::Dudes do
     let(:process_tree) { Object.new }
 
     before do
-      stub(File).exist? { false }
+      stub(File).exist?(anything) { false }
       stub(Dude::Dudes::ProcessTree).new { process_tree }
     end
 

@@ -31,7 +31,7 @@ describe Dude::Dudes::Tasks do
     end
 
     it 'returns false when no project dir' do
-      stub(Dir).exist?(project_dir) { false }
+      stub(Dir).exist?(anything) { false }
 
       expect(sut.has_abide?(dude_dir)).to be false
     end

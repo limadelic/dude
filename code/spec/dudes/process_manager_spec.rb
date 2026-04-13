@@ -16,21 +16,21 @@ describe Dude::Dudes::ProcessManager do
 
   describe '.pgrep_all' do
     it 'returns array of pids matching pattern' do
-      stub(described_class).` { "123\n456\n789" }
+      stub(described_class).`.with('pgrep -f "dude abide"') { "123\n456\n789" }
 
       expect(described_class.pgrep_all('dude abide'))
         .to eq([123, 456, 789])
     end
 
     it 'filters out non-positive integers' do
-      stub(described_class).` { "123\n0\n-1\n456" }
+      stub(described_class).`.with('pgrep -f "dude abide"') { "123\n0\n-1\n456" }
 
       expect(described_class.pgrep_all('dude abide'))
         .to eq([123, 456])
     end
 
     it 'returns empty array when no matches' do
-      stub(described_class).` { "" }
+      stub(described_class).`.with('pgrep -f "dude abide"') { "" }
 
       expect(described_class.pgrep_all('dude abide'))
         .to eq([])

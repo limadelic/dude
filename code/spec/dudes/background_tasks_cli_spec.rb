@@ -34,11 +34,5 @@ describe Dude::Dudes::BackgroundTasksCli do
 
       sut.kill('12345')
     end
-
-    it 'coerces pid argument to integer' do
-      mock(Dude::Helpers::BackgroundTasks).kill(12345)
-
-      sut.kill('12345')
-    end
   end
 end

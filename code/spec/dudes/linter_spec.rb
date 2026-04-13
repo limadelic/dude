@@ -8,9 +8,9 @@ describe Dude::Dudes::Linter do
   let(:files) { %w[lib/foo.rb] }
 
   describe '#pass?' do
-    it 'returns true when rubocop passes' do
-      stub(sut).system { true }
+    before { stub(sut).system { true } }
 
+    it 'returns true when rubocop passes' do
       expect(sut.pass?).to be true
     end
 

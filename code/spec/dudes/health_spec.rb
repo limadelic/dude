@@ -6,11 +6,12 @@ describe Dude::Dudes::Health do
 
   let(:sut) { described_class.new }
   let(:dir) { '/proj/.claude/dudes' }
+  let(:pattern) { 'wait-until.*' + File.join(dir, 'inbox.json') }
 
   describe '#check' do
     it 'returns alive pid when process is running' do
-      stub(sut).`(/pgrep -f.*/) { "123\n" }
-      stub(sut).`(/ps -p.*/) { "999\n" }
+      stub(sut).`("pgrep -f \"#{pattern}\"") { "123\n" }
+      stub(sut).`("ps -p 123 -o ppid=") { "999\n" }
 
       result = sut.check(dir, { 'abide_pid' => 123 })
 
@@ -18,7 +19,7 @@ describe Dude::Dudes::Health do
     end
 
     it 'returns nil when no processes found' do
-      stub(sut).`(/pgrep -f.*/) { "" }
+      stub(sut).`("pgrep -f \"#{pattern}\"") { "" }
 
       result = sut.check(dir, {})
 
@@ -26,8 +27,8 @@ describe Dude::Dudes::Health do
     end
 
     it 'returns nil for orphaned process' do
-      stub(sut).`(/pgrep -f.*/) { "456\n" }
-      stub(sut).`(/ps -p.*/) { "1\n" }
+      stub(sut).`("pgrep -f \"#{pattern}\"") { "456\n" }
+      stub(sut).`("ps -p 456 -o ppid=") { "1\n" }
       mock(Process).kill('TERM', 456)
 
       result = sut.check(dir, {})
@@ -36,19 +37,23 @@ describe Dude::Dudes::Health do
     end
 
     it 'updates status when pid changed' do
-      stub(sut).`(/pgrep -f.*/) { "789\n" }
-      stub(sut).`(/ps -p.*/) { "999\n" }
-      mock(File).write(/status\.json/, /abide_pid/)
+      stub(sut).`("pgrep -f \"#{pattern}\"") { "789\n" }
+      stub(sut).`("ps -p 789 -o ppid=") { "999\n" }
+      mock(File).write("/proj/.claude/dudes/status.json", anything)
 
-      sut.check(dir, { 'abide_pid' => 111 })
+      result = sut.check(dir, { 'abide_pid' => 111 })
+
+      expect(result[:pid_alive]).to eq(789)
     end
 
     it 'does not update status when pid unchanged' do
-      stub(sut).`(/pgrep -f.*/) { "123\n" }
-      stub(sut).`(/ps -p.*/) { "999\n" }
-      mock(File).write.never
+      stub(sut).`("pgrep -f \"#{pattern}\"") { "123\n" }
+      stub(sut).`("ps -p 123 -o ppid=") { "999\n" }
+      dont_allow(File).write
 
-      sut.check(dir, { 'abide_pid' => 123 })
+      result = sut.check(dir, { 'abide_pid' => 123 })
+
+      expect(result[:pid_alive]).to eq(123)
     end
   end
 end

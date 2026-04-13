@@ -9,6 +9,11 @@ describe Dude::Dudes::Dude do
   let(:registry) { Object.new }
   let(:inbox) { Object.new }
   let(:pub) { Object.new }
+  let(:target_inbox) { Object.new }
+  let(:msg) { { 'text' => 'hi' } }
+  let(:tell_msg) { { 'text' => 'hello', 'status' => 'new' } }
+  let(:ask_msg) { { 'from' => 'smith', 'text' => 'whatup', 'status' => 'new' } }
+  let(:new_msg) { { 'text' => 'hello', 'status' => 'new' } }
 
   let(:defaults) do
     {
@@ -71,12 +76,10 @@ describe Dude::Dudes::Dude do
     end
 
     it 'delivers message to target inbox' do
-      target_inbox = Object.new
-      msg = { 'text' => 'hello', 'status' => 'new' }
       stub(File).symlink?(/rec/) { true }
       stub(File).readlink(/rec/) { '/projects/rec/.claude/' }
       stub(Dude::Dudes::Inbox).new(/rec.*inbox\.json/) { target_inbox }
-      mock(target_inbox).append(msg)
+      mock(target_inbox).append(tell_msg)
 
       sut_with(name: 'smith').tell('rec', 'hello')
     end
@@ -91,12 +94,10 @@ describe Dude::Dudes::Dude do
     end
 
     it 'includes from field in message' do
-      target_inbox = Object.new
-      msg = { 'from' => 'smith', 'text' => 'whatup', 'status' => 'new' }
       stub(File).symlink?(/rec/) { true }
       stub(File).readlink(/rec/) { '/projects/rec/.claude/' }
       stub(Dude::Dudes::Inbox).new(/rec.*inbox\.json/) { target_inbox }
-      mock(target_inbox).append(msg)
+      mock(target_inbox).append(ask_msg)
 
       sut_with(name: 'smith').ask('rec', 'whatup')
     end
@@ -126,7 +127,6 @@ describe Dude::Dudes::Dude do
 
   describe '#append' do
     it 'adds message to own inbox' do
-      msg = { 'text' => 'hi' }
       mock(inbox).append(msg)
 
       sut.append(msg)
@@ -135,10 +135,9 @@ describe Dude::Dudes::Dude do
 
   describe '#first_new' do
     it 'returns first new message' do
-      msg = { 'text' => 'hello', 'status' => 'new' }
-      stub(inbox).first_new { msg }
+      stub(inbox).first_new { new_msg }
 
-      expect(sut.first_new).to eq(msg)
+      expect(sut.first_new).to eq(new_msg)
     end
 
     it 'returns nil when no new messages' do
@@ -184,11 +183,10 @@ describe Dude::Dudes::Dude do
 
   describe '#watch' do
     it 'returns first new message and marks as wip' do
-      msg = { 'text' => 'hello', 'status' => 'new' }
-      stub(inbox).first_new { msg }
+      stub(inbox).first_new { new_msg }
       mock(inbox).mark_wip
 
-      expect(sut.watch).to eq(msg)
+      expect(sut.watch).to eq(new_msg)
     end
   end
 

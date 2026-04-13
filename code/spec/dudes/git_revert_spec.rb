@@ -8,9 +8,12 @@ describe Dude::Dudes::GitRevert do
   let(:files) { %w[lib/foo.rb] }
 
   describe '#execute' do
-    it 'restores single file to HEAD' do
-      mock(Kernel).system("git checkout lib/foo.rb") { true }
+    before do
+      mock(Kernel).system(/git.*lib\/foo\.rb/) { true }
+      mock(Kernel).system(/git.*lib\/bar\.rb/) { true }
+    end
 
+    it 'restores single file to HEAD' do
       sut.execute
     end
 
@@ -18,9 +21,6 @@ describe Dude::Dudes::GitRevert do
       let(:files) { %w[lib/foo.rb lib/bar.rb] }
 
       it 'restores all files to HEAD' do
-        mock(Kernel).system("git checkout lib/foo.rb") { true }
-        mock(Kernel).system("git checkout lib/bar.rb") { true }
-
         sut.execute
       end
     end

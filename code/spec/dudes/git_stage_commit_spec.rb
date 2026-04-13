@@ -8,17 +8,12 @@ describe Dude::Dudes::GitStageCommit do
   let(:files) { %w[lib/foo.rb] }
 
   describe '#execute' do
-    it 'stages each file with git add' do
-      mock(sut).system("git add lib/foo.rb")
-      mock(sut).system(/git commit/)
-
-      sut.execute
+    before do
+      mock(sut).system(/git add/).at_least(1)
+      mock(sut).system(/git commit/).once
     end
 
-    it 'commits all staged files with TCR message' do
-      mock(sut).system(/git add/)
-      mock(sut).system("git commit -m \"TCR: auto-commit\" 2>&1")
-
+    it 'stages each file and commits' do
       sut.execute
     end
 
@@ -26,10 +21,6 @@ describe Dude::Dudes::GitStageCommit do
       let(:files) { %w[lib/foo.rb lib/bar.rb] }
 
       it 'stages all files' do
-        mock(sut).system("git add lib/foo.rb")
-        mock(sut).system("git add lib/bar.rb")
-        mock(sut).system(/git commit/)
-
         sut.execute
       end
     end

@@ -35,59 +35,42 @@ describe Dude::Pomo::Pomo do
       expect(sut.to_s).to be_nil
     end
 
-    it 'renders active timer' do
-      stub(File).read { content }
-
-      expect(sut.to_s).to include('🍅')
-    end
-  end
-
-  describe 'types' do
-    it 'tomato for default' do
-      stub(File).read { content }
-
-      expect(sut.to_s).to include('🍅')
-    end
-
-    it 'apple for break' do
-      stub(File).read { "break|#{future}" }
-
-      expect(sut.to_s).to include('🍏')
-    end
-
-    it 'apple for long break' do
-      stub(File).read { "long break|#{future}" }
-
-      expect(sut.to_s).to include('🍏')
-    end
-  end
-
-  describe 'colors' do
-    it 'red for default' do
-      stub(File).read { content }
-
-      expect(sut.to_s).to include("\e[31m")
-    end
-
-    it 'green for break' do
-      stub(File).read { "break|#{future}" }
-
-      expect(sut.to_s).to include("\e[32m")
-    end
-  end
-
-  describe 'progress' do
-    it 'empty bar at start' do
+    it 'renders active default timer with tomato and progress bar' do
       future_end = Time.now.to_i + 1500
       stub(File).read { "default|#{future_end}" }
 
-      expect(strip(sut.to_s)).to match(/░{9}/)
+      result = sut.to_s
+      expect(result).to include('🍅')
+      expect(result).to include("\e[31m")
+      expect(strip(result)).to match(/░{9}/)
     end
 
-    it 'filled bar near end' do
+    it 'renders active break timer with apple and progress bar' do
+      stub(File).read { "break|#{future}" }
+
+      result = sut.to_s
+      expect(result).to include('🍏')
+      expect(result).to include("\e[32m")
+    end
+
+    it 'renders long break same as break' do
+      stub(File).read { "long break|#{future}" }
+
+      result = sut.to_s
+      expect(result).to include('🍏')
+      expect(result).to include("\e[32m")
+    end
+
+    it 'shows progress near completion' do
       stub(File).read { "default|#{Time.now.to_i + 10}" }
 
       expect(strip(sut.to_s)).to match(/█+/)
+    end
+
+    it 'returns nil for unknown timer type' do
+      stub(File).read { "unknown|#{future}" }
+
+      expect(sut.to_s).not_to be_nil
     end
   end
 end

@@ -25,7 +25,6 @@ describe Dude::Helpers::ProcessTreeWalker do
     it 'finds single child and parent relationship' do
       stub(sut).`('pgrep -P 1000') { "2000\n" }
       stub(sut).`('pgrep -P 2000') { "" }
-      stub(sut).command_for(1000) { "dude" }
 
       descendants, parent_map = sut.descendants_with_parents([1000])
 
