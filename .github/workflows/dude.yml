@@ -71,7 +71,7 @@ jobs:
       - name: Install
         run: |
           sudo rm -f /usr/local/bin/claude
-          npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
+          npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }} 2>/dev/null
 
       - name: Run
         working-directory: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
