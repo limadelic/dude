@@ -27,41 +27,49 @@ describe Dude::Dudes::Home do
   describe '#read_dude_link' do
     let(:path_resolver) { Object.new }
     let(:target) { '/root/.claude' }
+    let(:link_path) { "#{dudes_dir}/dude" }
+    let(:resolved_target) { target }
+    let(:dude_name) { 'dude' }
 
-    before { stub(Dude::Dudes::PathResolver).new { path_resolver } }
+    before do
+      stub(Dude::Dudes::PathResolver).new { path_resolver }
+      stub(File).symlink?(link_path) { true }
+      stub(Dude::Dudes::Dudes).pids { { 12345 => target } }
+    end
 
     it 'resolves absolute symlink' do
-      link_path = "#{dudes_dir}/dude"
-      stub(File).symlink?(link_path) { true }
       stub(File).readlink(link_path) { '/root/.claude/' }
-      stub(path_resolver).expand_target('/root/.claude/', dudes_dir) { target }
-      stub(Dude::Dudes::Dudes).pids { { 12345 => target } }
+      stub(path_resolver).expand_target('/root/.claude/', dudes_dir) { resolved_target }
 
-      expect(sut.read_dude_link(dudes_dir, 'dude')).to eq(target)
+      expect(sut.read_dude_link(dudes_dir, dude_name)).to eq(target)
     end
 
     it 'returns nil when not accessible' do
-      link_path = "#{dudes_dir}/x"
-      stub(File).symlink?(link_path) { true }
-      stub(File).readlink(link_path) { '/unknown/' }
+      link_path_x = "#{dudes_dir}/x"
+      stub(File).symlink?(link_path_x) { true }
+      stub(File).readlink(link_path_x) { '/unknown/' }
       stub(path_resolver).expand_target('/unknown/', dudes_dir) { '/unknown' }
-      stub(Dude::Dudes::Dudes).pids { { 12345 => '/root/.claude' } }
 
       expect(sut.read_dude_link(dudes_dir, 'x')).to be_nil
     end
   end
 
   describe '#read_dude_data' do
+    let(:claude_path) { '/proj/.claude/CLAUDE.md' }
+    let(:status_path) { '/proj/.claude/dudes/status.json' }
+    let(:dude_dir) { '/proj/.claude' }
+
+    before do
+      stub(Dude::Dudes::Inbox).new { inbox }
+    end
+
     it 'returns data hash with icon, inbox and status' do
-      claude_path = '/proj/.claude/CLAUDE.md'
-      status_path = '/proj/.claude/dudes/status.json'
       stub(File).exist?(claude_path) { true }
       stub(File).read(claude_path) { "---\nicon: 🔴\n---\n" }
-      stub(Dude::Dudes::Inbox).new { inbox }
       stub(File).exist?(status_path) { true }
       stub(File).read(status_path) { '{}' }
 
-      result = sut.read_dude_data('/proj/.claude')
+      result = sut.read_dude_data(dude_dir)
 
       expect(result[:icon]).to eq('🔴')
       expect(result[:inbox]).to be(inbox)
@@ -69,10 +77,9 @@ describe Dude::Dudes::Home do
     end
 
     it 'returns nil without icon' do
-      claude_path = '/proj/.claude/CLAUDE.md'
       stub(File).exist?(claude_path) { false }
 
-      expect(sut.read_dude_data('/proj/.claude')).to be_nil
+      expect(sut.read_dude_data(dude_dir)).to be_nil
     end
   end
 end

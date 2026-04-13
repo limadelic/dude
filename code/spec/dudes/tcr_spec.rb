@@ -12,10 +12,10 @@ describe Dude::Dudes::Tcr do
   let(:revert) { Object.new }
 
   before do
-    stub(Dude::Dudes::TestsRunner).new(files) { tests_runner }
-    stub(Dude::Dudes::Linter).new(files) { linter }
-    stub(Dude::Dudes::GitStageCommit).new(files) { commit }
-    stub(Dude::Dudes::GitRevert).new(files) { revert }
+    stub(Dude::Dudes::TestsRunner).new { tests_runner }
+    stub(Dude::Dudes::Linter).new { linter }
+    stub(Dude::Dudes::GitStageCommit).new { commit }
+    stub(Dude::Dudes::GitRevert).new { revert }
     stub(tests_runner).pass? { true }
     stub(linter).pass? { true }
     stub(commit).execute

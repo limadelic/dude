@@ -30,15 +30,15 @@ describe Dude::News::Sommelier do
       expect(sut.taste('v1.2.3'))
         .to eq(conclusion: 'failure', url: 'https://github.com/UKGEPIC/dude/actions/runs/12345', error: 'Error: test failed')
     end
-  end
 
-  describe '#taste when run is queued' do
-    it 'returns result after polling through queued status' do
-      calls = 0
-      stub(gh).run(/status/) { (calls += 1) == 1 ? 'queued' : 'completed' }
+    context 'when run is queued' do
+      it 'returns result after polling through queued status' do
+        calls = 0
+        stub(gh).run(/status/) { (calls += 1) == 1 ? 'queued' : 'completed' }
 
-      expect(sut.taste('v1.2.3'))
-        .to eq(conclusion: 'success', url: 'https://github.com/UKGEPIC/dude/actions/runs/12345', error: nil)
+        expect(sut.taste('v1.2.3'))
+          .to eq(conclusion: 'success', url: 'https://github.com/UKGEPIC/dude/actions/runs/12345', error: nil)
+      end
     end
   end
 end

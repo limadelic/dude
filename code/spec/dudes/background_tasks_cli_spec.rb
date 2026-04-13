@@ -5,7 +5,6 @@ describe Dude::Dudes::BackgroundTasksCli do
   include RR::DSL
 
   let(:sut) { described_class.new }
-  let(:bg_tasks) { Object.new }
 
   before { stub(Dude::Helpers::BackgroundTasks).list { [] } }
 

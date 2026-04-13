@@ -114,18 +114,15 @@ describe Dude::StatusLine::Format do
 
   describe '#normalize_to_100' do
     it 'ensures sum equals 100' do
-      result = sut.normalize_to_100(30, 30, 30)
-      expect(result.sum).to eq(100)
+      expect(sut.normalize_to_100(30, 30, 30).sum).to eq(100)
     end
 
     it 'increases largest value by remainder' do
-      result = sut.normalize_to_100(10, 50, 30)
-      expect(result[1]).to be > 50
+      expect(sut.normalize_to_100(10, 50, 30)[1]).to be > 50
     end
 
     it 'rounds all values to nearest 10' do
-      result = sut.normalize_to_100(33, 33, 33)
-      expect(result.all? { |v| v % 10 == 0 }).to eq(true)
+      expect(sut.normalize_to_100(33, 33, 33).all? { |v| v % 10 == 0 }).to eq(true)
     end
   end
 
@@ -268,18 +265,15 @@ describe Dude::StatusLine::Format do
 
   describe '.strip' do
     it 'removes ANSI codes' do
-      result = Dude::StatusLine::Format.strip("\e[32mtest\e[0m")
-      expect(result).to eq('test')
+      expect(Dude::StatusLine::Format.strip("\e[32mtest\e[0m")).to eq('test')
     end
 
     it 'preserves non-ANSI text' do
-      result = Dude::StatusLine::Format.strip('plain text')
-      expect(result).to eq('plain text')
+      expect(Dude::StatusLine::Format.strip('plain text')).to eq('plain text')
     end
 
     it 'removes multiple ANSI codes' do
-      result = Dude::StatusLine::Format.strip("\e[32m🎭\e[42m⁵\e[0m")
-      expect(result).to eq('🎭⁵')
+      expect(Dude::StatusLine::Format.strip("\e[32m🎭\e[42m⁵\e[0m")).to eq('🎭⁵')
     end
   end
 end

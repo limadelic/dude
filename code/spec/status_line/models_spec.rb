@@ -10,123 +10,118 @@ describe Dude::StatusLine::Models do
     s.gsub(/\e\[[0-9;]*m/, '')
   end
 
+  let(:session) { mock_session('opus', 25) }
+  let(:activity) { mock_activity }
+  let(:sut) { Dude::StatusLine::Models.new(session, activity) }
+
   describe 'Active model background' do
-    it 'is red for opus' do
-      session = mock_session('opus', 25)
-      activity = mock_activity
-      output = Dude::StatusLine::Models.new(session, activity).to_s
-      expect(output).to include("\e[41m")
+    context 'when using opus' do
+      let(:session) { mock_session('opus', 25) }
+
+      it 'is red' do
+        expect(sut.to_s).to include("\e[41m")
+      end
+
+      it 'has white text' do
+        expect(sut.to_s).to include("\e[41m\e[97m")
+      end
     end
 
-    it 'is green for sonnet' do
-      session = mock_session('sonnet', 25)
-      activity = mock_activity
-      output = Dude::StatusLine::Models.new(session, activity).to_s
-      expect(output).to include("\e[42m")
+    context 'when using sonnet' do
+      let(:session) { mock_session('sonnet', 25) }
+
+      it 'is green' do
+        expect(sut.to_s).to include("\e[42m")
+      end
+
+      it 'has white text' do
+        expect(sut.to_s).to include("\e[42m\e[97m")
+      end
     end
 
-    it 'is green for haiku' do
-      session = mock_session('haiku', 25)
-      activity = mock_activity
-      output = Dude::StatusLine::Models.new(session, activity).to_s
-      expect(output).to include("\e[42m")
+    context 'when using haiku' do
+      let(:session) { mock_session('haiku', 25) }
+
+      it 'is green' do
+        expect(sut.to_s).to include("\e[42m")
+      end
     end
 
-    it 'has white text on red' do
-      session = mock_session('opus', 25)
-      activity = mock_activity
-      output = Dude::StatusLine::Models.new(session, activity).to_s
-      expect(output).to include("\e[41m\e[97m")
-    end
-
-    it 'has white text on green' do
-      session = mock_session('sonnet', 25)
-      activity = mock_activity
-      output = Dude::StatusLine::Models.new(session, activity).to_s
-      expect(output).to include("\e[42m\e[97m")
-    end
-
-    it 'has black text on yellow for readability' do
-      models = {
-        'claude-haiku-4-5' => {
-          'metrics' => {
-            'successful_requests' => 40,
-            'spend' => 5.0
+    context 'when multiple models have high request counts' do
+      let(:activity) do
+        mock_activity(models: {
+          'claude-haiku-4-5' => {
+            'metrics' => { 'successful_requests' => 40, 'spend' => 5.0 }
+          },
+          'claude-opus-4-6' => {
+            'metrics' => { 'successful_requests' => 30, 'spend' => 5.0 }
+          },
+          'claude-sonnet-4-6' => {
+            'metrics' => { 'successful_requests' => 30, 'spend' => 5.0 }
           }
-        },
-        'claude-opus-4-6' => {
-          'metrics' => {
-            'successful_requests' => 30,
-            'spend' => 5.0
-          }
-        },
-        'claude-sonnet-4-6' => {
-          'metrics' => {
-            'successful_requests' => 30,
-            'spend' => 5.0
-          }
-        }
-      }
-      session = mock_session('opus', 50)
-      activity = mock_activity(models: models)
-      output = Dude::StatusLine::Models.new(session, activity).to_s
-      expect(output).to include("\e[48;5;226m\e[30m")
+        })
+      end
+      let(:session) { mock_session('opus', 50) }
+
+      it 'has black text on yellow for readability' do
+        expect(sut.to_s).to include("\e[48;5;226m\e[30m")
+      end
     end
   end
 
   describe 'Model order' do
     it 'is sorted by requests' do
-      session = mock_session('opus', 25)
-      activity = mock_activity
-      output = Dude::StatusLine::Models.new(session, activity).to_s
-      expect(strip(output)).to match(/🐸.*🎭.*🎸/)
+      expect(strip(sut.to_s)).to match(/🐸.*🎭.*🎸/)
     end
   end
 
   describe 'Model multiplier' do
     it 'shows superscript for all models' do
-      session = mock_session('opus', 25)
-      activity = mock_activity
-      output = Dude::StatusLine::Models.new(session, activity).to_s
-      expect(strip(output)).to match(/[²³⁴⁵⁶⁷⁸⁹]/)
+      expect(strip(sut.to_s)).to match(/[²³⁴⁵⁶⁷⁸⁹]/)
     end
 
-    it 'shows ¹⁰ for model with 1 request' do
-      models = {
-        'claude-opus-4-6' => {
-          'metrics' => {
-            'successful_requests' => 1, 'spend' => 1.0
+    context 'when model has 1 request' do
+      let(:activity) do
+        mock_activity(models: {
+          'claude-opus-4-6' => {
+            'metrics' => { 'successful_requests' => 1, 'spend' => 1.0 }
           }
-        }
-      }
-      session = mock_session('opus', 25)
-      activity = mock_activity(models: models)
-      output = strip(Dude::StatusLine::Models.new(session, activity).to_s)
-      expect(output).to match(/🎭 ?¹⁰/)
+        })
+      end
+
+      it 'shows ¹⁰ for that model' do
+        expect(strip(sut.to_s)).to match(/🎭 ?¹⁰/)
+      end
     end
 
-    it 'shows no models with zero requests' do
-      models = {}
-      session = mock_session('opus', 25)
-      activity = mock_activity(models: models)
-      output = strip(Dude::StatusLine::Models.new(session, activity).to_s)
-      expect(output).not_to match(/[🐸🎭🎸]/)
+    context 'when no models have requests' do
+      let(:activity) { mock_activity(models: {}) }
+
+      it 'shows no models' do
+        expect(strip(sut.to_s)).not_to match(/[🐸🎭🎸]/)
+      end
     end
 
-    it 'shows all models with superscripts for single model' do
-      models = {
-        'claude-opus-4-6' => {
-          'metrics' => {
-            'successful_requests' => 50, 'spend' => 5.0
+    context 'when only one model has requests' do
+      let(:activity) do
+        mock_activity(models: {
+          'claude-opus-4-6' => {
+            'metrics' => { 'successful_requests' => 50, 'spend' => 5.0 }
           }
-        }
-      }
-      session = mock_session('opus', 25)
-      activity = mock_activity(models: models)
-      output = strip(Dude::StatusLine::Models.new(session, activity).to_s)
-      expect(output).to match(/🎭 ?¹⁰/)
-      expect(output).to match(/🐸 ?⁰/)
-      expect(output).to match(/🎸 ?⁰/)
+        })
+      end
+
+      it 'shows opus with superscript' do
+        expect(strip(sut.to_s)).to match(/🎭 ?¹⁰/)
+      end
+
+      it 'shows haiku with zero superscript' do
+        expect(strip(sut.to_s)).to match(/🐸 ?⁰/)
+      end
+
+      it 'shows sonnet with zero superscript' do
+        expect(strip(sut.to_s)).to match(/🎸 ?⁰/)
+      end
     end
   end
 

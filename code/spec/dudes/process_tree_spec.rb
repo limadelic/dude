@@ -28,7 +28,6 @@ describe Dude::Dudes::ProcessTree do
 
     it 'returns false when pid not in ancestor chain' do
       stub(sut).shell_parent_pid(200) { 999 }
-      stub(sut).shell_parent_pid(999) { 1 }
 
       expect(sut.is_current?(100)).to be false
     end
@@ -41,8 +40,6 @@ describe Dude::Dudes::ProcessTree do
   describe '#has_ancestor?' do
     before do
       stub(sut).shell_parent_pid(300) { 200 }
-      stub(sut).shell_parent_pid(200) { 100 }
-      stub(sut).shell_parent_pid(100) { 1 }
     end
 
     it 'returns true when target_pid is ancestor' do
@@ -51,7 +48,6 @@ describe Dude::Dudes::ProcessTree do
 
     it 'returns false when target_pid not ancestor' do
       stub(sut).shell_parent_pid(300) { 999 }
-      stub(sut).shell_parent_pid(999) { 1 }
 
       expect(sut.has_ancestor?(300, 100)).to be false
     end

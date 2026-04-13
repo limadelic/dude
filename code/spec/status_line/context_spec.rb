@@ -10,24 +10,54 @@ describe Dude::StatusLine::Context do
   before { stub_const('Dude::StatusLine::Format::JETBRAINS', false) }
 
   describe '#to_s' do
-    it 'returns 9-block bar' do
-      sut = described_class.new(mock_session('opus', 0).to_json, 0)
-      bar = Dude::StatusLine::Format.strip(sut.to_s)[/🧠 ([█░]+)/, 1]
-      expect(bar.length).to eq(9)
+    let(:sut) { described_class.new(mock_session('opus', percentage).to_json, percentage) }
+    let(:bar) { Dude::StatusLine::Format.strip(sut.to_s)[/🧠 ([█░]+)/, 1] }
+
+    context 'at 0%' do
+      let(:percentage) { 0 }
+
+      it 'returns 9-block bar' do
+        expect(bar.length).to eq(9)
+      end
+
+      it 'shows 0 filled blocks' do
+        expect(bar.count("█")).to eq(0)
+      end
     end
 
-    describe 'filled blocks' do
-      [
-        [0, 0],
-        [33, 3],
-        [66, 6],
-        [100, 9]
-      ].each do |pct, filled|
-        it "shows #{filled} filled at #{pct}%" do
-          sut = described_class.new(mock_session('opus', pct).to_json, pct)
-          bar = Dude::StatusLine::Format.strip(sut.to_s)[/🧠 ([█░]+)/, 1]
-          expect(bar.count("█")).to eq(filled)
-        end
+    context 'at 33%' do
+      let(:percentage) { 33 }
+
+      it 'returns 9-block bar' do
+        expect(bar.length).to eq(9)
+      end
+
+      it 'shows 3 filled blocks' do
+        expect(bar.count("█")).to eq(3)
+      end
+    end
+
+    context 'at 66%' do
+      let(:percentage) { 66 }
+
+      it 'returns 9-block bar' do
+        expect(bar.length).to eq(9)
+      end
+
+      it 'shows 6 filled blocks' do
+        expect(bar.count("█")).to eq(6)
+      end
+    end
+
+    context 'at 100%' do
+      let(:percentage) { 100 }
+
+      it 'returns 9-block bar' do
+        expect(bar.length).to eq(9)
+      end
+
+      it 'shows 9 filled blocks' do
+        expect(bar.count("█")).to eq(9)
       end
     end
 

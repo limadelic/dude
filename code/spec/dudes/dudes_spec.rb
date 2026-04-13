@@ -54,7 +54,7 @@ describe Dude::Dudes::Dudes do
     end
 
     it 'returns nil when no current' do
-      stub(File).readlink { '/other/.claude/' }
+      stub(File).readlink(anything) { '/other/.claude/' }
       stub(Dude::Dudes::Dudes).pids { { ppid => '/other/.claude' } }
       stub(Process).ppid { 99999 }
 
@@ -82,9 +82,8 @@ describe Dude::Dudes::Dudes do
     it 'returns inbox path from symlink target' do
       stub(File).readlink(anything) { '/projects/rec/.claude/' }
 
-      result = sut.resolve_inbox('rec')
-
-      expect(result).to eq('/projects/rec/.claude/dudes/inbox.json')
+      expect(sut.resolve_inbox('rec'))
+        .to eq('/projects/rec/.claude/dudes/inbox.json')
     end
 
     it 'raises when symlink not found' do
@@ -97,9 +96,8 @@ describe Dude::Dudes::Dudes do
     it 'handles symlink trailing slash' do
       stub(File).readlink(anything) { '/projects/rec/.claude/' }
 
-      result = sut.resolve_inbox('rec')
-
-      expect(result).to eq('/projects/rec/.claude/dudes/inbox.json')
+      expect(sut.resolve_inbox('rec'))
+        .to eq('/projects/rec/.claude/dudes/inbox.json')
     end
   end
 
@@ -108,9 +106,8 @@ describe Dude::Dudes::Dudes do
       status_file = '/proj/.claude/dudes/status.json'
       stub(JSON).load_file(status_file) { { 'name' => 'smith' } }
 
-      result = sut.read_self_name('/proj/.claude/dudes')
-
-      expect(result).to eq('smith')
+      expect(sut.read_self_name('/proj/.claude/dudes'))
+        .to eq('smith')
     end
   end
 
@@ -152,17 +149,15 @@ describe Dude::Dudes::Dudes do
       ]
       stub(Dude::Helpers::BackgroundTasks).list { task_list }
 
-      result = sut.is_abiding?(1000, dudes_dir, target)
-
-      expect(result).to be true
+      expect(sut.is_abiding?(1000, dudes_dir, target))
+        .to be true
     end
 
     it 'returns false when no abide task' do
       stub(Dude::Helpers::BackgroundTasks).list { [] }
 
-      result = sut.is_abiding?(1000, dudes_dir, target)
-
-      expect(result).to be false
+      expect(sut.is_abiding?(1000, dudes_dir, target))
+        .to be false
     end
 
     it 'returns false when task parent is not the pid' do
@@ -171,9 +166,8 @@ describe Dude::Dudes::Dudes do
       ]
       stub(Dude::Helpers::BackgroundTasks).list { task_list }
 
-      result = sut.is_abiding?(1000, dudes_dir, target)
-
-      expect(result).to be false
+      expect(sut.is_abiding?(1000, dudes_dir, target))
+        .to be false
     end
 
     it 'returns false when task is for different dude' do
@@ -182,9 +176,8 @@ describe Dude::Dudes::Dudes do
       ]
       stub(Dude::Helpers::BackgroundTasks).list { task_list }
 
-      result = sut.is_abiding?(1000, dudes_dir, target)
-
-      expect(result).to be false
+      expect(sut.is_abiding?(1000, dudes_dir, target))
+        .to be false
     end
   end
 
@@ -194,9 +187,8 @@ describe Dude::Dudes::Dudes do
         { 100 => '/proj/.claude', 200 => '/proj/.claude', 300 => '/other/.claude' }
       end
 
-      result = sut.pids_for_target('/proj/.claude')
-
-      expect(result).to match_array([100, 200])
+      expect(sut.pids_for_target('/proj/.claude'))
+        .to match_array([100, 200])
     end
 
     it 'handles target with trailing slash' do
@@ -204,17 +196,15 @@ describe Dude::Dudes::Dudes do
         { 100 => '/proj/.claude', 200 => '/proj' }
       end
 
-      result = sut.pids_for_target('/proj/.claude/')
-
-      expect(result).to match_array([100, 200])
+      expect(sut.pids_for_target('/proj/.claude/'))
+        .to match_array([100, 200])
     end
 
     it 'returns empty when no matching pids' do
       stub(Dude::Dudes::Dudes).pids { { 100 => '/other/.claude' } }
 
-      result = sut.pids_for_target('/proj/.claude')
-
-      expect(result).to eq([])
+      expect(sut.pids_for_target('/proj/.claude'))
+        .to eq([])
     end
   end
 end

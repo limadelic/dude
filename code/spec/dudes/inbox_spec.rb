@@ -6,38 +6,45 @@ describe Dude::Dudes::Inbox do
 
   let(:sut) { described_class.new(path) }
   let(:path) { '/root/.claude/dudes/inbox.json' }
+  let(:empty_data) { [] }
+  let(:one_old_msg) { [{ 'text' => 'old', 'status' => 'new' }] }
+  let(:one_new_msg) { [{ 'text' => 'hi', 'status' => 'new' }] }
+  let(:one_wip_msg) { [{ 'text' => 'hi', 'status' => 'wip' }] }
+  let(:wip_and_new) do
+    [
+      { 'text' => 'hi', 'status' => 'wip' },
+      { 'text' => 'bye', 'status' => 'new' }
+    ]
+  end
 
   before do
     stub(File).exist?(path) { true }
-    stub(JSON).load_file(path) { [] }
-  end
+    stub(JSON).load_file(path) { empty_data }
+end
 
   describe '#append' do
     it 'persists message to file' do
-      mock(File).write(path, anything) { nil }
+      stub(File).write(path, anything) { nil }
 
       sut.append({ 'text' => 'hi' })
-
       expect(sut.length).to eq(1)
     end
 
     it 'appends to existing messages' do
-      stub(JSON).load_file(path) { [{ 'text' => 'old', 'status' => 'new' }] }
-      mock(File).write(path, anything) { nil }
+      stub(JSON).load_file(path) { one_old_msg }
+      stub(File).write(path, anything) { nil }
 
       sut.append({ 'text' => 'hi' })
-
       expect(sut.length).to eq(2)
     end
   end
 
   describe '#mark_wip' do
     it 'updates first item status to wip' do
-      stub(JSON).load_file(path) { [{ 'text' => 'hi', 'status' => 'new' }] }
-      mock(File).write(path, anything) { nil }
+      stub(JSON).load_file(path) { one_new_msg }
+      stub(File).write(path, anything) { nil }
 
       sut.mark_wip
-
       expect(sut.first_new).to be_nil
     end
 
@@ -50,21 +57,15 @@ describe Dude::Dudes::Inbox do
 
   describe '#dequeue_wip' do
     it 'removes first item when wip' do
-      stub(JSON).load_file(path) do
-        [
-          { 'text' => 'hi', 'status' => 'wip' },
-          { 'text' => 'bye', 'status' => 'new' }
-        ]
-      end
-      mock(File).write(path, anything) { nil }
+      stub(JSON).load_file(path) { wip_and_new }
+      stub(File).write(path, anything) { nil }
 
       sut.dequeue_wip
-
       expect(sut.length).to eq(1)
     end
 
     it 'skips removal when not wip' do
-      stub(JSON).load_file(path) { [{ 'text' => 'hi', 'status' => 'new' }] }
+      stub(JSON).load_file(path) { one_new_msg }
       dont_allow(File).write
 
       sut.dequeue_wip
@@ -73,16 +74,13 @@ describe Dude::Dudes::Inbox do
 
   describe '#first_new' do
     it 'returns first new message' do
-      stub(JSON).load_file(path) do
-        [{ 'text' => 'hi', 'status' => 'new' }]
-      end
+      stub(JSON).load_file(path) { one_new_msg }
 
-      expect(sut.first_new)
-        .to eq({ 'text' => 'hi', 'status' => 'new' })
+      expect(sut.first_new).to eq({ 'text' => 'hi', 'status' => 'new' })
     end
 
     it 'returns nil when no new messages' do
-      stub(JSON).load_file(path) { [{ 'text' => 'hi', 'status' => 'wip' }] }
+      stub(JSON).load_file(path) { one_wip_msg }
 
       expect(sut.first_new).to be_nil
     end

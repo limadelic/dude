@@ -7,8 +7,8 @@ describe Dude::Helpers::ProcessTreeWalker do
   let(:sut) { described_class.new }
 
   describe '#command_for' do
-    it 'uses command keyword instead of cmd for cross-platform support' do
-      stub(sut).`('ps -o command= -p 2000') { "dude abide\n" }
+    it 'strips trailing whitespace from command output' do
+      stub(sut).` { "dude abide\n" }
 
       expect(sut.command_for(2000)).to eq("dude abide")
     end
@@ -19,16 +19,29 @@ describe Dude::Helpers::ProcessTreeWalker do
       descendants, parent_map = sut.descendants_with_parents([])
 
       expect(descendants).to eq([])
+    end
+
+    it 'returns empty parent map when no pids given' do
+      descendants, parent_map = sut.descendants_with_parents([])
+
       expect(parent_map).to eq({})
     end
 
-    it 'finds single child and parent relationship' do
-      stub(sut).`('pgrep -P 1000') { "2000\n" }
-      stub(sut).`('pgrep -P 2000') { "" }
+    it 'finds single child from parent' do
+      stub(sut).`.with(/pgrep -P 1000/) { "2000\n" }
+      stub(sut).`.with(/pgrep -P 2000/) { "" }
 
       descendants, parent_map = sut.descendants_with_parents([1000])
 
       expect(descendants).to eq([2000])
+    end
+
+    it 'maps child to parent' do
+      stub(sut).`.with(/pgrep -P 1000/) { "2000\n" }
+      stub(sut).`.with(/pgrep -P 2000/) { "" }
+
+      descendants, parent_map = sut.descendants_with_parents([1000])
+
       expect(parent_map[2000]).to eq(1000)
     end
   end

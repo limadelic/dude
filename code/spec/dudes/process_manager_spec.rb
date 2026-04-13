@@ -5,8 +5,11 @@ describe Dude::Dudes::ProcessManager do
   include RR::DSL
 
   describe '.kill_watchers' do
+    before do
+      stub(described_class).pgrep_all { [123, 456] }
+    end
+
     it 'kills all dude abide processes' do
-      stub(described_class).pgrep_all('dude abide') { [123, 456] }
       mock(described_class).kill_process(123)
       mock(described_class).kill_process(456)
 
@@ -15,22 +18,24 @@ describe Dude::Dudes::ProcessManager do
   end
 
   describe '.pgrep_all' do
-    it 'returns array of pids matching pattern' do
-      stub(described_class).`.with('pgrep -f "dude abide"') { "123\n456\n789" }
+    before do
+      stub(described_class).` { "123\n456\n789" }
+    end
 
+    it 'returns array of pids matching pattern' do
       expect(described_class.pgrep_all('dude abide'))
         .to eq([123, 456, 789])
     end
 
     it 'filters out non-positive integers' do
-      stub(described_class).`.with('pgrep -f "dude abide"') { "123\n0\n-1\n456" }
+      stub(described_class).` { "123\n0\n-1\n456" }
 
       expect(described_class.pgrep_all('dude abide'))
         .to eq([123, 456])
     end
 
     it 'returns empty array when no matches' do
-      stub(described_class).`.with('pgrep -f "dude abide"') { "" }
+      stub(described_class).` { "" }
 
       expect(described_class.pgrep_all('dude abide'))
         .to eq([])
@@ -38,6 +43,10 @@ describe Dude::Dudes::ProcessManager do
   end
 
   describe '.kill_process' do
+    before do
+      stub(Process).kill { nil }
+    end
+
     it 'sends TERM signal to process' do
       mock(Process).kill('TERM', 123)
 
