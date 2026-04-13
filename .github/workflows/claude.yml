@@ -69,13 +69,16 @@ jobs:
           printf '#!/bin/bash\nif [[ "$1" == "install" ]]; then exit 0; fi\nexec %s "$@"\n' "$BUN_REAL" > $WRAPPER_DIR/bun
           chmod +x $WRAPPER_DIR/bun
 
+      - name: Set cwd
+        if: inputs.cwd
+        run: echo "GITHUB_WORKSPACE=${{ github.workspace }}/${{ inputs.cwd }}" >> $GITHUB_ENV
+
       - name: Run
         id: claude
         uses: anthropics/claude-code-action@v1
         env:
           ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
           CLAUDE_CODE_MODEL: claude-sonnet-4-6
-          GITHUB_WORKSPACE: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
         with:
           path_to_claude_code_executable: ${{ env.CLAUDE_PATH }}
           path_to_bun_executable: /home/runner/bun-skip/bun
