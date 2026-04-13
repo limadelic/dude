@@ -25,17 +25,17 @@ describe Dude::News::News do
     end
 
     it 'includes installed version in output' do
-      expect(fetch)
+      expect(sut.fetch)
         .to include('Installed: 1.0.0, Latest: 1.2.3')
     end
 
     it 'includes vintage result in output' do
-      expect(fetch)
+      expect(sut.fetch)
         .to include('Vintage 1.2.3: success')
     end
 
     it 'includes releases up to limit in output' do
-      expect(fetch)
+      expect(sut.fetch)
         .to include('v1.0.0', 'v0.9.0')
     end
   end
@@ -50,10 +50,12 @@ describe Dude::News::News do
         { { conclusion: 'success', url: nil, error: nil } }
     end
 
-    it 'requests only specified releases' do
-      output = fetch
-      expect(output).to include('v1.0.0')
-      expect(output).not_to include('v0.9.0')
+    it 'includes only requested releases in output' do
+      expect(sut.fetch).to include('v1.0.0')
+    end
+
+    it 'excludes releases beyond limit' do
+      expect(sut.fetch).not_to include('v0.9.0')
     end
   end
 
@@ -67,17 +69,8 @@ describe Dude::News::News do
     end
 
     it 'defaults installed version to unknown' do
-      expect(fetch)
+      expect(sut.fetch)
         .to include('Installed: unknown')
     end
-  end
-
-  def fetch
-    old_stdout = $stdout
-    $stdout = StringIO.new
-    sut.fetch
-    $stdout.string
-  ensure
-    $stdout = old_stdout
   end
 end

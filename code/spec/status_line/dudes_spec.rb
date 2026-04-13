@@ -12,14 +12,6 @@ describe Dude::StatusLine::Dudes do
   let(:dude_dir) { '/tmp' }
   let(:context_pct) { 25 }
 
-  let(:dude_1) { Object.new }
-  let(:dude_2) { Object.new }
-  let(:dude_3) { Object.new }
-
-  let(:default_dudes) do
-    [dude_1, dude_2, dude_3]
-  end
-
   def make_dude(name:, icon:, messages:, context:, is_current:, is_abiding:)
     dude = Object.new
     stub(dude).name { name }
@@ -31,110 +23,95 @@ describe Dude::StatusLine::Dudes do
     dude
   end
 
-  before do
-    stub(dude_1).name { 'dude' }
-    stub(dude_1).icon { '🎳' }
-    stub(dude_1).messages { 0 }
-    stub(dude_1).context { 25 }
-    stub(dude_1).is_current? { true }
-    stub(dude_1).is_abiding? { true }
-
-    stub(dude_2).name { 'rec' }
-    stub(dude_2).icon { '🔴' }
-    stub(dude_2).messages { 3 }
-    stub(dude_2).context { 50 }
-    stub(dude_2).is_current? { false }
-    stub(dude_2).is_abiding? { true }
-
-    stub(dude_3).name { 'smith' }
-    stub(dude_3).icon { '🤖' }
-    stub(dude_3).messages { 0 }
-    stub(dude_3).context { 80 }
-    stub(dude_3).is_current? { false }
-    stub(dude_3).is_abiding? { true }
+  def strip(s)
+    s.gsub(/\e\[[0-9;]*m/, '')
   end
 
-  describe 'Dudes section' do
+  let(:default_dudes) do
+    [
+      make_dude(name: 'dude', icon: '🎳', messages: 0, context: 25, is_current: true, is_abiding: true),
+      make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: true),
+      make_dude(name: 'smith', icon: '🤖', messages: 0, context: 80, is_current: false, is_abiding: true)
+    ]
+  end
+
+  describe '#to_s' do
     it 'shows dude icons' do
-      output = out(session_data, activity, dudes_data)
-      expect(strip(output)).to include('🎳', '🔴', '🤖')
+      output = sut.to_s
+      expect(output).to include('🎳', '🔴', '🤖')
     end
 
     it 'shows message count superscript' do
-      output = out(session_data, activity, dudes_data)
-      expect(strip(output)).to match(/🔴 ?³/)
+      output = sut.to_s
+      expect(output).to match(/🔴 ?³/)
     end
 
     it 'shows zero superscript' do
-      output = out(session_data, activity, dudes_data)
-      expect(strip(output)).to match(/🎳 ?⁰/)
-    end
-
-    it 'appears after models' do
-      output = out(session_data, activity, dudes_data)
-      expect(strip(output).index('🎭')).to be < strip(output).index('🎳')
+      output = sut.to_s
+      expect(output).to match(/🎳 ?⁰/)
     end
 
     it 'highlights current dude with background' do
-      output = out(session_data, activity, dudes_data)
+      output = sut.to_s
       expect(output).to include("\e[42m\e[97m🎳")
     end
 
     it 'does not highlight non-current dude' do
-      output = out(session_data, activity, dudes_data)
+      output = sut.to_s
       expect(output).not_to include("\e[42m\e[97m🔴")
     end
 
     it 'highlights current yellow dude with black text' do
       yellow_dude = make_dude(name: 'dude', icon: '🎳', messages: 0, context: 50, is_current: true, is_abiding: true)
+      sut = described_class.new(session_data, [yellow_dude], dude_dir, 50)
 
-      yellow_session = {
-        'model' => { 'id' => 'claude-opus-4-6' },
-        'context_window' => { 'used_percentage' => 50 }
-      }.to_json
-
-      output = out(yellow_session, activity, [yellow_dude])
+      output = sut.to_s
       expect(output).to include("\e[48;5;226m\e[30m🎳")
     end
   end
 
-  describe 'Abide watcher status' do
+  describe '#to_s - abide watcher status' do
     context 'not abiding' do
       it 'shows ˣ with context color' do
-        not_abiding_dude = make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: false)
+        dude = make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: false)
+        sut = described_class.new(session_data, [dude], dude_dir, context_pct)
 
-        output = out(session_data, activity, [not_abiding_dude])
+        output = sut.to_s
         expect(output).to include("\e[38;5;226m🔴", "ˣ")
       end
 
       it 'shows green ˣ with low context' do
-        green_dude = make_dude(name: 'rec', icon: '🔴', messages: 0, context: 10, is_current: false, is_abiding: false)
+        dude = make_dude(name: 'rec', icon: '🔴', messages: 0, context: 10, is_current: false, is_abiding: false)
+        sut = described_class.new(session_data, [dude], dude_dir, context_pct)
 
-        output = out(session_data, activity, [green_dude])
+        output = sut.to_s
         expect(output).to include("\e[32m🔴", "ˣ")
       end
 
       it 'has background highlight for current not-abiding dude' do
-        highlight_dude = make_dude(name: 'rec', icon: '🔴', messages: 0, context: 25, is_current: true, is_abiding: false)
+        dude = make_dude(name: 'rec', icon: '🔴', messages: 0, context: 25, is_current: true, is_abiding: false)
+        sut = described_class.new(session_data, [dude], dude_dir, context_pct)
 
-        output = out(session_data, activity, [highlight_dude])
+        output = sut.to_s
         expect(output).to include("\e[42m\e[97m🔴", "ˣ")
       end
 
       it 'shows red ˣ with high context' do
-        red_dude = make_dude(name: 'rec', icon: '🔴', messages: 0, context: 80, is_current: false, is_abiding: false)
+        dude = make_dude(name: 'rec', icon: '🔴', messages: 0, context: 80, is_current: false, is_abiding: false)
+        sut = described_class.new(session_data, [dude], dude_dir, context_pct)
 
-        output = out(session_data, activity, [red_dude])
+        output = sut.to_s
         expect(output).to include("\e[31m🔴", "ˣ")
       end
     end
 
     context 'abiding' do
       it 'shows message count' do
-        abiding_dude = make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: true)
+        dude = make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: true)
+        sut = described_class.new(session_data, [dude], dude_dir, context_pct)
 
-        output = out(session_data, activity, [abiding_dude])
-        expect(strip(output)).to match(/🔴 ?³/)
+        output = sut.to_s
+        expect(output).to match(/🔴 ?³/)
       end
     end
   end

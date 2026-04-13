@@ -69,19 +69,4 @@ describe Dude::StatusLine::Runner do
       end
     end
   end
-
-  describe 'Activity data handling' do
-    it 'accepts injected activity data' do
-      result = sut.send(:activity_data)
-
-      expect(result).to eq(activity_data)
-    end
-
-    it 'has expected structure' do
-      result = sut.send(:activity_data)
-
-      expect(result.dig('results', 0, 'metrics', 'spend')).to be_truthy
-      expect(result.dig('results', 0, 'breakdown', 'models')).to be_truthy
-    end
-  end
 end

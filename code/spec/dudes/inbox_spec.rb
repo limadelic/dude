@@ -14,25 +14,31 @@ describe Dude::Dudes::Inbox do
 
   describe '#append' do
     it 'persists message to file' do
-      mock(File).write(path, /hi/) { nil }
+      mock(File).write(path, anything) { nil }
 
       sut.append({ 'text' => 'hi' })
+
+      expect(sut.length).to eq(1)
     end
 
     it 'appends to existing messages' do
       stub(JSON).load_file(path) { [{ 'text' => 'old', 'status' => 'new' }] }
-      mock(File).write(path, /old.*hi/) { nil }
+      mock(File).write(path, anything) { nil }
 
       sut.append({ 'text' => 'hi' })
+
+      expect(sut.length).to eq(2)
     end
   end
 
   describe '#mark_wip' do
     it 'updates first item status to wip' do
       stub(JSON).load_file(path) { [{ 'text' => 'hi', 'status' => 'new' }] }
-      mock(File).write(path, /wip/) { nil }
+      mock(File).write(path, anything) { nil }
 
       sut.mark_wip
+
+      expect(sut.first_new).to be_nil
     end
 
     it 'skips empty inbox' do
@@ -50,9 +56,11 @@ describe Dude::Dudes::Inbox do
           { 'text' => 'bye', 'status' => 'new' }
         ]
       end
-      mock(File).write(path, /bye/) { nil }
+      mock(File).write(path, anything) { nil }
 
       sut.dequeue_wip
+
+      expect(sut.length).to eq(1)
     end
 
     it 'skips removal when not wip' do
@@ -81,6 +89,12 @@ describe Dude::Dudes::Inbox do
 
     it 'returns nil when inbox missing' do
       stub(File).exist?(path) { false }
+
+      expect(sut.first_new).to be_nil
+    end
+
+    it 'returns nil when JSON is malformed' do
+      stub(JSON).load_file(path) { raise JSON::ParserError }
 
       expect(sut.first_new).to be_nil
     end

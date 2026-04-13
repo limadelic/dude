@@ -1,49 +1,48 @@
 require_relative '../spec_helper'
 require_relative '../../lib/dude/status_line/models'
-require_relative '../../lib/dude/dudes/dudes'
 require_relative '../examples/shared'
 
 describe Dude::StatusLine::Models do
   include RR::DSL
   include_context 'StatusLine helpers'
 
-  let(:dudes_double) { Object.new }
-
-  before do
-    stub(dudes_double).all { [] }
-    stub(Dude::Dudes::Dudes).new { dudes_double }
+  def strip(s)
+    s.gsub(/\e\[[0-9;]*m/, '')
   end
 
   describe 'Active model background' do
-    let(:activity_data) { mock_activity }
-
     it 'is red for opus' do
-      session_data = mock_session('opus', 25)
-      output = out(session_data.to_json, activity_data)
+      session = mock_session('opus', 25)
+      activity = mock_activity
+      output = Dude::StatusLine::Models.new(session, activity).to_s
       expect(output).to include("\e[41m")
     end
 
     it 'is green for sonnet' do
-      session_data = mock_session('sonnet', 25)
-      output = out(session_data.to_json, activity_data)
+      session = mock_session('sonnet', 25)
+      activity = mock_activity
+      output = Dude::StatusLine::Models.new(session, activity).to_s
       expect(output).to include("\e[42m")
     end
 
     it 'is green for haiku' do
-      session_data = mock_session('haiku', 25)
-      output = out(session_data.to_json, activity_data)
+      session = mock_session('haiku', 25)
+      activity = mock_activity
+      output = Dude::StatusLine::Models.new(session, activity).to_s
       expect(output).to include("\e[42m")
     end
 
     it 'has white text on red' do
-      session_data = mock_session('opus', 25)
-      output = out(session_data.to_json, activity_data)
+      session = mock_session('opus', 25)
+      activity = mock_activity
+      output = Dude::StatusLine::Models.new(session, activity).to_s
       expect(output).to include("\e[41m\e[97m")
     end
 
     it 'has white text on green' do
-      session_data = mock_session('sonnet', 25)
-      output = out(session_data.to_json, activity_data)
+      session = mock_session('sonnet', 25)
+      activity = mock_activity
+      output = Dude::StatusLine::Models.new(session, activity).to_s
       expect(output).to include("\e[42m\e[97m")
     end
 
@@ -68,29 +67,27 @@ describe Dude::StatusLine::Models do
           }
         }
       }
-      session_data = mock_session('opus', 50)
-      activity_data = mock_activity(models: models)
-      output = out(session_data.to_json, activity_data)
+      session = mock_session('opus', 50)
+      activity = mock_activity(models: models)
+      output = Dude::StatusLine::Models.new(session, activity).to_s
       expect(output).to include("\e[48;5;226m\e[30m")
     end
   end
 
   describe 'Model order' do
-    let(:session_data) { mock_session('opus', 25).to_json }
-    let(:activity_data) { mock_activity }
-
     it 'is sorted by requests' do
-      output = out(session_data, activity_data)
+      session = mock_session('opus', 25)
+      activity = mock_activity
+      output = Dude::StatusLine::Models.new(session, activity).to_s
       expect(strip(output)).to match(/🐸.*🎭.*🎸/)
     end
   end
 
   describe 'Model multiplier' do
-    let(:session_data) { mock_session('opus', 25).to_json }
-    let(:activity_data) { mock_activity }
-
     it 'shows superscript for all models' do
-      output = out(session_data, activity_data)
+      session = mock_session('opus', 25)
+      activity = mock_activity
+      output = Dude::StatusLine::Models.new(session, activity).to_s
       expect(strip(output)).to match(/[²³⁴⁵⁶⁷⁸⁹]/)
     end
 
@@ -102,15 +99,17 @@ describe Dude::StatusLine::Models do
           }
         }
       }
-      activity_data = mock_activity(models: models)
-      output = strip(out(session_data, activity_data))
+      session = mock_session('opus', 25)
+      activity = mock_activity(models: models)
+      output = strip(Dude::StatusLine::Models.new(session, activity).to_s)
       expect(output).to match(/🎭 ?¹⁰/)
     end
 
     it 'shows no models with zero requests' do
       models = {}
-      activity_data = mock_activity(models: models)
-      output = strip(out(session_data, activity_data))
+      session = mock_session('opus', 25)
+      activity = mock_activity(models: models)
+      output = strip(Dude::StatusLine::Models.new(session, activity).to_s)
       expect(output).not_to match(/[🐸🎭🎸]/)
     end
 
@@ -122,8 +121,9 @@ describe Dude::StatusLine::Models do
           }
         }
       }
-      activity_data = mock_activity(models: models)
-      output = strip(out(session_data, activity_data))
+      session = mock_session('opus', 25)
+      activity = mock_activity(models: models)
+      output = strip(Dude::StatusLine::Models.new(session, activity).to_s)
       expect(output).to match(/🎭 ?¹⁰/)
       expect(output).to match(/🐸 ?⁰/)
       expect(output).to match(/🎸 ?⁰/)

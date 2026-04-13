@@ -7,58 +7,36 @@ describe Dude::StatusLine::Context do
   include RR::DSL
   include_context 'StatusLine helpers'
 
-  let(:sut) { described_class.new(session, pct) }
-  let(:pct) { 25 }
-  let(:session) { mock_session('opus', pct).to_json }
-
   before { stub_const('Dude::StatusLine::Format::JETBRAINS', false) }
 
-  describe 'Context bar' do
-    it 'has 9 blocks' do
-      result = strip(sut.to_s)[/🧠 ([█░]+)/, 1]&.length
-      expect(result).to eq(9)
+  describe '#to_s' do
+    it 'returns 9-block bar' do
+      sut = described_class.new(mock_session('opus', 0).to_json, 0)
+      bar = Dude::StatusLine::Format.strip(sut.to_s)[/🧠 ([█░]+)/, 1]
+      expect(bar.length).to eq(9)
     end
 
-    context 'fill based on percentage' do
-      it 'shows 0 filled blocks at 0%' do
-        sut_with_pct = described_class.new(mock_session('opus', 0).to_json, 0)
-        result = strip(sut_with_pct.to_s)[/🧠 ([█░]+)/, 1]&.count("█")
-        expect(result).to eq(0)
-      end
-
-      it 'shows 3 filled blocks at 33%' do
-        sut_with_pct = described_class.new(mock_session('opus', 33).to_json, 33)
-        result = strip(sut_with_pct.to_s)[/🧠 ([█░]+)/, 1]&.count("█")
-        expect(result).to eq(3)
-      end
-
-      it 'shows 6 filled blocks at 66%' do
-        sut_with_pct = described_class.new(mock_session('opus', 66).to_json, 66)
-        result = strip(sut_with_pct.to_s)[/🧠 ([█░]+)/, 1]&.count("█")
-        expect(result).to eq(6)
-      end
-
-      it 'shows 9 filled blocks at 100%' do
-        sut_with_pct = described_class.new(mock_session('opus', 100).to_json, 100)
-        result = strip(sut_with_pct.to_s)[/🧠 ([█░]+)/, 1]&.count("█")
-        expect(result).to eq(9)
+    describe 'filled blocks' do
+      [
+        [0, 0],
+        [33, 3],
+        [66, 6],
+        [100, 9]
+      ].each do |pct, filled|
+        it "shows #{filled} filled at #{pct}%" do
+          sut = described_class.new(mock_session('opus', pct).to_json, pct)
+          bar = Dude::StatusLine::Format.strip(sut.to_s)[/🧠 ([█░]+)/, 1]
+          expect(bar.count("█")).to eq(filled)
+        end
       end
     end
 
     describe 'color coding' do
-      it 'is green at 25%' do
-        expect(sut.to_s).to include("\e[32m🧠")
+      def output_at_percentage(pct)
+        described_class.new(mock_session('opus', pct).to_json, pct).to_s
       end
 
-      it 'is yellow at 50%' do
-        sut_with_pct = described_class.new(mock_session('opus', 50).to_json, 50)
-        expect(sut_with_pct.to_s).to include("\e[38;5;226m🧠")
-      end
-
-      it 'is red at 80%' do
-        sut_with_pct = described_class.new(mock_session('opus', 80).to_json, 80)
-        expect(sut_with_pct.to_s).to include("\e[31m🧠")
-      end
+      include_examples 'color threshold', 25, 50, 80
     end
   end
 end

@@ -37,7 +37,7 @@ describe Dude::Helpers::Cli do
     it 'passes files to Tcr' do
       files = %w[lib/foo.rb]
       mock(Dude::Dudes::Tcr).new(files) { tcr_instance }
-      stub(tcr_instance).run { true }
+      mock(tcr_instance).run { true }
 
       expect { sut.invoke(:tcr, files) }.to raise_error(SystemExit)
     end
@@ -78,7 +78,6 @@ describe Dude::Helpers::Cli do
     end
 
     it 'calls pub method with name argument' do
-      stub(pub_instance).pub { 'myicon' }
       mock(pub_instance).pub('/proj', 'myicon') { 'myicon' }
 
       sut.invoke(:pub, ['myicon'])
@@ -91,7 +90,6 @@ describe Dude::Helpers::Cli do
     end
 
     it 'uses nil as default name when not provided' do
-      stub(pub_instance).pub { '/proj' }
       mock(pub_instance).pub('/proj', nil) { '/proj' }
 
       sut.invoke(:pub, [])

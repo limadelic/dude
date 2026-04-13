@@ -1,9 +1,9 @@
 {
   "mcpServers": {
-    "playwright": {
+    "arana": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@playwright/mcp@latest"]
+      "args": ["-y", "chrome-devtools-mcp@latest", "--autoConnect"]
     },
     "jira": {
       "type": "http",

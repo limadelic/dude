@@ -13,8 +13,8 @@ describe Dude::StatusLine::Dudes do
 
   before do
     stub_const('Dude::StatusLine::Format::JETBRAINS', false)
-    stub(Dir).exist? { true }
-    stub(JSON).load_file { {} }
+    stub(Dir).exist? { |path| true if path == '/tmp' }
+    stub(JSON).load_file(anything) { {} }
   end
 
   def build_dude(name:, icon:, messages:, context:, current:, abiding: true)
@@ -75,16 +75,23 @@ describe Dude::StatusLine::Dudes do
       expect(result).not_to include("\e[42m\e[97m🔴")
     end
 
-    it 'highlights current yellow dude with black text' do
-      yellow_dude = build_dude(
-        name: 'dude', icon: '🎳', messages: 0, context: 50, current: true
-      )
-      session_data = { 'model' => { 'id' => 'claude-opus-4-6' },
-                       'context_window' => { 'used_percentage' => 50 } }.to_json
-      sut_yellow = described_class.new(session_data, [yellow_dude], '/tmp', 50)
-      result = sut_yellow.to_s
+    context 'yellow dude' do
+      let(:yellow_dude) do
+        build_dude(
+          name: 'dude', icon: '🎳', messages: 0, context: 50, current: true
+        )
+      end
+      let(:session_data) do
+        { 'model' => { 'id' => 'claude-opus-4-6' },
+          'context_window' => { 'used_percentage' => 50 } }.to_json
+      end
+      let(:sut) { described_class.new(session_data, [yellow_dude], '/tmp', 50) }
 
-      expect(result).to include("\e[48;5;226m\e[30m🎳")
+      it 'highlights with black text' do
+        result = sut.to_s
+
+        expect(result).to include("\e[48;5;226m\e[30m🎳")
+      end
     end
   end
 
@@ -95,7 +102,7 @@ describe Dude::StatusLine::Dudes do
           name: 'rec', icon: '🔴', messages: 0, context: 50, current: false, abiding: false
         )
       end
-      let(:sut_rec) { described_class.new('', [rec], '/tmp', 0) }
+      let(:sut) { described_class.new('', [rec], '/tmp', 0) }
 
       context 'with messages' do
         let(:rec) do
@@ -105,7 +112,7 @@ describe Dude::StatusLine::Dudes do
         end
 
         it 'shows ˣ with context color' do
-          result = sut_rec.to_s
+          result = sut.to_s
           expect(result).to include("\e[38;5;226m🔴", "ˣ")
         end
       end
@@ -118,7 +125,7 @@ describe Dude::StatusLine::Dudes do
         end
 
         it 'shows green ˣ with low context' do
-          result = sut_rec.to_s
+          result = sut.to_s
           expect(result).to include("\e[32m🔴", "ˣ")
         end
       end
@@ -131,7 +138,7 @@ describe Dude::StatusLine::Dudes do
         end
 
         it 'has background highlight for current not-abiding dude' do
-          result = sut_rec.to_s
+          result = sut.to_s
           expect(result).to include("\e[42m\e[97m🔴", "ˣ")
         end
       end
@@ -144,7 +151,7 @@ describe Dude::StatusLine::Dudes do
         end
 
         it 'shows red ˣ with high context' do
-          result = sut_rec.to_s
+          result = sut.to_s
           expect(result).to include("\e[31m🔴", "ˣ")
         end
       end
@@ -156,10 +163,10 @@ describe Dude::StatusLine::Dudes do
           name: 'rec', icon: '🔴', messages: 3, context: 50, current: false, abiding: true
         )
       end
-      let(:sut_rec) { described_class.new('', [rec], '/tmp', 0) }
+      let(:sut) { described_class.new('', [rec], '/tmp', 0) }
 
       it 'shows message count' do
-        result = sut_rec.to_s
+        result = sut.to_s
         stripped = Dude::StatusLine::Format.strip(result)
 
         expect(stripped).to match(/🔴³/)
@@ -174,9 +181,15 @@ describe Dude::StatusLine::Dudes do
         67 => 'red', 100 => 'red'
       }.each do |pct, color|
         it "writes #{color} at #{pct}%" do
-          sut_status = described_class.new({}, nil, '/tmp', pct)
-          mock(File).write(anything, /#{color}/)
-          sut_status.write_status
+          sut_color = described_class.new({}, nil, '/tmp', pct)
+          written = nil
+          stub(File).write(anything, anything) { |_path, content| written = content }
+
+          sut_color.write_status
+
+          expect(written).to include("color")
+          parsed = JSON.parse(written)
+          expect(parsed['color']).to eq(color)
         end
       end
     end
