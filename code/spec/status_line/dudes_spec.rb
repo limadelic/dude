@@ -61,55 +61,74 @@ describe Dude::StatusLine::Dudes do
       expect(output).not_to include("\e[42m\e[97m🔴")
     end
 
-    it 'highlights current yellow dude with black text' do
-      yellow_dude = make_dude(name: 'dude', icon: '🎳', messages: 0, context: 50, is_current: true, is_abiding: true)
-      sut = described_class.new(session_data, [yellow_dude], dude_dir, 50)
+    context 'yellow dude at context 50' do
+      let(:dudes_data) do
+        [make_dude(name: 'dude', icon: '🎳', messages: 0, context: 50, is_current: true, is_abiding: true)]
+      end
+      let(:context_pct) { 50 }
 
-      output = sut.to_s
-      expect(output).to include("\e[48;5;226m\e[30m🎳")
+      it 'highlights current yellow dude with black text' do
+        output = sut.to_s
+        expect(output).to include("\e[48;5;226m\e[30m🎳")
+      end
     end
   end
 
   describe '#to_s - abide watcher status' do
     context 'not abiding' do
-      it 'shows ˣ with context color' do
-        dude = make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: false)
-        sut = described_class.new(session_data, [dude], dude_dir, context_pct)
-
-        output = sut.to_s
-        expect(output).to include("\e[38;5;226m🔴", "ˣ")
+      let(:dudes_data) do
+        [make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: false)]
       end
 
-      it 'shows green ˣ with low context' do
-        dude = make_dude(name: 'rec', icon: '🔴', messages: 0, context: 10, is_current: false, is_abiding: false)
-        sut = described_class.new(session_data, [dude], dude_dir, context_pct)
+      context 'at context 50' do
+        let(:context_pct) { 50 }
 
-        output = sut.to_s
-        expect(output).to include("\e[32m🔴", "ˣ")
+        it 'shows ˣ with context color' do
+          output = sut.to_s
+          expect(output).to include("\e[38;5;226m🔴", "ˣ")
+        end
       end
 
-      it 'has background highlight for current not-abiding dude' do
-        dude = make_dude(name: 'rec', icon: '🔴', messages: 0, context: 25, is_current: true, is_abiding: false)
-        sut = described_class.new(session_data, [dude], dude_dir, context_pct)
+      context 'at low context 10' do
+        let(:dudes_data) do
+          [make_dude(name: 'rec', icon: '🔴', messages: 0, context: 10, is_current: false, is_abiding: false)]
+        end
 
-        output = sut.to_s
-        expect(output).to include("\e[42m\e[97m🔴", "ˣ")
+        it 'shows green ˣ with low context' do
+          output = sut.to_s
+          expect(output).to include("\e[32m🔴", "ˣ")
+        end
       end
 
-      it 'shows red ˣ with high context' do
-        dude = make_dude(name: 'rec', icon: '🔴', messages: 0, context: 80, is_current: false, is_abiding: false)
-        sut = described_class.new(session_data, [dude], dude_dir, context_pct)
+      context 'current not-abiding dude at context 25' do
+        let(:dudes_data) do
+          [make_dude(name: 'rec', icon: '🔴', messages: 0, context: 25, is_current: true, is_abiding: false)]
+        end
 
-        output = sut.to_s
-        expect(output).to include("\e[31m🔴", "ˣ")
+        it 'has background highlight' do
+          output = sut.to_s
+          expect(output).to include("\e[42m\e[97m🔴", "ˣ")
+        end
+      end
+
+      context 'at high context 80' do
+        let(:dudes_data) do
+          [make_dude(name: 'rec', icon: '🔴', messages: 0, context: 80, is_current: false, is_abiding: false)]
+        end
+
+        it 'shows red ˣ with high context' do
+          output = sut.to_s
+          expect(output).to include("\e[31m🔴", "ˣ")
+        end
       end
     end
 
     context 'abiding' do
-      it 'shows message count' do
-        dude = make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: true)
-        sut = described_class.new(session_data, [dude], dude_dir, context_pct)
+      let(:dudes_data) do
+        [make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: true)]
+      end
 
+      it 'shows message count' do
         output = sut.to_s
         expect(output).to match(/🔴 ?³/)
       end
@@ -118,6 +137,7 @@ describe Dude::StatusLine::Dudes do
 
   describe '#write_status' do
     let(:status_file) { '/tmp/status.json' }
+    let(:dudes_data) { [] }
 
     before do
       stub(Dir).exist?(dude_dir) { true }
@@ -125,58 +145,85 @@ describe Dude::StatusLine::Dudes do
     end
 
     context 'context color' do
-      it 'writes green at 0%' do
-        mock(File).write(status_file, /green/)
-        dudes = described_class.new(session_data, [], dude_dir, 0)
-        dudes.write_status
+      context 'at 0%' do
+        let(:context_pct) { 0 }
+
+        it 'writes green' do
+          mock(File).write(status_file, /green/)
+          sut.write_status
+        end
       end
 
-      it 'writes green at 32%' do
-        mock(File).write(status_file, /green/)
-        dudes = described_class.new(session_data, [], dude_dir, 32)
-        dudes.write_status
+      context 'at 32%' do
+        let(:context_pct) { 32 }
+
+        it 'writes green' do
+          mock(File).write(status_file, /green/)
+          sut.write_status
+        end
       end
 
-      it 'writes yellow at 33%' do
-        mock(File).write(status_file, /yellow/)
-        dudes = described_class.new(session_data, [], dude_dir, 33)
-        dudes.write_status
+      context 'at 33%' do
+        let(:context_pct) { 33 }
+
+        it 'writes yellow' do
+          mock(File).write(status_file, /yellow/)
+          sut.write_status
+        end
       end
 
-      it 'writes yellow at 66%' do
-        mock(File).write(status_file, /yellow/)
-        dudes = described_class.new(session_data, [], dude_dir, 66)
-        dudes.write_status
+      context 'at 66%' do
+        let(:context_pct) { 66 }
+
+        it 'writes yellow' do
+          mock(File).write(status_file, /yellow/)
+          sut.write_status
+        end
       end
 
-      it 'writes red at 67%' do
-        mock(File).write(status_file, /red/)
-        dudes = described_class.new(session_data, [], dude_dir, 67)
-        dudes.write_status
+      context 'at 67%' do
+        let(:context_pct) { 67 }
+
+        it 'writes red' do
+          mock(File).write(status_file, /red/)
+          sut.write_status
+        end
       end
 
-      it 'writes red at 100%' do
-        mock(File).write(status_file, /red/)
-        dudes = described_class.new(session_data, [], dude_dir, 100)
-        dudes.write_status
+      context 'at 100%' do
+        let(:context_pct) { 100 }
+
+        it 'writes red' do
+          mock(File).write(status_file, /red/)
+          sut.write_status
+        end
       end
     end
   end
 
   describe 'initialization' do
-    it 'recovers from invalid JSON in session_data' do
-      invalid_session = '{"data": "value"}'
-      stub(JSON).parse(invalid_session) \
-        { raise JSON::ParserError.new('test') }
+    context 'with invalid JSON in session_data' do
+      let(:invalid_session) { '{"data": "value"}' }
+      let(:session_data) { invalid_session }
+      let(:dudes_data) { [] }
 
-      sut = described_class.new(invalid_session, [], dude_dir, context_pct)
-      expect(sut.to_s).to eq('')
+      before do
+        stub(JSON).parse(invalid_session) \
+          { raise JSON::ParserError.new('test') }
+      end
+
+      it 'recovers and returns empty string' do
+        expect(sut.to_s).to eq('')
+      end
     end
 
-    it 'handles invalid JSON strings gracefully' do
-      invalid_json = '{invalid json'
-      sut = described_class.new(invalid_json, [], dude_dir, context_pct)
-      expect(sut.to_s).to eq('')
+    context 'with malformed JSON string' do
+      let(:session_data) { '{invalid json' }
+      let(:dudes_data) { [] }
+
+      it 'handles gracefully and returns empty string' do
+        expect(sut.to_s).to eq('')
+      end
     end
   end
 end

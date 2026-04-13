@@ -8,11 +8,10 @@ describe Dude::StatusLine::Spend do
 
   let(:sut) { described_class.new(activity_data) }
   let(:activity_data) { mock_activity(spend: spend_amount) }
+  let(:spend_amount) { 0 }
 
   describe 'Spend section color coding' do
     describe 'at 0%' do
-      let(:spend_amount) { 0 }
-
       it 'is green' do
         expect(sut.to_s).to include("\e[32m💰")
       end

@@ -18,15 +18,11 @@ describe Dude::Dudes::Pub do
     end
 
     it 'returns provided icon' do
-      result = sut.pub(pub_target, icon)
-
-      expect(result).to eq(icon)
+      expect(sut.pub(pub_target, icon)).to eq(icon)
     end
 
     it 'uses target as default icon' do
-      result = sut.pub(pub_target, nil)
-
-      expect(result).to eq(pub_target)
+      expect(sut.pub(pub_target, nil)).to eq(pub_target)
     end
   end
 
@@ -79,15 +75,11 @@ describe Dude::Dudes::Pub do
     end
 
     it 'returns underscore-prefixed name' do
-      result = sut.sub(sub_target, sub_name)
-
-      expect(result).to eq('dude_dev')
+      expect(sut.sub(sub_target, sub_name)).to eq('dude_dev')
     end
 
     it 'uses target basename as default name' do
-      result = sut.sub('/some/path/code', nil)
-
-      expect(result).to eq('dude_code')
+      expect(sut.sub('/some/path/code', nil)).to eq('dude_code')
     end
 
     it 'finds parent pub' do

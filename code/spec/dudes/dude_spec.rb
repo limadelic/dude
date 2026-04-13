@@ -28,16 +28,13 @@ describe Dude::Dudes::Dude do
 
   describe '#is_current?' do
     it 'returns false when pid is nil' do
-      sut.pid = nil
-
       expect(sut).not_to be_is_current
     end
 
     it 'returns true when registry says current' do
       stub(registry).is_current?(999) { true }
-      sut.pid = 999
 
-      expect(sut).to be_is_current
+      expect(sut_with(pid: 999)).to be_is_current
     end
   end
 
@@ -67,7 +64,17 @@ describe Dude::Dudes::Dude do
     end
   end
 
+  shared_context 'target dude stubs' do
+    before do
+      stub(File).symlink?(/rec/) { true }
+      stub(File).readlink(/rec/) { '/projects/rec/.claude/' }
+      stub(Dude::Dudes::Inbox).new(/rec.*inbox\.json/) { target_inbox }
+    end
+  end
+
   describe '#tell' do
+    include_context 'target dude stubs'
+
     it 'raises when target dude not found' do
       stub(File).symlink?(/rec/) { false }
 
@@ -76,9 +83,6 @@ describe Dude::Dudes::Dude do
     end
 
     it 'delivers message to target inbox' do
-      stub(File).symlink?(/rec/) { true }
-      stub(File).readlink(/rec/) { '/projects/rec/.claude/' }
-      stub(Dude::Dudes::Inbox).new(/rec.*inbox\.json/) { target_inbox }
       mock(target_inbox).append(tell_msg)
 
       sut_with(name: 'smith').tell('rec', 'hello')
@@ -86,6 +90,8 @@ describe Dude::Dudes::Dude do
   end
 
   describe '#ask' do
+    include_context 'target dude stubs'
+
     it 'raises when target dude not found' do
       stub(File).symlink?(/rec/) { false }
 
@@ -94,9 +100,6 @@ describe Dude::Dudes::Dude do
     end
 
     it 'includes from field in message' do
-      stub(File).symlink?(/rec/) { true }
-      stub(File).readlink(/rec/) { '/projects/rec/.claude/' }
-      stub(Dude::Dudes::Inbox).new(/rec.*inbox\.json/) { target_inbox }
       mock(target_inbox).append(ask_msg)
 
       sut_with(name: 'smith').ask('rec', 'whatup')
@@ -166,9 +169,8 @@ describe Dude::Dudes::Dude do
   describe '#is_abiding?' do
     it 'delegates to registry with pid and paths' do
       stub(registry).is_abiding?(888, '/proj/.claude/dudes', '/proj/.claude') { true }
-      sut.pid = 888
 
-      expect(sut).to be_is_abiding
+      expect(sut_with(pid: 888)).to be_is_abiding
     end
   end
 

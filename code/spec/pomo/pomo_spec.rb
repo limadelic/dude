@@ -10,6 +10,7 @@ describe Dude::Pomo::Pomo do
 
   before do
     stub(File).exist? { true }
+    stub(File).read { content }
   end
 
   def strip(s)
@@ -29,36 +30,53 @@ describe Dude::Pomo::Pomo do
       expect(sut.to_s).to be_nil
     end
 
+
     it 'returns nil when transitioning' do
       stub(File).read { "transitioning|#{future}" }
 
       expect(sut.to_s).to be_nil
     end
 
-    it 'renders active default timer with tomato and progress bar' do
-      future_end = Time.now.to_i + 1500
-      stub(File).read { "default|#{future_end}" }
+    it 'renders active default timer with tomato' do
+      stub(File).read { "default|#{Time.now.to_i + 1500}" }
 
-      result = sut.to_s
-      expect(result).to include('🍅')
-      expect(result).to include("\e[31m")
-      expect(strip(result)).to match(/░{9}/)
+      expect(sut.to_s).to include('🍅')
     end
 
-    it 'renders active break timer with apple and progress bar' do
+    it 'renders active default timer with red color' do
+      stub(File).read { "default|#{Time.now.to_i + 1500}" }
+
+      expect(sut.to_s).to include("\e[31m")
+    end
+
+    it 'renders active default timer with progress bar' do
+      stub(File).read { "default|#{Time.now.to_i + 1500}" }
+
+      expect(strip(sut.to_s)).to match(/░{9}/)
+    end
+
+    it 'renders active break timer with apple' do
       stub(File).read { "break|#{future}" }
 
-      result = sut.to_s
-      expect(result).to include('🍏')
-      expect(result).to include("\e[32m")
+      expect(sut.to_s).to include('🍏')
     end
 
-    it 'renders long break same as break' do
+    it 'renders active break timer with green color' do
+      stub(File).read { "break|#{future}" }
+
+      expect(sut.to_s).to include("\e[32m")
+    end
+
+    it 'renders long break with apple' do
       stub(File).read { "long break|#{future}" }
 
-      result = sut.to_s
-      expect(result).to include('🍏')
-      expect(result).to include("\e[32m")
+      expect(sut.to_s).to include('🍏')
+    end
+
+    it 'renders long break with green color' do
+      stub(File).read { "long break|#{future}" }
+
+      expect(sut.to_s).to include("\e[32m")
     end
 
     it 'shows progress near completion' do
@@ -67,7 +85,7 @@ describe Dude::Pomo::Pomo do
       expect(strip(sut.to_s)).to match(/█+/)
     end
 
-    it 'returns nil for unknown timer type' do
+    it 'renders unknown timer type' do
       stub(File).read { "unknown|#{future}" }
 
       expect(sut.to_s).not_to be_nil

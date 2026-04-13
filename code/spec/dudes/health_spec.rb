@@ -9,21 +9,19 @@ describe Dude::Dudes::Health do
   let(:pattern) { 'wait-until.*' + File.join(dir, 'inbox.json') }
 
   describe '#check' do
-    it 'returns alive pid when process is running' do
+    before do
       stub(sut).`("pgrep -f \"#{pattern}\"") { "123\n" }
       stub(sut).`("ps -p 123 -o ppid=") { "999\n" }
+    end
 
-      result = sut.check(dir, { 'abide_pid' => 123 })
-
-      expect(result[:pid_alive]).to eq(123)
+    it 'returns alive pid when process is running' do
+      expect(sut.check(dir, { 'abide_pid' => 123 })[:pid_alive]).to eq(123)
     end
 
     it 'returns nil when no processes found' do
       stub(sut).`("pgrep -f \"#{pattern}\"") { "" }
 
-      result = sut.check(dir, {})
-
-      expect(result[:pid_alive]).to be_nil
+      expect(sut.check(dir, {})[:pid_alive]).to be_nil
     end
 
     it 'returns nil for orphaned process' do
@@ -31,9 +29,7 @@ describe Dude::Dudes::Health do
       stub(sut).`("ps -p 456 -o ppid=") { "1\n" }
       mock(Process).kill('TERM', 456)
 
-      result = sut.check(dir, {})
-
-      expect(result[:pid_alive]).to be_nil
+      expect(sut.check(dir, {})[:pid_alive]).to be_nil
     end
 
     it 'updates status when pid changed' do
@@ -41,19 +37,13 @@ describe Dude::Dudes::Health do
       stub(sut).`("ps -p 789 -o ppid=") { "999\n" }
       mock(File).write("/proj/.claude/dudes/status.json", anything)
 
-      result = sut.check(dir, { 'abide_pid' => 111 })
-
-      expect(result[:pid_alive]).to eq(789)
+      expect(sut.check(dir, { 'abide_pid' => 111 })[:pid_alive]).to eq(789)
     end
 
     it 'does not update status when pid unchanged' do
-      stub(sut).`("pgrep -f \"#{pattern}\"") { "123\n" }
-      stub(sut).`("ps -p 123 -o ppid=") { "999\n" }
       dont_allow(File).write
 
-      result = sut.check(dir, { 'abide_pid' => 123 })
-
-      expect(result[:pid_alive]).to eq(123)
+      expect(sut.check(dir, { 'abide_pid' => 123 })[:pid_alive]).to eq(123)
     end
   end
 end
