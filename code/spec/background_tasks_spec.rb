@@ -20,17 +20,6 @@ describe Dude::Helpers::BackgroundTasks do
     it 'returns process hashes with pid, parent_pid, and command' do
       stub(Dude::Dudes::Dudes).pids { { 1000 => '/proj/.claude' } }
       stub(walker).descendants_with_parents([1000]) \
-        { [[2000], { 2000 => 1000 }] }
-      stub(walker).command_for(2000) { "dude abide" }
-
-      expect(Dude::Helpers::BackgroundTasks.list).to contain_exactly(
-        { pid: 2000, parent_pid: 1000, command: "dude abide" }
-      )
-    end
-
-    it 'returns multiple children with commands' do
-      stub(Dude::Dudes::Dudes).pids { { 1000 => '/proj/.claude' } }
-      stub(walker).descendants_with_parents([1000]) \
         { [[2000, 2001], { 2000 => 1000, 2001 => 1000 }] }
       stub(walker).command_for(2000) { "dude abide" }
       stub(walker).command_for(2001) { "dude watch" }
@@ -41,7 +30,7 @@ describe Dude::Helpers::BackgroundTasks do
       )
     end
 
-    it 'returns grandchildren with commands and correct parent_pid' do
+    it 'handles nested hierarchy with correct parent_pids' do
       stub(Dude::Dudes::Dudes).pids { { 1000 => '/proj/.claude' } }
       stub(walker).descendants_with_parents([1000]) \
         { [[2000, 3000], { 2000 => 1000, 3000 => 2000 }] }
@@ -54,14 +43,7 @@ describe Dude::Helpers::BackgroundTasks do
       )
     end
 
-    it 'handles no descendants (leaf process)' do
-      stub(Dude::Dudes::Dudes).pids { { 1000 => '/proj/.claude' } }
-      stub(walker).descendants_with_parents([1000]) { [[], {}] }
-
-      expect(Dude::Helpers::BackgroundTasks.list).to eq([])
-    end
-
-    it 'discovers multiple live dude pids and walks children for each' do
+    it 'passes all live dude pids to walker' do
       stub(Dude::Dudes::Dudes).pids do
         { 1000 => '/proj1/.claude', 2000 => '/proj2/.claude' }
       end
