@@ -18,12 +18,6 @@ on:
       claude_args:
         type: string
         required: false
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-  actions: write
-
 jobs:
   dude:
     runs-on: garm-dev-dlas1-vm-linux-mega-large
@@ -31,7 +25,6 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
-      ANTHROPIC_AUTH_TOKEN: ${{ secrets.LITELLM_KEY }}
     steps:
       - name: Test
         run: echo "hello"
