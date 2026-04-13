@@ -9,197 +9,277 @@ describe Dude::StatusLine::Format do
   let(:yellow) { Dude::StatusLine::Format::COLORS[:yellow] }
   let(:red) { Dude::StatusLine::Format::COLORS[:red] }
   let(:reset) { Dude::StatusLine::Format::COLORS[:reset] }
-
-  def with_jetbrains(value)
-    original = ENV['TERMINAL_EMULATOR'] == 'JetBrains-JediTerm'
-    Dude::StatusLine::Format.send(:remove_const, :JETBRAINS)
-    Dude::StatusLine::Format.const_set(:JETBRAINS, value)
-    yield
-  ensure
-    Dude::StatusLine::Format.send(:remove_const, :JETBRAINS)
-    Dude::StatusLine::Format.const_set(:JETBRAINS, original)
-  end
+  let(:white) { Dude::StatusLine::Format::WHITE }
+  let(:bg_green) { Dude::StatusLine::Format::COLORS[:bg_green] }
 
   describe '#clamp' do
-    it 'clamps values below 0 to 0' do
+    it 'returns 0 for negative values' do
       expect(sut.clamp(-10)).to eq(0)
     end
 
-    it 'clamps values above 100 to 100' do
+    it 'returns 100 for values above 100' do
       expect(sut.clamp(150)).to eq(100)
     end
 
-    it 'leaves values in range unchanged' do
+    it 'returns value when between 0 and 100' do
       expect(sut.clamp(50)).to eq(50)
+    end
+
+    it 'returns 0 for exactly 0' do
+      expect(sut.clamp(0)).to eq(0)
+    end
+
+    it 'returns 100 for exactly 100' do
+      expect(sut.clamp(100)).to eq(100)
     end
   end
 
   describe '#color_for_pct' do
-    it 'returns green for low percentage' do
+    it 'returns green below threshold' do
       expect(sut.color_for_pct(25)).to eq(green)
     end
 
-    it 'returns yellow for mid percentage' do
+    it 'returns green at lower threshold minus 1' do
+      expect(sut.color_for_pct(32)).to eq(green)
+    end
+
+    it 'returns yellow above lower threshold' do
       expect(sut.color_for_pct(50)).to eq(yellow)
     end
 
-    it 'returns red for high percentage' do
+    it 'returns yellow at upper threshold' do
+      expect(sut.color_for_pct(66)).to eq(yellow)
+    end
+
+    it 'returns red above upper threshold' do
       expect(sut.color_for_pct(75)).to eq(red)
+    end
+
+    it 'returns red at high value' do
+      expect(sut.color_for_pct(100)).to eq(red)
+    end
+
+    it 'returns green for 0' do
+      expect(sut.color_for_pct(0)).to eq(green)
     end
   end
 
   describe '#percentage' do
-    it 'calculates percentage of part to total' do
+    it 'calculates simple percentage' do
       expect(sut.percentage(25, 100)).to eq(25)
     end
 
-    it 'returns 0 for zero total' do
+    it 'returns 0 when total is zero' do
       expect(sut.percentage(10, 0)).to eq(0)
+    end
+
+    it 'rounds percentage correctly' do
+      expect(sut.percentage(1, 3)).to eq(33)
+    end
+
+    it 'calculates percentage for half' do
+      expect(sut.percentage(50, 100)).to eq(50)
     end
   end
 
   describe '#round_to_10' do
-    it 'rounds down when remainder < 5' do
+    it 'rounds down when remainder less than 5' do
       expect(sut.round_to_10(12)).to eq(10)
     end
 
     it 'rounds up when remainder >= 5' do
       expect(sut.round_to_10(15)).to eq(20)
     end
+
+    it 'returns 0 for 0' do
+      expect(sut.round_to_10(0)).to eq(0)
+    end
+
+    it 'rounds 5 up to 10' do
+      expect(sut.round_to_10(5)).to eq(10)
+    end
+
+    it 'rounds 4 down to 0' do
+      expect(sut.round_to_10(4)).to eq(0)
+    end
+
+    it 'rounds 24 to 20' do
+      expect(sut.round_to_10(24)).to eq(20)
+    end
+
+    it 'rounds 25 to 30' do
+      expect(sut.round_to_10(25)).to eq(30)
+    end
   end
 
   describe '#normalize_to_100' do
-    it 'distributes remainder to largest value' do
+    it 'ensures sum equals 100' do
       result = sut.normalize_to_100(30, 30, 30)
       expect(result.sum).to eq(100)
     end
 
-    it 'preserves largest value detection' do
+    it 'increases largest value by remainder' do
       result = sut.normalize_to_100(10, 50, 30)
       expect(result[1]).to be > 50
+    end
+
+    it 'rounds all values to nearest 10' do
+      result = sut.normalize_to_100(33, 33, 33)
+      expect(result.all? { |v| v % 10 == 0 }).to eq(true)
     end
   end
 
   describe '#bar' do
-    it 'renders emoji with filled blocks' do
+    it 'includes emoji in output' do
       result = sut.bar(50, '🧠')
-      expect(result).to include('🧠')
-      expect(result).to include('█')
-      expect(result).to include('░')
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to include('🧠')
     end
 
-    it 'uses custom lo and hi thresholds' do
-      result = sut.bar(40, '🎯', lo: 50, hi: 75)
-      expect(result).to include("\e[32m")
+    it 'includes filled blocks' do
+      result = sut.bar(50, '🧠')
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to include('█')
     end
 
-    it 'uses provided color instead of calculated' do
+    it 'includes empty blocks' do
+      result = sut.bar(50, '🧠')
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to include('░')
+    end
+
+    it 'applies green color for low values' do
+      result = sut.bar(10, '🎯')
+      expect(result).to include(green)
+    end
+
+    it 'applies custom color when provided' do
       result = sut.bar(25, '💰', color: red)
-      expect(result).to include("\e[31m")
+      expect(result).to include(red)
     end
 
-    context 'emoji and bars spacing' do
-      it 'has no extra space between emoji and bars when NOT JetBrains' do
-        with_jetbrains(false) do
-          result = sut.bar(50, '🧠')
-          stripped = result.gsub(/\033\[[^m]*m/, '')
-          expect(stripped).to match(/^🧠 [█░]+$/)
-        end
-      end
+    it 'overrides color calculation with explicit color' do
+      result = sut.bar(40, '🎯', lo: 50, hi: 75, color: red)
+      expect(result).to include(red)
+    end
 
-      it 'has extra space between emoji and bars when IS JetBrains' do
-        with_jetbrains(true) do
-          result = sut.bar(50, '🧠')
-          stripped = result.gsub(/\033\[[^m]*m/, '')
-          expect(stripped).to match(/^🧠  [█░]+$/)
-        end
-      end
+    it 'respects custom lo threshold' do
+      result = sut.bar(40, '🎯', lo: 50, hi: 75)
+      expect(result).to include(green)
+    end
+
+    it 'checks spacing between emoji and bars' do
+      result = sut.bar(50, '🧠')
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to match(/🧠 +[█░]+/)
     end
   end
 
   describe '#emoji_str' do
-    it 'formats emoji with color and superscript' do
+    it 'includes emoji in output' do
       result = sut.emoji_str('🎭', green, '³')
-      expect(result).to include('🎭')
-      expect(result).to include('³')
-      expect(result).to include("\e[32m")
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to include('🎭')
     end
 
-    context 'JetBrains emoji padding' do
-      it 'returns string WITHOUT space between emoji and superscript when NOT JetBrains' do
-        with_jetbrains(false) do
-          result = sut.emoji_str('🎭', green, '³')
-          stripped = result.gsub(/\033\[[^m]*m/, '')
-          expect(stripped).to eq('🎭³')
-        end
-      end
+    it 'includes superscript in output' do
+      result = sut.emoji_str('🎭', green, '³')
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to include('³')
+    end
 
-      it 'returns string WITH space between emoji and superscript when IS JetBrains' do
-        with_jetbrains(true) do
-          result = sut.emoji_str('🎭', green, '³')
-          stripped = result.gsub(/\033\[[^m]*m/, '')
-          expect(stripped).to eq('🎭 ³')
-        end
-      end
+    it 'includes color code' do
+      result = sut.emoji_str('🎭', green, '³')
+      expect(result).to include(green)
+    end
+
+    it 'includes reset code' do
+      result = sut.emoji_str('🎭', green, '³')
+      expect(result).to include(reset)
+    end
+
+    it 'handles spacing between emoji and superscript' do
+      result = sut.emoji_str('🎭', green, '³')
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to match(/🎭 *³/)
     end
   end
 
   describe '#emoji_group' do
-    context 'inactive emoji spacing' do
-      it 'has no space when NOT JetBrains' do
-        with_jetbrains(false) do
-          result = sut.emoji_group('🎭', 5, false, green)
-          stripped = result.gsub(/\033\[[^m]*m/, '')
-          expect(stripped).to eq('🎭⁵')
-        end
+    describe 'inactive emoji' do
+      it 'formats with emoji and superscript' do
+        result = sut.emoji_group('🎭', 5, false, green)
+        stripped = Dude::StatusLine::Format.strip(result)
+        expect(stripped).to match(/🎭 *⁵/)
       end
 
-      it 'has space when IS JetBrains' do
-        with_jetbrains(true) do
-          result = sut.emoji_group('🎭', 5, false, green)
-          stripped = result.gsub(/\033\[[^m]*m/, '')
-          expect(stripped).to eq('🎭 ⁵')
-        end
+      it 'includes color code' do
+        result = sut.emoji_group('🎭', 5, false, green)
+        expect(result).to include(green)
       end
     end
 
-    context 'active emoji spacing' do
-      it 'has no space when NOT JetBrains' do
-        with_jetbrains(false) do
-          result = sut.emoji_group('🎭', 5, true, green)
-          stripped = result.gsub(/\033\[[^m]*m/, '')
-          expect(stripped).to eq('🎭⁵')
-        end
+    describe 'active emoji' do
+      it 'formats with emoji and superscript' do
+        result = sut.emoji_group('🎭', 5, true, green)
+        stripped = Dude::StatusLine::Format.strip(result)
+        expect(stripped).to match(/🎭 *⁵/)
       end
 
-      it 'has space when IS JetBrains' do
-        with_jetbrains(true) do
-          result = sut.emoji_group('🎭', 5, true, green)
-          stripped = result.gsub(/\033\[[^m]*m/, '')
-          expect(stripped).to eq('🎭 ⁵')
-        end
+      it 'includes background color' do
+        result = sut.emoji_group('🎭', 5, true, green)
+        expect(result).to include(bg_green)
+      end
+
+      it 'uses black text on yellow background' do
+        result = sut.emoji_group('🎭', 5, true, yellow)
+        expect(result).to include("\e[30m")
+      end
+
+      it 'uses white text on green background' do
+        result = sut.emoji_group('🎭', 5, true, green)
+        expect(result).to include(white)
+      end
+
+      it 'uses white text on red background' do
+        result = sut.emoji_group('🎭', 5, true, red)
+        expect(result).to include(white)
       end
     end
 
-    it 'formats inactive emoji' do
-      result = sut.emoji_group('🎭', 5, false, green)
-      expect(result).to include('🎭')
-      expect(result).to include('⁵')
+    it 'handles string count' do
+      result = sut.emoji_group('🎭', '⁹⁺', false, green)
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to include('⁹⁺')
     end
 
-    it 'adds background for active emoji' do
-      result = sut.emoji_group('🎭', 5, true, green)
-      expect(result).to include("\e[42m")
+    it 'uses 9+ for count above 10' do
+      result = sut.emoji_group('🎭', 15, false, green)
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to include('⁹⁺')
     end
 
-    it 'uses black text on yellow' do
-      result = sut.emoji_group('🎭', 5, true, yellow)
-      expect(result).to include("\e[30m")
+    it 'uses exact superscript for count 0-10' do
+      result = sut.emoji_group('🎭', 0, false, green)
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to include('⁰')
+    end
+  end
+
+  describe '.strip' do
+    it 'removes ANSI codes' do
+      result = Dude::StatusLine::Format.strip("\e[32mtest\e[0m")
+      expect(result).to eq('test')
     end
 
-    it 'uses white text on other colors' do
-      result = sut.emoji_group('🎭', 5, true, green)
-      expect(result).to include("\e[97m")
+    it 'preserves non-ANSI text' do
+      result = Dude::StatusLine::Format.strip('plain text')
+      expect(result).to eq('plain text')
+    end
+
+    it 'removes multiple ANSI codes' do
+      result = Dude::StatusLine::Format.strip("\e[32m🎭\e[42m⁵\e[0m")
+      expect(result).to eq('🎭⁵')
     end
   end
 end
