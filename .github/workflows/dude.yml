@@ -21,6 +21,7 @@ on:
 jobs:
   dude:
     runs-on: garm-dev-dlas1-vm-linux-mega-large
+    timeout-minutes: ${{ inputs.timeout || 30 }}
     steps:
       - name: Test
         run: echo "hello"
