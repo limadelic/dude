@@ -13,16 +13,19 @@ describe Dude::Helpers::BackgroundTasks do
   end
 
   describe '.list' do
+    before do
+      stub(walker).descendants_with_parents([1000]) \
+        { [[2000, 2001], { 2000 => 1000, 2001 => 1000 }] }
+      stub(walker).command_for(2000) { "dude abide" }
+      stub(walker).command_for(2001) { "dude watch" }
+    end
+
     it 'returns empty array when no live dudes' do
       expect(Dude::Helpers::BackgroundTasks.list).to eq([])
     end
 
     it 'returns process hashes with pid, parent_pid, and command' do
       stub(Dude::Dudes::Dudes).pids { { 1000 => '/proj/.claude' } }
-      stub(walker).descendants_with_parents([1000]) \
-        { [[2000, 2001], { 2000 => 1000, 2001 => 1000 }] }
-      stub(walker).command_for(2000) { "dude abide" }
-      stub(walker).command_for(2001) { "dude watch" }
 
       expect(Dude::Helpers::BackgroundTasks.list).to contain_exactly(
         { pid: 2000, parent_pid: 1000, command: "dude abide" },
