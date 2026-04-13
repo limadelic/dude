@@ -47,7 +47,7 @@ permissions:
 
 jobs:
   dude:
-    runs-on: garm-dev-dlas1-vm-linux-mega-large
+    runs-on: ubuntu-latest
     timeout-minutes: ${{ inputs.timeout || 30 }}
     env:
       GH_TOKEN: ${{ github.token }}
