@@ -12,11 +12,12 @@ describe Dude::Helpers::Cli do
   let(:pub_instance) { Object.new }
 
   describe '#tcr' do
-    before { stub(Dude::Dudes::Tcr).new { tcr_instance } }
+    before do
+      stub(Dude::Dudes::Tcr).new { tcr_instance }
+      stub(tcr_instance).run { true }
+    end
 
     it 'exits with code 0 on success' do
-      stub(tcr_instance).run { true }
-
       expect { sut.invoke(:tcr, %w[file.rb]) }.to(
         raise_error(SystemExit) do |error|
           expect(error.status).to eq(0)
@@ -37,7 +38,6 @@ describe Dude::Helpers::Cli do
     it 'passes files to Tcr' do
       files = %w[lib/foo.rb]
       mock(Dude::Dudes::Tcr).new(files) { tcr_instance }
-      mock(tcr_instance).run { true }
 
       expect { sut.invoke(:tcr, files) }.to raise_error(SystemExit)
     end
@@ -68,12 +68,11 @@ describe Dude::Helpers::Cli do
     before do
       stub(Dude::Dudes::Pub).new { pub_instance }
       stub(Dir).pwd { '/proj' }
-      stub($stdout).puts
+      stub(pub_instance).pub { 'myicon' }
     end
 
     it 'calls Pub.new with current working directory' do
       mock(Dude::Dudes::Pub).new(target: '/proj') { pub_instance }
-      stub(pub_instance).pub { 'myicon' }
 
       sut.invoke(:pub, ['myicon'])
     end
@@ -85,8 +84,6 @@ describe Dude::Helpers::Cli do
     end
 
     it 'prints the returned name' do
-      stub(pub_instance).pub { 'myicon' }
-
       expect { sut.invoke(:pub, ['myicon']) }.to output("myicon\n").to_stdout
     end
 
