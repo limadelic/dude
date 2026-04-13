@@ -75,4 +75,10 @@ jobs:
 
       - name: Run
         working-directory: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
-        run: claude -p --dangerously-skip-permissions "${{ inputs.prompt }}" ${{ inputs.claude_args }}
+        run: |
+          output=$(claude -p --dangerously-skip-permissions "${{ inputs.prompt }}" ${{ inputs.claude_args }})
+          echo "$output"
+          echo "## Output" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "$output" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
