@@ -12,7 +12,8 @@ module Dude
 
       def fetch
         latest = @paperboy.latest_version
-        lines = [installed_and_latest_line(latest)]
+        lines = []
+        lines << installed_and_latest_line(latest)
         lines.concat(releases_lines)
         lines.concat(smoke_test_lines(latest))
         lines.join("\n")
@@ -35,23 +36,12 @@ module Dude
 
       def smoke_test_lines(latest)
         result = @sommelier.taste(latest)
-        [
-          smoke_test_conclusion(latest, result), smoke_test_url(result),
-          smoke_test_error(result)
-        ].compact
-      end
-
-      def smoke_test_conclusion(latest, result)
+        lines = []
         version = latest.start_with?('v') ? latest[1..-1] : latest
-        "Vintage #{version}: #{result[:conclusion]}"
-      end
-
-      def smoke_test_url(result)
-        result[:url]
-      end
-
-      def smoke_test_error(result)
-        result[:error]
+        lines << "Vintage #{version}: #{result[:conclusion]}"
+        lines << result[:url] if result[:url]
+        lines << result[:error] if result[:error]
+        lines
       end
     end
   end
