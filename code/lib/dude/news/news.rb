@@ -35,7 +35,7 @@ module Dude
       private
 
       def installed_version
-        @installed_version ||= ENV.fetch('CC_VERSION', 'unknown')
+        @installed_version ||= `claude --version`.strip
       end
 
       def installed_and_latest_line(latest)

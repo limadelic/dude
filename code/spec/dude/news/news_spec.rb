@@ -21,10 +21,8 @@ describe Dude::News::News do
     end
     stub(sommelier).taste('1.2.3') \
       { { conclusion: 'success', url: nil, error: nil } }
-    ENV['CC_VERSION'] = '1.0.0'
+    stub(sut).installed_version { '1.0.0' }
   end
-
-  after { ENV.delete('CC_VERSION') }
 
   describe '#fetch' do
     it 'includes installed version in output' do
@@ -66,16 +64,16 @@ describe Dude::News::News do
     end
   end
 
-  describe '#fetch with missing CC_VERSION' do
+  describe '#fetch when installed_version returns unknown' do
     before do
-      ENV.delete('CC_VERSION')
+      stub(sut).installed_version { 'unknown' }
       stub(paperboy).latest_version { '1.0.0' }
       stub(paperboy).releases(5) { [] }
       stub(sommelier).taste('1.0.0') \
         { { conclusion: 'success', url: nil, error: nil } }
     end
 
-    it 'defaults installed version to unknown' do
+    it 'includes unknown in output' do
       expect(sut.fetch)
         .to include('Installed: unknown')
     end
