@@ -56,6 +56,7 @@ GEM
     rainbow (3.1.1)
     rake (13.3.1)
     regexp_parser (2.11.3)
+    rr (3.1.2)
     rspec (3.13.2)
       rspec-core (~> 3.13.0)
       rspec-expectations (~> 3.13.0)
@@ -107,6 +108,7 @@ DEPENDENCIES
   cucumber
   dude!
   rake
+  rr
   rspec
   rubocop
   simplecov

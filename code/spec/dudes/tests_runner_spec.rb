@@ -1,23 +1,50 @@
 require_relative '../spec_helper'
 require_relative "../../lib/dude/dudes/tests_runner"
 
-describe 'Dude::Dudes::TestsRunner' do
-  let(:described_class) { Dude::Dudes::TestsRunner }
-  let(:runner) { described_class.new(files) }
+describe Dude::Dudes::TestsRunner do
+  include RR::DSL
+
+  let(:sut) { described_class.new(files) }
   let(:files) { %w[spec/foo_spec.rb] }
 
   describe '#pass?' do
+    let(:command) { 'bundle exec rspec spec/foo_spec.rb > /dev/null 2>&1' }
+    let(:result) { true }
+
     before do
-      allow(runner).to receive(:system).and_return(true)
+      stub(sut).system(command) { result }
     end
 
-    it 'returns true when system returns true' do
-      expect(runner.pass?).to be true
+    it 'returns true when command succeeds' do
+      expect(sut.pass?).to be true
     end
 
-    it 'returns false when system returns false' do
-      allow(runner).to receive(:system).and_return(false)
-      expect(runner.pass?).to be false
+    context 'when command fails' do
+      let(:result) { false }
+
+      it 'returns false' do
+        expect(sut.pass?).to be false
+      end
+    end
+
+    context 'with multiple files' do
+      let(:files) { %w[spec/a_spec.rb spec/b_spec.rb] }
+      let(:command) {
+        'bundle exec rspec spec/a_spec.rb spec/b_spec.rb > /dev/null 2>&1'
+      }
+
+      it 'joins multiple files' do
+        expect(sut.pass?).to be true
+      end
+    end
+
+    context 'with no files' do
+      let(:files) { [] }
+      let(:command) { 'bundle exec rspec  > /dev/null 2>&1' }
+
+      it 'handles no files' do
+        expect(sut.pass?).to be true
+      end
     end
   end
 end
