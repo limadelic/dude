@@ -7,6 +7,7 @@ describe Dude::Dudes::GitStageCommit do
   let(:sut) { described_class.new(files) }
 
   describe '#execute' do
+
     context 'with single file' do
       let(:files) { %w[lib/foo.rb] }
 

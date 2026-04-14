@@ -62,21 +62,6 @@ module Examples
         }
       end
 
-      def out(session_data, activity_data = activity, dudes_data = nil)
-        json_session = if session_data.nil?
-                         mock_session.to_json
-                       elsif session_data.is_a?(String)
-                         session_data
-                       else
-                         session_data.to_json
-                       end
-        capture_output do
-          Dude::StatusLine::Runner.new(
-            json_session, activity: activity_data,
-            dudes: dudes_data
-          ).run
-        end
-      end
     end
   end
 end

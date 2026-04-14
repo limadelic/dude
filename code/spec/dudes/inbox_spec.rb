@@ -48,10 +48,12 @@ end
       expect(sut.first_new).to be_nil
     end
 
-    it 'skips empty inbox' do
-      dont_allow(File).write
+    context 'when inbox is empty' do
+      before { dont_allow(File).write }
 
-      sut.mark_wip
+      it 'skips empty inbox' do
+        sut.mark_wip
+      end
     end
   end
 
@@ -64,11 +66,15 @@ end
       expect(sut.length).to eq(1)
     end
 
-    it 'skips removal when not wip' do
-      stub(JSON).load_file(path) { one_new_msg }
-      dont_allow(File).write
+    context 'when message is not wip' do
+      before do
+        stub(JSON).load_file(path) { one_new_msg }
+        dont_allow(File).write
+      end
 
-      sut.dequeue_wip
+      it 'skips removal when not wip' do
+        sut.dequeue_wip
+      end
     end
   end
 

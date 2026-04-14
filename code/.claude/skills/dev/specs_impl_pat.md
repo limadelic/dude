@@ -50,6 +50,13 @@
 - or to be verified in the result
 - trainwreck in 2 lines when Args and result are too long
 
+## Mock
+
+- mocks belong in Setup, next to stubs
+- mocks are seldom needed
+- they express something was called (side effects, sagas)
+- RR mocks auto-verify after Exercise
+
 ## Args
 
 - Args tend to be noisy, minimize noise
@@ -72,12 +79,6 @@
 - ideally a single Verify per Test
 - it should prove the intention of the Test name
 - when chained to Exercise write the trainwreck in 2 lines
-
-## Mock
-
-- mocks are seldom needed
-- they appear in the test to express something was called
-- sagas and side effects are usually mocked
 
 ## Teardown
 
