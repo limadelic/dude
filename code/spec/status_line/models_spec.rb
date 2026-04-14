@@ -49,17 +49,25 @@ describe Dude::StatusLine::Models do
 
     context 'when multiple models have high request counts' do
       let(:activity) do
-        mock_activity(models: {
-          'claude-haiku-4-5' => {
-            'metrics' => { 'successful_requests' => 40, 'spend' => 5.0 }
-          },
-          'claude-opus-4-6' => {
-            'metrics' => { 'successful_requests' => 30, 'spend' => 5.0 }
-          },
-          'claude-sonnet-4-6' => {
-            'metrics' => { 'successful_requests' => 30, 'spend' => 5.0 }
+        mock_activity(
+          models: {
+            'claude-haiku-4-5' => {
+              'metrics' => { 'successful_requests' => 40, 'spend' => 5.0 }
+            },
+            'claude-opus-4-6' => {
+              'metrics' => {
+                'successful_requests' => 30,
+                'spend' => 5.0
+              }
+            },
+            'claude-sonnet-4-6' => {
+              'metrics' => {
+                'successful_requests' => 30,
+                'spend' => 5.0
+              }
+            }
           }
-        })
+        )
       end
       let(:session) { mock_session('opus', 50) }
 
@@ -82,11 +90,13 @@ describe Dude::StatusLine::Models do
 
     context 'when model has 1 request' do
       let(:activity) do
-        mock_activity(models: {
-          'claude-opus-4-6' => {
-            'metrics' => { 'successful_requests' => 1, 'spend' => 1.0 }
+        mock_activity(
+          models: {
+            'claude-opus-4-6' => {
+              'metrics' => { 'successful_requests' => 1, 'spend' => 1.0 }
+            }
           }
-        })
+        )
       end
 
       it 'shows ¹⁰ for that model' do
@@ -104,11 +114,13 @@ describe Dude::StatusLine::Models do
 
     context 'when only one model has requests' do
       let(:activity) do
-        mock_activity(models: {
-          'claude-opus-4-6' => {
-            'metrics' => { 'successful_requests' => 50, 'spend' => 5.0 }
+        mock_activity(
+          models: {
+            'claude-opus-4-6' => {
+              'metrics' => { 'successful_requests' => 50, 'spend' => 5.0 }
+            }
           }
-        })
+        )
       end
 
       it 'shows opus with superscript' do
@@ -124,5 +136,4 @@ describe Dude::StatusLine::Models do
       end
     end
   end
-
 end

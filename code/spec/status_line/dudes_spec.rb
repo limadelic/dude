@@ -6,7 +6,9 @@ describe Dude::StatusLine::Dudes do
   include RR::DSL
   include_context 'StatusLine helpers'
 
-  let(:sut) { described_class.new(session_data, dudes_data, dude_dir, context_pct) }
+  let(:sut) {
+    described_class.new(session_data, dudes_data, dude_dir, context_pct)
+  }
   let(:session_data) { session }
   let(:dudes_data) { default_dudes }
   let(:dude_dir) { '/tmp' }
@@ -29,9 +31,18 @@ describe Dude::StatusLine::Dudes do
 
   let(:default_dudes) do
     [
-      make_dude(name: 'dude', icon: '🎳', messages: 0, context: 25, is_current: true, is_abiding: true),
-      make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: true),
-      make_dude(name: 'smith', icon: '🤖', messages: 0, context: 80, is_current: false, is_abiding: true)
+      make_dude(
+        name: 'dude', icon: '🎳', messages: 0, context: 25,
+        is_current: true, is_abiding: true
+      ),
+      make_dude(
+        name: 'rec', icon: '🔴', messages: 3, context: 50,
+        is_current: false, is_abiding: true
+      ),
+      make_dude(
+        name: 'smith', icon: '🤖', messages: 0, context: 80,
+        is_current: false, is_abiding: true
+      )
     ]
   end
 
@@ -63,7 +74,12 @@ describe Dude::StatusLine::Dudes do
 
     context 'yellow dude at context 50' do
       let(:dudes_data) do
-        [make_dude(name: 'dude', icon: '🎳', messages: 0, context: 50, is_current: true, is_abiding: true)]
+        [
+          make_dude(
+            name: 'dude', icon: '🎳', messages: 0, context: 50,
+            is_current: true, is_abiding: true
+          )
+        ]
       end
       let(:context_pct) { 50 }
 
@@ -77,7 +93,12 @@ describe Dude::StatusLine::Dudes do
   describe '#to_s - abide watcher status' do
     context 'not abiding' do
       let(:dudes_data) do
-        [make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: false)]
+        [
+          make_dude(
+            name: 'rec', icon: '🔴', messages: 3, context: 50,
+            is_current: false, is_abiding: false
+          )
+        ]
       end
 
       context 'at context 50' do
@@ -91,7 +112,12 @@ describe Dude::StatusLine::Dudes do
 
       context 'at low context 10' do
         let(:dudes_data) do
-          [make_dude(name: 'rec', icon: '🔴', messages: 0, context: 10, is_current: false, is_abiding: false)]
+          [
+            make_dude(
+              name: 'rec', icon: '🔴', messages: 0, context: 10,
+              is_current: false, is_abiding: false
+            )
+          ]
         end
 
         it 'shows green ˣ with low context' do
@@ -102,7 +128,12 @@ describe Dude::StatusLine::Dudes do
 
       context 'current not-abiding dude at context 25' do
         let(:dudes_data) do
-          [make_dude(name: 'rec', icon: '🔴', messages: 0, context: 25, is_current: true, is_abiding: false)]
+          [
+            make_dude(
+              name: 'rec', icon: '🔴', messages: 0, context: 25,
+              is_current: true, is_abiding: false
+            )
+          ]
         end
 
         it 'has background highlight' do
@@ -113,7 +144,12 @@ describe Dude::StatusLine::Dudes do
 
       context 'at high context 80' do
         let(:dudes_data) do
-          [make_dude(name: 'rec', icon: '🔴', messages: 0, context: 80, is_current: false, is_abiding: false)]
+          [
+            make_dude(
+              name: 'rec', icon: '🔴', messages: 0, context: 80,
+              is_current: false, is_abiding: false
+            )
+          ]
         end
 
         it 'shows red ˣ with high context' do
@@ -125,7 +161,12 @@ describe Dude::StatusLine::Dudes do
 
     context 'abiding' do
       let(:dudes_data) do
-        [make_dude(name: 'rec', icon: '🔴', messages: 3, context: 50, is_current: false, is_abiding: true)]
+        [
+          make_dude(
+            name: 'rec', icon: '🔴', messages: 3, context: 50,
+            is_current: false, is_abiding: true
+          )
+        ]
       end
 
       it 'shows message count' do

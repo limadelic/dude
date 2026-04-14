@@ -33,27 +33,42 @@ end
 ICONS = { 'dude' => '🎳', 'elita' => '🐶' }
 
 Given(/^dudes dude abides$/) do
-  setup_from_row('home' => 'dude', 'icon' => '🎳', 'pub' => 'yes', 'abide' => 'yes')
+  setup_from_row(
+    'home' => 'dude', 'icon' => '🎳', 'pub' => 'yes',
+    'abide' => 'yes'
+  )
 end
 
 Given(/^dudes "([^"]+)" pub$/) do |names|
   names.split(/,\s*/).each do |name|
-    setup_from_row('home' => name, 'icon' => ICONS.fetch(name), 'pub' => 'yes', 'abide' => 'no')
+    setup_from_row(
+      'home' => name, 'icon' => ICONS.fetch(name), 'pub' => 'yes',
+      'abide' => 'no'
+    )
   end
 end
 
 Given(/^dudes "([^"]+)" abide$/) do |names|
   names.split(/,\s*/).each do |name|
-    setup_from_row('home' => name, 'icon' => ICONS.fetch(name), 'pub' => 'yes', 'abide' => 'yes')
+    setup_from_row(
+      'home' => name, 'icon' => ICONS.fetch(name), 'pub' => 'yes',
+      'abide' => 'yes'
+    )
   end
 end
 
 When(/^@(\w+) > \/(.+):$/) do |name, command, table|
   case command
   when 'pub'
-    setup_from_row('home' => name, 'icon' => ICONS.fetch(name), 'pub' => 'yes', 'abide' => 'no')
+    setup_from_row(
+      'home' => name, 'icon' => ICONS.fetch(name), 'pub' => 'yes',
+      'abide' => 'no'
+    )
   when 'abide'
-    setup_from_row('home' => name, 'icon' => ICONS.fetch(name), 'pub' => 'yes', 'abide' => 'yes')
+    setup_from_row(
+      'home' => name, 'icon' => ICONS.fetch(name), 'pub' => 'yes',
+      'abide' => 'yes'
+    )
   else
     @home = home(name)
     run(@home, command)

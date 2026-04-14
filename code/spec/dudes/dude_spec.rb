@@ -168,7 +168,9 @@ describe Dude::Dudes::Dude do
 
   describe '#is_abiding?' do
     it 'delegates to registry with pid and paths' do
-      stub(registry).is_abiding?(888, '/proj/.claude/dudes', '/proj/.claude') { true }
+      stub(registry).is_abiding?(888, '/proj/.claude/dudes', '/proj/.claude') {
+        true
+      }
 
       expect(sut_with(pid: 888)).to be_is_abiding
     end

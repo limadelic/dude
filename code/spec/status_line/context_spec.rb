@@ -10,7 +10,9 @@ describe Dude::StatusLine::Context do
   before { stub_const('Dude::StatusLine::Format::JETBRAINS', false) }
 
   describe '#to_s' do
-    let(:sut) { described_class.new(mock_session('opus', percentage).to_json, percentage) }
+    let(:sut) {
+      described_class.new(mock_session('opus', percentage).to_json, percentage)
+    }
     let(:bar) { Dude::StatusLine::Format.strip(sut.to_s)[/🧠 ([█░]+)/, 1] }
 
     context 'at 0%' do

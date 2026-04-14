@@ -14,7 +14,6 @@ describe Dude::Helpers::Cli do
   end
 
   describe '#abide' do
-
     it 'abides when dude is running' do
       stub(dude).abide { '"result message"' }
 

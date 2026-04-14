@@ -6,7 +6,9 @@ describe Dude::Dudes::Tasks do
 
   let(:sut) { described_class.new }
   let(:dude_dir) { '/root/.claude/dudes' }
-  let(:project_dir) { File.join(File.expand_path('~/.claude/projects'), '-root--claude') }
+  let(:project_dir) {
+    File.join(File.expand_path('~/.claude/projects'), '-root--claude')
+  }
   let(:tasks_dir) { File.join(File.expand_path('~/.claude/tasks'), 'abc-123') }
 
   describe '#has_abide?' do

@@ -30,7 +30,9 @@ describe Dude::News::Paperboy do
     end
 
     it 'respects the limit parameter' do
-      stub(gh).run(/release list.*--limit 5/) { "v1.0.0\nv0.9.0\nv0.8.0\nv0.7.0\nv0.6.0" }
+      stub(gh).run(/release list.*--limit 5/) {
+        "v1.0.0\nv0.9.0\nv0.8.0\nv0.7.0\nv0.6.0"
+      }
       expect(sut.releases(5)).to eq(%w[v1.0.0 v0.9.0 v0.8.0 v0.7.0 v0.6.0])
     end
   end
