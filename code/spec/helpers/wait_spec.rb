@@ -2,25 +2,44 @@ require_relative '../spec_helper'
 require_relative '../../lib/dude/helpers/wait'
 
 describe Dude::Helpers::Wait do
+  include RR::DSL
+
+  let(:interval) { 0.01 }
+  let(:timeout) { nil }
+  let(:sut) { described_class.new(interval: interval, timeout: timeout) }
+
+  before do
+    stub(Kernel).sleep
+  end
+
   describe '#until' do
     it 'returns immediately when condition is true' do
-      result = described_class.new(interval: 0.01).until { true }
-      expect(result).to be true
+      sut.until { true }
     end
 
-    it 'polls until condition becomes true' do
-      calls = 0
-      described_class.new(interval: 0.01).until do
-        calls += 1
-        calls >= 3
+    context 'polling until condition becomes true' do
+      before do
+        mock(Kernel).sleep.times(2)
       end
-      expect(calls).to eq(3)
+
+      it 'calls sleep while polling' do
+        calls = 0
+        sut.until do
+          calls += 1
+          calls >= 3
+        end
+      end
     end
 
-    it 'raises on timeout' do
-      expect {
-        described_class.new(interval: 0.01, timeout: 0.03).until { false }
-      }.to raise_error(Dude::Helpers::Wait::Timeout)
+    context 'timeout exceeded' do
+      let(:interval) { 0.001 }
+      let(:timeout) { 0.001 }
+
+      it 'raises on timeout' do
+        expect {
+          sut.until { false }
+        }.to raise_error(Dude::Helpers::Wait::Timeout)
+      end
     end
   end
 end

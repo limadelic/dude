@@ -10,4 +10,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'thor'
   s.add_development_dependency 'rubocop'
   s.add_development_dependency 'cucumber'
+  s.add_development_dependency 'rr'
 end

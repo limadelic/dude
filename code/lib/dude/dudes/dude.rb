@@ -109,10 +109,9 @@ module Dude
       private
 
       def init(opts)
-        keys = %i[name icon inbox status dude_dir target]
+        keys = %i[name icon inbox status dude_dir target pid]
         vals = opts.values_at(*keys)
-        @name, @icon, @inbox, @status, @dude_dir, @target = vals
-        @pid = nil
+        @name, @icon, @inbox, @status, @dude_dir, @target, @pid = vals
       end
     end
   end

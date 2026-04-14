@@ -2,76 +2,92 @@ require_relative '../spec_helper'
 require_relative '../../lib/dude/pomo/pomo'
 
 describe Dude::Pomo::Pomo do
+  include RR::DSL
+
+  let(:sut) { described_class.new }
   let(:future) { Time.now.to_i + 100 }
-  let(:timer) { Dude::Pomo::Pomo.new }
+  let(:content) { "default|#{future}" }
+
+  before do
+    stub(File).exist? { true }
+    stub(File).read { content }
+  end
 
   def strip(s)
     s.gsub(/\e\[[0-9;]*m/, '')
   end
 
-  before do
-    allow(File).to receive(:exist?).and_return(true)
-    allow(File).to receive(:read).and_return("default|#{future}")
-  end
-
   describe '#to_s' do
     it 'returns nil when no file' do
-      allow(File).to receive(:exist?).and_return(false)
-      expect(timer.to_s).to be_nil
+      stub(File).exist? { false }
+
+      expect(sut.to_s).to be_nil
     end
 
     it 'returns nil when expired' do
-      allow(File).to receive(:read).and_return("default|#{Time.now.to_i - 100}")
-      expect(timer.to_s).to be_nil
+      stub(File).read { "default|#{Time.now.to_i - 100}" }
+
+      expect(sut.to_s).to be_nil
     end
 
     it 'returns nil when transitioning' do
-      allow(File).to receive(:read).and_return("transitioning|#{future}")
-      expect(timer.to_s).to be_nil
+      stub(File).read { "transitioning|#{future}" }
+
+      expect(sut.to_s).to be_nil
     end
 
-    it 'renders active timer' do
-      expect(timer.to_s).to include('🍅')
-    end
-  end
+    it 'renders active default timer with tomato' do
+      stub(File).read { "default|#{Time.now.to_i + 1500}" }
 
-  describe 'types' do
-    it 'tomato for default' do
-      expect(timer.to_s).to include('🍅')
+      expect(sut.to_s).to include('🍅')
     end
 
-    it 'apple for break' do
-      allow(File).to receive(:read).and_return("break|#{future}")
-      expect(timer.to_s).to include('🍏')
+    it 'renders active default timer with red color' do
+      stub(File).read { "default|#{Time.now.to_i + 1500}" }
+
+      expect(sut.to_s).to include("\e[31m")
     end
 
-    it 'apple for long break' do
-      allow(File).to receive(:read).and_return("long break|#{future}")
-      expect(timer.to_s).to include('🍏')
-    end
-  end
+    it 'renders active default timer with progress bar' do
+      stub(File).read { "default|#{Time.now.to_i + 1500}" }
 
-  describe 'colors' do
-    it 'red for default' do
-      expect(timer.to_s).to include("\e[31m")
+      expect(strip(sut.to_s)).to match(/░{9}/)
     end
 
-    it 'green for break' do
-      allow(File).to receive(:read).and_return("break|#{future}")
-      expect(timer.to_s).to include("\e[32m")
-    end
-  end
+    it 'renders active break timer with apple' do
+      stub(File).read { "break|#{future}" }
 
-  describe 'progress' do
-    it 'empty bar at start' do
-      future = Time.now.to_i + 1500
-      allow(File).to receive(:read).and_return("default|#{future}")
-      expect(strip(timer.to_s)).to match(/░{9}/)
+      expect(sut.to_s).to include('🍏')
     end
 
-    it 'filled bar near end' do
-      allow(File).to receive(:read).and_return("default|#{Time.now.to_i + 10}")
-      expect(strip(timer.to_s)).to match(/█+/)
+    it 'renders active break timer with green color' do
+      stub(File).read { "break|#{future}" }
+
+      expect(sut.to_s).to include("\e[32m")
+    end
+
+    it 'renders long break with apple' do
+      stub(File).read { "long break|#{future}" }
+
+      expect(sut.to_s).to include('🍏')
+    end
+
+    it 'renders long break with green color' do
+      stub(File).read { "long break|#{future}" }
+
+      expect(sut.to_s).to include("\e[32m")
+    end
+
+    it 'shows progress near completion' do
+      stub(File).read { "default|#{Time.now.to_i + 10}" }
+
+      expect(strip(sut.to_s)).to match(/█+/)
+    end
+
+    it 'renders unknown timer type' do
+      stub(File).read { "unknown|#{future}" }
+
+      expect(sut.to_s).not_to be_nil
     end
   end
 end

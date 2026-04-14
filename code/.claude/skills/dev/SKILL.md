@@ -10,3 +10,4 @@ description: Coding and spec rules. Use /katmandu to run the dev loop.
 
 - [Coding rules](code.md)
 - [Testing rules](specs.md)
+- [Testing patterns](specs_impl_pat.md)

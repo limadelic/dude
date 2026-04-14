@@ -12,36 +12,48 @@ module Dude
 
       def fetch
         latest = @paperboy.latest_version
-        print_installed_and_latest(latest)
-        content
-        fact_check(latest)
+        lines = build_output_lines(latest)
+        lines.join("\n")
+      end
+
+      def build_output_lines(latest)
+        [
+          installed_and_latest_line(latest),
+          releases_lines,
+          smoke_test_lines(latest)
+        ].flatten
       end
 
       private
-
-      def content
-        @paperboy.releases(@limit).each { |release| puts release }
-      end
-
-      def fact_check(latest)
-        result = @sommelier.taste(latest)
-        print_smoke_test_result(result, latest)
-      end
 
       def installed_version
         @installed_version ||= ENV.fetch('CC_VERSION', 'unknown')
       end
 
-      def print_installed_and_latest(latest)
+      def installed_and_latest_line(latest)
         installed = installed_version
-        puts "Installed: #{installed}, Latest: #{latest}"
+        "Installed: #{installed}, Latest: #{latest}"
       end
 
-      def print_smoke_test_result(result, latest)
-        version = latest.start_with?('v') ? latest[1..-1] : latest
-        puts "Vintage #{version}: #{result[:conclusion]}"
-        puts result[:url] if result[:url]
-        puts result[:error] if result[:error]
+      def releases_lines
+        @paperboy.releases(@limit)
+      end
+
+      def smoke_test_lines(latest)
+        result = @sommelier.taste(latest)
+        version = extract_version(latest)
+        build_vintage_lines(version, result)
+      end
+
+      def extract_version(latest)
+        latest.start_with?('v') ? latest[1..-1] : latest
+      end
+
+      def build_vintage_lines(version, result)
+        lines = ["Vintage #{version}: #{result[:conclusion]}"]
+        lines << result[:url] if result[:url]
+        lines << result[:error] if result[:error]
+        lines
       end
     end
   end

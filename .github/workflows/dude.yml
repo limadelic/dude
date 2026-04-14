@@ -48,7 +48,7 @@ permissions:
 jobs:
   dude:
     runs-on: garm-dev-dlas1-vm-linux-mega-large
-    timeout-minutes: ${{ inputs.timeout || 30 }}
+    timeout-minutes: 30
     env:
       GH_TOKEN: ${{ github.token }}
       ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
@@ -61,9 +61,11 @@ jobs:
       CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: '0'
       CLAUDE_CODE_ENABLE_TELEMETRY: '1'
       CLAUDE_CODE_USE_VERTEX: '0'
+      CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS: '1'
+      NODE_EXTRA_CA_CERTS: ${{ github.workspace }}/ukg.pem
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Registry
         run: npm config set registry https://ukgartifactory.pe.jfrog.io/artifactory/api/npm/npm/
@@ -71,8 +73,17 @@ jobs:
       - name: Install
         run: |
           sudo rm -f /usr/local/bin/claude
-          npm install -g @anthropic-ai/claude-code@${{ inputs.version || '2.1.87' }}
+          npm install -g @anthropic-ai/claude-code@${{ inputs.version || 'latest' }} 2>/dev/null
+
+      - name: CI mode
+        if: inputs.cwd
+        run: cp ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.ci.md ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.md
 
       - name: Run
         working-directory: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
-        run: claude -p --dangerously-skip-permissions "${{ inputs.prompt }}" ${{ inputs.claude_args }}
+        run: |
+          claude -p --dangerously-skip-permissions "${{ inputs.prompt }}" ${{ inputs.claude_args }} > /tmp/claude-output.txt 2>/dev/null
+          echo "## Output" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/claude-output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
