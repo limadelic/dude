@@ -6,30 +6,30 @@ Feature: News
     # Paperboy
     * ! claude --version
       | 2.1.90 |
-    * ! gh release list -R anthropics/claude-code --limit 1
+    * ! gh release list limit 1
       | v2.1.96 |
-    * ! gh release list -R anthropics/claude-code
+    * ! gh release list
       | v2.1.96 |
       | v2.1.95 |
       | v2.1.94 |
       | v2.1.93 |
       | v2.1.92 |
-    * ! gh release view v2.1.96 -R anthropics/claude-code --json body -q '.body'
+    * ! gh release view v2.1.96
       | Fix critical bug |
-    * ! gh release view v2.1.95 -R anthropics/claude-code --json body -q '.body'
+    * ! gh release view v2.1.95
       | New feature |
-    * ! gh release view v2.1.94 -R anthropics/claude-code --json body -q '.body'
+    * ! gh release view v2.1.94
       | Minor update |
-    * ! gh release view v2.1.93 -R anthropics/claude-code --json body -q '.body'
+    * ! gh release view v2.1.93
       | Patch release |
-    * ! gh release view v2.1.92 -R anthropics/claude-code --json body -q '.body'
+    * ! gh release view v2.1.92
       | Maintenance |
 
     # Sommelier
     * ! gh workflow run dude.yml prompt="1 + 1" version=$latest
-    * ! gh run list --repo UKGEPIC/dude --json status
+    * ! gh run list --json status
       | completed |
-    * ! gh run list --repo UKGEPIC/dude --json conclusion
+    * ! gh run list --json conclusion
       | success |
 
     * > /news:
@@ -64,15 +64,15 @@ Feature: News
 
   Scenario: custom limit
 
-    * ! gh release list -R anthropics/claude-code limit=3
+    * ! gh release list limit=3
       | v2.1.96 |
       | v2.1.95 |
       | v2.1.94 |
-    * ! gh release view v2.1.96 -R anthropics/claude-code --json body -q '.body'
+    * ! gh release view v2.1.96
       | Fix critical bug |
-    * ! gh release view v2.1.95 -R anthropics/claude-code --json body -q '.body'
+    * ! gh release view v2.1.95
       | New feature |
-    * ! gh release view v2.1.94 -R anthropics/claude-code --json body -q '.body'
+    * ! gh release view v2.1.94
       | Minor update |
 
     * > /news --limit 3:
