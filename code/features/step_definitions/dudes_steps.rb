@@ -72,10 +72,6 @@ When(/^@(\w+) > \/(.+):$/) do |name, command, table|
   verify_table(table)
 end
 
-Before('@news') do
-  @mocks = []
-end
-
 When(/^! (.+)$/) do |cmd, *rest|
   table = rest.flatten.compact.first
   @mocks ||= []
@@ -102,8 +98,6 @@ def stub_backticks(mocks)
     match ? match[1] : ''
   end
 end
-
-
 
 def capture_stdout
   original = $stdout
