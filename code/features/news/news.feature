@@ -48,6 +48,15 @@ Feature: News
 
   Scenario: vintage tasting fails
 
+    * ! claude --version
+      | 2.1.90 |
+    * ! gh release list limit 1
+      | v2.1.96 |
+    * ! gh run list --json status
+      | completed |
+    * ! gh release view v2.1.96
+      | Vintage release |
+    * ! gh workflow run dude.yml prompt="1 + 1" version=$latest
     * ! gh run list --repo UKGEPIC/dude --json conclusion
       | failure |
     * ! gh run list --repo UKGEPIC/dude --json databaseId
@@ -64,7 +73,11 @@ Feature: News
 
   Scenario: custom limit
 
-    * ! gh release list limit=3
+    * ! claude --version
+      | 2.1.90 |
+    * ! gh release list limit 1
+      | v2.1.96 |
+    * ! gh release list limit 3
       | v2.1.96 |
       | v2.1.95 |
       | v2.1.94 |
@@ -74,11 +87,18 @@ Feature: News
       | New feature |
     * ! gh release view v2.1.94
       | Minor update |
+    * ! gh workflow run dude.yml prompt="1 + 1" version=$latest
+    * ! gh run list --json status
+      | completed |
+    * ! gh run list --json conclusion
+      | success |
 
     * > /news --limit 3:
+      | Installed: 2.1.90, Latest: v2.1.96 |
       | v2.1.96 |
       | Fix critical bug |
       | v2.1.95 |
       | New feature |
       | v2.1.94 |
       | Minor update |
+      | Vintage 2.1.96: success |
