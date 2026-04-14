@@ -28,7 +28,7 @@ module Dude
         [
           installed_and_latest_line(latest),
           releases_lines,
-          smoke_taste_lines(latest)
+          smoke_test_lines(latest)
         ]
       end
 
@@ -49,7 +49,7 @@ module Dude
         end.flatten
       end
 
-      def smoke_taste_lines(latest)
+      def smoke_test_lines(latest)
         result = @sommelier.taste(latest)
         version = extract_version(latest)
         build_vintage_lines(version, result)
