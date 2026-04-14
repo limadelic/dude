@@ -21,11 +21,15 @@ module Dude
       end
 
       def build_output_lines(latest)
+        collect_sections(latest).flatten
+      end
+
+      def collect_sections(latest)
         [
           installed_and_latest_line(latest),
           releases_lines,
           smoke_test_lines(latest)
-        ].flatten
+        ]
       end
 
       private
