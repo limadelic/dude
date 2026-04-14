@@ -133,11 +133,23 @@ def run_with_mocks(command)
   paperboy = Dude::News::Paperboy.new(gh: gh)
   sommelier = Dude::News::Sommelier.new(gh: gh)
 
-  @output = Dude::News::News.new(
+  news = Dude::News::News.new(
     limit: limit,
     paperboy: paperboy,
     sommelier: sommelier
-  ).fetch
+  )
+  @output = capture_stdout { news.run }
+end
+
+private
+
+def capture_stdout
+  original = $stdout
+  $stdout = StringIO.new
+  yield
+  $stdout.string.chomp
+ensure
+  $stdout = original
 end
 
 def verify_table(table)
