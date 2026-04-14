@@ -16,6 +16,10 @@ module Dude
         lines.join("\n")
       end
 
+      def run
+        puts fetch
+      end
+
       def build_output_lines(latest)
         [
           installed_and_latest_line(latest),
