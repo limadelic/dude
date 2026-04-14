@@ -141,8 +141,6 @@ def run_with_mocks(command)
   @output = capture_stdout { news.run }
 end
 
-private
-
 def capture_stdout
   original = $stdout
   $stdout = StringIO.new
@@ -183,10 +181,3 @@ def verify_negative(val)
   end
 end
 
-def capture_output
-  out = $stdout = StringIO.new
-  yield
-  out.string
-ensure
-  $stdout = STDOUT
-end
