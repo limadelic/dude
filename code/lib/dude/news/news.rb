@@ -16,18 +16,26 @@ module Dude
         lines.join("\n")
       end
 
+      def run
+        puts fetch
+      end
+
       def build_output_lines(latest)
+        collect_sections(latest).flatten
+      end
+
+      def collect_sections(latest)
         [
           installed_and_latest_line(latest),
           releases_lines,
           smoke_test_lines(latest)
-        ].flatten
+        ]
       end
 
       private
 
       def installed_version
-        @installed_version ||= ENV.fetch('CC_VERSION', 'unknown')
+        @installed_version ||= `claude --version`.strip
       end
 
       def installed_and_latest_line(latest)
@@ -36,7 +44,9 @@ module Dude
       end
 
       def releases_lines
-        @paperboy.releases(@limit)
+        @paperboy.releases(@limit).map do |release|
+          [release[:tag], release[:body]]
+        end.flatten
       end
 
       def smoke_test_lines(latest)

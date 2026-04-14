@@ -2,10 +2,6 @@ require 'tmpdir'
 require 'fileutils'
 require 'rspec/mocks/standalone'
 require_relative '../../lib/cuke/dude'
-require_relative '../../lib/dude/helpers/gh'
-require_relative '../../lib/dude/news/news'
-require_relative '../../lib/dude/news/paperboy'
-require_relative '../../lib/dude/news/sommelier'
 
 World(Cuke::Dude)
 World(RSpec::Mocks::ExampleMethods)
@@ -76,34 +72,17 @@ When(/^@(\w+) > \/(.+):$/) do |name, command, table|
   verify_table(table)
 end
 
-Before('@news') do
-  @mocks = {
-    'claude --version' => '2.1.90',
-    'gh release list -R anthropics/claude-code --limit 1' => 'v2.1.96',
-    'gh run list --repo UKGEPIC/dude --json status' => 'completed',
-    'gh run list --repo UKGEPIC/dude --json conclusion' => 'success',
-    'gh release list -R anthropics/claude-code' => %w[
-      v2.1.96 v2.1.95 v2.1.94 v2.1.93 v2.1.92
-    ].join("\n")
-  }
-end
-
-After('@news') do
-  ENV.delete('CC_VERSION')
-end
-
 When(/^! (.+)$/) do |cmd, *rest|
   table = rest.flatten.compact.first
-  @mocks ||= {}
-  if table
-    values = table.raw.flatten.map(&:strip)
-    @mocks[cmd] = values.size == 1 ? values.first : values.join("\n")
-  end
+  @mocks ||= []
+  @mocks << [cmd, table&.raw&.flatten&.map(&:strip)&.join("\n")]
 end
 
 When(/^> \/(.+):$/) do |command, table|
   if @mocks
-    run_with_mocks(command)
+    stub_backticks(@mocks)
+    require 'dude/helpers/cli'
+    @output = capture_stdout { Dude::Helpers::Cli.start(command.split) }
   else
     run(@home, command)
   end
@@ -111,33 +90,22 @@ When(/^> \/(.+):$/) do |command, table|
   verify_table(table)
 end
 
-def run_with_mocks(command)
-  @mocks ||= {}
-  @mocks.each do |cmd, val|
-    ENV['CC_VERSION'] = val if cmd.include?('claude --version')
-  end
-
-  mocks = @mocks
-  gh = instance_double(Dude::Helpers::Gh)
-  allow(gh).to receive(:run) do |run_cmd|
+def stub_backticks(mocks)
+  allow_any_instance_of(Object).to receive(:`) do |_receiver, cmd|
     match = mocks.find do |pattern, _|
-      key = pattern.sub(/^gh\s+/, '')
-      key.split.all? { |word| run_cmd.include?(word) }
+      pattern.split.all? { |word| cmd.include?(word) }
     end
     match ? match[1] : ''
   end
+end
 
-  limit_match = command.match(/--limit\s+(\d+)/)
-  limit = limit_match ? limit_match[1].to_i : 5
-
-  paperboy = Dude::News::Paperboy.new(gh: gh)
-  sommelier = Dude::News::Sommelier.new(gh: gh)
-
-  @output = Dude::News::News.new(
-    limit: limit,
-    paperboy: paperboy,
-    sommelier: sommelier
-  ).fetch
+def capture_stdout
+  original = $stdout
+  $stdout = StringIO.new
+  yield
+  $stdout.string.chomp
+ensure
+  $stdout = original
 end
 
 def verify_table(table)
@@ -169,12 +137,4 @@ def verify_negative(val)
     output = dude('status_line').strip
     raise "Not expected '#{val}' in status line:\n#{output}" if output.include?(val)
   end
-end
-
-def capture_output
-  out = $stdout = StringIO.new
-  yield
-  out.string
-ensure
-  $stdout = STDOUT
 end
