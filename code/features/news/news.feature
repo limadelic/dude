@@ -1,4 +1,3 @@
-@news
 Feature: News
 
   Scenario: happy path
@@ -95,10 +94,10 @@ Feature: News
 
     * > /news --limit 3:
       | Installed: 2.1.90, Latest: v2.1.96 |
-      | v2.1.96 |
-      | Fix critical bug |
-      | v2.1.95 |
-      | New feature |
-      | v2.1.94 |
-      | Minor update |
-      | Vintage 2.1.96: success |
+      | v2.1.96                            |
+      | Fix critical bug                   |
+      | v2.1.95                            |
+      | New feature                        |
+      | v2.1.94                            |
+      | Minor update                       |
+      | Vintage 2.1.96: success            |
