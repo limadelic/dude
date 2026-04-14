@@ -12,7 +12,13 @@ describe Dude::News::News do
     stub(Dude::News::Paperboy).new { paperboy }
     stub(Dude::News::Sommelier).new { sommelier }
     stub(paperboy).latest_version { '1.2.3' }
-    stub(paperboy).releases(5) { %w[v1.0.0 v0.9.0 v0.8.0] }
+    stub(paperboy).releases(5) do
+      [
+        { tag: 'v1.0.0', body: 'Version 1.0.0 release notes' },
+        { tag: 'v0.9.0', body: 'Version 0.9.0 release notes' },
+        { tag: 'v0.8.0', body: 'Version 0.8.0 release notes' }
+      ]
+    end
     stub(sommelier).taste('1.2.3') \
       { { conclusion: 'success', url: nil, error: nil } }
     ENV['CC_VERSION'] = '1.0.0'
@@ -33,7 +39,7 @@ describe Dude::News::News do
 
     it 'includes releases up to limit in output' do
       expect(sut.fetch)
-        .to include('v1.0.0', 'v0.9.0')
+        .to include('v1.0.0', 'v0.9.0', 'Version 1.0.0 release notes')
     end
   end
 
@@ -47,7 +53,8 @@ describe Dude::News::News do
     let(:sut) { described_class.new(limit: 1) }
 
     before do
-      stub(paperboy).releases(1) { %w[v1.0.0] }
+      release_v1 = { tag: 'v1.0.0', body: 'Version 1.0.0 release notes' }
+      stub(paperboy).releases(1) { [release_v1] }
     end
 
     it 'includes only requested releases in output' do
@@ -64,6 +71,7 @@ describe Dude::News::News do
       ENV.delete('CC_VERSION')
       stub(paperboy).latest_version { '1.0.0' }
       stub(paperboy).releases(5) { [] }
+      stub(paperboy).releases(1) { [] }
       stub(sommelier).taste('1.0.0') \
         { { conclusion: 'success', url: nil, error: nil } }
     end
