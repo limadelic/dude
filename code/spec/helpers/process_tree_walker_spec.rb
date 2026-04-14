@@ -15,32 +15,26 @@ describe Dude::Helpers::ProcessTreeWalker do
   end
 
   describe '#descendants_with_parents' do
-    it 'returns empty arrays when no pids given' do
+    before do
+      stub(sut).`.with(/pgrep -P 1000/) { "2000\n" }
+      stub(sut).`.with(/pgrep -P 2000/) { "" }
+    end
+
+    it 'returns empty arrays and parent_map when no pids given' do
       descendants, parent_map = sut.descendants_with_parents([])
 
       expect(descendants).to eq([])
-    end
-
-    it 'returns empty parent map when no pids given' do
-      descendants, parent_map = sut.descendants_with_parents([])
-
       expect(parent_map).to eq({})
     end
 
     it 'finds single child from parent' do
-      stub(sut).`.with(/pgrep -P 1000/) { "2000\n" }
-      stub(sut).`.with(/pgrep -P 2000/) { "" }
-
-      descendants, parent_map = sut.descendants_with_parents([1000])
+      descendants, _ = sut.descendants_with_parents([1000])
 
       expect(descendants).to eq([2000])
     end
 
     it 'maps child to parent' do
-      stub(sut).`.with(/pgrep -P 1000/) { "2000\n" }
-      stub(sut).`.with(/pgrep -P 2000/) { "" }
-
-      descendants, parent_map = sut.descendants_with_parents([1000])
+      _, parent_map = sut.descendants_with_parents([1000])
 
       expect(parent_map[2000]).to eq(1000)
     end
