@@ -9,7 +9,7 @@ describe Dude::News::Sommelier do
 
   before do
     stub(Dude::Helpers::Gh).new { gh }
-    mock(gh).run(/workflow run/) { }
+    mock(gh).run(/workflow run/) {}
     stub(gh).run(/status/) { 'completed' }
     stub(gh).run(/databaseId/) { '12345' }
     stub(gh).run(/conclusion/) { 'success' }
@@ -19,7 +19,10 @@ describe Dude::News::Sommelier do
   describe '#taste' do
     it 'returns success with url' do
       expect(sut.taste('v1.2.3'))
-        .to eq(conclusion: 'success', url: 'https://github.com/UKGEPIC/dude/actions/runs/12345', error: nil)
+        .to eq(
+          conclusion: 'success',
+          url: 'https://github.com/UKGEPIC/dude/actions/runs/12345', error: nil
+        )
     end
 
     it 'returns failure with error logs' do
@@ -28,7 +31,10 @@ describe Dude::News::Sommelier do
       stub(gh).run(/actions\/jobs\/job123\/logs/) { 'Error: test failed' }
 
       expect(sut.taste('v1.2.3'))
-        .to eq(conclusion: 'failure', url: 'https://github.com/UKGEPIC/dude/actions/runs/12345', error: 'Error: test failed')
+        .to eq(
+          conclusion: 'failure',
+          url: 'https://github.com/UKGEPIC/dude/actions/runs/12345', error: 'Error: test failed'
+        )
     end
 
     context 'when run is queued' do
@@ -37,7 +43,10 @@ describe Dude::News::Sommelier do
         stub(gh).run(/status/) { (calls += 1) == 1 ? 'queued' : 'completed' }
 
         expect(sut.taste('v1.2.3'))
-          .to eq(conclusion: 'success', url: 'https://github.com/UKGEPIC/dude/actions/runs/12345', error: nil)
+          .to eq(
+            conclusion: 'success',
+            url: 'https://github.com/UKGEPIC/dude/actions/runs/12345', error: nil
+          )
       end
     end
   end

@@ -1,6 +1,8 @@
 
 # What is the Dude?
 
+![Dude](img/dude.png)
+
 It's a question that haunts me. It started with a clear answer, and I can give a clear answer today. What puzzles me is how I cannot anticipate what it will be. For what started as a simple role playing has permeated into my subconscious in unexpected ways. I have always joked about controlling the Matrix. But deep inside, I have always feared the Ghost in the Shell.
 
 ## What is the Matrix?
@@ -29,4 +31,4 @@ Now I know what I am building. It is a coding machine, the Dude is a machine tha
 
 And this is the scary part. If I succeed I would have a machine puppeteered by my own programming ghost. I would have achieved a dream I frankly never had. I wrote myself, I automated myself, I have transcended into another shell. And then I wonder, what would be left for my human ghost.
 
-Once I'm stripped away of my programming ghost, I would need something else to feed my human soul. As I code myself away I find hope in new layers that I can't code. However I fear I can soon also code those. Then, when all is set and done, I'll look at my human shell in the mirror and wonder. What would I use you for?
+Once I'm stripped away of my programming ghost, I would need something else to feed my human soul. As I code myself away I find hope in new layers that I can't code. However I fear I can soon also code those. Then, when all is set and done, I'll look at my human shell in the mirror and ask it. What would I use you for?

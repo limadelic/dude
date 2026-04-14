@@ -29,7 +29,9 @@ describe Dude::Dudes::TestsRunner do
 
     context 'with multiple files' do
       let(:files) { %w[spec/a_spec.rb spec/b_spec.rb] }
-      let(:command) { 'bundle exec rspec spec/a_spec.rb spec/b_spec.rb > /dev/null 2>&1' }
+      let(:command) {
+        'bundle exec rspec spec/a_spec.rb spec/b_spec.rb > /dev/null 2>&1'
+      }
 
       it 'joins multiple files' do
         expect(sut.pass?).to be true

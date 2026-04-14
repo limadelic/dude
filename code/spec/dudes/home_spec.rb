@@ -39,7 +39,9 @@ describe Dude::Dudes::Home do
 
     it 'resolves absolute symlink' do
       stub(File).readlink(link_path) { '/root/.claude/' }
-      stub(path_resolver).expand_target('/root/.claude/', dudes_dir) { resolved_target }
+      stub(path_resolver).expand_target('/root/.claude/', dudes_dir) {
+        resolved_target
+      }
 
       expect(sut.read_dude_link(dudes_dir, dude_name)).to eq(target)
     end

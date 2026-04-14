@@ -66,7 +66,10 @@ describe Dude::Dudes::Dudes do
     before do
       stub(JSON).load_file(anything) { { 'context' => 50 } }
       stub(Dude::Dudes::Dudes).pids do
-        { 111 => '/proj/.claude', 222 => '/proj/.claude', 333 => '/proj/.claude' }
+        {
+          111 => '/proj/.claude', 222 => '/proj/.claude',
+          333 => '/proj/.claude'
+        }
       end
     end
 
@@ -172,7 +175,10 @@ describe Dude::Dudes::Dudes do
 
     it 'returns false when task is for different dude' do
       task_list = [
-        { pid: 123, parent_pid: 1000, command: 'dude abide /other/.claude/dudes' }
+        {
+          pid: 123, parent_pid: 1000,
+          command: 'dude abide /other/.claude/dudes'
+        }
       ]
       stub(Dude::Helpers::BackgroundTasks).list { task_list }
 
@@ -184,7 +190,10 @@ describe Dude::Dudes::Dudes do
   describe '#pids_for_target' do
     it 'returns pids matching target or parent' do
       stub(Dude::Dudes::Dudes).pids do
-        { 100 => '/proj/.claude', 200 => '/proj/.claude', 300 => '/other/.claude' }
+        {
+          100 => '/proj/.claude', 200 => '/proj/.claude',
+          300 => '/other/.claude'
+        }
       end
 
       expect(sut.pids_for_target('/proj/.claude'))

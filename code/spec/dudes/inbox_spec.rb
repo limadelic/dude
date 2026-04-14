@@ -20,7 +20,7 @@ describe Dude::Dudes::Inbox do
   before do
     stub(File).exist?(path) { true }
     stub(JSON).load_file(path) { empty_data }
-end
+  end
 
   describe '#append' do
     it 'persists message to file' do

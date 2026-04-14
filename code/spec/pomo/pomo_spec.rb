@@ -30,7 +30,6 @@ describe Dude::Pomo::Pomo do
       expect(sut.to_s).to be_nil
     end
 
-
     it 'returns nil when transitioning' do
       stub(File).read { "transitioning|#{future}" }
 

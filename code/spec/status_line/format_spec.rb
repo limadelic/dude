@@ -122,7 +122,11 @@ describe Dude::StatusLine::Format do
     end
 
     it 'rounds all values to nearest 10' do
-      expect(sut.normalize_to_100(33, 33, 33).all? { |v| v % 10 == 0 }).to eq(true)
+      expect(
+        sut.normalize_to_100(33, 33, 33).all? { |v|
+          v % 10 == 0
+        }
+      ).to eq(true)
     end
   end
 
