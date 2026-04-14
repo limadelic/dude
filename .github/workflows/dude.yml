@@ -76,8 +76,13 @@ jobs:
           npm install -g @anthropic-ai/claude-code@${{ inputs.version || 'latest' }} 2>/dev/null
 
       - name: CI mode
-        if: inputs.cwd
-        run: cp ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.ci.md ${{ github.workspace }}/${{ inputs.cwd }}/.claude/CLAUDE.md
+        run: |
+          DIR=${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
+          if [ -f "$DIR/.claude/CLAUDE.ci.md" ]; then
+            cp "$DIR/.claude/CLAUDE.ci.md" "$DIR/.claude/CLAUDE.md"
+          elif [ -f "$DIR/CLAUDE.ci.md" ]; then
+            cp "$DIR/CLAUDE.ci.md" "$DIR/CLAUDE.md"
+          fi
 
       - name: Run
         working-directory: ${{ inputs.cwd && format('{0}/{1}', github.workspace, inputs.cwd) || github.workspace }}
