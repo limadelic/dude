@@ -40,7 +40,9 @@ module Dude
       end
 
       def releases_lines
-        @paperboy.releases(@limit)
+        @paperboy.releases(@limit).map do |release|
+          [release[:tag], release[:body]]
+        end.flatten
       end
 
       def smoke_test_lines(latest)
