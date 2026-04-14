@@ -37,6 +37,12 @@ describe Dude::News::News do
     end
   end
 
+  describe '#run' do
+    it 'prints fetch output to stdout' do
+      expect { sut.run }.to output(sut.fetch + "\n").to_stdout
+    end
+  end
+
   context 'with limit 1' do
     let(:sut) { described_class.new(limit: 1) }
 
