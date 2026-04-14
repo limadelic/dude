@@ -1,6 +1,6 @@
 ---
 name: news
-description: First, trigger the dude GHA to test the latest release
+description: Find out latest features and bug fixes. Test the latest release to see if we can update.
 ---
 
 # news
