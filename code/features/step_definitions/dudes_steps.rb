@@ -88,10 +88,6 @@ Before('@news') do
   }
 end
 
-After('@news') do
-  ENV.delete('CC_VERSION')
-end
-
 When(/^! (.+)$/) do |cmd, *rest|
   table = rest.flatten.compact.first
   @mocks ||= {}
@@ -113,10 +109,6 @@ end
 
 def run_with_mocks(command)
   @mocks ||= {}
-  @mocks.each do |cmd, val|
-    ENV['CC_VERSION'] = val if cmd.include?('claude --version')
-  end
-
   mocks = @mocks
   gh = instance_double(Dude::Helpers::Gh)
   allow(gh).to receive(:run) do |run_cmd|
@@ -138,6 +130,12 @@ def run_with_mocks(command)
     paperboy: paperboy,
     sommelier: sommelier
   )
+
+  version_val = @mocks['claude --version']
+  if version_val
+    allow(news).to receive(:installed_version).and_return(version_val)
+  end
+
   @output = capture_stdout { news.run }
 end
 
@@ -180,4 +178,3 @@ def verify_negative(val)
     raise "Not expected '#{val}' in status line:\n#{output}" if output.include?(val)
   end
 end
-
