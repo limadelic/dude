@@ -14,6 +14,16 @@ Feature: News
       | v2.1.94 |
       | v2.1.93 |
       | v2.1.92 |
+    * ! gh release view v2.1.96 -R anthropics/claude-code --json body -q '.body'
+      | Fix critical bug |
+    * ! gh release view v2.1.95 -R anthropics/claude-code --json body -q '.body'
+      | New feature |
+    * ! gh release view v2.1.94 -R anthropics/claude-code --json body -q '.body'
+      | Minor update |
+    * ! gh release view v2.1.93 -R anthropics/claude-code --json body -q '.body'
+      | Patch release |
+    * ! gh release view v2.1.92 -R anthropics/claude-code --json body -q '.body'
+      | Maintenance |
 
     # Sommelier
     * ! gh workflow run dude.yml prompt="1 + 1" version=$latest
@@ -25,10 +35,15 @@ Feature: News
     * > /news:
       | Installed: 2.1.90, Latest: v2.1.96 |
       | v2.1.96                            |
+      | Fix critical bug                   |
       | v2.1.95                            |
+      | New feature                        |
       | v2.1.94                            |
+      | Minor update                       |
       | v2.1.93                            |
+      | Patch release                      |
       | v2.1.92                            |
+      | Maintenance                        |
       | Vintage 2.1.96: success            |
 
   Scenario: vintage tasting fails
@@ -53,8 +68,17 @@ Feature: News
       | v2.1.96 |
       | v2.1.95 |
       | v2.1.94 |
+    * ! gh release view v2.1.96 -R anthropics/claude-code --json body -q '.body'
+      | Fix critical bug |
+    * ! gh release view v2.1.95 -R anthropics/claude-code --json body -q '.body'
+      | New feature |
+    * ! gh release view v2.1.94 -R anthropics/claude-code --json body -q '.body'
+      | Minor update |
 
     * > /news --limit 3:
       | v2.1.96 |
+      | Fix critical bug |
       | v2.1.95 |
+      | New feature |
       | v2.1.94 |
+      | Minor update |

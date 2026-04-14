@@ -71,7 +71,6 @@ describe Dude::News::News do
       ENV.delete('CC_VERSION')
       stub(paperboy).latest_version { '1.0.0' }
       stub(paperboy).releases(5) { [] }
-      stub(paperboy).releases(1) { [] }
       stub(sommelier).taste('1.0.0') \
         { { conclusion: 'success', url: nil, error: nil } }
     end

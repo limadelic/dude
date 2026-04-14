@@ -15,11 +15,12 @@ module Dude
       def releases(limit)
         output = @gh.run(releases_cmd(limit))
         tags = output.split("\n").reject(&:empty?).take(limit)
-        tags.map { |tag| {tag: tag, body: release_body(tag)} }
+        tags.map { |tag| { tag: tag, body: release_body(tag) } }
       end
 
       def release_body(tag)
-        @gh.run("release view #{tag} -R anthropics/claude-code --json body -q '.body'")
+        cmd = "release view #{tag} -R anthropics/claude-code"
+        @gh.run("#{cmd} --json body -q '.body'")
       end
 
       private
