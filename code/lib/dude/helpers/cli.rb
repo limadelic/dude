@@ -117,6 +117,16 @@ module Dude
         require_relative '../news/news'
         Dude::News::News.new(limit: options[:limit]).run
       end
+
+      desc "alley-pr", "Create PR for current branch"
+      def alley_pr
+        require_relative '../dudes/alley_pr'
+        result = Dude::Dudes::AlleyPr.new.execute
+        puts result
+      rescue StandardError => e
+        puts e.message
+      end
+
       desc "dudes", "Manage dudes"
       subcommand :dudes, DudesCommand
 

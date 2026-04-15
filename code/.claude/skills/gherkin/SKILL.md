@@ -1,9 +1,16 @@
 ---
 name: gherkin
-description: The Gherkin loop — Lisa writes scenarios, Eric reviews, Dude approves
+description: Lisa writes scenarios, Eric reviews adversarially, Dude arbitrates
 ---
 
 # Gherkin
+
+## Goal
+
+- Automate the scenarios following current DSL.
+- Minimize the need to add Step Definitions to the DSL.
+
+## Instructions per Agent
 
 **Dude** — you run the loop. Read [loop.md](loop.md).
 
