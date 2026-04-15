@@ -1,35 +1,43 @@
+require_relative '../helpers/wait'
+
 module Dude
   module Dudes
     class AlleyPr
-      def initialize
-        @gh = Helpers::Gh.create
-      end
-
       def execute
         branch = get_branch
         guard_main_branch(branch)
-        run_push_and_workflow(branch)
+        run_url = trigger_and_wait_for_workflow(branch)
+        complete_workflow(branch, run_url)
       end
 
-      def run_push_and_workflow(branch)
-        run_command("git push -u origin #{branch} 2>&1")
-        trigger_workflow(branch)
+      private
+
+      def trigger_and_wait_for_workflow(branch)
+        push_and_trigger(branch)
         run_id = wait_for_workflow_completion
         run_url = build_run_url(run_id)
-        check_and_publish(branch, run_url)
+        check_workflow_success(run_url)
+        run_url
       end
 
-      def check_and_publish(branch, run_url)
-        check_workflow_success(run_url)
-        pr_url = find_and_select_pr(branch, run_url)
-        publish_to_clipboard_and_skip_ci(pr_url)
-        pr_url
+      def push_and_trigger(branch)
+        `git push -u origin #{branch} 2>&1`
+        `gh workflow run dude.yml --ref #{branch}`
       end
 
       def wait_for_workflow_completion
         run_id = get_run_id
-        wait_for_completion(run_id)
+        Helpers::Wait.new.until { completed?(run_id) }
         run_id
+      end
+
+      def get_run_id
+        `gh run list --json databaseId -q '.[0].databaseId'`.strip
+      end
+
+      def completed?(run_id)
+        status = `gh run list --json status -q '.[0].status'`.strip
+        status == 'completed'
       end
 
       def build_run_url(run_id)
@@ -37,74 +45,52 @@ module Dude
         "https://github.com/#{repo}/actions/runs/#{run_id}"
       end
 
-      def publish_to_clipboard_and_skip_ci(pr_url)
-        run_command("echo #{pr_url} | pbcopy")
-        run_command('git commit --allow-empty -m "[skip ci]" && git push')
-      end
-
-      private
-
-      def get_branch
-        run_command('git branch --show-current').strip
-      end
-
-      def guard_main_branch(branch)
-        raise 'Cannot run on main branch' if branch == 'main'
-      end
-
-      def trigger_workflow(branch)
-        @gh.run("workflow run dude.yml --ref #{branch}")
-      end
-
-      def get_run_id
-        list_cmd = 'run list --workflow=dude.yml --limit 1 --json databaseId'
-        @gh.run("#{list_cmd} -q '.[0].databaseId'").strip
-      end
-
-      def wait_for_completion(run_id)
-        Helpers::Wait.new.until do
-          is_completed?(run_id)
-        end
-      end
-
-      def is_completed?(run_id)
-        status = @gh.run("run view #{run_id} --json status -q .status").strip
-        status == 'completed'
-      end
-
       def extract_repo_from_remote
-        remote = run_command('git remote get-url origin').strip
+        remote = `git remote get-url origin`.strip
         remote.match(%r{github\.com[:/](.+?)(?:\.git)?$})[1]
       end
 
       def check_workflow_success(run_url)
-        cmd = "run view #{run_url.split('/')[-1]} --json conclusion " \
-              "-q .conclusion"
-        conclusion = @gh.run(cmd).strip
+        run_id = run_url.split('/')[-1]
+        conclusion = `gh run list --json conclusion -q '.[0].conclusion'`.strip
         raise "Workflow failed: #{run_url}" unless conclusion == 'success'
       end
 
-      def find_and_select_pr(branch, run_url)
+      def complete_workflow(branch, run_url)
+        pr_url = find_pr(branch, run_url)
+        warn_multiple_prs(pr_url) if multiple_prs?(branch, run_url)
+        `echo "#{pr_url}" | pbcopy`
+        `git commit --allow-empty -m "[skip ci]" && git push`
+        pr_url
+      end
+
+      def find_pr(branch, run_url)
         pr_urls = fetch_prs(branch, run_url)
-        warn_multiple_prs(pr_urls) if pr_urls.length > 1
         pr_urls.last
       end
 
+      def multiple_prs?(branch, run_url)
+        fetch_prs(branch, run_url).length > 1
+      end
+
       def fetch_prs(branch, run_url)
-        prs_cmd = "pr list --head #{branch} --state open --json url " \
-                  "-q '.[].url'"
-        prs = @gh.run(prs_cmd).strip
+        cmd = "gh pr list --head #{branch} --state open --json url -q '.[].url'"
+        prs = `#{cmd}`.strip
         raise "No PR found: #{run_url}" if prs.empty?
 
         prs.split("\n")
       end
 
-      def warn_multiple_prs(pr_urls)
-        puts 'Multiple PRs found, using newest' if pr_urls.length > 1
+      def warn_multiple_prs(pr_url)
+        puts 'Multiple PRs found, using newest'
       end
 
-      def run_command(cmd)
-        `#{cmd}`
+      def get_branch
+        `git branch --show-current`.strip
+      end
+
+      def guard_main_branch(branch)
+        raise 'Cannot run on main branch' if branch == 'main'
       end
     end
   end

@@ -38,12 +38,23 @@ Think in terms of cards:
 - **Green (Examples)**: concrete "when THIS, then THAT" under each rule
 - **Red (Questions)**: unknowns to resolve or park
 
+## CRC Cards
+
+As scenarios emerge, discover objects using CRC cards (Beck & Cunningham, 1989):
+
+| Object | Responsibilities | Collaborators |
+|--------|-----------------|---------------|
+| name   | what it does, what it knows | who it talks to |
+
+Walk each scenario: who acts? who knows? who delegates? That's your CRC card.
+Scenarios are the input, CRC cards are the design that emerges.
+
 ## Tasks
 
 Create these two tasks when the session starts:
 
 - **Amigos respond to discovery**. Facilitate the team discussion. Route tensions, cross-pollinate, resolve red questions. Mark complete when converged or time's up.
-- **Write discovery plan**. Synthesize the amigos' output into `~/.claude/plans/<feature>-examples.md` with yellow/blue/green/red cards. Blocked by the first task.
+- **Write discovery plan**. Synthesize the amigos' output into `~/.claude/plans/<feature>-examples.md` with yellow/blue/green/red cards and CRC cards for discovered agents. Blocked by the first task.
 
 ## The Flow
 
