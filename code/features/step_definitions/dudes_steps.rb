@@ -14,6 +14,12 @@ Before('@dudes') do
   ENV['DUDE_PROCESS'] = 'dude_test'
 end
 
+After do
+  RSpec::Mocks.teardown if @mocks
+  RSpec::Mocks.setup if @mocks
+  @mocks = nil
+end
+
 After('@dudes') do
   cleanup
   `pkill -f dude_test 2>/dev/null`
