@@ -64,6 +64,10 @@ module Dude
 
       def complete_workflow(branch, run_url)
         pr_url = find_pr(branch, run_url)
+        finalize_workflow(pr_url, branch, run_url)
+      end
+
+      def finalize_workflow(pr_url, branch, run_url)
         warn_multiple_prs(pr_url) if multiple_prs?(branch, run_url)
         copy_pr_to_clipboard(pr_url)
         push_skip_ci_commit
