@@ -1,79 +1,75 @@
 # Patterns & Practices
 
-Rules for writing and reviewing Gherkin in this project.
+## Goal
 
-## Scope
+- Maximize reuse of existing DSL
+- Minimize new step definitions
 
-- Only touch files under `features/` and `lib/cuke/`. Nothing else.
-- Never touch production code. Step definitions use mocks and stubs.
-- If something outside scope needs changing, tag the scenario `@wip` and leave a `pending("kenny: reason")` note.
+## The DSL
+
+### Stub a shell command
+```gherkin
+* ~ git branch --show-current
+  | main |
+```
+
+### Execute a shell command for real
+```gherkin
+* ! mkdir -p .claude
+```
+
+### Execute and verify output
+```gherkin
+* ! readlink dude:
+  | .claude |
+```
+
+### Run a dude command and verify output
+```gherkin
+* > /alley-pr:
+  | Cannot run on main branch |
+```
+
+### Negative assertion (parens = NOT present)
+```gherkin
+* > /alley-pr:
+  | (should not see this) |
+```
+
+### Multi-line stubs and assertions
+```gherkin
+* ~ gh release list
+  | v2.1.96 |
+  | v2.1.95 |
+* > /news:
+  | v2.1.96 |
+  | v2.1.95 |
+```
 
 ## Scenarios
 
-- **Declarative** — describe WHAT the system does, never HOW. No UI mechanics, no implementation details.
-- **One outcome per scenario** — test one thing. Multiple assertions = multiple scenarios.
-- **Domain language** — use glossary terms. If a term is missing, propose it.
-- **Scenario Outlines** for variations with Examples tables. Plain Scenarios for unique flows.
-- **No incidental detail** — every Given/When/Then earns its place or gets cut.
-
-## Step Definitions
-
-- **Reusable** — steps work across features. No feature-coupled steps. If two features need similar steps, parameterize.
-- **Parameterized** — use capture groups for dynamic values. `Given I have {int} items` not `Given I have 3 items`.
-- **Thin bodies** — step definitions delegate to World module helpers. No business logic in step files.
-- **No production code** — step definitions use mocks and stubs. Never import or modify production classes directly.
-
-## World Modules
-
-- Live in `lib/cuke/`. One module per domain concept.
-- Mixed into World with `World(Cuke::ModuleName)`.
-- Shared helpers, test doubles, and setup logic go here.
-- New World instance per scenario — no leaked state.
-
-## Mocks & Stubs
-
-- Stubs for external dependencies (APIs, file system, env vars).
-- Setup in `Before` hooks or World module methods, never inline in step bodies.
-- Prefer simple doubles over complex mock chains.
-- No mocking internals — mock boundaries only.
-
-## Hooks
-
-- `Before`/`After` for per-scenario setup and teardown.
-- Tagged hooks (`Before('@tag')`) for feature-specific setup.
-- Cleanup in `After` even on failure — no leaked state between scenarios.
-- Global setup in `features/support/env.rb`.
+- Declarative — WHAT not HOW
+- One outcome per scenario
+- Use domain language
+- No incidental detail
 
 ## File Organization
 
 ```
 features/
-  support/
-    env.rb              # global setup, requires lib/cuke modules
-  step_definitions/
-    <domain>_steps.rb   # grouped by domain concept, not by feature
   <domain>/
-    <feature>.feature   # grouped by domain area
-lib/cuke/
-  <concept>.rb          # World modules, one per domain concept
+    <feature>.feature
 ```
 
-## WIP
+## Scope
 
-- Tag scenarios `@wip` while working on them
-- Use `pending("reason")` in step bodies as scaffolding
-- Remove `@wip` when scenarios pass
-
-## Commands
-
-- **cucumber**: `bundle exec cucumber`
-- **wip**: `bundle exec cucumber --tags @wip`
+- Features test user-facing behavior (the WHAT)
+- Implementation edge cases belong in specs (the HOW)
+- Ask: "would a user describe this scenario?" If no, it's a spec
 
 ## Anti-Patterns
 
-- Feature-coupled steps that only work for one feature
-- Imperative scenarios with UI/implementation details
-- Multi-outcome scenarios testing several things at once
-- Fat step bodies with inline logic instead of helpers
-- Mocks scattered in step definitions instead of hooks
-- Steps that import production code
+- Creating new step definitions when the DSL covers it
+- Creating World modules or `.rb` files unnecessarily
+- Imperative scenarios with implementation details
+- Testing multiple outcomes in one scenario

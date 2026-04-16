@@ -10,10 +10,10 @@ Deliberate Discovery session using Example Mapping. Three agents as a team, you 
 ## Setup
 
 - Use `/sup` to start the team with the cast below
-- Build the brief with the user before spawning. Use the template in `BRIEF.md` to structure the conversation naturally
+- Build the brief FIRST using BRIEF.md template. Don't spawn until the user confirms the brief.
 - Send the completed brief as the spawn prompt to all three. Do NOT rely on follow-up SendMessages
-- Idle notifications are normal. Teammates go idle after every turn. Idle does NOT mean stuck. Wait for their reply, don't resend the brief
-- Confirm each teammate replies before proceeding
+- Idle notifications are normal. Teammates go idle after every turn — including right after spawn. Idle does NOT mean stuck. WAIT. Don't resend. Don't nudge. They're processing.
+- Confirm each teammate replies before proceeding. Be patient — Opus agents on complex prompts may take time.
 - Do NOT start the session until all three have said hello
 
 ## The Cast
@@ -38,12 +38,23 @@ Think in terms of cards:
 - **Green (Examples)**: concrete "when THIS, then THAT" under each rule
 - **Red (Questions)**: unknowns to resolve or park
 
+## CRC Cards
+
+As scenarios emerge, discover objects using CRC cards (Beck & Cunningham, 1989):
+
+| Object | Responsibilities | Collaborators |
+|--------|-----------------|---------------|
+| name   | what it does, what it knows | who it talks to |
+
+Walk each scenario: who acts? who knows? who delegates? That's your CRC card.
+Scenarios are the input, CRC cards are the design that emerges.
+
 ## Tasks
 
 Create these two tasks when the session starts:
 
 - **Amigos respond to discovery**. Facilitate the team discussion. Route tensions, cross-pollinate, resolve red questions. Mark complete when converged or time's up.
-- **Write discovery plan**. Synthesize the amigos' output into `~/.claude/plans/<feature>-examples.md` with yellow/blue/green/red cards. Blocked by the first task.
+- **Write discovery plan**. Synthesize the amigos' output into `~/.claude/plans/<feature>.md` with yellow/blue/green/red cards and CRC cards for discovered agents. Blocked by the first task.
 
 ## The Flow
 
@@ -53,7 +64,7 @@ Create these two tasks when the session starts:
   - Route tensions: "Liz raised X, Kent, is that feasible?"
   - Challenge: "Dude says the term is Y, Liz you used Z, which is right?"
 - Repeat until converged or going in circles
-- YOU write the final plan to `~/.claude/plans/<feature>-examples.md`
+- YOU write the final plan to `~/.claude/plans/<feature>.md`
 
 ## Time Limit
 
@@ -79,3 +90,4 @@ Create these two tasks when the session starts:
 - Only YOU write the final plan
 - The conversation IS the value
 - Independence first, let each amigo form their own take before cross-pollinating
+- ALL THREE must reply. If one never responds, the session is NOT complete. Tear down, restart, or tell the user — but NEVER write a plan and call it done with missing voices. That's lying.

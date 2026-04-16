@@ -18,9 +18,12 @@ Manage agent teams. Spin up with exact names, tear down cleanly.
 - ONLY spawn the agents listed in the cast — no extras. If you need utility work (reading files, searching, etc.), use plain subagents WITHOUT `team_name`. Ask the user before adding anyone not in the cast.
 
 ### Verify Team
-- After spawning, wait for each agent to reply
-- If any agent doesn't reply, tear down the whole team and respawn
+- After spawning, WAIT. Idle notifications fire after every turn — including the first. Idle does NOT mean the agent missed the prompt.
+- Known issue ([#29163](https://github.com/anthropics/claude-code/issues/29163)): agents sometimes go idle without processing their spawn prompt due to mailbox polling not activating. One nudge via SendMessage can wake the polling loop.
+- If an agent goes idle without replying within ~15 seconds, send ONE nudge: "Did you get the brief? Reply with your take."
 - Don't ping a silent agent more than once
+- If an agent truly won't reply after one ping, tear down the WHOLE team and respawn cleanly
+- NEVER spawn a duplicate with a suffix (e.g. kent-2). That creates chaos. Always tear down first.
 - Team is NOT ready until every cast member has said hello
 
 ### Stop a Team
@@ -36,3 +39,12 @@ Manage agent teams. Spin up with exact names, tear down cleanly.
   - `mv ~/.claude/teams/<team-name> /tmp/`
   - `mv ~/.claude/tasks/<team-name> /tmp/`
 - Orphaned processes die on their own once team files are gone
+
+## Anti-Patterns (Learned the Hard Way)
+
+1. **Faking completion**. If a cast member never replied, the session is NOT done. Don't write a plan and call it complete with missing voices. Tell the user, tear down, restart.
+2. **Panic-spawning duplicates**. Agent goes idle? Don't spawn `kent-2`. Tear down the whole team, start clean.
+3. **Nudge storms**. One ping per agent, max. If they don't reply after one nudge, the polling bug bit them. Tear down.
+4. **Moving forward without the team**. The skill defines a cast for a reason. If the cast isn't all present, the session hasn't started. Period.
+5. **Ignoring your own instructions**. The skill said "wait" and "don't resend." Read the skill, follow the skill.
+6. **Agent teams require tmux**. In-process backend is broken — agents fail to poll their mailbox in IDE terminals (RubyMine, VS Code). tmux backend works. Before spawning a team, make sure you're running inside tmux (`brew install tmux`, then `tmux` before `claude`).

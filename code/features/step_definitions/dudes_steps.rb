@@ -14,6 +14,12 @@ Before('@dudes') do
   ENV['DUDE_PROCESS'] = 'dude_test'
 end
 
+After do
+  RSpec::Mocks.teardown if @mocks
+  RSpec::Mocks.setup if @mocks
+  @mocks = nil
+end
+
 After('@dudes') do
   cleanup
   `pkill -f dude_test 2>/dev/null`
@@ -72,10 +78,22 @@ When(/^@(\w+) > \/(.+):$/) do |name, command, table|
   verify_table(table)
 end
 
-When(/^! (.+)$/) do |cmd, *rest|
+When(/^~ (.+)$/) do |cmd, *rest|
   table = rest.flatten.compact.first
   @mocks ||= []
   @mocks << [cmd, table&.raw&.flatten&.map(&:strip)&.join("\n")]
+end
+
+When(/^! ([^:]+)$/) do |cmd|
+  system(cmd)
+end
+
+When(/^! ([^:]+):$/) do |cmd, table|
+  output = `#{cmd}`.chomp
+  table.raw.flatten.each do |expected|
+    expected = expected.strip.gsub(/\$(\w+)/) { ENV[$1] || $& }
+    raise "Expected '#{expected}' in output of '#{cmd}':\n#{output}" unless output.include?(expected)
+  end
 end
 
 When(/^> \/(.+):$/) do |command, table|
