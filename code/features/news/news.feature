@@ -3,32 +3,32 @@ Feature: News
   Scenario: happy path
 
     # Paperboy
-    * ! claude --version
+    * ~ claude --version
       | 2.1.90 |
-    * ! gh release list limit 1
+    * ~ gh release list limit 1
       | v2.1.96 |
-    * ! gh release list
+    * ~ gh release list
       | v2.1.96 |
       | v2.1.95 |
       | v2.1.94 |
       | v2.1.93 |
       | v2.1.92 |
-    * ! gh release view v2.1.96
+    * ~ gh release view v2.1.96
       | Fix critical bug |
-    * ! gh release view v2.1.95
+    * ~ gh release view v2.1.95
       | New feature |
-    * ! gh release view v2.1.94
+    * ~ gh release view v2.1.94
       | Minor update |
-    * ! gh release view v2.1.93
+    * ~ gh release view v2.1.93
       | Patch release |
-    * ! gh release view v2.1.92
+    * ~ gh release view v2.1.92
       | Maintenance |
 
     # Sommelier
-    * ! gh workflow run dude.yml prompt="1 + 1" version=$latest
-    * ! gh run list --json status
+    * ~ gh workflow run dude.yml prompt="1 + 1" version=$latest
+    * ~ gh run list --json status
       | completed |
-    * ! gh run list --json conclusion
+    * ~ gh run list --json conclusion
       | success |
 
     * > /news:
@@ -47,22 +47,22 @@ Feature: News
 
   Scenario: vintage tasting fails
 
-    * ! claude --version
+    * ~ claude --version
       | 2.1.90 |
-    * ! gh release list limit 1
+    * ~ gh release list limit 1
       | v2.1.96 |
-    * ! gh run list --json status
+    * ~ gh run list --json status
       | completed |
-    * ! gh release view v2.1.96
+    * ~ gh release view v2.1.96
       | Vintage release |
-    * ! gh workflow run dude.yml prompt="1 + 1" version=$latest
-    * ! gh run list --repo UKGEPIC/dude --json conclusion
+    * ~ gh workflow run dude.yml prompt="1 + 1" version=$latest
+    * ~ gh run list --repo UKGEPIC/dude --json conclusion
       | failure |
-    * ! gh run list --repo UKGEPIC/dude --json databaseId
+    * ~ gh run list --repo UKGEPIC/dude --json databaseId
       | 12345 |
-    * ! gh api repos/UKGEPIC/dude/actions/runs/12345/jobs
+    * ~ gh api repos/UKGEPIC/dude/actions/runs/12345/jobs
       | 678 |
-    * ! gh api repos/UKGEPIC/dude/actions/jobs/678/logs
+    * ~ gh api repos/UKGEPIC/dude/actions/jobs/678/logs
       | Error: claude timed out after 5s |
 
     * > /news:
@@ -72,24 +72,24 @@ Feature: News
 
   Scenario: custom limit
 
-    * ! claude --version
+    * ~ claude --version
       | 2.1.90 |
-    * ! gh release list limit 1
+    * ~ gh release list limit 1
       | v2.1.96 |
-    * ! gh release list limit 3
+    * ~ gh release list limit 3
       | v2.1.96 |
       | v2.1.95 |
       | v2.1.94 |
-    * ! gh release view v2.1.96
+    * ~ gh release view v2.1.96
       | Fix critical bug |
-    * ! gh release view v2.1.95
+    * ~ gh release view v2.1.95
       | New feature |
-    * ! gh release view v2.1.94
+    * ~ gh release view v2.1.94
       | Minor update |
-    * ! gh workflow run dude.yml prompt="1 + 1" version=$latest
-    * ! gh run list --json status
+    * ~ gh workflow run dude.yml prompt="1 + 1" version=$latest
+    * ~ gh run list --json status
       | completed |
-    * ! gh run list --json conclusion
+    * ~ gh run list --json conclusion
       | success |
 
     * > /news --limit 3:
