@@ -90,7 +90,7 @@ When(/^! ([^:]+):$/) do |cmd, table|
   end
 end
 
-When(/^> \/(.+)$/) do |command|
+When(/^> \/([^:]+)$/) do |command|
   if @mocks
     stub_backticks(@mocks)
     require 'dude/helpers/cli'
@@ -100,7 +100,7 @@ When(/^> \/(.+)$/) do |command|
   end
 end
 
-When(/^> \/(.+):$/) do |command, table|
+When(/^> \/([^:]+):$/) do |command, table|
   if @mocks
     stub_backticks(@mocks)
     require 'dude/helpers/cli'

@@ -19,7 +19,7 @@ Feature: Alley-PR
       | 12345 |
     * ~ gh run list --json status
       | completed |
-    * ~ gh run list --json conclusion
+    * ~ gh run view --json conclusion
       | success |
     * ~ gh pr list --head feature-branch
       | https://github.com/org/repo/pull/123 |
@@ -39,7 +39,7 @@ Feature: Alley-PR
       | 12345 |
     * ~ gh run list --json status
       | completed |
-    * ~ gh run list --json conclusion
+    * ~ gh run view --json conclusion
       | failure |
     * > /alley-pr:
       | Workflow failed |
@@ -58,7 +58,7 @@ Feature: Alley-PR
       | 12345 |
     * ~ gh run list --json status
       | completed |
-    * ~ gh run list --json conclusion
+    * ~ gh run view --json conclusion
       | success |
     * ~ gh pr list --head feature-branch
       |  |
@@ -79,7 +79,7 @@ Feature: Alley-PR
       | 12345 |
     * ~ gh run list --json status
       | completed |
-    * ~ gh run list --json conclusion
+    * ~ gh run view --json conclusion
       | success |
     * ~ gh pr list --head feature-branch
       | https://github.com/org/repo/pull/122 |
