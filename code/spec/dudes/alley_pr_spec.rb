@@ -14,7 +14,7 @@ describe Dude::Dudes::AlleyPr do
     'gh run list json databaseId' => '12345',
     'gh run list json status' => 'completed',
     'gh run view 12345 json conclusion' => 'success'
-  }.freeze
+  }
 
   let(:sut) { described_class.new }
   let(:wait) { Object.new }
