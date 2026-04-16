@@ -5,26 +5,10 @@ require_relative "../../lib/dude/helpers/wait"
 describe Dude::Dudes::AlleyPr do
   include RR::DSL
 
-  REMOTE_URL = 'git@github.com:UKGEPIC/dude.git'
-  BASE_MOCKS = {
-    'git branch --show-current' => 'feature-branch',
-    'git remote get-url origin' => REMOTE_URL,
-    'git push' => '',
-    'gh workflow run dude.yml' => '',
-    'gh run list json databaseId' => '12345',
-    'gh run list json status' => 'completed',
-    'gh run view 12345 json conclusion' => 'success'
-  }
-
   let(:sut) { described_class.new }
   let(:wait) { Object.new }
 
   before do
-    @mocks = {}
-    allow_any_instance_of(Object).to receive(:`) do |_, cmd|
-      match = @mocks.find { |pat, _| pat.split.all? { |w| cmd.include?(w) } }
-      match&.last || ''
-    end
     stub(Dude::Helpers::Wait).new { wait }
     stub(wait).until { |&block| block.call }
   end
@@ -32,17 +16,23 @@ describe Dude::Dudes::AlleyPr do
   describe '#execute' do
     context 'on main branch' do
       it 'raises error' do
-        @mocks['git branch --show-current'] = 'main'
+        stub(sut).`('git branch --show-current') { 'main' }
         expect { sut.execute }.to raise_error('Cannot run on main branch')
       end
     end
 
     context 'happy path' do
       before do
-        @mocks.update(BASE_MOCKS)
-        @mocks['gh pr list head feature-branch json url'] = 'https://github.com/UKGEPIC/dude/pull/123'
-        @mocks['pbcopy'] = ''
-        @mocks['git commit'] = ''
+        stub(sut).`('git branch --show-current') { 'feature-branch' }
+        stub(sut).`(/git push/) { '' }
+        stub(sut).`(/gh workflow run/) { '' }
+        stub(sut).`(/gh run list.*databaseId/) { '12345' }
+        stub(sut).`(/gh run list.*status/) { 'completed' }
+        stub(sut).`(/git remote get-url/) { 'git@github.com:UKGEPIC/dude.git' }
+        stub(sut).`(/gh run view.*conclusion/) { 'success' }
+        stub(sut).`(/gh pr list.*head/) { 'https://github.com/UKGEPIC/dude/pull/123' }
+        stub(sut).`(/pbcopy/) { '' }
+        stub(sut).`(/git commit/) { '' }
       end
 
       it 'executes full sequence and returns PR URL' do
@@ -52,8 +42,13 @@ describe Dude::Dudes::AlleyPr do
 
     context 'workflow fails' do
       before do
-        @mocks.update(BASE_MOCKS)
-        @mocks['gh run view 12345 json conclusion'] = 'failure'
+        stub(sut).`('git branch --show-current') { 'feature-branch' }
+        stub(sut).`(/git push/) { '' }
+        stub(sut).`(/gh workflow run/) { '' }
+        stub(sut).`(/gh run list.*databaseId/) { '12345' }
+        stub(sut).`(/gh run list.*status/) { 'completed' }
+        stub(sut).`(/git remote get-url/) { 'git@github.com:UKGEPIC/dude.git' }
+        stub(sut).`(/gh run view.*conclusion/) { 'failure' }
       end
 
       it 'raises error with run URL' do
@@ -65,8 +60,14 @@ describe Dude::Dudes::AlleyPr do
 
     context 'no PR found' do
       before do
-        @mocks.update(BASE_MOCKS)
-        @mocks['gh pr list head feature-branch json url'] = ''
+        stub(sut).`('git branch --show-current') { 'feature-branch' }
+        stub(sut).`(/git push/) { '' }
+        stub(sut).`(/gh workflow run/) { '' }
+        stub(sut).`(/gh run list.*databaseId/) { '12345' }
+        stub(sut).`(/gh run list.*status/) { 'completed' }
+        stub(sut).`(/git remote get-url/) { 'git@github.com:UKGEPIC/dude.git' }
+        stub(sut).`(/gh run view.*conclusion/) { 'success' }
+        stub(sut).`(/gh pr list.*head/) { '' }
       end
 
       it 'raises error with run URL' do
@@ -78,11 +79,16 @@ describe Dude::Dudes::AlleyPr do
 
     context 'multiple PRs found' do
       before do
-        @mocks.update(BASE_MOCKS)
-        @mocks['gh pr list head feature-branch json url'] =
-          "https://github.com/UKGEPIC/dude/pull/122\nhttps://github.com/UKGEPIC/dude/pull/123"
-        @mocks['pbcopy'] = ''
-        @mocks['git commit'] = ''
+        stub(sut).`('git branch --show-current') { 'feature-branch' }
+        stub(sut).`(/git push/) { '' }
+        stub(sut).`(/gh workflow run/) { '' }
+        stub(sut).`(/gh run list.*databaseId/) { '12345' }
+        stub(sut).`(/gh run list.*status/) { 'completed' }
+        stub(sut).`(/git remote get-url/) { 'git@github.com:UKGEPIC/dude.git' }
+        stub(sut).`(/gh run view.*conclusion/) { 'success' }
+        stub(sut).`(/gh pr list.*head/) { "https://github.com/UKGEPIC/dude/pull/122\nhttps://github.com/UKGEPIC/dude/pull/123" }
+        stub(sut).`(/pbcopy/) { '' }
+        stub(sut).`(/git commit/) { '' }
       end
 
       it 'uses newest PR and warns' do
