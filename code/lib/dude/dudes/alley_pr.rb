@@ -20,7 +20,7 @@ module Dude
 
       def push_and_trigger(branch)
         `git push -u origin #{branch} 2>&1`
-        `gh workflow run dude.yml --ref #{branch}`
+        `gh workflow run dude.yml --ref #{branch} -f prompt="/alley-pr"`
       end
 
       def wait_for_workflow_completion
