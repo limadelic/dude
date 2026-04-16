@@ -90,17 +90,7 @@ When(/^! ([^:]+):$/) do |cmd, table|
   end
 end
 
-When(/^> \/([^:]+)$/) do |command|
-  if @mocks
-    stub_backticks(@mocks)
-    require 'dude/helpers/cli'
-    @output = capture_stdout { Dude::Helpers::Cli.start(command.split) }
-  else
-    run(@home, command)
-  end
-end
-
-When(/^> \/([^:]+):$/) do |command, table|
+When(/^> \/(.+):$/) do |command, table|
   if @mocks
     stub_backticks(@mocks)
     require 'dude/helpers/cli'
