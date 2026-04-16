@@ -33,7 +33,7 @@ describe Dude::Dudes::AlleyPr do
         set_backtick_mock('gh workflow run dude.yml', '')
         set_backtick_mock('gh run list json databaseId', '12345')
         set_backtick_mock('gh run list json status', 'completed')
-        set_backtick_mock('gh run list json conclusion', 'success')
+        set_backtick_mock('gh run view 12345 json conclusion', 'success')
         set_backtick_mock('gh pr list head feature-branch json url', 'https://github.com/UKGEPIC/dude/pull/123')
         set_backtick_mock('pbcopy', '')
         set_backtick_mock('git commit', '')
@@ -78,7 +78,7 @@ describe Dude::Dudes::AlleyPr do
         set_backtick_mock('gh workflow run dude.yml', '')
         set_backtick_mock('gh run list json databaseId', '12345')
         set_backtick_mock('gh run list json status', 'completed')
-        set_backtick_mock('gh run list json conclusion', 'failure')
+        set_backtick_mock('gh run view 12345 json conclusion', 'failure')
       end
 
       it 'raises error with run URL' do
@@ -94,7 +94,7 @@ describe Dude::Dudes::AlleyPr do
         set_backtick_mock('gh workflow run dude.yml', '')
         set_backtick_mock('gh run list json databaseId', '12345')
         set_backtick_mock('gh run list json status', 'completed')
-        set_backtick_mock('gh run list json conclusion', 'success')
+        set_backtick_mock('gh run view 12345 json conclusion', 'success')
         set_backtick_mock('gh pr list head feature-branch json url', '')
       end
 
@@ -111,7 +111,7 @@ describe Dude::Dudes::AlleyPr do
         set_backtick_mock('gh workflow run dude.yml', '')
         set_backtick_mock('gh run list json databaseId', '12345')
         set_backtick_mock('gh run list json status', 'completed')
-        set_backtick_mock('gh run list json conclusion', 'success')
+        set_backtick_mock('gh run view 12345 json conclusion', 'success')
         prs = 'https://github.com/UKGEPIC/dude/pull/122' \
               "\n" \
               'https://github.com/UKGEPIC/dude/pull/123'
@@ -142,7 +142,7 @@ describe Dude::Dudes::AlleyPr do
         set_backtick_mock('gh workflow run dude.yml', '')
         set_backtick_mock('gh run list json databaseId', '12345')
         set_backtick_mock('gh run list json status', 'completed')
-        set_backtick_mock('gh run list json conclusion', 'success')
+        set_backtick_mock('gh run view 12345 json conclusion', 'success')
         set_backtick_mock('gh pr list head feature-branch json url', 'https://github.com/UKGEPIC/dude/pull/123')
         set_backtick_mock('pbcopy', '')
         set_backtick_mock('git commit', '')
@@ -161,7 +161,7 @@ describe Dude::Dudes::AlleyPr do
         set_backtick_mock('gh workflow run dude.yml', '')
         set_backtick_mock('gh run list json databaseId', '12345')
         set_backtick_mock('gh run list json status', 'completed')
-        set_backtick_mock('gh run list json conclusion', 'success')
+        set_backtick_mock('gh run view 12345 json conclusion', 'success')
         set_backtick_mock('gh pr list head feature-branch json url', 'https://github.com/UKGEPIC/dude/pull/123')
         set_backtick_mock('pbcopy', '')
         set_backtick_mock('git commit', '')
