@@ -15,9 +15,7 @@ module Dude
       def trigger_and_wait_for_workflow(branch)
         push_and_trigger(branch)
         run_id = wait_for_workflow_completion
-        run_url = build_run_url(run_id)
-        check_workflow_success(run_url)
-        run_url
+        build_run_url(run_id).tap { |url| check_workflow_success(run_id) }
       end
 
       def push_and_trigger(branch)
@@ -50,17 +48,25 @@ module Dude
         remote.match(%r{github\.com[:/](.+?)(?:\.git)?$})[1]
       end
 
-      def check_workflow_success(run_url)
-        run_id = run_url.split('/')[-1]
-        conclusion = `gh run list --json conclusion -q '.[0].conclusion'`.strip
-        raise "Workflow failed: #{run_url}" unless conclusion == 'success'
+      def check_workflow_success(run_id)
+        conclusion = fetch_run_conclusion(run_id)
+        raise_workflow_failed(run_id) unless conclusion == 'success'
+      end
+
+      def fetch_run_conclusion(run_id)
+        `gh run view #{run_id} --json conclusion -q '.conclusion'`.strip
+      end
+
+      def raise_workflow_failed(run_id)
+        run_url = build_run_url(run_id)
+        raise "Workflow failed: #{run_url}"
       end
 
       def complete_workflow(branch, run_url)
         pr_url = find_pr(branch, run_url)
         warn_multiple_prs(pr_url) if multiple_prs?(branch, run_url)
-        `echo "#{pr_url}" | pbcopy`
-        `git commit --allow-empty -m "[skip ci]" && git push`
+        copy_pr_to_clipboard(pr_url)
+        push_skip_ci_commit
         pr_url
       end
 
@@ -74,11 +80,23 @@ module Dude
       end
 
       def fetch_prs(branch, run_url)
-        cmd = "gh pr list --head #{branch} --state open --json url -q '.[].url'"
-        prs = `#{cmd}`.strip
+        prs = query_pr_list(branch)
         raise "No PR found: #{run_url}" if prs.empty?
 
         prs.split("\n")
+      end
+
+      def query_pr_list(branch)
+        cmd = "gh pr list --head #{branch} --state open --json url -q '.[].url'"
+        `#{cmd}`.strip
+      end
+
+      def copy_pr_to_clipboard(pr_url)
+        `echo "#{pr_url}" | pbcopy`
+      end
+
+      def push_skip_ci_commit
+        `git commit --allow-empty -m "[skip ci]" && git push`
       end
 
       def warn_multiple_prs(pr_url)
