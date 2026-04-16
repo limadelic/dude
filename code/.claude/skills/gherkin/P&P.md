@@ -9,8 +9,19 @@
 
 ### Stub a shell command
 ```gherkin
-* ! git branch --show-current
+* ~ git branch --show-current
   | main |
+```
+
+### Execute a shell command for real
+```gherkin
+* ! mkdir -p .claude
+```
+
+### Execute and verify output
+```gherkin
+* ! readlink dude:
+  | .claude |
 ```
 
 ### Run a dude command and verify output
@@ -27,7 +38,7 @@
 
 ### Multi-line stubs and assertions
 ```gherkin
-* ! gh release list
+* ~ gh release list
   | v2.1.96 |
   | v2.1.95 |
 * > /news:
@@ -49,6 +60,12 @@ features/
   <domain>/
     <feature>.feature
 ```
+
+## Scope
+
+- Features test user-facing behavior (the WHAT)
+- Implementation edge cases belong in specs (the HOW)
+- Ask: "would a user describe this scenario?" If no, it's a spec
 
 ## Anti-Patterns
 
