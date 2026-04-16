@@ -4,7 +4,7 @@ module Dude
   module Dudes
     class AlleyPr
       def execute
-        branch = get_branch
+        branch = `git branch --show-current`.strip
         guard_main_branch(branch)
         run_url = trigger_and_wait_for_workflow(branch)
         complete_workflow(branch, run_url)
@@ -49,38 +49,24 @@ module Dude
       end
 
       def check_workflow_success(run_id)
-        conclusion = fetch_run_conclusion(run_id)
-        raise_workflow_failed(run_id) unless conclusion == 'success'
-      end
+        cmd = "gh run view #{run_id} --json conclusion -q '.conclusion'"
+        conclusion = `#{cmd}`.strip
+        return if conclusion == 'success'
 
-      def fetch_run_conclusion(run_id)
-        `gh run view #{run_id} --json conclusion -q '.conclusion'`.strip
-      end
-
-      def raise_workflow_failed(run_id)
-        run_url = build_run_url(run_id)
-        raise "Workflow failed: #{run_url}"
+        raise "Workflow failed: #{build_run_url(run_id)}"
       end
 
       def complete_workflow(branch, run_url)
-        pr_url = find_pr(branch, run_url)
-        finalize_workflow(pr_url, branch, run_url)
+        prs = fetch_prs(branch, run_url)
+        pr_url = prs.last
+        finalize_workflow(pr_url, prs, run_url)
       end
 
-      def finalize_workflow(pr_url, branch, run_url)
-        warn_multiple_prs(pr_url) if multiple_prs?(branch, run_url)
+      def finalize_workflow(pr_url, prs, run_url)
+        puts 'Multiple PRs found, using newest' if prs.length > 1
         copy_pr_to_clipboard(pr_url)
         push_skip_ci_commit
         pr_url
-      end
-
-      def find_pr(branch, run_url)
-        pr_urls = fetch_prs(branch, run_url)
-        pr_urls.last
-      end
-
-      def multiple_prs?(branch, run_url)
-        fetch_prs(branch, run_url).length > 1
       end
 
       def fetch_prs(branch, run_url)
@@ -101,14 +87,6 @@ module Dude
 
       def push_skip_ci_commit
         `git commit --allow-empty -m "[skip ci]" && git push`
-      end
-
-      def warn_multiple_prs(pr_url)
-        puts 'Multiple PRs found, using newest'
-      end
-
-      def get_branch
-        `git branch --show-current`.strip
       end
 
       def guard_main_branch(branch)
