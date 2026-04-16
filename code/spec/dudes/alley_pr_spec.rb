@@ -6,7 +6,7 @@ describe Dude::Dudes::AlleyPr do
   include RR::DSL
 
   REMOTE_URL = 'git@github.com:UKGEPIC/dude.git'
-  WORKFLOW_MOCKS = {
+  BASE_MOCKS = {
     'git branch --show-current' => 'feature-branch',
     'git remote get-url origin' => REMOTE_URL,
     'git push' => '',
@@ -20,7 +20,11 @@ describe Dude::Dudes::AlleyPr do
   let(:wait) { Object.new }
 
   before do
-    stub_backticks
+    @mocks = {}
+    allow_any_instance_of(Object).to receive(:`) do |_, cmd|
+      match = @mocks.find { |pat, _| pat.split.all? { |w| cmd.include?(w) } }
+      match&.last || ''
+    end
     stub(Dude::Helpers::Wait).new { wait }
     stub(wait).until { |&block| block.call }
   end
@@ -28,26 +32,28 @@ describe Dude::Dudes::AlleyPr do
   describe '#execute' do
     context 'on main branch' do
       it 'raises error' do
-        set_backtick_mock('git branch --show-current', 'main')
-
+        @mocks['git branch --show-current'] = 'main'
         expect { sut.execute }.to raise_error('Cannot run on main branch')
       end
     end
 
     context 'happy path' do
-      before { setup_happy_path }
+      before do
+        @mocks.update(BASE_MOCKS)
+        @mocks['gh pr list head feature-branch json url'] = 'https://github.com/UKGEPIC/dude/pull/123'
+        @mocks['pbcopy'] = ''
+        @mocks['git commit'] = ''
+      end
 
       it 'executes full sequence and returns PR URL' do
-        result = sut.execute
-
-        expect(result).to eq 'https://github.com/UKGEPIC/dude/pull/123'
+        expect(sut.execute).to eq 'https://github.com/UKGEPIC/dude/pull/123'
       end
     end
 
     context 'workflow fails' do
       before do
-        setup_workflow_base
-        set_backtick_mock('gh run view 12345 json conclusion', 'failure')
+        @mocks.update(BASE_MOCKS)
+        @mocks['gh run view 12345 json conclusion'] = 'failure'
       end
 
       it 'raises error with run URL' do
@@ -59,8 +65,8 @@ describe Dude::Dudes::AlleyPr do
 
     context 'no PR found' do
       before do
-        setup_workflow_base
-        set_backtick_mock('gh pr list head feature-branch json url', '')
+        @mocks.update(BASE_MOCKS)
+        @mocks['gh pr list head feature-branch json url'] = ''
       end
 
       it 'raises error with run URL' do
@@ -71,53 +77,18 @@ describe Dude::Dudes::AlleyPr do
     end
 
     context 'multiple PRs found' do
-      before { setup_multiple_prs }
+      before do
+        @mocks.update(BASE_MOCKS)
+        @mocks['gh pr list head feature-branch json url'] =
+          "https://github.com/UKGEPIC/dude/pull/122\nhttps://github.com/UKGEPIC/dude/pull/123"
+        @mocks['pbcopy'] = ''
+        @mocks['git commit'] = ''
+      end
 
       it 'uses newest PR and warns' do
         mock($stdout).puts(/Multiple PRs found, using newest/)
-
-        result = sut.execute
-
-        expect(result).to eq 'https://github.com/UKGEPIC/dude/pull/123'
+        expect(sut.execute).to eq 'https://github.com/UKGEPIC/dude/pull/123'
       end
     end
-  end
-
-  private
-
-  def stub_backticks
-    @backtick_mocks = {}
-    allow_any_instance_of(Object).to receive(:`) { |_, cmd| find_mock(cmd) }
-  end
-
-  def find_mock(cmd)
-    match = @backtick_mocks.find do |pat, _|
-      pat.split.all? { |word| cmd.include?(word) }
-    end
-    match&.last || ''
-  end
-
-  def set_backtick_mock(pattern, response)
-    @backtick_mocks ||= {}
-    @backtick_mocks[pattern] = response
-  end
-
-  def setup_workflow_base
-    WORKFLOW_MOCKS.each { |pat, res| set_backtick_mock(pat, res) }
-  end
-
-  def setup_happy_path
-    setup_workflow_base
-    pr_url = 'https://github.com/UKGEPIC/dude/pull/123'
-    set_backtick_mock('gh pr list head feature-branch json url', pr_url)
-    set_backtick_mock('pbcopy', '')
-    set_backtick_mock('git commit', '')
-  end
-
-  def setup_multiple_prs
-    setup_happy_path
-    prs = "https://github.com/UKGEPIC/dude/pull/122\n" \
-          "https://github.com/UKGEPIC/dude/pull/123"
-    set_backtick_mock('gh pr list head feature-branch json url', prs)
   end
 end
