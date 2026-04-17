@@ -95,6 +95,7 @@ Naming/FileName:
   Exclude:
     - 'spec/**/*'
     - 'bin/**/*'
+    - 'features/step_definitions/**/*'
 
 Style:
   Enabled: false
