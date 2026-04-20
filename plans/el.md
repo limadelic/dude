@@ -36,30 +36,28 @@ Kent reviewed Claude Code source and found these injection points:
 - Control subtypes: `interrupt`, `initialize`, `set_permission_mode`
 - Structured NDJSON responses on stdout
 
-## Solution: Claude Phone
+## Architecture
 
-An Elixir app that spawns and manages multiple Claude processes, routing messages between them via stdin/stdout.
+Two modes, one system:
 
-### Architecture
+### Headless Mode (priority)
+- `claude_code` hex package wraps Claude CLI as GenServers
+- `ClaudeCode.start_link(name: :dude)` → named session
+- `ClaudeCode.stream(:dude, "do this")` → structured responses
+- Multiple sessions in one BEAM, zero shared state
+- Distributed sessions via Erlang distribution
 
-- Each Claude process is wrapped in a GenServer via `Port.open`
-- Messages route through a central router GenServer
-- Supervision tree manages lifecycle — crash = restart
-- No JSON files, no polling, no broken inbox
+### PTY Mode (proven, polish later)
+- `script -q /dev/null` allocates a PTY for full TUI
+- Read/write via `/dev/tty` bypasses Erlang's prim_tty
+- `el.sh` wrapper sets `stty raw -echo`, traps cleanup
+- User types normally, sees full Claude Code UI
+- `El.PTY.inject/2` pushes messages from other sessions
 
-### Elixir Side
-
-```
-Port.open({:spawn, "claude -p --input-format=stream-json --output-format=stream-json"}, [:binary, :stream, {:line, 65536}])
-```
-
-GenServer wrapping a Port — the most classic Erlang pattern.
-
-### Three Dynamics It Unifies
-
-1. **Pub** — separate terminals, separate directories. Currently file-based messaging between Claude sessions. Could become Phone-managed processes.
-2. **Sub** — nested. A Claude inside another Claude's project. Could become a child process in the supervision tree.
-3. **Phone** — spawn Claude from Elixir, own stdin pipe, route messages. The new dynamic.
+### Cross-node messaging
+- Each session starts as a distributed BEAM node (`--sname`)
+- `el <name> tell msg` connects and injects via GenServer cast
+- Same mechanism for headless and PTY sessions
 
 ## What This Is NOT
 
@@ -72,15 +70,7 @@ GenServer wrapping a Port — the most classic Erlang pattern.
 - A reliable phone system for multiple Claude processes
 - An Elixir app that wraps Claude CLI via Ports
 - A bridge that makes multi-agent workflows work TODAY
-- A stepping stone — patterns learned here feed into Elita later
-
-## Open Questions
-
-- Name: "plug" conflicts with Elixir's Plug library. Claude Phone? Switchboard? PBX?
-- How does the user interact? Do they talk to one Claude that routes, or do they talk to Phone directly?
-- How does this integrate with the existing dude gem and skills?
-- Does `claude -p` (print mode) support everything interactive mode does? Tools, edits, etc.?
-- How do agents discover each other? Registry in Phone?
+- A stepping stone — patterns learned here feed into Cucumber (Ruby) later
 
 ## Research Sources
 
@@ -101,6 +91,51 @@ GenServer wrapping a Port — the most classic Erlang pattern.
 - Synapse — declarative multi-agent framework with signal bus
 - GNAP — git-native agent protocol, 4 JSON files
 
+## PTY Libraries (for hardening)
+
+- **ExPTY** v0.2.1 — full PTY allocation, based on Microsoft's node-pty
+- **erlexec** v2.2.4 — mature Erlang process manager with PTY
+- **net_runner** v1.2.0 — modern, PTY + cgroup isolation
+
+## Project
+
+- Location: `~/dev/self/el/`
+- Repo: `limadelic/el`
+- Sibling of: `~/dev/self/elita/`
+- Dep: `claude_code` from hex.pm
+- Reference: `~/dev/ext/claude_code_ex/` (cloned source)
+
+## Answered Questions
+
+- Name: **El** (not plug, not phone — just El)
+- Registry: Elixir's built-in Registry, no custom needed
+- Agent discovery: Named sessions, `GenServer.call(:name, ...)`
+- `claude -p`: Yes, supports tools, edits, everything
+- User interaction: Talk to one Claude (dude), dude delegates to others via El
+- TUI: PTY via `script` works, ExPTY for production
+- Status line: JSON via stdin to `dude status_line`, El can provide same data
+- Auth: Works with API keys, Pro plans, Bedrock, Vertex, proxies — El is agnostic
+- Yolo loop: El can replace it (supervision) or coexist alongside it
+- CLI commands: `el <name>`, `el <name> kill`, `el <name> tell`, `el <name> ask`, `el <name> log`, `el ls`
+
 ## Status
 
-Discovery phase. We know the port (stdin), we know the pattern (GenServer wrapping Port), we know the runtime (BEAM). Next step: POC.
+### PROVEN
+- Headless sessions: start, send, receive via `claude_code` hex ✓
+- PTY TUI: full Claude Code UI through Elixir-managed process ✓
+- Cross-node messaging: `el <name> tell` injects messages via distributed Erlang ✓
+- Two sessions talking: dude/elita/man all reachable ✓
+
+### NEXT — Headless Multi-Agent
+1. Supervision tree for headless sessions
+2. `El.tell/2` and `El.ask/2` — fire-and-forget vs wait-for-response
+3. Session registry — who's running, what are they doing
+4. Integration with dude workflow — skills, tell skill, etc.
+5. Multiple sessions in one BEAM (vs separate nodes)
+
+### LATER — Shell & Polish
+1. ExPTY instead of `script` hack
+2. Signal handling (Ctrl+C, resize)
+3. Yolo loop integration
+4. Clean terminal on crash
+5. Lighter `tell` mechanism (Unix socket vs spawning BEAM)
