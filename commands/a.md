@@ -1,4 +1,4 @@
-exit---
+---
 description: Delegate a task to a specified subagent
 argument-hint: <agent> <task>
 ---

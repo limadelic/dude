@@ -6,6 +6,13 @@
     "pr": ""
   },
   "permissions": {
+    "allow": [
+      "Bash(sed *)",
+      "Bash(pkill *)",
+      "Bash(rm *)",
+      "Bash(sleep *)",
+      "Edit(/Users/maykel.suarez/.claude/plans/*)"
+    ],
     "deny": [
       "Bash(gh run watch*)",
       "Bash(python*)",
@@ -54,14 +61,7 @@
       "mcp__playwright__browser_hover",
       "mcp__playwright__browser_select_option"
     ],
-    "defaultMode": "dontAsk",
-    "allow": [
-      "Bash(sed *)",
-      "Bash(pkill *)",
-      "Bash(rm *)",
-      "Bash(sleep *)",
-      "Edit(/Users/maykel.suarez/.claude/plans/*)"
-    ]
+    "defaultMode": "dontAsk"
   },
   "model": "opus[1m]",
   "statusLine": {
@@ -93,5 +93,7 @@
   "effortLevel": "low",
   "autoUpdatesChannel": "latest",
   "autoMemoryEnabled": false,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "preferredNotifChannel": "notifications_disabled",
+  "autoCompactEnabled": false
 }
