@@ -6,15 +6,10 @@
     "pr": ""
   },
   "permissions": {
-    "allow": [
-      "Bash(sed *)",
-      "Bash(pkill *)",
-      "Bash(rm *)",
-      "Bash(sleep *)",
-      "Edit(/Users/maykel.suarez/.claude/plans/*)"
-    ],
     "deny": [
       "Bash(gh run watch*)",
+      "Bash(rm *)",
+      "Bash(sleep *)",
       "Bash(python*)",
       "mcp__jira__jira_get_user_profile",
       "mcp__jira__jira_search_fields",
@@ -63,7 +58,7 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "dude status_line",
@@ -94,6 +89,5 @@
   "autoUpdatesChannel": "latest",
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
-  "preferredNotifChannel": "notifications_disabled",
-  "autoCompactEnabled": false
+  "autoCompactEnabled": true
 }
