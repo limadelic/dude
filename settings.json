@@ -58,7 +58,6 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "dude status_line",
@@ -86,8 +85,9 @@
     ]
   },
   "effortLevel": "low",
-  "autoUpdatesChannel": "latest",
+  "autoUpdatesChannel": "stable",
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
-  "autoCompactEnabled": true
+  "autoCompactEnabled": true,
+  "preferredNotifChannel": "notifications_disabled"
 }
