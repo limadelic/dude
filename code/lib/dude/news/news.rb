@@ -4,10 +4,11 @@ require_relative 'sommelier'
 module Dude
   module News
     class News
-      def initialize(limit: 5, paperboy: Paperboy.new, sommelier: Sommelier.new)
+      def initialize(limit: 5, paperboy: Paperboy.new, sommelier: Sommelier.new, taste: nil)
         @limit = limit
         @paperboy = paperboy
         @sommelier = sommelier
+        @taste = taste
       end
 
       def fetch
@@ -50,7 +51,7 @@ module Dude
       end
 
       def smoke_test_lines(latest)
-        result = @sommelier.taste(latest)
+        result = @sommelier.taste(latest, prompt: @taste)
         version = extract_version(latest)
         build_vintage_lines(version, result)
       end

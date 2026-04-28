@@ -19,7 +19,7 @@ describe Dude::News::News do
         { tag: 'v0.8.0', body: 'Version 0.8.0 release notes' }
       ]
     end
-    stub(sommelier).taste('1.2.3') \
+    stub(sommelier).taste('1.2.3', prompt: nil) \
       { { conclusion: 'success', url: nil, error: nil } }
     stub(sut).installed_version { '1.0.0' }
   end
@@ -69,13 +69,26 @@ describe Dude::News::News do
       stub(sut).installed_version { 'unknown' }
       stub(paperboy).latest_version { '1.0.0' }
       stub(paperboy).releases(5) { [] }
-      stub(sommelier).taste('1.0.0') \
+      stub(sommelier).taste('1.0.0', prompt: nil) \
         { { conclusion: 'success', url: nil, error: nil } }
     end
 
     it 'includes unknown in output' do
       expect(sut.fetch)
         .to include('Installed: unknown')
+    end
+  end
+
+  describe '#fetch with taste parameter' do
+    let(:sut) { described_class.new(taste: 'bold red wine') }
+
+    before do
+      mock(sommelier).taste('1.2.3', prompt: 'bold red wine') \
+        { { conclusion: 'excellent', url: nil, error: nil } }
+    end
+
+    it 'forwards taste as prompt to sommelier' do
+      sut.fetch
     end
   end
 end
