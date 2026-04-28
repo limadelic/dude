@@ -37,6 +37,18 @@ describe Dude::News::Sommelier do
         )
     end
 
+    context 'with custom prompt' do
+      it 'passes custom prompt to workflow run' do
+        mock(gh).run(/workflow run.*prompt="custom test"/) {}
+
+        expect(sut.taste('v1.2.3', prompt: 'custom test'))
+          .to eq(
+            conclusion: 'success',
+            url: 'https://github.com/UKGEPIC/dude/actions/runs/12345', error: nil
+          )
+      end
+    end
+
     context 'when run is queued' do
       it 'returns result after polling through queued status' do
         calls = 0
