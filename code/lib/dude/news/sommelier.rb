@@ -7,8 +7,8 @@ module Dude
         @gh = gh
       end
 
-      def taste(vintage)
-        trigger(vintage)
+      def taste(vintage, prompt: nil)
+        trigger(vintage, prompt: prompt)
         wait_for_completion
         conclude
       end
@@ -25,8 +25,9 @@ module Dude
         @gh.run(run_id_cmd)
       end
 
-      def trigger(vintage)
-        cmd = "workflow run dude.yml -R UKGEPIC/dude -f prompt=\"1 + 1\" " \
+      def trigger(vintage, prompt: nil)
+        p = prompt || '1 + 1'
+        cmd = "workflow run dude.yml -R UKGEPIC/dude -f prompt=\"#{p}\" " \
               "-f version=#{vintage} -f timeout=5"
         @gh.run(cmd)
       end
