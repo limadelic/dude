@@ -21,7 +21,7 @@ function yolo {
       source ~/.zshrc
       claude --dangerously-skip-permissions -c "u have been restarted continue if needed"
     else
-      claude --dangerously-skip-permissions "the dude abides" $initial_args
+      claude --dangerously-skip-permissions $initial_args "the dude abides"
     fi
 
     [[ ! -f restart ]] && return
