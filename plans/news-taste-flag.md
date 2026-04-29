@@ -1,32 +1,76 @@
-# News -t Flag: Analysis & Todos
+# News -t Flag: Custom Prompt for Vintage Taste Test
 
-## Analysis
+## Why
 
-The `-t` flag threads a custom prompt from CLI down to the GitHub Actions workflow dispatch. Today sommelier hardcodes `prompt="1 + 1"` in `trigger` (sommelier.rb:29). The plumbing is straightforward: CLI option -> News orchestrator -> Sommelier -> workflow `-f prompt=`. Default behavior stays the same when `-t` is omitted.
+The sommelier smoke-tests new Claude Code releases by running a prompt via GHA. Today it hardcodes `"1 + 1"` — useless for catching real regressions like broken haiku delegation. We need a `-t` flag so we can pass prompts like `dude news -t "delegate to a haiku subagent and have it return hello"` and taste the vintage with a real scenario before upgrading.
 
-### Files
+## Use Katmandu
 
-| File | Path | Role |
-|------|------|------|
-| cli.rb | `lib/dude/helpers/cli.rb:113-119` | Thor entry point, `--limit` option, instantiates News |
-| news.rb | `lib/dude/news/news.rb` | Orchestrator: paperboy (releases) + sommelier (smoke test) |
-| sommelier.rb | `lib/dude/news/sommelier.rb` | Triggers `dude.yml` workflow, polls, returns conclusion |
-| paperboy.rb | `lib/dude/news/paperboy.rb` | Fetches releases from anthropics/claude-code. Untouched. |
+Kenny codes, Cartman reviews, Dude decides. One small task per Kenny invocation. Describe BEHAVIOR not implementation.
 
-### Current Flow
+## Current Code
+
+### sommelier.rb (`lib/dude/news/sommelier.rb`)
+
+The `trigger` method hardcodes the prompt at line 29:
+```ruby
+def trigger(vintage)
+  cmd = "workflow run dude.yml -R UKGEPIC/dude -f prompt=\"1 + 1\" " \
+        "-f version=#{vintage} -f timeout=5"
+  @gh.run(cmd)
+end
+```
+
+`taste` is the public API:
+```ruby
+def taste(vintage)
+  trigger(vintage)
+  wait_for_completion
+  conclude
+end
+```
+
+### news.rb (`lib/dude/news/news.rb`)
+
+Orchestrator. Calls sommelier in `smoke_test_lines`:
+```ruby
+def smoke_test_lines(latest)
+  result = @sommelier.taste(latest)
+  version = extract_version(latest)
+  build_vintage_lines(version, result)
+end
+```
+
+Constructor:
+```ruby
+def initialize(limit: 5, paperboy: Paperboy.new, sommelier: Sommelier.new)
+  @limit = limit
+  @paperboy = paperboy
+  @sommelier = sommelier
+end
+```
+
+### cli.rb (`lib/dude/helpers/cli.rb:113-119`)
+
+Thor entry point. Currently only has `--limit`:
+```ruby
+News.new(limit: options[:limit]).run
+```
+
+### dude.yml (`.github/workflows/dude.yml`)
+
+Already accepts `prompt` as a workflow_dispatch input. No changes needed there.
+
+## Flow After Change
 
 ```
-cli.rb: News.new(limit:).run
+cli.rb: News.new(limit:, taste:).run
   -> paperboy.latest_version, paperboy.releases(limit)
-  -> sommelier.taste(vintage)
-       -> trigger(vintage)  # hardcoded prompt="1 + 1"
+  -> sommelier.taste(vintage, prompt: taste)
+       -> trigger(vintage, prompt: taste)  # uses taste or defaults to "1 + 1"
        -> wait_for_completion
        -> conclude
 ```
-
-### Key Insight
-
-sommelier.trigger already sends `-f prompt="1 + 1"` to the workflow. The `-t` flag just makes that value configurable. When omitted, default to `"1 + 1"`.
 
 ## Todos for Kenny
 
@@ -37,3 +81,4 @@ sommelier.trigger already sends `-f prompt="1 + 1"` to the workflow. The `-t` fl
 - [ ] **news_spec.rb** - Add test: taste param is forwarded to sommelier. Verify default (no taste) still works.
 - [ ] **news.feature** - Add scenario: `dude news -t 'verify haiku delegation is fixed'` triggers workflow with custom prompt string.
 - [ ] **paperboy.rb** - No changes needed.
+- [ ] **dude.yml** - No changes needed. Already accepts `prompt` input.
