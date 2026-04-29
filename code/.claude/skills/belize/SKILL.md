@@ -1,11 +1,17 @@
-# Patterns & Practices
+---
+name: belize
+description: Dude Code acceptance testing DSL and rules
+---
 
-## Goal
+# Belize (Dude Code)
 
-- Maximize reuse of existing DSL
-- Minimize new step definitions
+- Read global belize for the process and cast
+- This skill defines Dude Code's DSL and rules
 
-## The DSL
+## DSL
+
+- Three operators: `~` (stub), `!` (execute), `>` (dude command)
+- Gherkin keyword `*` keeps it neutral
 
 ### Stub a shell command
 ```gherkin
@@ -48,7 +54,7 @@
 
 ## Scenarios
 
-- Declarative — WHAT not HOW
+- Declarative, WHAT not HOW
 - One outcome per scenario
 - Use domain language
 - No incidental detail
