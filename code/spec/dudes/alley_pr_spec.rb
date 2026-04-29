@@ -77,20 +77,12 @@ describe Dude::Dudes::AlleyPr do
 
     context 'non-UKGEPIC repo' do
       before do
-        stub(sut).`('git branch --show-current') { 'feature-branch' }
         stub(sut).`(/git remote get-url/) { 'git@github.com:foo/bar.git' }
-        stub(sut).`(/git push/) { '' }
         stub(sut).`(/gh pr create --fill/) { 'https://github.com/foo/bar/pull/1' }
-        stub(sut).`(/pbcopy/) { '' }
       end
 
       it 'creates PR via gh cli' do
         expect(sut.execute).to eq 'https://github.com/foo/bar/pull/1'
-      end
-
-      it 'does not push skip-ci commit' do
-        dont_allow(sut).`(/git commit --allow-empty/)
-        sut.execute
       end
     end
   end
