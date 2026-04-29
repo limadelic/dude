@@ -72,7 +72,11 @@ Tcr → PlatformDetector.detect → :elixir | :dotnet | :node | :ruby
 
 ### PlatformDetector
 
-New class. Walks markers top-down by hierarchy. Returns a symbol. Raises if no platform found.
+New class. Single responsibility: files → platform symbol. All validation lives here:
+- Unknown extension → error with educational message listing allowed extensions
+- Mixed extensions → error
+- Missing project marker → error
+- Hierarchy only used when no files provided (fallback inference)
 
 ### TestsRunner / Linter
 
@@ -91,9 +95,9 @@ Accept a `platform` param. Map platform to command. Same `pass?` interface.
 | `spec/dudes/linter_spec.rb` | New/update — platform specs |
 | `spec/dudes/tcr_spec.rb` | Update — platform wiring |
 
-## Open questions
+## Decisions (resolved)
 
-1. Should `dude tcr` accept a `--platform` flag to override detection?
-2. For Elixir+Cucumber, does TCR run `mix test` or both `mix test` and `cucumber`? (Current thinking: just `mix test` — Cucumber is acceptance-level, TCR is unit-level)
-3. Lint for Node.js — assume `npm run lint` exists in package.json? Or try `npx eslint`?
-4. .NET lint — `dotnet format --verify-no-changes` or skip lint for .NET?
+1. **No `--platform` flag.** Detection is deterministic. If it fails, fix the project, not the CLI.
+2. **Elixir+Cucumber → `mix test` only.** TCR is unit-level. `.feature` files aren't in the whitelist, so they're rejected.
+3. **Node.js lint → `npm run lint`.** If the project doesn't have a lint script, that's the project's problem. No fallback to `npx eslint`.
+4. **.NET lint → `dotnet format --verify-no-changes`.** All platforms lint. Consistency.
