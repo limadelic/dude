@@ -12,10 +12,11 @@ describe Dude::Dudes::Tcr do
   let(:revert) { Object.new }
 
   before do
-    stub(Dude::Dudes::TestsRunner).new { tests_runner }
-    stub(Dude::Dudes::Linter).new { linter }
-    stub(Dude::Dudes::GitStageCommit).new { commit }
-    stub(Dude::Dudes::GitRevert).new { revert }
+    stub(Dude::Dudes::PlatformDetector).detect(files) { :ruby }
+    stub(Dude::Dudes::TestsRunner).new(files, :ruby) { tests_runner }
+    stub(Dude::Dudes::Linter).new(files, :ruby) { linter }
+    stub(Dude::Dudes::GitStageCommit).new(files) { commit }
+    stub(Dude::Dudes::GitRevert).new(files) { revert }
     stub(tests_runner).pass? { true }
     stub(linter).pass? { true }
     stub(commit).execute

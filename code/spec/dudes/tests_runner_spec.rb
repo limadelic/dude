@@ -4,46 +4,73 @@ require_relative "../../lib/dude/dudes/tests_runner"
 describe Dude::Dudes::TestsRunner do
   include RR::DSL
 
-  let(:sut) { described_class.new(files) }
   let(:files) { %w[spec/foo_spec.rb] }
 
   describe '#pass?' do
-    let(:command) { 'bundle exec rspec spec/foo_spec.rb > /dev/null 2>&1' }
-    let(:result) { true }
+    context 'ruby platform' do
+      let(:sut) { described_class.new(files, :ruby) }
 
-    before do
-      stub(sut).system(command) { result }
+      it 'calls system with rspec command' do
+        expected_cmd = 'bundle exec rspec spec/foo_spec.rb > /dev/null 2>&1'
+        stub(sut).system(expected_cmd) { true }
+
+        expect(sut.pass?).to eq true
+      end
     end
 
-    it 'returns true when command succeeds' do
-      expect(sut.pass?).to be true
+    context 'elixir platform' do
+      let(:sut) { described_class.new(files, :elixir) }
+
+      it 'calls system with mix test command' do
+        expected_cmd = 'mix test spec/foo_spec.rb > /dev/null 2>&1'
+        stub(sut).system(expected_cmd) { true }
+
+        expect(sut.pass?).to eq true
+      end
     end
 
-    context 'when command fails' do
-      let(:result) { false }
+    context 'dotnet platform' do
+      let(:sut) { described_class.new(files, :dotnet) }
 
-      it 'returns false' do
-        expect(sut.pass?).to be false
+      it 'calls system with dotnet test command' do
+        expected_cmd = 'dotnet test > /dev/null 2>&1'
+        stub(sut).system(expected_cmd) { true }
+
+        expect(sut.pass?).to eq true
+      end
+    end
+
+    context 'node platform' do
+      let(:sut) { described_class.new(files, :node) }
+
+      it 'calls system with npm test command' do
+        expected_cmd = 'npm test > /dev/null 2>&1'
+        stub(sut).system(expected_cmd) { true }
+
+        expect(sut.pass?).to eq true
+      end
+    end
+
+    context 'default platform is ruby' do
+      let(:sut) { described_class.new(files) }
+
+      it 'uses rspec command' do
+        expected_cmd = 'bundle exec rspec spec/foo_spec.rb > /dev/null 2>&1'
+        stub(sut).system(expected_cmd) { true }
+
+        expect(sut.pass?).to eq true
       end
     end
 
     context 'with multiple files' do
       let(:files) { %w[spec/a_spec.rb spec/b_spec.rb] }
-      let(:command) {
-        'bundle exec rspec spec/a_spec.rb spec/b_spec.rb > /dev/null 2>&1'
-      }
+      let(:sut) { described_class.new(files, :ruby) }
 
-      it 'joins multiple files' do
-        expect(sut.pass?).to be true
-      end
-    end
+      it 'joins multiple files for ruby' do
+        expected_cmd = 'bundle exec rspec spec/a_spec.rb spec/b_spec.rb > /dev/null 2>&1'
+        stub(sut).system(expected_cmd) { true }
 
-    context 'with no files' do
-      let(:files) { [] }
-      let(:command) { 'bundle exec rspec  > /dev/null 2>&1' }
-
-      it 'handles no files' do
-        expect(sut.pass?).to be true
+        expect(sut.pass?).to eq true
       end
     end
   end
