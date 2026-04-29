@@ -2,6 +2,7 @@ require_relative 'tests_runner'
 require_relative 'linter'
 require_relative 'git_stage_commit'
 require_relative 'git_revert'
+require_relative 'platform_detector'
 
 module Dude
   module Dudes
@@ -11,19 +12,20 @@ module Dude
       end
 
       def run
-        pass = rubocop_pass? && rspec_pass?
+        platform = PlatformDetector.detect(@files)
+        pass = tests_pass?(platform) && lint_pass?(platform)
         pass ? commit : revert
         pass
       end
 
       private
 
-      def rspec_pass?
-        TestsRunner.new(@files).pass?
+      def tests_pass?(platform)
+        TestsRunner.new(@files, platform).pass?
       end
 
-      def rubocop_pass?
-        Linter.new(@files).pass?
+      def lint_pass?(platform)
+        Linter.new(@files, platform).pass?
       end
 
       def commit

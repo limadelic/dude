@@ -1,12 +1,21 @@
 module Dude
   module Dudes
     class TestsRunner
-      def initialize(files)
+      COMMANDS = {
+        ruby: ->(files) { "bundle exec rspec #{files.join(' ')}" },
+        elixir: ->(files) { "mix test #{files.join(' ')}" },
+        dotnet: ->(_files) { "dotnet test" },
+        node: ->(_files) { "npm test" }
+      }
+
+      def initialize(files, platform = :ruby)
         @files = files
+        @platform = platform
       end
 
       def pass?
-        system("bundle exec rspec #{@files.join(' ')} > /dev/null 2>&1")
+        command = COMMANDS[@platform].call(@files)
+        system("#{command} > /dev/null 2>&1")
       end
     end
   end
