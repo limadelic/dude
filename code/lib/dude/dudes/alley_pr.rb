@@ -6,10 +6,17 @@ module Dude
       def execute
         branch = `git branch --show-current`.strip
         guard_main_branch(branch)
-        workflow_pr(branch)
+        ukgepic? ? workflow_pr(branch) : simple_pr(branch)
       end
 
       private
+
+      def simple_pr(branch)
+        `git push -u origin #{branch} 2>&1`
+        pr_url = `gh pr create --fill`.strip
+        copy_pr_to_clipboard(pr_url)
+        pr_url
+      end
 
       def workflow_pr(branch)
         run_url = trigger_and_wait_for_workflow(branch)
