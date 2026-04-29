@@ -6,11 +6,15 @@ module Dude
       def execute
         branch = `git branch --show-current`.strip
         guard_main_branch(branch)
-        run_url = trigger_and_wait_for_workflow(branch)
-        complete_workflow(branch, run_url)
+        workflow_pr(branch)
       end
 
       private
+
+      def workflow_pr(branch)
+        run_url = trigger_and_wait_for_workflow(branch)
+        complete_workflow(branch, run_url)
+      end
 
       def trigger_and_wait_for_workflow(branch)
         push_and_trigger(branch)
@@ -42,6 +46,14 @@ module Dude
       def build_run_url(run_id)
         repo = extract_repo_from_remote
         "https://github.com/#{repo}/actions/runs/#{run_id}"
+      end
+
+      def ukgepic?
+        extract_org_from_remote == 'UKGEPIC'
+      end
+
+      def extract_org_from_remote
+        extract_repo_from_remote.split('/')[0]
       end
 
       def extract_repo_from_remote
