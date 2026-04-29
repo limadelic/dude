@@ -4,7 +4,8 @@ require_relative 'sommelier'
 module Dude
   module News
     class News
-      def initialize(limit: 5, paperboy: Paperboy.new, sommelier: Sommelier.new, taste: nil)
+      def initialize(limit: 5, paperboy: Paperboy.new,
+        sommelier: Sommelier.new, taste: nil)
         @limit = limit
         @paperboy = paperboy
         @sommelier = sommelier

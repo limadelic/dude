@@ -24,11 +24,13 @@ module Dude
 
       def self.platform_for(file)
         extension = File.extname(file)
-        EXTENSION_MAP[extension] || raise('TCR only supports .rb, .ex, .exs, .cs, .ts, .js files')
+        EXTENSION_MAP[extension] ||
+          raise('TCR only supports .rb, .ex, .exs, .cs, .ts, .js files')
       end
 
       def self.validate_same_platform(platforms)
         return if platforms.uniq.size == 1
+
         raise 'TCR files must be the same platform'
       end
     end
