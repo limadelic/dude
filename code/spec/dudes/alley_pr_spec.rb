@@ -74,5 +74,20 @@ describe Dude::Dudes::AlleyPr do
         expect(sut.execute).to eq 'https://github.com/UKGEPIC/dude/pull/123'
       end
     end
+
+    context 'non-UKGEPIC repo' do
+      before do
+        stub(sut).`('git branch --show-current') { 'feature-branch' }
+        stub(sut).`(/git remote get-url/) { 'git@github.com:foo/bar.git' }
+        stub(sut).`(/git push/) { '' }
+        stub(sut).`(/gh pr create --fill/) { 'https://github.com/foo/bar/pull/1' }
+        stub(sut).`(/pbcopy/) { '' }
+      end
+
+      it 'creates PR via gh cli' do
+        expect(sut.execute).to eq 'https://github.com/foo/bar/pull/1'
+      end
+    end
   end
+
 end
