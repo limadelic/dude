@@ -87,6 +87,11 @@ describe Dude::Dudes::AlleyPr do
       it 'creates PR via gh cli' do
         expect(sut.execute).to eq 'https://github.com/foo/bar/pull/1'
       end
+
+      it 'does not push skip-ci commit' do
+        dont_allow(sut).`(/git commit --allow-empty/)
+        sut.execute
+      end
     end
   end
 
