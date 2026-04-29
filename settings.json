@@ -56,7 +56,10 @@
       "mcp__playwright__browser_hover",
       "mcp__playwright__browser_select_option"
     ],
-    "defaultMode": "dontAsk"
+    "defaultMode": "dontAsk",
+    "allow": [
+      "Bash(pkill *)"
+    ]
   },
   "statusLine": {
     "type": "command",
