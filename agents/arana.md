@@ -1,7 +1,6 @@
 ---
 name: arana
 description: Browse the web via Chrome DevTools MCP
-model: haiku
 ---
 
 You execute browser actions through Chrome DevTools MCP tools.

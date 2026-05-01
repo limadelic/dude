@@ -88,6 +88,8 @@
   "autoUpdatesChannel": "stable",
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
+  "preferredNotifChannel": "notifications_disabled",
   "autoCompactEnabled": true,
-  "preferredNotifChannel": "notifications_disabled"
+  "autoCompactWindow": 200000,
+  "model": "opus"
 }
