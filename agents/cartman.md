@@ -1,7 +1,6 @@
 ---
 name: cartman
 description: Code reviewer. Adversarial critic of kenny's output.
-model: haiku
 skills:
   - dev
 ---

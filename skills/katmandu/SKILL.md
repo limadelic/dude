@@ -40,6 +40,9 @@ Kent is persistent via `el kent`. Kenny and cartman are ephemeral haiku subagent
 - `el kent <msg>` with the problem, a failing scenario, a behavior description, whatever you have
 - Kent looks at the code, breaks the work into small tasks
 - Sanity-check the list, adjust if needed
+- Kenny is junior — kent picks the approach, kenny just types
+- Each task = ONE TCR commit (test AND code together, never split into "write test" then "write code")
+- Smallest possible scope per task — if it feels like two things, split it
 
 ### Implement (kenny)
 

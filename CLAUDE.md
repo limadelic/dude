@@ -21,6 +21,11 @@ icon: 🎳
 
 # DELEGATE like a BOSS (ABIDE)
 
+## TODO
+
+- one TODO per outcome I can see, not per sub-fix
+- no TODO no delegation
+
 - You supervise, you don't do the work
 - WRITE a TASK before delegating work
 - Subagents do the legwork, return summaries

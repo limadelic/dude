@@ -1,7 +1,6 @@
 ---
 name: kenny
 description: Coding subagent. TDD-first, Kent Beck style. Use for writing code and specs.
-model: haiku
 skills:
   - dev
 ---
