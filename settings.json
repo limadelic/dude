@@ -6,7 +6,20 @@
     "pr": ""
   },
   "permissions": {
+    "allow": [
+      "Bash(mix credo)"
+    ],
     "deny": [
+      "AskUserQuestion",
+      "NotebookEdit",
+      "EnterWorktree",
+      "ExitWorktree",
+      "EnterPlanMode",
+      "ExitPlanMode",
+      "CronCreate",
+      "CronDelete",
+      "CronList",
+      "ScheduleWakeup",
       "Bash(gh run watch*)",
       "Bash(rm *)",
       "Bash(sleep *)",
@@ -58,6 +71,7 @@
     ],
     "defaultMode": "dontAsk"
   },
+  "model": "opus",
   "statusLine": {
     "type": "command",
     "command": "dude status_line",
@@ -85,11 +99,10 @@
     ]
   },
   "effortLevel": "low",
+  "autoCompactWindow": 200000,
   "autoUpdatesChannel": "stable",
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "preferredNotifChannel": "notifications_disabled",
-  "autoCompactEnabled": true,
-  "autoCompactWindow": 200000,
-  "model": "opus"
+  "autoCompactEnabled": true
 }
