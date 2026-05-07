@@ -11,6 +11,8 @@ module Dude
         trigger(vintage, prompt: prompt)
         wait_for_completion
         conclude
+      rescue => e
+        { conclusion: 'timeout', url: nil, error: e.message }
       end
 
       private

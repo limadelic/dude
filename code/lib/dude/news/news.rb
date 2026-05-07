@@ -19,7 +19,12 @@ module Dude
       end
 
       def run
-        puts fetch
+        latest = @paperboy.latest_version
+        puts installed_and_latest_line(latest)
+        releases_lines.each { |line| puts line }
+        smoke_test_lines(latest).each { |line| puts line }
+      rescue => e
+        puts "Error: #{e.message}"
       end
 
       def build_output_lines(latest)

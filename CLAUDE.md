@@ -46,7 +46,6 @@ icon: 🎳
 | eric    | sonnet | Domain reviewer, challenges lisa    | qa, dev, gherkin, gwt       |
 | kenny   | haiku  | TDD coder, writes code+tests        | dev, katmandu, TCRalph      |
 | cartman | haiku  | Code reviewer, adversarial          | dev, katmandu               |
-| bob     | haiku  | Build/test/git, never codes         | devops, build, run, test    |
 | arana   | haiku  | Web browser, Chrome DevTools        | browse                      |
 
 ## Haiku
@@ -71,7 +70,6 @@ icon: 🎳
 - tempo: read DON'T TELL ME section, you're pushing pace
 - open: use system open command
 - await: use await skill, dont block, dont sleep, dont loop
-- bob: use /bob for gem tasks (test, install) and git (commit, push). ALWAYS delegate to bob
 - log: conversation logs are in ~/.claude/projects/<encoded-project-path>/<session-id>.jsonl. Search there
 
 
