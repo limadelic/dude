@@ -102,6 +102,28 @@ Per the spec's "Key PA Fields", these are **not** in the payload and would need 
 - Approved Headcount (only FTE is in payload)
 - Resolved names for Org Unit / Location / Company / Job (only IDs are in payload)
 
+### What Elasticsearch covers
+
+Recruiting indexes a `SearchablePosition` document into ES. It helps with **some** of the gaps above — specifically the resolved names — but NOT the truly-missing business fields.
+
+Indexed in ES (`Product/Recruitment.Domain/SearchModel/Position/SearchablePosition.cs`, mapping at `Product/Recruitment.Persistence/Search/Mapping/SearchablePositionMapping.cs`):
+
+- `Id`, `Code`, `LocalizedName`, `JobCode`, `Status` (name + enum byte), `FTE`, `TenantId`
+- **`OrgLevels[]`** — each with `Id`, `Code`, `Description`, `CategoryName`, `Level` ← **resolved org names**
+- **`Location`** — `Id`, `Name`, `City`, `State` (name+code), `Country` (localized name + code) ← **resolved location names**
+
+So if the agent wants human-readable Org Unit / Location strings, ES is a viable source for those (via `SearchablePositionRepository`).
+
+**Still NOT in ES** (would need UKG Pro / Core HR lookup):
+- Cost Center
+- Hiring Manager (no manager / owner field at all)
+- Pay Grade / salary band
+- Approved Headcount (FTE is indexed, not headcount)
+- Resolved Company name
+- Resolved Job name (only `JobCode`, no `JobName`)
+
+**Bottom line:** Kafka payload + ES together cover names for Org Unit and Location, but the four spec fields (Cost Center, Hiring Manager, Pay Grade, Approved Headcount) aren't anywhere in recruiting's data — they live in upstream HR systems and need a separate integration regardless of where the listener runs.
+
 ## 5. What recruiting DOES on top of the framework
 
 This is the part you have to reimplement in your generic listener. The recruiting C# code does this for the POC trigger:
