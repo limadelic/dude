@@ -1,8 +1,8 @@
 # PA from Scratch — Kafka Consumer Reference
 
-For someone rebuilding the **Requisition Creation Agent — Signal 1 (PA Open Position)** OUTSIDE the recruiting C# codebase. Could be Java, Python, Node — doesn't matter. This doc tells you what topics to subscribe to, what's in the payloads, and what business logic the recruiting code does on top of the framework so you know what you have to recreate.
+This document is for a team rebuilding the **Requisition Creation Agent — Signal 1 (PA Open Position)** outside the recruiting C# codebase, in any language (Java, Python, Node, etc.). It documents the Kafka topics to subscribe to, the payload shapes, and the business logic the recruiting code performs on top of its event framework so the equivalent work can be reproduced elsewhere.
 
-The recruiting app uses an internal framework called **Plata.Eventing** that wraps Confluent.Kafka. Outside the monolith, you don't have Plata. You'd use vanilla Kafka client libraries (`confluent-kafka-python`, `kafka-clients` for Java, `kafkajs` for Node, etc.).
+The recruiting application uses an internal framework called **Plata.Eventing** that wraps Confluent.Kafka. Outside this codebase, Plata is not available. A vanilla Kafka client library (`confluent-kafka-python`, `kafka-clients` for Java, `kafkajs` for Node, etc.) would be used in its place.
 
 ---
 
@@ -30,7 +30,7 @@ Recruiting registers all PA subscriptions under one logical consumer key `positi
 {KafkaEnvironment}.recruiting.rec-event.position-automation
 ```
 
-You'd pick your own group name (e.g. `req-agent.signal1.open-position`) so you don't fight recruiting for offsets. Each consumer group sees every message independently.
+A separate consumer group name (for example `req-agent.signal1.open-position`) should be chosen so the new consumer does not share offsets with the recruiting consumer. Each consumer group receives every message independently.
 
 Defined: `Product/Recruitment.Domain/Kafka/KafkaConsumers.cs:50-67`
 
@@ -50,7 +50,7 @@ Listed in `Product/Recruitment.Application.Services/KafkaEventRegistry.cs:112-15
 | `PositionFlexAssignedV2Event` | entity-position-assignment-dev | `PositionAssignedV2Payload` |
 | `PositionFlexChangedV2Event` | entity-position-dev | `PositionChangedV2Payload` |
 
-Both the recruiting Plata stack and an external consumer see the **same JSON on the wire**. The C# class names are recruiting's local types — the payload structure is what matters across languages.
+Both the recruiting Plata stack and an external consumer see the same JSON on the wire. The C# class names are recruiting's local types; the payload structure is what is portable across languages.
 
 ## 4. PositionChangedV2Payload — every field
 
@@ -73,13 +73,13 @@ This is the one the POC consumes. From `Product/Recruitment.Domain/Events/v2/Pay
 - `Name` (string) — position title
 - `AlternativePositionNumber` (string)
 - `FullTimeEquivalent` (decimal) — FTE
-- `Status` (string) — **the field we key on. Values include "Open", "Filled", "PartiallyFilled", "Inactive", "Active", "Closed", "Proposed", "Overstaffed"**
+- `Status` (string) — **the field on which the POC's transition rule is evaluated. Possible values include "Open", "Filled", "PartiallyFilled", "Inactive", "Active", "Closed", "Proposed", "Overstaffed"**
 - `IsApproved` (bool)
 - `IsApprovedDeleted` (bool?)
 - `IsOverStaffingAllowed` (bool)
 - `Notes` (string)
 - `JobId` (Guid?)
-- `ReportsToPositionId` (Guid?) — closest thing to "hiring manager" but it's another position, not a person
+- `ReportsToPositionId` (Guid?) — the closest equivalent to "hiring manager" available in the payload, but it references another position, not a person
 - `BudgetId` (Guid?)
 - `AmountPerFte` (decimal?), `AmountPerFteCurrencyCode` (string)
 - `BudgetEndDate` (DateTime?)
@@ -182,36 +182,36 @@ Spec field → People Fabric path → in our Kafka payload? → in our ES?
 
 | Spec field | People Fabric path | Kafka payload | Recruiting ES |
 |---|---|---|---|
-| Position ID | `position.id` | ✅ `PositionId` | ✅ `Id` |
-| Job Title | `position.jobTitle` / `jobProfile.title` | ✅ `Name` | ✅ `LocalizedName` |
-| Job Code | `position.jobCode` | ✅ `Code` | ✅ `Code`, `JobCode` |
-| Job Profile ID | `position.jobProfile.id` | ✅ `JobId` | ❌ |
-| Job Family | `position.jobFamily` | ❌ | ❌ |
-| Job Level | `position.jobLevel` | ❌ | ❌ |
-| Business Unit | `org.businessUnit` | ⚠️ Implicit (top OrgLevel ID) | ✅ Implicit (OrgLevels hierarchy) |
-| Department | `org.department` | ⚠️ ID only | ✅ Resolved name in `OrgLevels[]` |
-| **Cost Center** | `org.costCenter` | ❌ | ❌ |
-| **Hiring Manager** | `position.reportsTo → person.id` | ❌ (`ReportsToPositionId` is a position, not a person) | ❌ |
-| HRBP | `org.hrbp` | ❌ | ❌ |
-| Location | `position.location.id` + `.name` | ⚠️ `WorkLocationId` only | ✅ Id, Name, City, State, Country |
-| Sub-location / Work Site | `position.workSite` | ❌ | ❌ |
-| **Pay Grade** | `compensation.payGrade` | ❌ | ❌ |
-| Pay Band (min/mid/max) | `compensation.payRange.*` | ❌ | ❌ |
-| Pay Frequency | `compensation.payFrequency` | ❌ | ❌ |
-| Currency | `compensation.currency` | ⚠️ `AmountPerFteCurrencyCode` (FTE rate only) | ❌ |
-| **FLSA Status** | `jobProfile.flsaStatus` | ❌ | ❌ |
-| EEO Category | `jobProfile.eeoCategory` | ❌ | ❌ |
-| Worker Type | `position.workerType` | ❌ | ❌ |
-| Employment Type | `position.employmentType` | ❌ | ❌ |
-| OFCCP Flag | `org.ofccpCovered` | ❌ | ❌ |
-| Bargaining Unit | `position.bargainingUnit` | ❌ | ❌ |
-| FTE | `position.fte` | ✅ `FullTimeEquivalent` | ✅ `FTE` |
-| Scheduled Hours | `position.scheduledHours` | ❌ | ❌ |
-| Work Arrangement | `position.workArrangement` | ❌ | ❌ |
-| Shift Type | `position.shiftType` | ✅ `ShiftCode` | ❌ |
-| Travel Requirements | `jobProfile.travelRequirement` | ❌ | ❌ |
-| **Approved Headcount** | (PA-side, not in spec PF section) | ❌ | ❌ |
-| Change Reason / Source | (PA event source) | ✅ `ChangeReason`, `ChangeDetails` | ❌ |
+| Position ID | `position.id` | Yes — `PositionId` | Yes — `Id` |
+| Job Title | `position.jobTitle` / `jobProfile.title` | Yes — `Name` | Yes — `LocalizedName` |
+| Job Code | `position.jobCode` | Yes — `Code` | Yes — `Code`, `JobCode` |
+| Job Profile ID | `position.jobProfile.id` | Yes — `JobId` | No |
+| Job Family | `position.jobFamily` | No | No |
+| Job Level | `position.jobLevel` | No | No |
+| Business Unit | `org.businessUnit` | Partial — implicit (top OrgLevel ID) | Yes — implicit in OrgLevels hierarchy |
+| Department | `org.department` | Partial — ID only | Yes — resolved name in `OrgLevels[]` |
+| **Cost Center** | `org.costCenter` | No | No |
+| **Hiring Manager** | `position.reportsTo → person.id` | No (`ReportsToPositionId` is a position, not a person) | No |
+| HRBP | `org.hrbp` | No | No |
+| Location | `position.location.id` + `.name` | Partial — `WorkLocationId` only | Yes — Id, Name, City, State, Country |
+| Sub-location / Work Site | `position.workSite` | No | No |
+| **Pay Grade** | `compensation.payGrade` | No | No |
+| Pay Band (min/mid/max) | `compensation.payRange.*` | No | No |
+| Pay Frequency | `compensation.payFrequency` | No | No |
+| Currency | `compensation.currency` | Partial — `AmountPerFteCurrencyCode` (FTE rate only) | No |
+| **FLSA Status** | `jobProfile.flsaStatus` | No | No |
+| EEO Category | `jobProfile.eeoCategory` | No | No |
+| Worker Type | `position.workerType` | No | No |
+| Employment Type | `position.employmentType` | No | No |
+| OFCCP Flag | `org.ofccpCovered` | No | No |
+| Bargaining Unit | `position.bargainingUnit` | No | No |
+| FTE | `position.fte` | Yes — `FullTimeEquivalent` | Yes — `FTE` |
+| Scheduled Hours | `position.scheduledHours` | No | No |
+| Work Arrangement | `position.workArrangement` | No | No |
+| Shift Type | `position.shiftType` | Yes — `ShiftCode` | No |
+| Travel Requirements | `jobProfile.travelRequirement` | No | No |
+| **Approved Headcount** | (PA-side, not in spec PF section) | No | No |
+| Change Reason / Source | (PA event source) | Yes — `ChangeReason`, `ChangeDetails` | No |
 
 **Bold rows are spec-required for approval AND not in any recruiting data source.** They have to come from People Fabric or another Core HR integration — regardless of whether the listener lives inside or outside recruiting.
 
@@ -221,17 +221,17 @@ The spec's Data Completeness Rules list 11 fields as Required for Approval. If t
 
 | Required field | Best source | Risk for the agent |
 |---|---|---|
-| Job title | Kafka `Name` (or PF `position.jobTitle`) | 🟢 Low — in payload |
-| Job code | Kafka `Code` | 🟢 Low — in payload |
-| Location | PF `position.location.name` or recruiting ES | 🟡 Medium — needs lookup |
-| Hiring manager | PF `position.reportsTo → person.id` | 🔴 High — only PF has it |
-| Pay grade | PF `compensation.payGrade` | 🔴 High — only PF |
-| Cost center | PF `org.costCenter` | 🔴 High — only PF |
-| Org level / department | Recruiting ES `OrgLevels[]` (resolved) or PF | 🟡 Medium — ES helps |
-| FLSA status | PF `jobProfile.flsaStatus` | 🔴 High — only PF |
-| FTE type | Derived from Kafka `FullTimeEquivalent` | 🟢 Low |
-| Number of openings / headcount | PF approved headcount | 🔴 High — Kafka has FTE only |
-| Req type | Inferred from signal (PA = New Hire) per BR-PA-05 | 🟢 Low — derivable |
+| Job title | Kafka `Name` (or PF `position.jobTitle`) | Low — present in payload |
+| Job code | Kafka `Code` | Low — present in payload |
+| Location | PF `position.location.name` or recruiting ES | Medium — requires a lookup |
+| Hiring manager | PF `position.reportsTo → person.id` | High — only People Fabric has it |
+| Pay grade | PF `compensation.payGrade` | High — only People Fabric |
+| Cost center | PF `org.costCenter` | High — only People Fabric |
+| Org level / department | Recruiting ES `OrgLevels[]` (resolved) or PF | Medium — ES provides resolved names |
+| FLSA status | PF `jobProfile.flsaStatus` | High — only People Fabric |
+| FTE type | Derived from Kafka `FullTimeEquivalent` | Low |
+| Number of openings / headcount | PF approved headcount | High — Kafka carries FTE only |
+| Req type | Inferred from signal (PA = New Hire) per BR-PA-05 | Low — derivable from trigger |
 
 **Of 11 required fields, 5 require a People Fabric integration** the listener does NOT provide. The listener can honestly only assert "open position detected, here's the ID." The agent owns the PF lookups to fill the draft (which is exactly what BR-PA-04 expects).
 
@@ -241,9 +241,9 @@ The spec's Data Completeness Rules list 11 fields as Required for Approval. If t
 - **OQ-BR-12** ("What People Fabric fields are reliably populated vs. commonly null?") — not answerable from recruiting code alone. Requires production data sampling against People Fabric. The matrix in 5d shows what fields exist in the schema, not their fill rate.
 - **OQ-BR-03** ("Match criteria for existing open req — job code + location? job code + cost center? position ID?") — recruiting's ES indexes both `JobCode` and `Location.Id`, so job-code + location match is queryable. Cost center is not in ES, so cost-center match would require a separate Mongo or Core HR query.
 
-## 6. What recruiting DOES on top of the framework
+## 6. What the recruiting code does on top of the framework
 
-This is the part you have to reimplement in your generic listener. The recruiting C# code does this for the POC trigger:
+This is the portion that needs to be reproduced in any external listener. The recruiting C# code performs the following for the POC trigger:
 
 ```
 1. Plata deserializes Kafka message → PositionChangedV2Payload object
@@ -256,13 +256,13 @@ This is the part you have to reimplement in your generic listener. The recruitin
 
 Source: `PositionAutomationPocEventSubscription.cs` (~120 lines).
 
-**Important:** the payload itself does NOT tell you "this is a transition". It tells you the new state only. Detecting the transition requires comparing against last-known state — which means your generic listener also needs a small datastore (Redis, DB, anything) keyed by `PositionId` to remember each position's last `Status`.
+**Important:** the payload itself does not signal a transition. It carries only the new state. Detecting a transition requires comparing the incoming state against the last-known state, which means an external listener needs a small datastore (Redis, a database table, etc.) keyed by `PositionId` to record each position's most recent `Status`.
 
 ## 7. Translating to a vanilla Kafka listener
 
-Distance from "what recruiting has" to "vanilla Kafka consumer in $LANGUAGE": **small**. Most of the recruiting code is framework boilerplate you don't need.
+The distance from the recruiting implementation to a vanilla Kafka consumer in any language is small. Most of the recruiting code is framework infrastructure that does not need to be reproduced.
 
-### What Plata does for us (and you don't need to recreate)
+### What Plata provides (and does not need to be reproduced)
 
 - Topic name resolution (env prefix + JSON config overrides)
 - Consumer group fully-qualified-name building
@@ -272,18 +272,18 @@ Distance from "what recruiting has" to "vanilla Kafka consumer in $LANGUAGE": **
 - Logging (`IPlataLogger`)
 - Toggle gating (`ITenantFeatureToggle`)
 
-You replace those with: standard Kafka client config + your app's own logger / config / DI / toggle layer.
+These can be replaced with a standard Kafka client configuration plus the host application's own logging, configuration, dependency injection, and feature toggle layers.
 
-### What you DO need to write
+### What needs to be written
 
-1. **Kafka consumer** in $LANGUAGE pointing at:
-   - Bootstrap servers: same as recruiting's (ask infra; recruiting reads from `RecruitingConfiguration.cs:1045-1098`)
-   - Topic: `{env}.business-events.flex-data-analytics.entity-position-dev` (or prod equivalent)
-   - Consumer group: yours, not recruiting's
-   - Auth: probably SASL — check with Kafka platform team
-2. **JSON deserialization** of the payload. The wire format is JSON. Define a class/struct/dict matching section 4 above. You can ignore fields you don't care about.
-3. **Last-known-status store** — tiny key-value store: `PositionId → last Status`. Anything works (Redis, Postgres, even an in-mem map for POC).
-4. **Transition detection** — same logic as `PositionAutomationPocEventSubscription.cs`:
+1. **Kafka consumer** in the chosen language, configured with:
+   - Bootstrap servers — same brokers used by recruiting (confirm with the platform team; recruiting reads these from `RecruitingConfiguration.cs:1045-1098`)
+   - Topic — `{env}.business-events.flex-data-analytics.entity-position-dev` (or production equivalent)
+   - Consumer group — a new group, distinct from recruiting's
+   - Authentication — likely SASL; confirm with the Kafka platform team
+2. **JSON deserialization** of the payload. The wire format is JSON. Define a class, struct, or dictionary matching section 4 above. Fields not used by the agent can be ignored.
+3. **Last-known-status store** — a small key-value store mapping `PositionId` to last seen `Status`. Redis, Postgres, or even an in-memory map is sufficient for a POC.
+4. **Transition detection** — equivalent to the logic in `PositionAutomationPocEventSubscription.cs`:
    ```
    if payload.Status == "Open" and store.get(payload.PositionId) != "Open":
        post_to_agent({"positionId": payload.PositionId})
@@ -293,24 +293,24 @@ You replace those with: standard Kafka client config + your app's own logger / c
 
 ### Rough size estimate
 
-A Python `confluent-kafka` consumer doing all of the above is **~80-120 lines** including config + retries. Java with `kafka-clients` is ~150-200 lines. None of this is hard — the work is operational (auth, networking, observability), not algorithmic.
+A Python `confluent-kafka` consumer covering all of the above is roughly 80–120 lines, including configuration and retry handling. A Java implementation with `kafka-clients` is roughly 150–200 lines. The work is primarily operational (authentication, networking, observability) rather than algorithmic.
 
-### Caveats for going outside recruiting
+### Considerations when running outside recruiting
 
-- **Schema drift:** payload is owned by FlexDataAnalytics, not recruiting. If they change the schema, you're affected the same way recruiting is. Subscribe to their schema-change announcements.
-- **Multi-tenancy:** `TenantId` is in the payload. You're on the hook for filtering by tenant if your agent is tenant-aware.
-- **Volume:** every position field change publishes a message. Recruiting receives a LOT. Plan for backpressure.
-- **Replay / startup state:** when your consumer first starts with a fresh group, it reads from the topic's earliest or latest offset depending on config. "Earliest" replays history (could be huge); "latest" misses everything before startup. Pick deliberately.
+- **Schema drift.** The payload is owned by the FlexDataAnalytics team, not recruiting. Schema changes affect any consumer equally. Subscribe to their schema-change announcements.
+- **Multi-tenancy.** `TenantId` is included in the payload. Tenant filtering is the consumer's responsibility if the agent is tenant-aware.
+- **Volume.** Every position field change publishes a message. Recruiting consumes a high volume of these. Plan for backpressure.
+- **Replay and startup state.** A consumer joining with a fresh group reads from either the earliest or latest topic offset depending on configuration. "Earliest" replays the full retained history; "latest" skips everything before startup. Choose deliberately.
 
-## 8. Summary for your hater conversation
+## 8. Summary
 
-- Recruiting is just one of N consumers on these topics. You can be another.
-- The data you need to detect "position became Open" is in the payload **except** for transition history (you keep your own).
-- The recruiting C# subscription does ~30 lines of real logic. Everything else is framework wiring.
-- Going language-agnostic costs you nothing — the wire format is JSON, the topic is shared, the consumer-group model isolates you from recruiting.
-- The fields the spec calls "Key PA Fields" are mostly in the payload (Job Code, Title, FTE, Org Units, Location). What's missing (Cost Center, Hiring Manager, Pay Grade, Approved Headcount) requires separate lookups regardless of where you implement the listener.
+- Recruiting is one of several consumers on these topics. An additional consumer can be added without affecting recruiting.
+- The data needed to detect a "position became Open" event is present in the payload, with the exception of prior-state transition history, which the consumer maintains itself.
+- The recruiting subscription contains roughly 30 lines of business logic. The remainder is framework wiring.
+- A language-agnostic implementation carries no functional cost: the wire format is JSON, the topic is shared, and the consumer-group model isolates the new consumer from recruiting.
+- The fields the spec labels "Key PA Fields" are largely present in the payload (Job Code, Title, FTE, Org Units, Location). The fields that are missing (Cost Center, Hiring Manager, Pay Grade, Approved Headcount) require separate lookups regardless of where the listener is implemented.
 
-## 9. Reference files in this repo (if you can read them)
+## 9. Reference files in this repository
 
 | Concern | File |
 |---|---|
