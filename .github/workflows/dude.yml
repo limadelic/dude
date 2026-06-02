@@ -53,7 +53,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       ANTHROPIC_BASE_URL: https://sdlc-llm.ukg.int
       ANTHROPIC_AUTH_TOKEN: ${{ secrets.LITELLM_KEY }}
-      ANTHROPIC_MODEL: opus
+      ANTHROPIC_MODEL: haiku
       ANTHROPIC_DEFAULT_HAIKU_MODEL: claude-haiku-4-5
       ANTHROPIC_DEFAULT_OPUS_MODEL: claude-opus-4-6
       ANTHROPIC_DEFAULT_SONNET_MODEL: claude-sonnet-4-6

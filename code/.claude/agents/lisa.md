@@ -1,7 +1,7 @@
 ---
 name: lisa
 description: Acceptance Test agent. Writes features, step definitions, and support code in Gherkin.
-model: sonnet
+model: haiku
 skills:
   - ddd
   - gherkin
