@@ -81,8 +81,7 @@ module Dude
       def spend_section
         token_fetcher = Dude::StatusLine::AnthropicToken
         client = Dude::StatusLine::AnthropicSpendClient.new(token_fetcher.fetch)
-        cache = Dude::StatusLine::SpendCache.new
-        Dude::StatusLine::Spend.new(token_fetcher, client, cache).to_s
+        Dude::StatusLine::Spend.new(token_fetcher, client).to_s
       end
 
       def activity_data
