@@ -1,6 +1,4 @@
 require 'json'
-require 'open3'
-require 'date'
 require_relative '../helpers/json'
 require_relative 'format'
 require_relative '../pomo/pomo'
@@ -9,6 +7,9 @@ require_relative 'context'
 require_relative 'spend'
 require_relative 'models'
 require_relative 'dudes'
+require_relative 'anthropic_token'
+require_relative 'anthropic_spend_client'
+require_relative 'spend_cache'
 
 module Dude
   module StatusLine
@@ -78,11 +79,14 @@ module Dude
       end
 
       def spend_section
-        Dude::StatusLine::Spend.new(activity_data).to_s
+        token_fetcher = Dude::StatusLine::AnthropicToken
+        client = Dude::StatusLine::AnthropicSpendClient.new(token_fetcher.fetch)
+        cache = Dude::StatusLine::SpendCache.new
+        Dude::StatusLine::Spend.new(token_fetcher, client, cache).to_s
       end
 
       def activity_data
-        @activity_data ||= @activity || fetch_json(activity_url) || {}
+        @activity_data ||= @activity || {}
       end
 
       def pomo_section
@@ -91,25 +95,6 @@ module Dude
 
       def models_section
         Dude::StatusLine::Models.new(@session, activity_data).to_s
-      end
-
-      def activity_url
-        today = Date.today.strftime('%Y-%m-%d')
-        ENV['CLAUDE_ACTIVITY_URL'] || "https://sdlc-llm.ukg.int/user/daily/activity?start_date=#{today}&end_date=#{today}"
-      end
-
-      def fetch_json(url)
-        out, _, status = run_curl(url)
-        status.success? && JSON.parse(out) rescue nil
-      end
-
-      def run_curl(url)
-        auth_header = "x-litellm-api-key: #{ENV['ANTHROPIC_AUTH_TOKEN']}"
-        cert_path = File.expand_path('~/.claude/ukg.pem')
-        Open3.capture3(
-          'curl', '-s', '-L', url, '-H', auth_header,
-          '--cacert', cert_path
-        )
       end
     end
   end
