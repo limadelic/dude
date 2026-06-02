@@ -5,24 +5,48 @@ module Dude
     class Spend
       include Dude::StatusLine::Format
 
-      SPEND_CAP = ENV.fetch('CLAUDE_SPEND_CAP', '50').to_i
+      DAILY_BUDGET = 8.75
 
-      def initialize(activity_data)
-        @activity_data = activity_data
+      def initialize(token_fetcher, client = nil, cache = nil)
+        @token_fetcher = token_fetcher
+        @client = client
+        @cache = cache
       end
 
       def to_s
-        pct, min = spend_pct
-        blocks = [(pct * 9 / 100.0).round, min].max
-        bars = "#{'█' * blocks}#{'░' * (9 - blocks)}"
-        "#{color_for_pct(pct)}💰 #{bars}#{COLORS[:reset]}"
+        token = @token_fetcher.fetch
+        return empty_bar if token.empty?
+
+        daily_rate = fetch_daily_rate
+        pct = clamp((daily_rate / DAILY_BUDGET * 100).round)
+        build_bar(pct)
       end
 
       private
 
-      def spend_pct
-        spend = @activity_data.dig('results', 0, 'metrics', 'spend')&.to_f || 0
-        [clamp((spend / SPEND_CAP * 100).round), spend > 0 ? 1 : 0]
+      def fetch_daily_rate
+        if @cache && @client
+          @cache.fetch { @client.fetch }
+        elsif @client
+          @client.fetch
+        else
+          0
+        end.then do |monthly_spend|
+          day_of_month = Time.now.day
+          monthly_spend / day_of_month
+        end
+      rescue StandardError
+        0
+      end
+
+      def build_bar(pct)
+        blocks = [(pct * 9 / 100.0).round, pct > 0 ? 1 : 0].max
+        bars = "#{'█' * blocks}#{'░' * (9 - blocks)}"
+        "#{color_for_pct(pct)}💰 #{bars}#{COLORS[:reset]}"
+      end
+
+      def empty_bar
+        "#{color_for_pct(0)}💰 #{'░' * 9}#{COLORS[:reset]}"
       end
     end
   end
