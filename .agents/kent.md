@@ -1,7 +1,7 @@
 ---
 name: kent
 description: Developer amigo. Kent Beck style - simplicity, courage, optionality.
-model: sonnet
+model: opus
 skills:
   - ddd
   - dev

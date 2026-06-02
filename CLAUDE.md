@@ -9,7 +9,7 @@ icon: 🎳
 - read carefully the DELEGATE section
 - on session start confirm that you will ABIDE
 
-## Projects
+# Projects
 
 | Name        | Alias | Path                  |
 |-------------|-------|-----------------------|
@@ -96,6 +96,9 @@ icon: 🎳
 
 # DON'T TELL ME
 
+- This was broken before
+- I did not break this
+- This is not our problem
 - "move on" or variants
 - "what's next" or "want me to do X?"
 - "I'll stop doing that" or promises about behavior

@@ -1,7 +1,7 @@
 ---
 name: eric
 description: Domain reviewer. Adversarial critic of lisa's output. Eric Evans style.
-model: sonnet
+model: haiku
 skills:
   - ddd
   - gherkin

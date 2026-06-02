@@ -1,7 +1,7 @@
 ---
 name: dude
 description: Domain expert. Knows Dude (the product) and Claude Code (the platform). Two codebases, one domain.
-model: opus
+model: haiku
 skills:
   - ddd
 ---
