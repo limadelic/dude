@@ -7,10 +7,9 @@ module Dude
 
       DAILY_BUDGET = 8.75
 
-      def initialize(token_fetcher, client = nil, cache = nil)
+      def initialize(token_fetcher, client = nil)
         @token_fetcher = token_fetcher
         @client = client
-        @cache = cache
       end
 
       def to_s
@@ -25,16 +24,9 @@ module Dude
       private
 
       def fetch_daily_rate
-        if @cache && @client
-          @cache.fetch { @client.fetch }
-        elsif @client
-          @client.fetch
-        else
-          0
-        end.then do |monthly_spend|
-          day_of_month = Time.now.day
-          monthly_spend / day_of_month
-        end
+        monthly_spend = @client ? @client.fetch : 0
+        day_of_month = Time.now.day
+        monthly_spend / day_of_month
       rescue StandardError
         0
       end
