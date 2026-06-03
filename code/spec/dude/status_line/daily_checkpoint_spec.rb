@@ -1,0 +1,145 @@
+require_relative '../../spec_helper'
+require 'dude/status_line/daily_checkpoint'
+
+describe Dude::StatusLine::DailyCheckpoint do
+  include RR::DSL
+  let(:status_path) { File.expand_path('~/.claude/status.json') }
+  let(:sut) { described_class.new(status_path) }
+
+  describe '#read' do
+    it 'returns empty hash when file does not exist' do
+      stub(File).exist?(status_path) { false }
+
+      result = sut.read
+
+      expect(result).to eq({})
+    end
+
+    it 'returns checkpoint data when file has valid data' do
+      file_content = {
+        'daily_checkpoint_month_total' => 42,
+        'daily_checkpoint_date' => '2026-06-03',
+        'color' => 'green'
+      }
+      stub(File).exist?(status_path) { true }
+      stub(File).read(status_path) { JSON.generate(file_content) }
+
+      result = sut.read
+
+      expect(result).to eq({
+        daily_checkpoint_month_total: 42,
+        daily_checkpoint_date: '2026-06-03'
+      })
+    end
+
+    it 'returns empty hash when JSON is corrupted' do
+      stub(File).exist?(status_path) { true }
+      stub(File).read(status_path) { 'invalid json' }
+
+      result = sut.read
+
+      expect(result).to eq({})
+    end
+
+    it 'returns only keys that exist in file' do
+      file_content = {
+        'daily_checkpoint_date' => '2026-06-03'
+      }
+      stub(File).exist?(status_path) { true }
+      stub(File).read(status_path) { JSON.generate(file_content) }
+
+      result = sut.read
+
+      expect(result).to eq({ daily_checkpoint_date: '2026-06-03' })
+    end
+
+    it 'ignores other keys in the file' do
+      file_content = {
+        'daily_checkpoint_month_total' => 42,
+        'color' => 'blue',
+        'other_key' => 'ignored'
+      }
+      stub(File).exist?(status_path) { true }
+      stub(File).read(status_path) { JSON.generate(file_content) }
+
+      result = sut.read
+
+      expect(result).to eq({ daily_checkpoint_month_total: 42 })
+    end
+  end
+
+  describe '#write' do
+    it 'creates file when it does not exist' do
+      stub(File).exist?(status_path) { false }
+      written_data = nil
+      stub(File).write(status_path, is_a(String)) do |path, data|
+        written_data = JSON.parse(data)
+      end
+
+      sut.write(month_total: 10, date: '2026-06-03')
+
+      expect(written_data['daily_checkpoint_month_total']).to eq(10)
+      expect(written_data['daily_checkpoint_date']).to eq('2026-06-03')
+    end
+
+    it 'updates existing file and preserves other keys' do
+      existing_content = { 'color' => 'green', 'other' => 'value' }
+      stub(File).exist?(status_path) { true }
+      stub(File).read(status_path) { JSON.generate(existing_content) }
+      written_data = nil
+      stub(File).write(status_path, is_a(String)) do |path, data|
+        written_data = JSON.parse(data)
+      end
+
+      sut.write(month_total: 15, date: '2026-06-04')
+
+      expect(written_data['daily_checkpoint_month_total']).to eq(15)
+      expect(written_data['daily_checkpoint_date']).to eq('2026-06-04')
+      expect(written_data['color']).to eq('green')
+      expect(written_data['other']).to eq('value')
+    end
+
+    it 'overwrites existing checkpoint values' do
+      existing_content = { 'daily_checkpoint_month_total' => 5, 'daily_checkpoint_date' => '2026-06-02' }
+      stub(File).exist?(status_path) { true }
+      stub(File).read(status_path) { JSON.generate(existing_content) }
+      written_data = nil
+      stub(File).write(status_path, is_a(String)) do |path, data|
+        written_data = JSON.parse(data)
+      end
+
+      sut.write(month_total: 20, date: '2026-06-03')
+
+      expect(written_data['daily_checkpoint_month_total']).to eq(20)
+      expect(written_data['daily_checkpoint_date']).to eq('2026-06-03')
+    end
+
+    it 'uses default path when none provided' do
+      sut_default = described_class.new
+      stub(File).exist?(File.expand_path('~/.claude/status.json')) { true }
+      stub(File).read(File.expand_path('~/.claude/status.json')) { JSON.generate({}) }
+      written_data = nil
+      stub(File).write(File.expand_path('~/.claude/status.json'), is_a(String)) do |path, data|
+        written_data = JSON.parse(data)
+      end
+
+      sut_default.write(month_total: 5, date: '2026-06-03')
+
+      expect(written_data['daily_checkpoint_month_total']).to eq(5)
+    end
+
+    it 'writes valid JSON format' do
+      stub(File).exist?(status_path) { false }
+      written_data = nil
+      stub(File).write(status_path, is_a(String)) do |path, data|
+        written_data = JSON.parse(data)
+      end
+
+      sut.write(month_total: 8, date: '2026-06-03')
+
+      expect(written_data).to be_a(Hash)
+      expect(written_data['daily_checkpoint_month_total']).to eq(8)
+      expect(written_data['daily_checkpoint_date']).to eq('2026-06-03')
+    end
+  end
+end
