@@ -72,9 +72,11 @@ describe Dude::StatusLine::DailyCheckpoint do
     it 'creates file when it does not exist' do
       stub(File).exist?(status_path) { false }
       written_data = nil
-      stub(File).write(status_path, is_a(String)) do |path, data|
+      tmp_path = status_path + '.tmp'
+      stub(File).write(tmp_path, is_a(String)) do |path, data|
         written_data = JSON.parse(data)
       end
+      stub(File).rename(tmp_path, status_path)
 
       sut.write(month_total: 10, date: '2026-06-03')
 
@@ -87,9 +89,11 @@ describe Dude::StatusLine::DailyCheckpoint do
       stub(File).exist?(status_path) { true }
       stub(File).read(status_path) { JSON.generate(existing_content) }
       written_data = nil
-      stub(File).write(status_path, is_a(String)) do |path, data|
+      tmp_path = status_path + '.tmp'
+      stub(File).write(tmp_path, is_a(String)) do |path, data|
         written_data = JSON.parse(data)
       end
+      stub(File).rename(tmp_path, status_path)
 
       sut.write(month_total: 15, date: '2026-06-04')
 
@@ -104,9 +108,11 @@ describe Dude::StatusLine::DailyCheckpoint do
       stub(File).exist?(status_path) { true }
       stub(File).read(status_path) { JSON.generate(existing_content) }
       written_data = nil
-      stub(File).write(status_path, is_a(String)) do |path, data|
+      tmp_path = status_path + '.tmp'
+      stub(File).write(tmp_path, is_a(String)) do |path, data|
         written_data = JSON.parse(data)
       end
+      stub(File).rename(tmp_path, status_path)
 
       sut.write(month_total: 20, date: '2026-06-03')
 
@@ -116,12 +122,15 @@ describe Dude::StatusLine::DailyCheckpoint do
 
     it 'uses default path when none provided' do
       sut_default = described_class.new
-      stub(File).exist?(File.expand_path('~/.claude/status.json')) { true }
-      stub(File).read(File.expand_path('~/.claude/status.json')) { JSON.generate({}) }
+      default_path = File.expand_path('~/.claude/status.json')
+      stub(File).exist?(default_path) { true }
+      stub(File).read(default_path) { JSON.generate({}) }
       written_data = nil
-      stub(File).write(File.expand_path('~/.claude/status.json'), is_a(String)) do |path, data|
+      tmp_path = default_path + '.tmp'
+      stub(File).write(tmp_path, is_a(String)) do |path, data|
         written_data = JSON.parse(data)
       end
+      stub(File).rename(tmp_path, default_path)
 
       sut_default.write(month_total: 5, date: '2026-06-03')
 
@@ -131,9 +140,11 @@ describe Dude::StatusLine::DailyCheckpoint do
     it 'writes valid JSON format' do
       stub(File).exist?(status_path) { false }
       written_data = nil
-      stub(File).write(status_path, is_a(String)) do |path, data|
+      tmp_path = status_path + '.tmp'
+      stub(File).write(tmp_path, is_a(String)) do |path, data|
         written_data = JSON.parse(data)
       end
+      stub(File).rename(tmp_path, status_path)
 
       sut.write(month_total: 8, date: '2026-06-03')
 
