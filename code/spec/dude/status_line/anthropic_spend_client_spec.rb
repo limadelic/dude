@@ -14,8 +14,22 @@ describe Dude::StatusLine::AnthropicSpendClient do
   end
 
   describe '#fetch' do
+    it 'sets User-Agent header' do
+      verify = proc do |req|
+        expect(req['User-Agent']).to eq('claude-code/latest')
+        response_mock
+      end
+      stub(http_mock).request { |req| verify.call(req) }
+      stub(response_mock).body do
+        JSON.generate({ 'extra_usage' => { 'used_credits' => 5000 } })
+      end
+
+      sut.fetch
+    end
+
     it 'returns spend in dollars from API response' do
-      stub(response_mock).body { JSON.generate({ 'extra_usage' => { 'used_credits' => 5000 } }) }
+      body = { 'extra_usage' => { 'used_credits' => 5000 } }
+      stub(response_mock).body { JSON.generate(body) }
 
       spend = sut.fetch
 
@@ -31,7 +45,8 @@ describe Dude::StatusLine::AnthropicSpendClient do
     end
 
     it 'returns 0 when used_credits missing' do
-      stub(response_mock).body { JSON.generate({ 'extra_usage' => { 'other_field' => 100 } }) }
+      body = { 'extra_usage' => { 'other_field' => 100 } }
+      stub(response_mock).body { JSON.generate(body) }
 
       spend = sut.fetch
 

@@ -14,16 +14,23 @@ module Dude
 
       def fetch
         uri = URI(API_URL)
-        http = @http_factory.call(uri)
-        req = Net::HTTP::Get.new(uri.path)
-        req['Authorization'] = "Bearer #{@token}"
-        req['anthropic-version'] = '2023-06-01'
-        req['Content-Type'] = 'application/json'
-
-        response = http.request(req)
+        response = @http_factory.call(uri).request(build_request(uri))
         parse_response(response)
       rescue StandardError
         0
+      end
+
+      def build_request(uri)
+        req = Net::HTTP::Get.new(uri.path)
+        set_headers(req)
+        req
+      end
+
+      def set_headers(req)
+        req['Authorization'] = "Bearer #{@token}"
+        req['anthropic-version'] = '2023-06-01'
+        req['Content-Type'] = 'application/json'
+        req['User-Agent'] = 'claude-code/latest'
       end
 
       private
