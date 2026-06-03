@@ -6,8 +6,6 @@ module Dude
     class Spend
       include Dude::StatusLine::Format
 
-      DAILY_BUDGET = 8.75
-
       def initialize(token_fetcher, client = nil)
         @token_fetcher = token_fetcher
         @client = client
@@ -20,8 +18,8 @@ module Dude
         token = @token_fetcher.fetch
         return empty_bar if token.empty?
 
-        daily_rate = fetch_daily_rate
-        pct = clamp((daily_rate / DAILY_BUDGET * 100).round)
+        pct = calculate_daily_target_pct
+        pct = clamp(pct)
         build_bar(pct)
       end
 
@@ -47,12 +45,34 @@ module Dude
       rescue StandardError
       end
 
-      def fetch_daily_rate
+      def calculate_daily_target_pct
         monthly_spend = @client ? @client.fetch : 0
-        day_of_month = Time.now.day
-        monthly_spend / day_of_month
+        checkpoint = Dude::StatusLine::DailyCheckpoint.new
+        checkpoint_data = checkpoint.read
+        checkpoint_month_total = checkpoint_data[:daily_checkpoint_month_total] || 0
+
+        today_actual = monthly_spend - checkpoint_month_total
+        remaining_budget = 175.0 - monthly_spend
+        remaining_days = days_left_in_month
+
+        if remaining_days <= 0 || remaining_budget <= 0
+          return 100.0
+        end
+
+        today_target = remaining_budget / remaining_days
+        if today_target <= 0
+          return 100.0
+        end
+
+        (today_actual / today_target * 100).round
       rescue StandardError
         0
+      end
+
+      def days_left_in_month
+        today = Date.today
+        last_day = Date.new(today.year, today.month, -1)
+        (last_day - today).to_i + 1
       end
 
       def build_bar(pct)
