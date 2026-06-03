@@ -28,19 +28,19 @@ module Dude
       def bootstrap_checkpoint
         checkpoint = Dude::StatusLine::DailyCheckpoint.new
         if checkpoint.read.empty?
-          checkpoint.write(month_total: 0, date: Date.today.to_s)
+          checkpoint.write(spent: 0, date: Date.today.to_s)
         end
       end
 
       def handle_day_rollover
         checkpoint = Dude::StatusLine::DailyCheckpoint.new
         data = checkpoint.read
-        checkpoint_date = data[:daily_checkpoint_date]
+        checkpoint_date = data[:date]
         today = Date.today.to_s
 
         if checkpoint_date && checkpoint_date != today
           monthly_spend = @client ? @client.fetch : 0
-          checkpoint.write(month_total: monthly_spend, date: today)
+          checkpoint.write(spent: monthly_spend, date: today)
         end
       rescue StandardError
       end
@@ -49,7 +49,7 @@ module Dude
         monthly_spend = @client ? @client.fetch : 0
         checkpoint = Dude::StatusLine::DailyCheckpoint.new
         checkpoint_data = checkpoint.read
-        checkpoint_month_total = checkpoint_data[:daily_checkpoint_month_total] || 0
+        checkpoint_month_total = checkpoint_data[:spent] || 0
 
         today_actual = monthly_spend - checkpoint_month_total
         remaining_budget = 175.0 - monthly_spend

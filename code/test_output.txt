@@ -1,0 +1,19 @@
+
+Dude::StatusLine::Spend
+  #to_s
+    shows green bar when daily rate below 33%
+    calculates daily rate as monthly_spend / day_of_month
+    shows yellow bar when daily rate 33-66%
+    shows red bar when daily rate above 66%
+    shows empty bar when no token available
+    shows empty bar when API fails
+    initializes checkpoint on first render with no checkpoint
+    preserves existing checkpoint on subsequent renders
+    preserves checkpoint from previous session
+
+Finished in 0.0188 seconds (files took 0.17996 seconds to load)
+9 examples, 0 failures
+
+Coverage report generated for rspec to /Users/maykel.suarez/.claude/code/coverage.
+Line Coverage: 53.32% (530 / 994)
+Branch Coverage: 9.29% (17 / 183)

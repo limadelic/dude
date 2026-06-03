@@ -1,0 +1,16 @@
+@@ -43,13 +43,13 @@
+-          checkpoint.write(month_total: monthly_spend, date: today)
++          checkpoint.write(spent: monthly_spend, date: today)
+         end
+       rescue StandardError
+       end
+ 
+       def calculate_daily_target_pct
+         monthly_spend = @client ? @client.fetch : 0
+         checkpoint = Dude::StatusLine::DailyCheckpoint.new
+         checkpoint_data = checkpoint.read
+-        checkpoint_month_total = checkpoint_data[:daily_checkpoint_month_total] || 0
++        checkpoint_month_total = checkpoint_data[:spent] || 0
+ 
+         today_actual = monthly_spend - checkpoint_month_total
+ 
