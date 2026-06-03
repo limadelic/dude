@@ -141,5 +141,33 @@ describe Dude::StatusLine::DailyCheckpoint do
       expect(written_data['daily_checkpoint_month_total']).to eq(8)
       expect(written_data['daily_checkpoint_date']).to eq('2026-06-03')
     end
+
+    it 'uses atomic write with .tmp file' do
+      tmp_path = status_path + '.tmp'
+      stub(File).exist?(status_path) { false }
+      write_called = false
+      rename_called = false
+
+      stub(File).write(tmp_path, is_a(String)) { write_called = true }
+      stub(File).rename(tmp_path, status_path) { rename_called = true }
+
+      sut.write(month_total: 12, date: '2026-06-03')
+
+      expect(write_called).to be true
+      expect(rename_called).to be true
+    end
+
+    it 'writes to .tmp then renames to final path' do
+      tmp_path = status_path + '.tmp'
+      stub(File).exist?(status_path) { false }
+      call_order = []
+
+      stub(File).write(tmp_path, is_a(String)) { call_order << :write }
+      stub(File).rename(tmp_path, status_path) { call_order << :rename }
+
+      sut.write(month_total: 12, date: '2026-06-03')
+
+      expect(call_order).to eq([:write, :rename])
+    end
   end
 end
