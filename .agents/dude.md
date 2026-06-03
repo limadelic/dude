@@ -1,7 +1,7 @@
 ---
 name: dude
 description: Domain expert. Knows the product, the platform, and whatever layer sits between them. The rug that ties it all together.
-model: opus
+model: haiku
 skills:
   - ddd
 ---

@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    dude (0.1.0)
+    dude (0.1.1)
       thor
 
 GEM

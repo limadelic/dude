@@ -33,8 +33,10 @@ module Dude
 
       def extract_checkpoint_fields(data)
         result = {}
-        result[:daily_checkpoint_month_total] = data['daily_checkpoint_month_total'] if data.key?('daily_checkpoint_month_total')
-        result[:daily_checkpoint_date] = data['daily_checkpoint_date'] if data.key?('daily_checkpoint_date')
+        result[:daily_checkpoint_month_total] =
+          data['daily_checkpoint_month_total'] if data.key?('daily_checkpoint_month_total')
+        result[:daily_checkpoint_date] =
+          data['daily_checkpoint_date'] if data.key?('daily_checkpoint_date')
         result
       end
     end
