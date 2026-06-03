@@ -17,8 +17,8 @@ describe Dude::StatusLine::DailyCheckpoint do
 
     it 'returns checkpoint data when file has valid data' do
       file_content = {
-        'daily_checkpoint_month_total' => 42,
-        'daily_checkpoint_date' => '2026-06-03',
+        'spent' => 42,
+        'date' => '2026-06-03',
         'color' => 'green'
       }
       stub(File).exist?(status_path) { true }
@@ -27,8 +27,8 @@ describe Dude::StatusLine::DailyCheckpoint do
       result = sut.read
 
       expect(result).to eq({
-        daily_checkpoint_month_total: 42,
-        daily_checkpoint_date: '2026-06-03'
+        spent: 42,
+        date: '2026-06-03'
       })
     end
 
@@ -43,19 +43,19 @@ describe Dude::StatusLine::DailyCheckpoint do
 
     it 'returns only keys that exist in file' do
       file_content = {
-        'daily_checkpoint_date' => '2026-06-03'
+        'date' => '2026-06-03'
       }
       stub(File).exist?(status_path) { true }
       stub(File).read(status_path) { JSON.generate(file_content) }
 
       result = sut.read
 
-      expect(result).to eq({ daily_checkpoint_date: '2026-06-03' })
+      expect(result).to eq({ date: '2026-06-03' })
     end
 
     it 'ignores other keys in the file' do
       file_content = {
-        'daily_checkpoint_month_total' => 42,
+        'spent' => 42,
         'color' => 'blue',
         'other_key' => 'ignored'
       }
@@ -64,7 +64,7 @@ describe Dude::StatusLine::DailyCheckpoint do
 
       result = sut.read
 
-      expect(result).to eq({ daily_checkpoint_month_total: 42 })
+      expect(result).to eq({ spent: 42 })
     end
   end
 
@@ -80,8 +80,8 @@ describe Dude::StatusLine::DailyCheckpoint do
 
       sut.write(month_total: 10, date: '2026-06-03')
 
-      expect(written_data['daily_checkpoint_month_total']).to eq(10)
-      expect(written_data['daily_checkpoint_date']).to eq('2026-06-03')
+      expect(written_data['spent']).to eq(10)
+      expect(written_data['date']).to eq('2026-06-03')
     end
 
     it 'updates existing file and preserves other keys' do
@@ -97,14 +97,14 @@ describe Dude::StatusLine::DailyCheckpoint do
 
       sut.write(month_total: 15, date: '2026-06-04')
 
-      expect(written_data['daily_checkpoint_month_total']).to eq(15)
-      expect(written_data['daily_checkpoint_date']).to eq('2026-06-04')
+      expect(written_data['spent']).to eq(15)
+      expect(written_data['date']).to eq('2026-06-04')
       expect(written_data['color']).to eq('green')
       expect(written_data['other']).to eq('value')
     end
 
     it 'overwrites existing checkpoint values' do
-      existing_content = { 'daily_checkpoint_month_total' => 5, 'daily_checkpoint_date' => '2026-06-02' }
+      existing_content = { 'spent' => 5, 'date' => '2026-06-02' }
       stub(File).exist?(status_path) { true }
       stub(File).read(status_path) { JSON.generate(existing_content) }
       written_data = nil
@@ -116,8 +116,8 @@ describe Dude::StatusLine::DailyCheckpoint do
 
       sut.write(month_total: 20, date: '2026-06-03')
 
-      expect(written_data['daily_checkpoint_month_total']).to eq(20)
-      expect(written_data['daily_checkpoint_date']).to eq('2026-06-03')
+      expect(written_data['spent']).to eq(20)
+      expect(written_data['date']).to eq('2026-06-03')
     end
 
     it 'uses default path when none provided' do
@@ -134,7 +134,7 @@ describe Dude::StatusLine::DailyCheckpoint do
 
       sut_default.write(month_total: 5, date: '2026-06-03')
 
-      expect(written_data['daily_checkpoint_month_total']).to eq(5)
+      expect(written_data['spent']).to eq(5)
     end
 
     it 'writes valid JSON format' do
@@ -149,8 +149,8 @@ describe Dude::StatusLine::DailyCheckpoint do
       sut.write(month_total: 8, date: '2026-06-03')
 
       expect(written_data).to be_a(Hash)
-      expect(written_data['daily_checkpoint_month_total']).to eq(8)
-      expect(written_data['daily_checkpoint_date']).to eq('2026-06-03')
+      expect(written_data['spent']).to eq(8)
+      expect(written_data['date']).to eq('2026-06-03')
     end
 
     it 'uses atomic write with .tmp file' do

@@ -14,8 +14,8 @@ module Dude
 
       def write(month_total:, date:)
         data = read_all
-        data['daily_checkpoint_month_total'] = month_total
-        data['daily_checkpoint_date'] = date
+        data['spent'] = month_total
+        data['date'] = date
         tmp = @path + '.tmp'
         File.write(tmp, JSON.generate(data))
         File.rename(tmp, @path)
@@ -33,10 +33,10 @@ module Dude
 
       def extract_checkpoint_fields(data)
         result = {}
-        result[:daily_checkpoint_month_total] =
-          data['daily_checkpoint_month_total'] if data.key?('daily_checkpoint_month_total')
-        result[:daily_checkpoint_date] =
-          data['daily_checkpoint_date'] if data.key?('daily_checkpoint_date')
+        result[:spent] =
+          data['spent'] if data.key?('spent')
+        result[:date] =
+          data['date'] if data.key?('date')
         result
       end
     end
