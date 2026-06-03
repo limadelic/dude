@@ -1,4 +1,5 @@
 require_relative 'format'
+require_relative 'daily_checkpoint'
 
 module Dude
   module StatusLine
@@ -13,6 +14,8 @@ module Dude
       end
 
       def to_s
+        bootstrap_checkpoint
+
         token = @token_fetcher.fetch
         return empty_bar if token.empty?
 
@@ -22,6 +25,13 @@ module Dude
       end
 
       private
+
+      def bootstrap_checkpoint
+        checkpoint = Dude::StatusLine::DailyCheckpoint.new
+        if checkpoint.read.empty?
+          checkpoint.write(month_total: 0, date: Date.today.to_s)
+        end
+      end
 
       def fetch_daily_rate
         monthly_spend = @client ? @client.fetch : 0
