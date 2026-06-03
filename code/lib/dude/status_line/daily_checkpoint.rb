@@ -12,9 +12,9 @@ module Dude
         extract_checkpoint_fields(data)
       end
 
-      def write(month_total:, date:)
+      def write(spent:, date:)
         data = read_all
-        data['spent'] = month_total
+        data['spent'] = spent
         data['date'] = date
         tmp = @path + '.tmp'
         File.write(tmp, JSON.generate(data))
