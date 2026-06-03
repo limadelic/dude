@@ -1,21 +1,27 @@
 require_relative '../../spec_helper'
 require 'dude/status_line/spend'
+require 'dude/status_line/daily_checkpoint'
+require 'tempfile'
+require 'date'
 
 describe Dude::StatusLine::Spend do
   include RR::DSL
-  let(:sut) { described_class.new(token_fetcher, client, cache) }
+  let(:sut) { described_class.new(token_fetcher, client) }
   let(:token_fetcher) { Object.new }
   let(:client) { Object.new }
-  let(:cache) { Object.new }
+  let(:temp_status_file) { Tempfile.new('status.json') }
 
   before do
     allow_message_expectations_on_nil
   end
 
+  after do
+    temp_status_file.unlink if temp_status_file
+  end
+
   describe '#to_s' do
     it 'shows green bar when daily rate below 33%' do
       stub(token_fetcher).fetch { 'token' }
-      stub(cache).fetch { 10.0 }
       stub(client).fetch { 10.0 }
       stub(Time).now { Time.new(2026, 6, 15, 0, 0, 0) }
 
@@ -28,7 +34,6 @@ describe Dude::StatusLine::Spend do
 
     it 'calculates daily rate as monthly_spend / day_of_month' do
       stub(token_fetcher).fetch { 'token' }
-      stub(cache).fetch { 100.0 }
       stub(client).fetch { 100.0 }
       stub(Time).now { Time.new(2026, 6, 15, 0, 0, 0) }
 
@@ -42,7 +47,6 @@ describe Dude::StatusLine::Spend do
 
     it 'shows yellow bar when daily rate 33-66%' do
       stub(token_fetcher).fetch { 'token' }
-      stub(cache).fetch { 50.0 }
       stub(client).fetch { 50.0 }
       stub(Time).now { Time.new(2026, 6, 10, 0, 0, 0) }
 
@@ -53,7 +57,6 @@ describe Dude::StatusLine::Spend do
 
     it 'shows red bar when daily rate above 66%' do
       stub(token_fetcher).fetch { 'token' }
-      stub(cache).fetch { 150.0 }
       stub(client).fetch { 150.0 }
       stub(Time).now { Time.new(2026, 6, 5, 0, 0, 0) }
 
@@ -73,12 +76,61 @@ describe Dude::StatusLine::Spend do
 
     it 'shows empty bar when API fails' do
       stub(token_fetcher).fetch { 'token' }
-      stub(cache).fetch { 0.0 }
       stub(client).fetch { 0.0 }
 
       output = sut.to_s
 
       expect(output).to include('░░░░░░░░░')
+    end
+
+    it 'initializes checkpoint on first render with no checkpoint' do
+      stub(token_fetcher).fetch { 'token' }
+      stub(client).fetch { 10.0 }
+      stub(Time).now { Time.new(2026, 6, 15, 0, 0, 0) }
+      stub(Date).today { Date.new(2026, 6, 15) }
+
+      checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
+      stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
+
+      sut.to_s
+
+      checkpoint_data = checkpoint.read
+      expect(checkpoint_data[:daily_checkpoint_month_total]).to eq(0)
+      expect(checkpoint_data[:daily_checkpoint_date]).to eq('2026-06-15')
+    end
+
+    it 'preserves existing checkpoint on subsequent renders' do
+      stub(token_fetcher).fetch { 'token' }
+      stub(client).fetch { 10.0 }
+      stub(Time).now { Time.new(2026, 6, 15, 0, 0, 0) }
+
+      checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
+      stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
+
+      sut.to_s
+      initial_data = checkpoint.read
+
+      sut.to_s
+      subsequent_data = checkpoint.read
+
+      expect(subsequent_data).to eq(initial_data)
+    end
+
+    it 'preserves checkpoint from previous session' do
+      stub(token_fetcher).fetch { 'token' }
+      stub(client).fetch { 10.0 }
+      stub(Time).now { Time.new(2026, 6, 15, 0, 0, 0) }
+
+      checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
+      checkpoint.write(month_total: 5.5, date: '2026-06-14')
+
+      stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
+
+      sut.to_s
+
+      checkpoint_data = checkpoint.read
+      expect(checkpoint_data[:daily_checkpoint_month_total]).to eq(5.5)
+      expect(checkpoint_data[:daily_checkpoint_date]).to eq('2026-06-14')
     end
   end
 end

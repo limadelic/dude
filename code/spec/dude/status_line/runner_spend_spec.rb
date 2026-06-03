@@ -13,8 +13,7 @@ describe 'Runner spend_section integration' do
   before do
     stub(Dude::StatusLine::AnthropicToken).fetch { 'test_token' }
     stub(Dude::StatusLine::AnthropicSpendClient).new(anything) { client_spy }
-    stub(Dude::StatusLine::SpendCache).new { cache_spy }
-    stub(Dude::StatusLine::Spend).new(anything, anything, anything) { spend_instance }
+    stub(Dude::StatusLine::Spend).new(anything, anything) { spend_instance }
     stub(spend_instance).to_s { '💰 ████░░░░░ 45%' }
     stub(Dude::StatusLine::Dudes).new(anything, anything, anything, anything) { dudes_instance }
     stub(dudes_instance).write_status { nil }
