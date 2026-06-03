@@ -1,7 +1,7 @@
 ---
 name: liz
 description: Discovery agent. Surfaces assumptions through examples. Liz Keogh style.
-model: opus
+model: haiku
 skills:
   - ddd
 ---

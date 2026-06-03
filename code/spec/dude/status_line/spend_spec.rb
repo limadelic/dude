@@ -24,6 +24,12 @@ describe Dude::StatusLine::Spend do
       stub(token_fetcher).fetch { 'token' }
       stub(client).fetch { 10.0 }
       stub(Time).now { Time.new(2026, 6, 15, 0, 0, 0) }
+      stub(Date).today { Date.new(2026, 6, 15) }
+
+      checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
+      checkpoint.write(month_total: 8.0, date: '2026-06-15')
+
+      stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
 
       output = sut.to_s
 
@@ -32,23 +38,41 @@ describe Dude::StatusLine::Spend do
       expect(output).to include('█')
     end
 
-    it 'calculates daily rate as monthly_spend / day_of_month' do
+    it 'uses new formula: remaining_budget / remaining_days' do
       stub(token_fetcher).fetch { 'token' }
       stub(client).fetch { 100.0 }
       stub(Time).now { Time.new(2026, 6, 15, 0, 0, 0) }
+      stub(Date).today { Date.new(2026, 6, 15) }
+
+      checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
+      checkpoint.write(month_total: 95.0, date: '2026-06-15')
+
+      stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
 
       output = sut.to_s
 
-      daily_rate = 100.0 / 15
-      expected_pct = (daily_rate / 8.75 * 100).round
-      expect(expected_pct).to eq(76)
+      today_actual = 100.0 - 95.0
+      remaining_budget = 175.0 - 100.0
+      remaining_days = 16
+      today_target = remaining_budget / remaining_days
+      expected_pct = ((today_actual / today_target) * 100).round
+
+      expect(today_actual).to eq(5.0)
+      expect(today_target).to be_within(0.1).of(4.69)
+      expect(expected_pct).to eq(107)
       expect(output).to include('█')
     end
 
     it 'shows yellow bar when daily rate 33-66%' do
       stub(token_fetcher).fetch { 'token' }
-      stub(client).fetch { 50.0 }
-      stub(Time).now { Time.new(2026, 6, 10, 0, 0, 0) }
+      stub(client).fetch { 31.0 }
+      stub(Time).now { Time.new(2026, 6, 15, 0, 0, 0) }
+      stub(Date).today { Date.new(2026, 6, 15) }
+
+      checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
+      checkpoint.write(month_total: 28.0, date: '2026-06-15')
+
+      stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
 
       output = sut.to_s
 
@@ -59,6 +83,12 @@ describe Dude::StatusLine::Spend do
       stub(token_fetcher).fetch { 'token' }
       stub(client).fetch { 150.0 }
       stub(Time).now { Time.new(2026, 6, 5, 0, 0, 0) }
+      stub(Date).today { Date.new(2026, 6, 5) }
+
+      checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
+      checkpoint.write(month_total: 140.0, date: '2026-06-05')
+
+      stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
 
       output = sut.to_s
 
@@ -210,7 +240,7 @@ describe Dude::StatusLine::Spend do
       stub(Date).today { Date.new(2026, 6, 3) }
 
       checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
-      checkpoint.write(month_total: 1.50, date: '2026-06-02')
+      checkpoint.write(month_total: 1.50, date: '2026-06-03')
 
       stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
 
@@ -226,7 +256,7 @@ describe Dude::StatusLine::Spend do
       expect(remaining_budget).to eq(171.44)
       expect(today_target).to be_within(0.01).of(6.12)
       expect(expected_pct).to eq(34)
-      expect(output).to include("\033[32m")
+      expect(output).to include("\033[38;5;226m")
     end
 
     it 'handles february with 28 days' do
@@ -236,7 +266,7 @@ describe Dude::StatusLine::Spend do
       stub(Date).today { Date.new(2026, 2, 15) }
 
       checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
-      checkpoint.write(month_total: 10.0, date: '2026-02-14')
+      checkpoint.write(month_total: 10.0, date: '2026-02-15')
 
       stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
 
@@ -260,7 +290,7 @@ describe Dude::StatusLine::Spend do
       stub(Date).today { Date.new(2026, 5, 20) }
 
       checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
-      checkpoint.write(month_total: 40.0, date: '2026-05-19')
+      checkpoint.write(month_total: 40.0, date: '2026-05-20')
 
       stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
 
@@ -284,7 +314,7 @@ describe Dude::StatusLine::Spend do
       stub(Date).today { Date.new(2026, 6, 30) }
 
       checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
-      checkpoint.write(month_total: 165.0, date: '2026-06-29')
+      checkpoint.write(month_total: 165.0, date: '2026-06-30')
 
       stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
 
@@ -308,7 +338,7 @@ describe Dude::StatusLine::Spend do
       stub(Date).today { Date.new(2026, 6, 20) }
 
       checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
-      checkpoint.write(month_total: 170.0, date: '2026-06-19')
+      checkpoint.write(month_total: 170.0, date: '2026-06-20')
 
       stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
 
@@ -329,7 +359,7 @@ describe Dude::StatusLine::Spend do
       stub(Date).today { Date.new(2026, 6, 25) }
 
       checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
-      checkpoint.write(month_total: 170.0, date: '2026-06-24')
+      checkpoint.write(month_total: 170.0, date: '2026-06-25')
 
       stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
 
