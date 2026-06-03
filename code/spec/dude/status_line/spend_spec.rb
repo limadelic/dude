@@ -120,9 +120,10 @@ describe Dude::StatusLine::Spend do
       stub(token_fetcher).fetch { 'token' }
       stub(client).fetch { 10.0 }
       stub(Time).now { Time.new(2026, 6, 15, 0, 0, 0) }
+      stub(Date).today { Date.new(2026, 6, 15) }
 
       checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
-      checkpoint.write(month_total: 5.5, date: '2026-06-14')
+      checkpoint.write(month_total: 5.5, date: '2026-06-15')
 
       stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
 
@@ -130,7 +131,76 @@ describe Dude::StatusLine::Spend do
 
       checkpoint_data = checkpoint.read
       expect(checkpoint_data[:daily_checkpoint_month_total]).to eq(5.5)
-      expect(checkpoint_data[:daily_checkpoint_date]).to eq('2026-06-14')
+      expect(checkpoint_data[:daily_checkpoint_date]).to eq('2026-06-15')
+    end
+
+    it 'detects day rollover and updates checkpoint with yesterdays total' do
+      stub(token_fetcher).fetch { 'token' }
+      stub(client).fetch { 50.0 }
+      stub(Time).now { Time.new(2026, 6, 3, 0, 0, 0) }
+      stub(Date).today { Date.new(2026, 6, 3) }
+
+      checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
+      checkpoint.write(month_total: 20.0, date: '2026-06-02')
+
+      stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
+
+      sut.to_s
+
+      checkpoint_data = checkpoint.read
+      expect(checkpoint_data[:daily_checkpoint_month_total]).to eq(50.0)
+      expect(checkpoint_data[:daily_checkpoint_date]).to eq('2026-06-03')
+    end
+
+    it 'does not update checkpoint on same day' do
+      stub(token_fetcher).fetch { 'token' }
+      stub(client).fetch { 30.0 }
+      stub(Time).now { Time.new(2026, 6, 2, 0, 0, 0) }
+      stub(Date).today { Date.new(2026, 6, 2) }
+
+      checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
+      checkpoint.write(month_total: 15.0, date: '2026-06-02')
+
+      stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
+
+      sut.to_s
+
+      checkpoint_data = checkpoint.read
+      expect(checkpoint_data[:daily_checkpoint_month_total]).to eq(15.0)
+      expect(checkpoint_data[:daily_checkpoint_date]).to eq('2026-06-02')
+    end
+
+    it 'initializes to today when first render is on day 2 of month' do
+      stub(token_fetcher).fetch { 'token' }
+      stub(client).fetch { 10.0 }
+      stub(Time).now { Time.new(2026, 6, 2, 0, 0, 0) }
+      stub(Date).today { Date.new(2026, 6, 2) }
+
+      checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
+      stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
+
+      sut.to_s
+
+      checkpoint_data = checkpoint.read
+      expect(checkpoint_data[:daily_checkpoint_date]).to eq('2026-06-02')
+    end
+
+    it 'updates checkpoint with current monthly spend on rollover' do
+      stub(token_fetcher).fetch { 'token' }
+      stub(client).fetch { 75.0 }
+      stub(Time).now { Time.new(2026, 6, 15, 0, 0, 0) }
+      stub(Date).today { Date.new(2026, 6, 15) }
+
+      checkpoint = Dude::StatusLine::DailyCheckpoint.new(temp_status_file.path)
+      checkpoint.write(month_total: 50.0, date: '2026-06-14')
+
+      stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint }
+
+      sut.to_s
+
+      checkpoint_data = checkpoint.read
+      expect(checkpoint_data[:daily_checkpoint_month_total]).to eq(75.0)
+      expect(checkpoint_data[:daily_checkpoint_date]).to eq('2026-06-15')
     end
   end
 end

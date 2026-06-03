@@ -15,6 +15,7 @@ module Dude
 
       def to_s
         bootstrap_checkpoint
+        handle_day_rollover
 
         token = @token_fetcher.fetch
         return empty_bar if token.empty?
@@ -31,6 +32,19 @@ module Dude
         if checkpoint.read.empty?
           checkpoint.write(month_total: 0, date: Date.today.to_s)
         end
+      end
+
+      def handle_day_rollover
+        checkpoint = Dude::StatusLine::DailyCheckpoint.new
+        data = checkpoint.read
+        checkpoint_date = data[:daily_checkpoint_date]
+        today = Date.today.to_s
+
+        if checkpoint_date && checkpoint_date != today
+          monthly_spend = @client ? @client.fetch : 0
+          checkpoint.write(month_total: monthly_spend, date: today)
+        end
+      rescue StandardError
       end
 
       def fetch_daily_rate
