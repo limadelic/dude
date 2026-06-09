@@ -25,7 +25,7 @@ sessions/
 status.json
 teams/
 *.local.md
-ukg.pem
+*.pem
 .mcp.all.json
 remote-settings.json
 .github/
