@@ -1,1023 +1,679 @@
-# Policy-Driven Agent Architecture for Atlas ATS
+# Policy-Driven Agent Architecture for Atlas
 
-## Executive Summary
+## Context
 
-The system implements a hierarchical event-driven agent framework where autonomous agents evaluate runtime policies (platform + customer-defined) to make determinations about operational behavior. Position Automation is the proving ground: when a PA event arrives, a parent agent routes it through specialized sub-agents (Position Classifier, Position Necessity Evaluator, Requisition Schema Mapper, Field Population) that pause/advance/invoke requisition creation based on dynamic policy evaluation. This trades upfront policy compilation for runtime flexibility—agents use LLM reasoning or pre-compiled decision trees to match context against rules.
+**What is Atlas?**
+Atlas is an agentic Applicant Tracking System (ATS) that includes:
+- Conversation-oriented Recruiter UI
+- Task-performing agents
+- Enhanced backend ATS capabilities
 
----
+**The Challenge:**
+We're building agents that need to respond differently based on customer-specific business rules. For example:
+- Customer A: Auto-create requisition when cashier is terminated
+- Customer B: Require VP approval when store manager is terminated
+- Customer C: Never replace employees terminated for cause
 
-## 1. System Components & Dependency Graph
+We cannot hardcode every customer's unique workflow. We need a scalable way to define agent behavior that works across many customers and scenarios without becoming an unmaintainable N×M tangle of conditional logic.
 
-```
-┌──────────────────────────────────────────────────────────────────────────┐
-│                         SIGNAL ROUTER (Kafka)                             │
-│                  PositionChangedV2Event → PositionChangedV2Payload        │
-└─────────────────────────────┬──────────────────────────────────────────────┘
-                              │
-                    ┌─────────▼─────────┐
-                    │ Event Subscription │
-                    │ (PositionAutomation)
-                    └─────────┬─────────┘
-                              │
-        ┌─────────────────────▼──────────────────────┐
-        │ Requisition Agent (Parent/Orchestrator)    │
-        │  - Policy Context Builder                 │
-        │  - Sub-agent Executor                      │
-        │  - Pause State Manager                     │
-        │  - Decision Logger                         │
-        └──────────────┬───────────────┬─────────────┘
-                       │               │
-         ┌─────────────▼┐    ┌────────▼──────────────┐
-         │Sub-Agents    │    │State & Registry Svc   │
-         ├─────────────┤    ├──────────────────────┤
-         │Classifier   │    │Policy Registry        │
-         │Necessity    │    │Context Store          │
-         │Schema Map   │    │Pause State (MongoDB)  │
-         │Populator    │    │Idempotency Log        │
-         └─────────────┘    └────────┬──────────────┘
-                                     │
-                            ┌────────▼────────┐
-                            │Workflow Engine  │
-                            │ (Async Invoke)  │
-                            └─────────────────┘
-```
-
-**Component Roles:**
-
-| Component | Responsibility | Tech |
-|-----------|-----------------|------|
-| Signal Router | Kafka topic consumption, event deserialization | Plata.Eventing.Kafka |
-| Event Subscription | Decision to invoke agent (toggle + validation) | IAsyncEventSubscription |
-| Parent Agent | Orchestrate sub-agents, manage state transitions | Stateless + call graph |
-| Sub-agents | Policy evaluation, context extraction, determination | Decision tree or LLM |
-| Policy Registry | Store/retrieve platform + tenant policies | MongoDB collection |
-| Context Store | Build context snapshot for agent reasoning | Domain models |
-| Pause State Store | Track agent pauses, idempotency keys, status | MongoDB collection |
-| Idempotency Log | Prevent duplicate requisition creation | MongoDB collection + Redis |
-| Workflow Engine | Fire-and-forget async job submission | Background job queue |
+**The Solution:**
+Policy-driven agent architecture where agent behavior emerges from evaluating natural language policies against runtime context.
 
 ---
 
-## 2. Data Models
+## Core Concept: Policy-Driven Sub-Agents
 
-### 2.1 Policy Schema (Flexible, Versioned)
+### What is a Policy?
 
-```csharp
-namespace Recruitment.Domain.Model.PolicyDriven;
+A **policy** is a natural language statement that defines:
+- **When** it applies (conditional matching)
+- **What** action to take or information to gather
+- **How** to handle the result
 
-public class PolicyDefinition
-{
-    public Guid Id { get; set; }
-    public Guid TenantId { get; set; }
-    public string PolicyName { get; set; }  // "position-necessity-classifier"
-    public string PolicyVersion { get; set; }  // "1.0"
-    public PolicyScope Scope { get; set; }  // Platform | Tenant
-    public PolicyType Type { get; set; }  // Classifier | Necessity | SchemaMap | FieldPopulation
-    
-    // Either serialized decision tree OR prompt template for LLM
-    public PolicyEvaluationModel EvaluationModel { get; set; }  // DecisionTree | LLMPrompt
-    public string DecisionTreeJson { get; set; }  // Pre-compiled rules
-    public string LLMPromptTemplate { get; set; }  // For runtime eval
-    
-    public Dictionary<string, PolicyParameter> Parameters { get; set; }  // Thresholds, weights
-    public bool IsActive { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime LastUpdatedAt { get; set; }
-    public int VersionNumber { get; set; }
-}
+Policies come from two sources:
+1. **Platform-defined** - Created by Atlas development team (non-negotiable guardrails, required data gathering)
+2. **Customer-defined** - Created by tenant administrators (business-specific rules)
 
-public enum PolicyScope { Platform, Tenant }
-public enum PolicyType { Classifier, Necessity, SchemaMap, FieldPopulation }
-public enum PolicyEvaluationModel { DecisionTree, LLMPrompt, Hybrid }
+**Example policies:**
+- Platform: "Check if an evergreen requisition exists for this position"
+- Customer: "Always maintain an open requisition for cashier roles"
+- Customer: "Require VP approval before opening manager requisitions"
+- Platform: "Query HRIS API for terminated employee record"
+- Customer: "Set salary budget to previous hire's salary plus 5%"
 
-public class PolicyParameter
-{
-    public string Name { get; set; }
-    public object DefaultValue { get; set; }
-    public string Type { get; set; }  // "int", "string", "bool", "datetime"
-    public string Description { get; set; }
-}
+### What is a Sub-Agent?
+
+A **sub-agent** is a specialized agent focused on one aspect of a larger workflow. Each sub-agent:
+- Has a specific responsibility (e.g., "Determine if new req is necessary", "Populate requisition schema")
+- Owns a set of policies
+- Executes the standard policy evaluation pattern
+- Returns control to its parent agent
+
+**Example sub-agents for Requisition Creation:**
+- Position Classifier - Gather info about terminated employee and their position
+- Position Necessity - Determine if a new requisition should be created
+- Requisition Schema - Identify what fields need to be filled on the requisition
+- Field Population - Fill in each field according to policies
+
+---
+
+## The Policy Evaluation Pattern
+
+Every sub-agent follows this execution pattern when invoked:
+
 ```
-
-### 2.2 Context Schema (Agent Input)
-
-```csharp
-public class PolicyEvaluationContext
-{
-    public Guid TenantId { get; set; }
-    public Guid PositionId { get; set; }
-    public Guid? CorrelationId { get; set; }  // For idempotency
-    
-    // Position state from event
-    public string PositionCode { get; set; }
-    public string PositionStatus { get; set; }  // Open, Filled, On Hold, etc.
-    public string PositionTitle { get; set; }
-    public string PreviousStatus { get; set; }  // For status-change triggers
-    public DateTime? StatusChangeTimestamp { get; set; }
-    
-    // Org context
-    public Guid? HiringManagerId { get; set; }
-    public Guid? OrgLevel1Id { get; set; }
-    public Guid? OrgLevel2Id { get; set; }
-    public Guid? OrgLevel3Id { get; set; }
-    public Guid? CostCenterId { get; set; }
-    public Guid? WorkLocationId { get; set; }
-    
-    // PA fields
-    public decimal ApprovedHeadcount { get; set; }
-    public decimal CurrentHeadcount { get; set; }
-    public string PositionType { get; set; }
-    public decimal FTE { get; set; }
-    public string PayGrade { get; set; }
-    public string JobCode { get; set; }
-    
-    // Policy overrides/flags
-    public Dictionary<string, object> TenantPolicyParameters { get; set; }
-    public DateTime EventReceivedAt { get; set; }
-    
-    // Historical for 24h freeze check
-    public List<PositionStatusHistory> RecentStatusChanges { get; set; }
-}
-
-public class PositionStatusHistory
-{
-    public string FromStatus { get; set; }
-    public string ToStatus { get; set; }
-    public DateTime ChangedAt { get; set; }
-}
-```
-
-### 2.3 Pause State Format (Agent Execution State)
-
-```csharp
-public class AgentPauseState
-{
-    public Guid Id { get; set; }
-    public Guid TenantId { get; set; }
-    public Guid PositionId { get; set; }
-    public Guid CorrelationId { get; set; }  // Unique per event/position combo
-    
-    // Which agents have executed
-    public Dictionary<string, SubAgentExecutionRecord> SubAgentExecutions { get; set; }
-    
-    // Why paused
-    public PauseReason PauseReason { get; set; }  // PolicyEvalFailure, ManualHold, ValidationError
-    public string PauseMessage { get; set; }
-    public List<PolicyEvaluationResult> FailedPolicyEvaluations { get; set; }
-    
-    // How to resume
-    public PauseType PauseType { get; set; }  // Blocking | NonBlocking | Manual
-    public DateTime? ResumeAfter { get; set; }  // For time-based pauses
-    public Dictionary<string, object> ResumeContext { get; set; }  // What changed
-    
-    // Tracking
-    public int ExecutionAttempts { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime LastModifiedAt { get; set; }
-    public PauseStateStatus Status { get; set; }  // Active | Resolved | Expired | Abandoned
-}
-
-public enum PauseReason { PolicyEvalFailure, ManualHold, ValidationError, ThrottleLimit }
-public enum PauseType { Blocking, NonBlocking, Manual }
-public enum PauseStateStatus { Active, Resolved, Expired, Abandoned }
-
-public class SubAgentExecutionRecord
-{
-    public string AgentName { get; set; }
-    public string Version { get; set; }
-    public DateTime ExecutedAt { get; set; }
-    public AgentDecision Decision { get; set; }  // Pass | Fail | Error
-    public object Result { get; set; }
-    public List<PolicyEvaluationResult> PolicyResults { get; set; }
-    public int DurationMs { get; set; }
-}
-
-public enum AgentDecision { Pass, Fail, Error, Deferred }
-```
-
-### 2.4 Policy Registry Structure
-
-```csharp
-public interface IPolicyRegistry
-{
-    // Retrieve compiled policy for evaluation
-    Task<PolicyDefinition> GetPolicyAsync(
-        Guid tenantId,
-        string policyName,
-        string version = "latest");
-    
-    // Get tenant overrides (overwrite platform defaults)
-    Task<PolicyDefinition> GetTenantPolicyAsync(
-        Guid tenantId,
-        string policyName);
-    
-    // List all applicable policies for a tenant + policy type
-    Task<List<PolicyDefinition>> GetApplicablePoliciesAsync(
-        Guid tenantId,
-        PolicyType type);
-    
-    // Upsert policy (platform ops or tenant admin)
-    Task UpsertPolicyAsync(PolicyDefinition policy);
-    
-    // Audit: get policy change history
-    Task<List<PolicyDefinition>> GetPolicyHistoryAsync(
-        string policyName,
-        Guid? tenantId = null);
-}
+┌─────────────────────────────────────────────────────────┐
+│ 1. INVOCATION                                           │
+│    Parent agent calls sub-agent with current context    │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│ 2. LOAD POLICY SET                                      │
+│    - Retrieve platform-defined policies (hardcoded)     │
+│    - Retrieve customer-defined policies (from registry) │
+│    - All policies are natural language statements       │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│ 3. RECONCILE POLICIES                                   │
+│    - Apply predefined reconciliation rules              │
+│    - Resolve conflicts deterministically                │
+│    - Example: "Hard-coded policies override customer"   │
+│    - Example: "Most specific policy wins"               │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│ 4. MATCH AGAINST CONTEXT                                │
+│    - Evaluate which policies apply to current state     │
+│    - Check if we have sufficient information            │
+│    - Identify missing data or conflicts                 │
+└─────────────────────────────────────────────────────────┘
+                          ↓
+┌─────────────────────────────────────────────────────────┐
+│ 5. DECISION POINT                                       │
+│    ┌─────────────────────────────────────────────────┐ │
+│    │ Option A: Clear path + sufficient info          │ │
+│    │ → ADVANCE to next agent                         │ │
+│    └─────────────────────────────────────────────────┘ │
+│    ┌─────────────────────────────────────────────────┐ │
+│    │ Option B: Missing context information           │ │
+│    │ → SAVE STATE + PAUSE                            │ │
+│    │ → Identify what info is needed                  │ │
+│    └─────────────────────────────────────────────────┘ │
+│    ┌─────────────────────────────────────────────────┐ │
+│    │ Option C: Cannot reconcile policies             │ │
+│    │ → SAVE STATE + PAUSE                            │ │
+│    │ → Explain conflict to human                     │ │
+│    └─────────────────────────────────────────────────┘ │
+│    ┌─────────────────────────────────────────────────┐ │
+│    │ Option D: Policy explicitly says "pause"        │ │
+│    │ → PAUSE (per business rule)                     │ │
+│    └─────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 3. Key APIs (Component Contracts)
+## Example: Requisition Creation Agent
 
-### 3.1 Policy Storage API
+### Parent Agent: Requisition Agent
 
-```csharp
-public interface IPolicyStore
-{
-    // Write policy (audit changes)
-    Task<Result> StorePolicyAsync(PolicyDefinition policy);
-    
-    // Read with fallback to platform default
-    Task<Result<PolicyDefinition>> GetPolicyAsync(
-        Guid tenantId,
-        string policyName,
-        string version);
-    
-    // Bulk load for agent startup
-    Task<Result<List<PolicyDefinition>>> GetPoliciesByTypeAsync(
-        Guid tenantId,
-        PolicyType type);
-}
-```
+Orchestrates the overall requisition creation flow by invoking sub-agents in sequence.
 
-### 3.2 Policy Evaluator API
+### Sub-Agent 1: Position Classifier
 
-```csharp
-public interface IPolicyEvaluator
-{
-    // Main decision point: does context match policy?
-    Task<PolicyEvaluationResult> EvaluateAsync(
-        PolicyDefinition policy,
-        PolicyEvaluationContext context);
-}
+**Responsibility:** Gather information about the terminated employee and their position
 
-public class PolicyEvaluationResult
-{
-    public bool Matches { get; set; }  // true = policy applies
-    public double Confidence { get; set; }  // [0.0, 1.0] for ML
-    public string Explanation { get; set; }  // Why matched/not
-    public Dictionary<string, object> ExtractedFields { get; set; }  // For mappers
-    public List<string> AppliedRules { get; set; }  // Which rules fired
-    public DateTime EvaluatedAt { get; set; }
-}
-```
+**Policy Set (all platform-defined):**
+- "Query HRIS API for employee record using employee_id from demand signal"
+- "Query org chart for position details"
+- "Extract job title, department, location, salary"
 
-### 3.3 Runtime Reconciliation API
+**Execution:**
+- Load policies → Reconcile (no conflicts, all platform) → Match against context
+- Decision: Have employee_id? Yes → Query APIs → Return enriched context
+- Decision: Missing employee_id? → Pause: "Need employee_id to proceed"
 
-```csharp
-public interface IRuntimeReconciliator
-{
-    // Main flow: load policies → evaluate context → decide → record state
-    Task<Result<AgentDecision>> ReconcileAsync(
-        PolicyEvaluationContext context,
-        List<PolicyDefinition> applicablePolicies);
-}
-
-// Reconciliation flow:
-// 1. Load: Fetch all active policies for (tenantId, policyType)
-// 2. Reconcile: Match context against each policy (in priority order)
-// 3. Match: First policy to match determines decision
-// 4. Decide: Pass (continue) | Fail (pause) | Error (retry or dead-letter)
-```
-
-### 3.4 State Manager API
-
-```csharp
-public interface IAgentStateManager
-{
-    // Pause execution
-    Task<Result> PauseAsync(AgentPauseState state);
-    
-    // Retrieve for resume
-    Task<Result<AgentPauseState>> GetPauseStateAsync(
-        Guid tenantId,
-        Guid positionId,
-        Guid correlationId);
-    
-    // Resume after manual intervention or condition met
-    Task<Result> ResumeAsync(
-        Guid tenantId,
-        Guid positionId,
-        Guid correlationId,
-        Dictionary<string, object> resumeContext);
-    
-    // Garbage collect expired/abandoned pauses
-    Task<int> ExpirePausesAsync(int olderThanDays = 30);
-    
-    // Idempotency check
-    Task<bool> HasProcessedAsync(
-        Guid tenantId,
-        Guid positionId,
-        Guid correlationId);
-}
-```
-
-### 3.5 Sub-Agent Executor API
-
-```csharp
-public interface ISubAgentExecutor
-{
-    // Execute a single agent (Classifier, Necessity, etc.)
-    Task<Result<AgentDecision>> ExecuteAsync(
-        string agentName,
-        PolicyEvaluationContext context,
-        List<PolicyDefinition> agentPolicies);
-}
-```
+**Output:** Context enriched with position details
 
 ---
 
-## 4. Reconciliation Engine (Load → Reconcile → Match → Decide)
+### Sub-Agent 2: Position Necessity
 
-```csharp
-public class RuntimeReconciliationEngine : IRuntimeReconciliator
+**Responsibility:** Determine if a new requisition should be created
+
+**Policy Set:**
+
+Platform-defined:
+- "Check if an evergreen requisition exists for this position"
+
+Customer-defined:
+- "Always maintain open requisition for cashier roles"
+- "Require VP approval before opening manager requisitions"
+- "Don't replace employees terminated for cause"
+
+**Execution Example 1 (Cashier, Voluntary Termination):**
+
+Context:
+```
 {
-    private readonly IPolicyStore policyStore;
-    private readonly IPolicyEvaluator evaluator;
-    private readonly IAgentStateManager stateManager;
-    private readonly IPlataLogger logger;
-
-    public async Task<Result<AgentDecision>> ReconcileAsync(
-        PolicyEvaluationContext context,
-        List<PolicyDefinition> applicablePolicies)
-    {
-        // PHASE 1: LOAD
-        // Fetch platform default + tenant override policies
-        var policies = await LoadPoliciesAsync(context.TenantId);
-        
-        if (policies.Count == 0)
-        {
-            logger.Warn()
-                .Message("No policies found for tenant")
-                .Property("TenantId", context.TenantId)
-                .Write();
-            return AgentDecision.Error;  // Fail safe: no policy = no action
-        }
-
-        // Check idempotency: have we already processed this event?
-        var alreadyProcessed = await stateManager.HasProcessedAsync(
-            context.TenantId,
-            context.PositionId,
-            context.CorrelationId);
-        
-        if (alreadyProcessed)
-        {
-            logger.Info()
-                .Message("Duplicate event detected, skipping")
-                .Property("CorrelationId", context.CorrelationId)
-                .Write();
-            return AgentDecision.Pass;  // Idempotent: succeed silently
-        }
-
-        // PHASE 2: RECONCILE (Priority order)
-        var results = new List<PolicyEvaluationResult>();
-        var prioritizedPolicies = policies.OrderBy(p => p.Priority).ToList();
-
-        foreach (var policy in prioritizedPolicies)
-        {
-            var result = await evaluator.EvaluateAsync(policy, context);
-            results.Add(result);
-            
-            logger.Debug()
-                .Message("Policy evaluated")
-                .Property("PolicyName", policy.PolicyName)
-                .Property("Matches", result.Matches)
-                .Property("Confidence", result.Confidence)
-                .Write();
-
-            // PHASE 3: MATCH (first match wins)
-            if (result.Matches)
-            {
-                // PHASE 4: DECIDE
-                var decision = DetermineAction(result, policy);
-                
-                // Record state
-                await RecordDecisionAsync(context, decision, results);
-                
-                return decision;
-            }
-        }
-
-        // No policies matched: fail safe (pause, don't create requisition)
-        logger.Info()
-            .Message("No policies matched, pausing agent")
-            .Property("PositionId", context.PositionId)
-            .Write();
-        
-        return AgentDecision.Fail;
-    }
-
-    private async Task<List<PolicyDefinition>> LoadPoliciesAsync(Guid tenantId)
-    {
-        // Try tenant override first, fall back to platform
-        var tenantPolicies = await policyStore.GetPoliciesByTypeAsync(
-            tenantId, PolicyType.Necessity);
-        
-        if (tenantPolicies.Result?.Count > 0)
-            return tenantPolicies.Result;
-
-        // Fall back to platform default
-        var platformPolicies = await policyStore.GetPoliciesByTypeAsync(
-            Guid.Empty, PolicyType.Necessity);  // Guid.Empty = platform
-        
-        return platformPolicies.Result ?? new List<PolicyDefinition>();
-    }
-
-    private AgentDecision DetermineAction(
-        PolicyEvaluationResult policyResult,
-        PolicyDefinition policy)
-    {
-        // Policy action determines agent behavior
-        if (policyResult.Confidence < policy.Parameters["min_confidence"].DefaultValue)
-            return AgentDecision.Deferred;
-        
-        return AgentDecision.Pass;  // Proceed to next agent
-    }
-
-    private async Task RecordDecisionAsync(
-        PolicyEvaluationContext context,
-        AgentDecision decision,
-        List<PolicyEvaluationResult> results)
-    {
-        // Audit log: which policies evaluated, which matched, decision taken
-        var record = new SubAgentExecutionRecord
-        {
-            AgentName = "RuntimeReconciler",
-            Decision = decision,
-            ExecutedAt = DateTime.UtcNow,
-            PolicyResults = results,
-            DurationMs = (int)(DateTime.UtcNow - context.EventReceivedAt).TotalMilliseconds
-        };
-        
-        // Store if paused
-        if (decision == AgentDecision.Fail)
-        {
-            var pauseState = new AgentPauseState
-            {
-                Id = Guid.NewGuid(),
-                TenantId = context.TenantId,
-                PositionId = context.PositionId,
-                CorrelationId = context.CorrelationId,
-                PauseReason = PauseReason.PolicyEvalFailure,
-                FailedPolicyEvaluations = results,
-                CreatedAt = DateTime.UtcNow,
-                Status = PauseStateStatus.Active
-            };
-            
-            await stateManager.PauseAsync(pauseState);
-        }
-    }
+  "position": "Cashier",
+  "termination_reason": "voluntary",
+  "salary": "$35,000",
+  "evergreen_req_exists": false
 }
 ```
+
+Evaluation:
+1. Load policies (1 platform + 3 customer)
+2. Reconcile: No conflicts
+3. Match against context:
+   - "Always maintain open req for cashier roles" → MATCHES
+   - "Don't replace for cause" → Doesn't apply (voluntary term)
+   - "Require VP approval for managers" → Doesn't apply (cashier)
+   - "Evergreen req exists" → False
+4. Decision: Clear directive to create requisition → **ADVANCE**
+
+**Execution Example 2 (Manager, Unclear Budget):**
+
+Context:
+```
+{
+  "position": "Store Manager",
+  "termination_reason": "voluntary",
+  "salary": "$125,000",
+  "evergreen_req_exists": false,
+  "budget_approved": null
+}
+```
+
+Evaluation:
+1. Load policies
+2. Reconcile: No conflicts
+3. Match against context:
+   - "Require VP approval for managers" → MATCHES
+   - "Budget_approved" field is null
+4. Decision: Need VP approval AND missing budget info → **PAUSE**
+   - Message: "Need VP approval and budget information before proceeding"
 
 ---
 
-## 5. State Management
+### Sub-Agent 3: Requisition Schema
 
-### 5.1 Storage Strategy
+**Responsibility:** Identify what fields must be filled on the requisition
 
-**MongoDB Collections:**
+**Policy Set (all platform-defined):**
+- "Load mandatory fields from ATS API contract (title, department, location, hiring_manager)"
+- "Query tenant's PCF (People Configuration Fields) for custom fields"
+- "Mark mandatory vs optional fields"
 
+**Execution:**
+- This is pure info-gathering, no customer policies
+- Load API schema + tenant PCF config
+- Return field list with requirements
+
+**Output:** Schema definition
 ```
-tenant-{tenantId}
-├─ policies (PolicyDefinition)
-│   ├─ index: { policyName, version, isActive }
-│   ├─ index: { tenantId, policyType }
-│   └─ audit trail: { policyName, versionNumber, createdAt }
-│
-├─ agent-pause-states (AgentPauseState)
-│   ├─ index: { tenantId, positionId, correlationId } [UNIQUE]
-│   ├─ index: { tenantId, status, createdAt } [for GC queries]
-│   └─ index: { correlationId } [for idempotency]
-│
-├─ idempotency-log (IdempoencyRecord)
-│   ├─ index: { tenantId, positionId, correlationId } [UNIQUE]
-│   └─ ttl: 30 days (auto-expire)
-│
-└─ agent-execution-audit (SubAgentExecutionRecord)
-    ├─ index: { tenantId, positionId, createdAt }
-    └─ retention: 90 days
-```
-
-### 5.2 Resume Flow
-
-```csharp
-public class ResumeOrchestrator
 {
-    private readonly IAgentStateManager stateManager;
-    private readonly ISubAgentExecutor executor;
-
-    // Triggered by: manual intervention, time-based schedule, webhook
-    public async Task ResumeAsync(
-        Guid tenantId,
-        Guid positionId,
-        Guid correlationId)
-    {
-        // Fetch paused state
-        var pauseState = await stateManager.GetPauseStateAsync(
-            tenantId, positionId, correlationId);
-        
-        if (pauseState.Result == null)
-            return;  // Already resolved or expired
-
-        // Re-evaluate with fresh context
-        var freshContext = await BuildContextAsync(tenantId, positionId);
-        var policies = await policyStore.GetPoliciesByTypeAsync(tenantId, PolicyType.Necessity);
-        
-        // Re-run reconciliation
-        var decision = await reconciler.ReconcileAsync(freshContext, policies.Result);
-        
-        if (decision.IsSuccess && decision.Result == AgentDecision.Pass)
-        {
-            // Mark pause as resolved
-            await stateManager.ResumeAsync(tenantId, positionId, correlationId, new());
-        }
-    }
-}
-```
-
-### 5.3 Garbage Collection
-
-```csharp
-// Heartbeat (runs daily, off-peak)
-public class ExpirePauseStatesHeartBeat
-{
-    public async Task Execute()
-    {
-        var expiredCount = await stateManager.ExpirePausesAsync(olderThanDays: 30);
-        logger.Info()
-            .Message("Expired old pause states")
-            .Property("Count", expiredCount)
-            .Write();
-    }
-}
-```
-
----
-
-## 6. Determinism Strategy: LLM vs Decision Trees
-
-### Trade-offs
-
-| Dimension | LLM Reasoning | Pre-Compiled Decision Tree |
-|-----------|--------------|--------------------------|
-| **Flexibility** | Very high; handles novel contexts | Limited; must enumerate rules |
-| **Speed** | Slow (500ms-2s per call) | Fast (1-10ms per evaluation) |
-| **Cost** | High (LLM API calls) | Low (in-process) |
-| **Determinism** | Low (token sampling) | Perfect (deterministic) |
-| **Auditability** | Hard ("black box" reasoning) | Perfect (clear rule trace) |
-| **Learning** | Can improve with few-shot | Requires policy update |
-| **Compliance** | Risk for regulated decisions | Safe (explainable) |
-
-### Recommendation: **Hybrid Approach**
-
-1. **Platform Policies**: Use pre-compiled decision trees (determinism + compliance)
-2. **Tenant Policies**: Support both (tenant chooses via toggle)
-3. **Position Necessity**: Decision tree for v1 (clear, auditable rules)
-4. **Example Rules** (Decision Tree JSON):
-
-```json
-{
-  "policyName": "position-necessity-classifier",
-  "rules": [
-    {
-      "id": "rule-1",
-      "condition": {
-        "positionStatus": "Open",
-        "previousStatus": { "$in": ["Inactive", "OnHold", "Frozen"] }
-      },
-      "action": "PASS",
-      "priority": 1
-    },
-    {
-      "id": "rule-2",
-      "condition": {
-        "positionStatus": "Open",
-        "previousStatus": "Filled",
-        "statusChangeTimestamp": {
-          "$gt": "2024-06-03T00:00:00Z",
-          "$lt": "2024-06-04T00:00:00Z"
-        }
-      },
-      "action": "PASS",
-      "priority": 2
-    },
-    {
-      "id": "rule-3",
-      "condition": {
-        "positionStatus": { "$in": ["Draft", "PendingApproval"] }
-      },
-      "action": "FAIL",
-      "pauseReason": "PositionNotYetApproved",
-      "priority": 3
-    }
+  "fields": [
+    {"name": "job_title", "mandatory": true, "type": "string"},
+    {"name": "department", "mandatory": true, "type": "string"},
+    {"name": "salary_budget", "mandatory": true, "type": "currency"},
+    {"name": "custom_cost_center", "mandatory": false, "type": "string"}
   ]
 }
 ```
 
 ---
 
-## 7. Security Model
+### Sub-Agent 4: Field Population (per field)
 
-### 7.1 Prompt Injection Detection
+**Responsibility:** Determine how to populate each field in the schema
 
-```csharp
-public class PromptInjectionGuard
+**Policy Set varies by field and customer:**
+
+For `job_title`:
+- Platform: "Use terminated employee's job title"
+
+For `department`:
+- Platform: "Use terminated employee's department"
+
+For `salary_budget`:
+- Customer A: "Set to previous hire's salary plus 5%"
+- Customer B: "Set to average of last 3 hires in this position"
+- Customer C: "Call Compensation Advisor sub-agent for recommendation"
+
+For `hiring_manager`:
+- Platform: "Use terminated employee's manager"
+- Customer: "If manager is also terminated, use next level up"
+
+**Execution Example (salary_budget for Customer A):**
+
+Context:
+```
 {
-    private readonly List<string> suspiciousPatterns = new()
-    {
-        "ignore your instructions",
-        "follow new instructions from",
-        "disregard",
-        "system prompt",
-        "you are now"
-    };
-
-    public bool IsLikelyInjection(string input)
-    {
-        var normalized = input.ToLowerInvariant();
-        return suspiciousPatterns.Any(p => normalized.Contains(p));
-    }
+  "previous_hire_salary": "$45,000",
+  "position": "Cashier"
 }
 ```
 
-### 7.2 PII Handling
+Evaluation:
+1. Load policy: "Set to previous hire's salary plus 5%"
+2. Match: Have previous_hire_salary? Yes
+3. Calculation: $45,000 × 1.05 = $47,250
+4. Decision: Have all info → **ADVANCE** with value
 
-```csharp
-public class ContextSanitizer
+**Execution Example (salary_budget for Customer C):**
+
+Context:
+```
 {
-    // Strip PII from context before LLM eval
-    public PolicyEvaluationContext Sanitize(PolicyEvaluationContext context)
-    {
-        context.HiringManagerId = null;  // Don't expose person IDs
-        context.PositionTitle = "****";  // Mask sensitive job titles
-        // Keep only structural/policy-relevant fields
-        return context;
-    }
+  "position": "Store Manager"
 }
 ```
 
-### 7.3 Policy Sandbox
+Evaluation:
+1. Load policy: "Call Compensation Advisor sub-agent"
+2. Match: Need recommendation
+3. Decision: **INVOKE** Compensation Advisor sub-agent
+4. Sub-agent returns recommendation OR pauses for market data
+5. Continue based on sub-agent outcome
 
-```csharp
-// Decision trees are JSON: no code execution risk
-// LLM prompts are templated and sanitized before sending to Claude
+---
 
-public class LLMPolicySandbox
+## Differentiation from Workflows
+
+### Traditional Workflow (from Atlas → Signals → Workflows doc)
+
+**Characteristics:**
+- Predetermined sequence of steps
+- Fixed guards at specific points
+- Flow is designed ahead of time
+- Executed by workflow engine following a plan
+
+**Example:**
+```
+Step 1: Verify candidate email
+  ↓
+Step 2: HITL gate - recruiter approval
+  ↓ (if approved)
+Step 3: Create laptop request
+  ↓
+Step 4: Provision email account
+```
+
+### Policy-Driven Agent Architecture
+
+**Characteristics:**
+- Open-ended, emergent behavior
+- Each sub-agent evaluates policies at runtime
+- Flow adapts based on context and policies
+- Pauses anywhere when info is missing or reconciliation needed
+
+**Example:**
+```
+Requisition Agent
+  ↓
+Position Classifier (gather info)
+  ↓
+Position Necessity (evaluate policies → might pause)
+  ↓ (if approved)
+Requisition Schema (load config)
+  ↓
+Field Population (per field, might pause, might invoke sub-agents)
+  ↓
+(Continue based on context and policies...)
+```
+
+### When to Use Each
+
+| Use Workflow When... | Use Policy-Driven Agent When... |
+|---------------------|----------------------------------|
+| Steps are known and fixed | Steps depend on context |
+| Same sequence every time | Sequence varies by customer/scenario |
+| Gates are at predetermined points | Pauses happen anywhere based on data availability |
+| Compliance requires audit trail of exact steps | Flexibility is more important than predictability |
+
+**Note:** The two patterns can coexist. A workflow might invoke a policy-driven agent as one of its steps.
+
+---
+
+## Policy Authoring & Validation
+
+### How Customers Define Policies
+
+**Authoring UX (Hybrid Approach):**
+
+For each sub-agent that accepts customer-defined policies, the UI will:
+
+1. **Show suggested action chips** - Pre-defined common patterns displayed as clickable chips
+   - Example chips for salary budget:
+     - "Use previous employee's budget"
+     - "Find the most recent hire"
+     - "Average last 3 hires in this position"
+   - Example chips for approval rules:
+     - "Require VP approval"
+     - "Auto-approve under $100k"
+     - "Route to department head"
+
+2. **Allow free-form natural language** - Users can type their own policies instead of selecting chips
+
+3. **Enable chip modification** - Users can select a chip and then modify it with additional natural language
+   - Example: Select "Use previous employee's budget" → modify to "Use previous employee's budget plus 5% for inflation"
+
+**Chip Library:**
+- **System-defined per sub-agent** - Each sub-agent has its own curated chip set
+- **Not user-customizable initially** - Customers cannot create their own chips (Phase 1)
+- **Contextual** - Chips shown are specific to what the sub-agent does
+
+### Policy Evaluator Agent
+
+When a customer saves a policy, the **Policy Evaluator Agent** runs to validate it:
+
+**What it checks:**
+1. **Clarity** - Can we understand what this policy means?
+2. **Conflict detection** - Does this conflict with existing policies for this sub-agent?
+3. **Interpretability** - Can this be evaluated at runtime?
+4. **Security** - Does this contain prompt injection or malicious instructions?
+
+**Validation outcomes:**
+
+| Issue Type | Action | Phase |
+|-----------|--------|-------|
+| **Prompt injection detected** | **Reject** - Block saving entirely | Phase 1 |
+| **Unclear policy** | **Reject** - Block until clarified | Phase 1 |
+| **Conflicts with existing policy** | **Reject** - Show conflict, user must resolve | Phase 1 |
+| **Valid policy** | **Accept** - Save to policy registry | Phase 1 |
+| **Suggestions for improvement** | Offer corrections (future capability) | Phase 2+ |
+
+**Security guardrails (Prompt-hacking prevention):**
+- Detects attempts to override system instructions
+- Blocks policies with embedded commands or escape sequences
+- Flags suspicious patterns (e.g., "ignore all previous instructions")
+- **Action on detection:** Reject policy entirely with explanation
+
+### Policy Conflict Resolution During Authoring
+
+When Policy Evaluator detects a conflict between user-defined policies:
+
+**User must manually reconcile:**
+1. See both conflicting policies side-by-side
+2. Choose to:
+   - Delete one of the policies
+   - Modify one or both to remove conflict
+   - Assign explicit priority order (which should evaluate first)
+
+**Example conflict:**
+- Policy 1: "Never replace employees in Q4 (hiring freeze)"
+- Policy 2: "Always maintain open cashier reqs (high turnover)"
+- Context: Cashier terminated in November
+- **User action required:** Either remove one, modify to make them compatible, or set priority
+
+**System-defined policies cannot be modified or deleted** - they always apply and override user policies.
+
+---
+
+## Policy Reconciliation Rules
+
+When multiple policies could apply at runtime, the agent uses deterministic rules to resolve conflicts.
+
+### Confirmed Reconciliation Hierarchy
+
+1. **System-defined policies ALWAYS apply** (non-negotiable, cannot be overridden)
+   - Security guardrails
+   - Compliance requirements
+   - Required data gathering
+   - Platform technical constraints
+
+2. **User-defined policies evaluated in priority order**
+   - Users can set explicit priority when creating policies
+   - Most recently defined policy wins if no explicit priority set
+
+3. **Explicit "pause" policies take precedence**
+   - If any applicable policy says "pause for approval", the agent pauses
+   - Even if other policies say "proceed automatically"
+
+4. **Fall-through: If ambiguous or conflicting → Pause for human**
+   - If reconciliation cannot produce a clear directive
+   - If required context is missing
+   - Default safe behavior: ask a human
+
+### Example Reconciliation Scenarios
+
+**Scenario 1: Compatible policies**
+
+Store Manager termination
+
+**Policies:**
+- System: "Check evergreen req" (info gathering)
+- User (tenant-wide): "Always maintain open reqs for all positions"
+- User (role-specific, priority 1): "Require VP approval for manager positions"
+
+**Reconciliation:**
+1. System policy applies (always): Check evergreen req → none found
+2. User policies both apply
+3. They're compatible: "Create req" + "Get approval first"
+4. Combined directive: "Create req, but pause for VP approval before posting"
+5. **Decision:** Advance to schema creation, mark as "pending VP approval"
+
+---
+
+**Scenario 2: User policy conflicts**
+
+Cashier terminated in November
+
+**Policies:**
+- System: "Check evergreen req"
+- User (priority 1): "Never replace employees in Q4 (hiring freeze)"
+- User (priority 2): "Always maintain open cashier reqs (high turnover)"
+
+**Reconciliation:**
+1. System policy applies: Check evergreen req → none found
+2. User policy priority 1 says "don't create req"
+3. User policy priority 2 says "create req"
+4. Priority 1 wins → **Decision:** Don't create requisition (hiring freeze takes precedence)
+
+*Note: If policies had no explicit priority, agent would pause and explain the conflict to a human.*
+
+---
+
+**Scenario 3: System policy overrides user policy**
+
+Attempt to create requisition without budget approval
+
+**Policies:**
+- System: "All requisitions with salary > $100k require budget approval before creation"
+- User: "Auto-create all manager requisitions immediately"
+
+**Context:** Manager role, salary $125,000, no budget approval
+
+**Reconciliation:**
+1. System policy applies (non-negotiable): Salary > $100k → budget approval required
+2. User policy says "auto-create"
+3. **System policy ALWAYS wins**
+4. **Decision:** Pause for budget approval (system policy enforced, user policy ignored for this case)
+
+---
+
+**Scenario 4: Ambiguous context → Pause**
+
+Store Manager termination with unclear data
+
+**Policies:**
+- System: "Check evergreen req"
+- User: "Require VP approval for manager positions with team size > 10"
+
+**Context:** Manager role, team_size = null (missing data)
+
+**Reconciliation:**
+1. System policy applies: Check evergreen req
+2. User policy requires team_size to evaluate
+3. team_size is missing from context
+4. Cannot determine if policy applies
+5. **Decision:** Pause for human → "Need team size to determine if VP approval required"
+
+---
+
+## Design Decisions Made
+
+### Policy Authoring
+✅ **Hybrid UX** - Suggested chips (system-defined per sub-agent) + free-form natural language + chip modification
+
+✅ **Chip library** - System-defined per sub-agent, not user-customizable initially
+
+✅ **Policy Evaluator** - Validates clarity, conflicts, interpretability, and security before saving
+
+✅ **Validation blocking** - Phase 1: Block saving until fixed; Phase 2+: Suggest corrections
+
+### Security
+✅ **Prompt-hacking detection** - Policy Evaluator scans for malicious instructions and rejects entirely if found
+
+✅ **System policy override** - System-defined policies ALWAYS apply, cannot be modified or overridden by customers
+
+### Conflict Resolution
+✅ **User policy conflicts** - User must manually reconcile during authoring (delete, modify, or set priority)
+
+✅ **Runtime reconciliation** - System policies first, then user policies in priority order, pause if ambiguous
+
+---
+
+## Open Technical Questions (Still TBD)
+
+To implement this pattern, we still need to answer:
+
+### 1. Policy Storage
+- Where are policies stored? (Database? Policy registry service?)
+- How are they versioned?
+- How do we handle policy updates for in-flight agents?
+
+### 2. Policy Evaluation Runtime
+- Does the LLM evaluate policies at runtime for each sub-agent?
+- Do we pre-compile policies into decision trees for performance?
+- How do we ensure deterministic evaluation across invocations?
+
+### 3. State Management
+- How is state saved when pausing?
+- What's the serialization format for context?
+- Where is paused state stored (database, queue, cache)?
+- How long do we retain paused state before timeout?
+
+### 4. Context Passing
+- What format does context use between sub-agents? (JSON? Structured object?)
+- How is sensitive data handled (PII, salary info, SSNs)?
+- What's the maximum context size?
+- Do we encrypt context in transit and at rest?
+
+### 5. Observability & Audit
+- How do we log which policies were evaluated?
+- How do we explain why an agent paused (which policy triggered it)?
+- What audit trail exists for policy-driven decisions?
+- Do we show policy evaluation details in the Recruiter Hub?
+
+### 6. Integration with Workflow Engine
+- How do policy-driven agents interact with deterministic workflows?
+- Can a workflow step invoke a policy-driven agent?
+- Can a policy-driven agent create a workflow as its output?
+- Where's the handoff point between agent and workflow?
+
+### 7. Performance & Scalability
+- If every sub-agent invocation loads and evaluates policies via LLM, what's the latency impact?
+- Can we cache policy evaluations for identical contexts?
+- What's the throughput limit (agents/second)?
+
+### 8. Sub-Agent Reusability
+- Can sub-agents be shared across parent agents? (e.g., Position Classifier used by both Requisition Agent and Talent Pool Agent)
+- If shared, do they inherit different policies based on parent context?
+
+### 9. Testing
+- How do we test policy evaluation?
+- Can we simulate context to verify policy matching?
+- What's the testing strategy for policy combinations?
+
+---
+
+## Relationship to Atlas → Signals → Workflows Architecture
+
+### Where Policy-Driven Agents Fit
+
+The Atlas → Signals → Workflows document describes:
+- **Signal Router** - matches signals to workflows via TriggerBindings
+- **Workflows** - predetermined sequences executed by platform
+- **Skills** - reusable capabilities invoked by workflows
+
+Policy-driven agents are a **new layer** that sits between signals and workflows:
+
+```
+Signal (HCM termination)
+  ↓
+Signal Router (matches to binding)
+  ↓
+Trigger Binding (points to Requisition Agent)
+  ↓
+POLICY-DRIVEN AGENT (Requisition Agent + sub-agents)
+  ↓ (might create)
+Workflow (if a deterministic process is needed)
+  ↓ (invokes)
+Skills (reusable tools)
+```
+
+### TriggerBinding with Policy Context
+
+The TriggerBinding might look like:
+
+```json
 {
-    private const int MAX_CONTEXT_SIZE = 2048;  // Prevent unbounded input
-    private const int MAX_POLICY_RULES = 100;   // Prevent DOS
-
-    public async Task<PolicyEvaluationResult> EvaluateAsync(
-        string prompt,
-        PolicyEvaluationContext context)
-    {
-        if (prompt.Length > MAX_CONTEXT_SIZE)
-            throw new InvalidOperationException("Prompt exceeds max size");
-        
-        // Sanitize context first
-        var safeContext = new ContextSanitizer().Sanitize(context);
-        
-        // Call Claude with rate limiting
-        using (var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10)))
-        {
-            return await claudeClient.EvaluateAsync(prompt, safeContext, cts.Token);
-        }
-    }
+  "binding_id": "trg-req-on-termination",
+  "tenant_id": "customer-a",
+  "match": {
+    "signal_type": "hcm.separation",
+    "condition": "termination_reason is voluntary or retirement"
+  },
+  "target": {
+    "type": "policy_driven_agent",
+    "ref": "requisition_agent",
+    "agent_version": 3
+  },
+  "input_mapping": {
+    "employee_id": "from signal.employee_id",
+    "termination_reason": "from signal.reason"
+  },
+  "policy_context": {
+    "tenant_policies": ["policy-set-customer-a-v12"],
+    "autonomy": "recruiter_supervised"
+  }
 }
 ```
 
----
+### Execution Flow Integration
 
-## 8. Observability & Audit Trail
+1. **Signal arrives** → Signal Router matches binding
+2. **Dispatcher invokes** policy-driven agent (not a workflow)
+3. **Agent executes** using policy evaluation pattern
+4. **Agent might pause** → updates view store → shows in Recruiter Hub
+5. **Recruiter provides input** → directed command resumes agent
+6. **Agent completes** → might trigger a workflow OR create ATS records directly
+7. **Outcome event** → Output Handler updates view store
 
-### 8.1 Logging Strategy
+### Key Differences from Workflows
 
-```csharp
-public class PolicyEvaluationLogger
-{
-    public void LogPolicyEvaluation(
-        PolicyEvaluationContext context,
-        PolicyDefinition policy,
-        PolicyEvaluationResult result)
-    {
-        logger.Info()
-            .Message("Policy evaluated")
-            .Property("TenantId", context.TenantId)
-            .Property("PositionId", context.PositionId)
-            .Property("CorrelationId", context.CorrelationId)
-            .Property("PolicyName", policy.PolicyName)
-            .Property("PolicyVersion", policy.PolicyVersion)
-            .Property("Matches", result.Matches)
-            .Property("Confidence", result.Confidence)
-            .Property("Explanation", result.Explanation)
-            .Property("AppliedRules", string.Join(",", result.AppliedRules))
-            .Property("DurationMs", result.EvaluatedAt)
-            .Write();
-    }
-
-    public void LogAgentDecision(
-        PolicyEvaluationContext context,
-        AgentDecision decision,
-        List<PolicyEvaluationResult> results)
-    {
-        logger.Info()
-            .Message("Agent decision rendered")
-            .Property("TenantId", context.TenantId)
-            .Property("PositionId", context.PositionId)
-            .Property("Decision", decision)
-            .Property("PolicyCount", results.Count)
-            .Property("MatchCount", results.Count(r => r.Matches))
-            .Write();
-    }
-}
-```
-
-### 8.2 Audit Trail
-
-```csharp
-// Every policy evaluation + agent decision is immutable in MongoDB
-public class AuditTrail
-{
-    public Guid Id { get; set; }
-    public Guid TenantId { get; set; }
-    public Guid PositionId { get; set; }
-    public Guid CorrelationId { get; set; }
-    public string EventType { get; set; }  // PolicyEvaluated | AgentDecision | Paused | Resumed
-    public object Details { get; set; }  // Full snapshot
-    public DateTime TimestampUtc { get; set; }
-    public string Actor { get; set; }  // System | UserId
-}
-
-// Query: "Show me all policy evals that led to position X being paused"
-// Query: "Tenant Y: which policies are blocking position requisition creation?"
-```
+| Aspect | Workflows (from doc) | Policy-Driven Agents |
+|--------|---------------------|----------------------|
+| Structure | Pre-planned steps | Emergent from policies |
+| Execution | Platform workflow engine | Agent runtime (LLM-based?) |
+| Pausing | At predetermined HITL gates | Anywhere, based on context |
+| Customization | Per workflow version | Per policy set |
+| Determinism | High (same inputs → same path) | Lower (LLM interpretation) |
 
 ---
 
-## 9. Integration Points
+## Next Steps
 
-### 9.1 Signal Router → Agent Entry Point
+To move this concept forward with the other team:
 
-```csharp
-public class PositionAutomationEventSubscription : IAsyncEventSubscription<PositionChangedV2Event, PositionChangedV2Payload>
-{
-    private readonly IRequisitionAgent agent;
-    private readonly ITenantFeatureToggle featureToggle;
-    private readonly IIdempotencyChecker idempotencyChecker;
-
-    public async Task Process(PositionChangedV2Payload payload)
-    {
-        // Guard: toggle
-        if (!featureToggle.IsEnabled(ToggleableFeature.EnableReqCreationAgent))
-            return;
-
-        // Guard: idempotency
-        var correlationId = IdempotencyKeyGenerator.Generate(payload);
-        if (await idempotencyChecker.HasProcessedAsync(payload.TenantId, payload.PositionId, correlationId))
-            return;
-
-        // Build context from payload
-        var context = new PositionAutomationContextBuilder().Build(payload);
-        
-        // Invoke agent
-        var decision = await agent.EvaluateAsync(context);
-        
-        // Decision → Action
-        if (decision == AgentDecision.Pass)
-        {
-            // Queue async workflow job
-            await workflowEngine.QueueAsync(
-                new CreateRequisitionWorkflowJob(payload.TenantId, payload.PositionId));
-        }
-        else if (decision == AgentDecision.Fail)
-        {
-            // Paused: audit logged by agent, signal retry strategy
-            logger.Info().Message("Requisition creation paused by policy").Write();
-        }
-    }
-}
-```
-
-### 9.2 Agent → Workflow Engine (Fire-and-Forget)
-
-```csharp
-public interface IWorkflowEngine
-{
-    // Queue job for async processing (e.g., Hangfire, Kubernetes Job)
-    Task QueueAsync(WorkflowJob job);
-}
-
-public class CreateRequisitionWorkflowJob : WorkflowJob
-{
-    public Guid TenantId { get; set; }
-    public Guid PositionId { get; set; }
-    public Guid CorrelationId { get; set; }
-    
-    public override async Task ExecuteAsync()
-    {
-        // Call Bryte Supervisor Agent to create requisition
-        // This is fire-and-forget from PA agent perspective
-        var result = await bryteAgent.InitiateRequisitionAsync(TenantId, PositionId);
-        // Log result, handle retries via job framework
-    }
-}
-```
-
----
-
-## 10. Implementation Roadmap
-
-### Phase 1: PoC (Position Necessity Classifier Only) — 6 weeks
-
-**Goal:** Prove policy-driven pattern on simplest use case.
-
-**Deliverables:**
-- [ ] PolicyDefinition schema + MongoDB collection
-- [ ] DecisionTreeEvaluator (JSON rules → boolean)
-- [ ] RuntimeReconciliationEngine (load → reconcile → match → decide)
-- [ ] AgentPauseState store + GC
-- [ ] Unit tests (decision tree eval, reconciliation flow)
-- [ ] Integration test (event → pause state written)
-
-**Effort:** 3 devs × 2 weeks = 6 person-weeks
-**Risk:** None; isolated, no breaking changes. Uses existing event subscription pattern.
-
-**Code Skeleton:**
-```
-Recruitment.Domain/
-├─ Model/PolicyDriven/
-│  ├─ PolicyDefinition.cs
-│  ├─ PolicyEvaluationContext.cs
-│  ├─ AgentPauseState.cs
-│  └─ *.cs (other models)
-│
-Recruitment.Application.Services/
-├─ PolicyEngine/
-│  ├─ IDecisionTreeEvaluator.cs
-│  ├─ DecisionTreeEvaluator.cs
-│  ├─ IPolicyStore.cs
-│  ├─ PolicyStore.cs
-│  ├─ RuntimeReconciliationEngine.cs
-│  └─ *.cs (managers, loggers)
-│
-Recruitment.Persistence.Migrations/
-└─ {timestamp}_CreatePolicyDefinitionsCollection.cs
-```
-
----
-
-### Phase 2: MVP (4 Sub-agents + Tenant Policies) — 8 weeks
-
-**Goal:** Full agent ecosystem with tenant policy overrides.
-
-**Adds:**
-- [ ] Position Classifier agent (sub-agent #1)
-- [ ] Position Necessity agent (sub-agent #2)
-- [ ] Requisition Schema Mapper agent (sub-agent #3)
-- [ ] Field Population agent (sub-agent #4)
-- [ ] Parent orchestrator (calls sub-agents in sequence)
-- [ ] Tenant policy override UI (admin panel)
-- [ ] Policy change tracking (audit log)
-- [ ] Resume flow (manual intervention recovery)
-- [ ] System tests (end-to-end: event → requisition draft)
-
-**Effort:** 4 devs × 2 weeks = 8 person-weeks
-**Risk:** Sub-agent coordination; resume logic correctness.
-
-**Critical Path:**
-1. Finalize sub-agent contracts
-2. Implement parent orchestrator call graph
-3. Test pause/resume state machine
-4. Build admin UI for policy edits
-
----
-
-### Phase 3: Full Platform (LLM Support, Analytics, Scalability) — 12 weeks
-
-**Goal:** Production-ready, supports LLM policies, tenant self-service.
-
-**Adds:**
-- [ ] Claude/LLM evaluator (alternative to decision trees)
-- [ ] Policy versioning + rollback
-- [ ] Tenant policy sandbox (rate limits, input validation)
-- [ ] Analytics dashboard (policy eval success rate, pause reasons)
-- [ ] Self-service policy editor (UI for tenants)
-- [ ] Batch pause recovery (cron job + webhooks)
-- [ ] Scalability: async agent execution (Kubernetes jobs)
-- [ ] Multi-tenant policy hierarchy (company-level → department-level)
-
-**Effort:** 5 devs × 2.4 weeks = 12 person-weeks
-**Risk:** LLM cost, token consumption, latency SLA.
-
----
-
-## 11. Effort Estimate & Timeline
-
-### Phased Breakdown
-
-| Phase | Duration | FTE | Key Risk | Mitigation |
-|-------|----------|-----|----------|-----------|
-| **PoC** | 6 weeks | 3 | Schema design paralysis | Finalize in sprint 0 (2 days) |
-| **MVP** | 8 weeks | 4 | Sub-agent coordination | Mock sub-agents first (1 week) |
-| **Full** | 12 weeks | 5 | LLM latency / cost | Benchmark Claude latency early (week 1) |
-| **Total** | 26 weeks | ~4 avg | | |
-
-### Critical Path (Longest dependency chain)
-
-```
-Sprint 0 (2 days)
-├─ Finalize PolicyDefinition schema
-├─ Design MongoDB collections
-└─ Plan DecisionTreeEvaluator format
-
-↓ (Week 1-2: PoC Foundation)
-Sprint 1-2 (PoC phase 1)
-├─ Implement PolicyStore + queries
-├─ Build DecisionTreeEvaluator
-└─ Write unit tests
-
-↓ (Week 3-6: PoC Integration & Phase 2 Start)
-Sprint 3-6 (PoC phase 2 + MVP phase 1)
-├─ Integrate event subscription
-├─ Build AgentStateManager
-├─ Start parent orchestrator
-└─ Begin sub-agent contracts
-
-↓ (Week 7-13: MVP Completion)
-Sprint 7-13 (MVP phase 2 + Phase 3 start)
-├─ Sub-agent implementations
-├─ Resume flow
-├─ Admin policy UI
-└─ LLM evaluator (async track)
-
-↓ (Week 14-26: Full Platform Hardening)
-Sprint 14-26 (Phase 3 completion)
-├─ Analytics dashboard
-├─ Scalability improvements
-├─ Performance optimization
-└─ Production readiness
-```
-
-**Go-live readiness:** End of MVP (Week 14) with Phase 3 features behind toggles.
-
----
-
-## 12. Risk Factors & De-risking
-
-| Risk | Impact | Likelihood | Mitigation |
-|------|--------|-----------|-----------|
-| **Policy schema too rigid** | Rework on tenant feedback | Medium | PoC phase: gather tenant feedback on schema before MVP |
-| **Sub-agent coordination bugs** | Deadlocks, inconsistent state | Medium | Mock sub-agents + state machine tests (week 4) |
-| **LLM latency (full platform)** | SLA miss (>5s event processing) | High | Benchmark Claude + implement request timeout (week 15) |
-| **LLM cost overrun** | Budget exceeded | Medium | Implement caching + hybrid (DT for common cases, LLM for edge) |
-| **Idempotency failures** | Duplicate requisitions created | High | Correlation ID + MongoDB unique index + tests (PoC) |
-| **Pause state garbage collection** | DB bloat | Low | Implement TTL index on creation date (Phase 1) |
-| **Policy eval audit data explosion** | Disk I/O, query slowdown | Medium | Implement retention policy (90 days) + archival (week 18) |
-
----
-
-## 13. Success Metrics
-
-### Phase 1 (PoC)
-- Decision tree evaluator executes in <10ms
-- 0 duplicate requisitions created (idempotency 100%)
-- 100% unit test coverage for evaluator + reconciler
-
-### Phase 2 (MVP)
-- End-to-end latency: <1s (event → agent decision)
-- Pause state accuracy: 99% (correct pause reasons)
-- Tenant policy override working for ≥2 pilot customers
-
-### Phase 3 (Full)
-- LLM evaluator <500ms latency (p95)
-- Cost per evaluation: <$0.01 (batching + caching)
-- Dashboard: policy eval success rate >95%
-
----
-
-## Conclusion
-
-This architecture separates **policy definition** (data) from **policy evaluation** (logic), enabling runtime flexibility without redeployment. The reconciliation engine's "load → reconcile → match → decide" pattern is deterministic and auditable, critical for compliance. Phased rollout manages risk: PoC proves the pattern, MVP scales to 4 agents, Phase 3 adds LLM optionality for advanced tenants.
-
-**Key technical wins:**
-- Policies as first-class data (MongoDB stored, versioned, tenant-overridable)
-- Sub-agent contract clarity (each agent = one policy matcher)
-- Idempotency + pause state = safe retry semantics
-- Hybrid LLM/decision tree = flexibility without sacrificing auditability
-
-**Next immediate steps:**
-1. Finalize PolicyDefinition schema (sprint 0)
-2. Implement DecisionTreeEvaluator (sprint 1)
-3. Gather tenant feedback on policy customization (during PoC)
+1. **Validate the pattern**: Does this match their understanding of agent architecture?
+2. **Define policy schema**: What does a policy actually look like (syntax, structure)?
+3. **Choose reconciliation rules**: Agree on the hierarchy for conflict resolution
+4. **Pick storage approach**: Where do policies live and how are they managed?
+5. **Design state management**: How do we save/resume when pausing?
+6. **Build PoC**: Implement one sub-agent (e.g., Position Necessity) end-to-end
+7. **Define integration points**: How does this connect to the Signal Router and Workflow Engine?
