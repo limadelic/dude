@@ -25,3 +25,8 @@ sessions/
 status.json
 teams/
 *.local.md
+ukg.pem
+.mcp.all.json
+remote-settings.json
+.github/
+catalog-info.yaml
