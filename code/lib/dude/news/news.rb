@@ -1,15 +1,11 @@
 require_relative 'paperboy'
-require_relative 'sommelier'
 
 module Dude
   module News
     class News
-      def initialize(limit: 5, paperboy: Paperboy.new,
-        sommelier: Sommelier.new, taste: nil)
+      def initialize(limit: 5, paperboy: Paperboy.new)
         @limit = limit
         @paperboy = paperboy
-        @sommelier = sommelier
-        @taste = taste
       end
 
       def fetch
@@ -22,7 +18,6 @@ module Dude
         latest = @paperboy.latest_version
         puts installed_and_latest_line(latest)
         releases_lines.each { |line| puts line }
-        smoke_test_lines(latest).each { |line| puts line }
       rescue => e
         puts "Error: #{e.message}"
       end
@@ -34,8 +29,7 @@ module Dude
       def collect_sections(latest)
         [
           installed_and_latest_line(latest),
-          releases_lines,
-          smoke_test_lines(latest)
+          releases_lines
         ]
       end
 
@@ -54,23 +48,6 @@ module Dude
         @paperboy.releases(@limit).map do |release|
           [release[:tag], release[:body]]
         end.flatten
-      end
-
-      def smoke_test_lines(latest)
-        result = @sommelier.taste(latest, prompt: @taste)
-        version = extract_version(latest)
-        build_vintage_lines(version, result)
-      end
-
-      def extract_version(latest)
-        latest.start_with?('v') ? latest[1..-1] : latest
-      end
-
-      def build_vintage_lines(version, result)
-        lines = ["Vintage #{version}: #{result[:conclusion]}"]
-        lines << result[:url] if result[:url]
-        lines << result[:error] if result[:error]
-        lines
       end
     end
   end
