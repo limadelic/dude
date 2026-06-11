@@ -113,11 +113,9 @@ module Dude
       desc "news [OPTIONS]", "Report on latest Claude Code releases"
       option :limit, type: :numeric, default: 5,
         desc: "Number of releases to show"
-      option :taste, type: :string, aliases: '-t',
-        desc: "Custom prompt for vintage taste test"
       def news
         require_relative '../news/news'
-        Dude::News::News.new(limit: options[:limit], taste: options[:taste]).run
+        Dude::News::News.new(limit: options[:limit]).run
       end
 
       desc "alley-pr", "Create PR for current branch"

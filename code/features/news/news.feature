@@ -24,13 +24,6 @@ Feature: News
     * ~ gh release view v2.1.92
       | Maintenance |
 
-    # Sommelier
-    * ~ gh workflow run dude.yml prompt="1 + 1" version=$latest
-    * ~ gh run list --json status
-      | completed |
-    * ~ gh run list --json conclusion
-      | success |
-
     * > /news:
       | Installed: 2.1.90, Latest: v2.1.96 |
       | v2.1.96                            |
@@ -43,32 +36,6 @@ Feature: News
       | Patch release                      |
       | v2.1.92                            |
       | Maintenance                        |
-      | Vintage 2.1.96: success            |
-
-  Scenario: vintage tasting fails
-
-    * ~ claude --version
-      | 2.1.90 |
-    * ~ gh release list limit 1
-      | v2.1.96 |
-    * ~ gh run list --json status
-      | completed |
-    * ~ gh release view v2.1.96
-      | Vintage release |
-    * ~ gh workflow run dude.yml prompt="1 + 1" version=$latest
-    * ~ gh run list --repo UKGEPIC/dude --json conclusion
-      | failure |
-    * ~ gh run list --repo UKGEPIC/dude --json databaseId
-      | 12345 |
-    * ~ gh api repos/UKGEPIC/dude/actions/runs/12345/jobs
-      | 678 |
-    * ~ gh api repos/UKGEPIC/dude/actions/jobs/678/logs
-      | Error: claude timed out after 5s |
-
-    * > /news:
-      | Vintage 2.1.96: failure                            |
-      | https://github.com/UKGEPIC/dude/actions/runs/12345 |
-      | Error: claude timed out after 5s                   |
 
   Scenario: custom limit
 
@@ -86,11 +53,6 @@ Feature: News
       | New feature |
     * ~ gh release view v2.1.94
       | Minor update |
-    * ~ gh workflow run dude.yml prompt="1 + 1" version=$latest
-    * ~ gh run list --json status
-      | completed |
-    * ~ gh run list --json conclusion
-      | success |
 
     * > /news --limit 3:
       | Installed: 2.1.90, Latest: v2.1.96 |
@@ -100,4 +62,3 @@ Feature: News
       | New feature                        |
       | v2.1.94                            |
       | Minor update                       |
-      | Vintage 2.1.96: success            |
