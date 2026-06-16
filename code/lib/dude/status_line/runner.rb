@@ -104,6 +104,7 @@ module Dude
       end
 
       def five_hour_section
+        return unless @session['rate_limits']
         Dude::StatusLine::RateLimit.new(
           used_pct: @session.dig('rate_limits','five_hour','used_percentage') || 0,
           resets_at: @session.dig('rate_limits','five_hour','resets_at') || 0,
@@ -113,6 +114,7 @@ module Dude
       end
 
       def seven_day_section
+        return unless @session['rate_limits']
         Dude::StatusLine::RateLimit.new(
           used_pct: @session.dig('rate_limits','seven_day','used_percentage') || 0,
           resets_at: @session.dig('rate_limits','seven_day','resets_at') || 0,
