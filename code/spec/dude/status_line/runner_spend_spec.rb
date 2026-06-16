@@ -43,7 +43,7 @@ describe 'Runner spend_section integration' do
     let(:checkpoint_instance) { Object.new }
 
     before do
-      stub(Dude::StatusLine::AnthropicToken).fetch { 'test_token' }
+      mock(Dude::StatusLine::AnthropicToken).fetch { 'test_token' }.times(1)
       stub(Dude::StatusLine::SpendCache).new { spend_cache_instance }
       stub(spend_cache_instance).fetch { 100.5 }
       stub(Dude::StatusLine::AnthropicSpendClient).new(anything) { Object.new }
@@ -61,6 +61,11 @@ describe 'Runner spend_section integration' do
 
       expect(output).to include('☀️ enterprise_daily')
       expect(output).to include('🌙 enterprise_monthly')
+    end
+
+    it 'memoizes token fetch so it runs exactly once for both daily and monthly sections' do
+      sut = Dude::StatusLine::Runner.new(session_input)
+      capture_output { sut.run }
     end
   end
 
