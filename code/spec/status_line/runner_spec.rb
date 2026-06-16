@@ -122,6 +122,8 @@ describe Dude::StatusLine::Runner do
         output = capture_output { sut.run }
 
         expect(output).to include('█')
+        expect(output).to include('🧠')
+        expect(output).to include('🎭')
       end
     end
   end
