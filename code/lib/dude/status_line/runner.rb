@@ -22,6 +22,7 @@ module Dude
       BG_MAP = Dude::StatusLine::Format::BG_MAP
       WHITE = Dude::StatusLine::Format::WHITE
       JETBRAINS = Dude::StatusLine::Format::JETBRAINS
+      AUTOCOMPACT_WINDOW = 200_000
 
       def initialize(json_input, activity: nil, dudes: nil, cwd: Dir.pwd)
         @session = (JSON.parse(json_input) rescue default_session)
@@ -70,9 +71,9 @@ module Dude
       def context_percentage
         @context_percentage ||= begin
           cw = @session['context_window'] || {}
-          size = cw['context_window_size']
-          if size && size > 0 && (cw['total_input_tokens'] || cw['total_output_tokens'])
-            pct = (cw['total_input_tokens'].to_i + cw['total_output_tokens'].to_i) * 100 / size.to_f
+          tokens = cw['total_input_tokens'].to_i + cw['total_output_tokens'].to_i
+          if tokens > 0
+            pct = tokens * 100 / AUTOCOMPACT_WINDOW.to_f
           else
             pct = cw['used_percentage'] || 0
           end
