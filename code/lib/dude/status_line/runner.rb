@@ -57,8 +57,7 @@ module Dude
 
       def build_status_line(dudes_instance)
         sections = [
-          context_section, spend_section, pomo_section,
-          models_section, dudes_instance.to_s
+          context_section
         ]
         sections.compact.join(' ')
       end
