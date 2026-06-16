@@ -32,9 +32,9 @@ module Dude
         pct < lo ? COLORS[:green] : (pct <= hi ? COLORS[:yellow] : COLORS[:red])
       end
 
-      def bar(pct, emoji, lo: 33, hi: 66, color: nil, min_fill: 0)
+      def bar(pct, emoji, lo: 33, hi: 66, color: nil)
         filled = (clamp(pct) * 9 / 100.0).round
-        filled = min_fill if filled < min_fill && pct > 0
+        filled = 1 if filled < 1 && clamp(pct) > 0
         col = color || color_for_pct(clamp(pct), lo, hi)
         pad = JETBRAINS ? ' ' : ''
         bars = "#{'█' * filled}#{'░' * (9 - filled)}"
