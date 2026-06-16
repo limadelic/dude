@@ -10,6 +10,7 @@ require_relative 'dudes'
 require_relative 'anthropic_token'
 require_relative 'anthropic_spend_client'
 require_relative 'spend_cache'
+require_relative 'rate_limit'
 
 module Dude
   module StatusLine
@@ -57,7 +58,7 @@ module Dude
 
       def build_status_line(dudes_instance)
         sections = [
-          context_section, models_section
+          context_section, five_hour_section, models_section
         ]
         sections.compact.join(' ')
       end
@@ -93,6 +94,15 @@ module Dude
 
       def models_section
         Dude::StatusLine::Models.new(@session, activity_data).to_s
+      end
+
+      def five_hour_section
+        Dude::StatusLine::RateLimit.new(
+          used_pct: @session.dig('rate_limits','five_hour','used_percentage') || 0,
+          resets_at: @session.dig('rate_limits','five_hour','resets_at') || 0,
+          window_len: 5 * 3600,
+          emoji: '☀️'
+        ).to_s
       end
     end
   end
