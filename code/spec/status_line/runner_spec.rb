@@ -9,19 +9,19 @@ describe Dude::StatusLine::Runner do
       let(:input) do
         {
           'context_window' => {
-            'total_input_tokens' => 100000,
-            'total_output_tokens' => 2300,
-            'context_window_size' => 200000,
-            'used_percentage' => 9
+            'total_input_tokens' => 124000,
+            'total_output_tokens' => 0,
+            'context_window_size' => 1000000,
+            'used_percentage' => 12
           }
         }
       end
 
-      it 'renders 5 filled blocks from tokens (51%)' do
+      it 'renders 6 filled blocks from tokens (62%)' do
         output = capture_output { sut.run }
         filled = strip(output).count('█')
 
-        expect(filled).to eq(5)
+        expect(filled).to eq(6)
       end
     end
 
@@ -57,8 +57,8 @@ describe Dude::StatusLine::Runner do
       let(:input) do
         {
           'context_window' => {
-            'total_input_tokens' => 100000,
-            'total_output_tokens' => 2300,
+            'total_input_tokens' => 0,
+            'total_output_tokens' => 0,
             'context_window_size' => 0,
             'used_percentage' => 9
           }
