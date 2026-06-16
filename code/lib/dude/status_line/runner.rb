@@ -58,7 +58,7 @@ module Dude
 
       def build_status_line(dudes_instance)
         sections = [
-          context_section, five_hour_section, models_section
+          context_section, five_hour_section, seven_day_section, models_section
         ]
         sections.compact.join(' ')
       end
@@ -102,6 +102,15 @@ module Dude
           resets_at: @session.dig('rate_limits','five_hour','resets_at') || 0,
           window_len: 5 * 3600,
           emoji: '☀️'
+        ).to_s
+      end
+
+      def seven_day_section
+        Dude::StatusLine::RateLimit.new(
+          used_pct: @session.dig('rate_limits','seven_day','used_percentage') || 0,
+          resets_at: @session.dig('rate_limits','seven_day','resets_at') || 0,
+          window_len: 7 * 24 * 3600,
+          emoji: '🌙'
         ).to_s
       end
     end
