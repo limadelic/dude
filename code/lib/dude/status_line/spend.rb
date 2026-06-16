@@ -39,9 +39,30 @@ module Dude
 
         if checkpoint_date && checkpoint_date != today
           monthly_spend = @client ? @client.fetch : 0
-          checkpoint.write(spent: monthly_spend, date: today)
+          days_left = days_remaining_in_month
+          checkpoint.write(
+            spent: monthly_spend,
+            date: today,
+            month_spend_at_day_start: monthly_spend,
+            days_left: days_left
+          )
+        elsif !checkpoint_date
+          monthly_spend = @client ? @client.fetch : 0
+          days_left = days_remaining_in_month
+          checkpoint.write(
+            spent: monthly_spend,
+            date: today,
+            month_spend_at_day_start: monthly_spend,
+            days_left: days_left
+          )
         end
       rescue StandardError
+      end
+
+      def days_remaining_in_month
+        today = Date.today
+        last_day = Date.new(today.year, today.month, -1)
+        (last_day - today).to_i + 1
       end
 
       def calculate_rate_per_min
