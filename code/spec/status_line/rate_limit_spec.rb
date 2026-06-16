@@ -27,6 +27,14 @@ describe Dude::StatusLine::RateLimit do
         end
       end
 
+      context 'at 3% used (small nonzero)' do
+        let(:used_pct) { 3 }
+
+        it 'shows at least 1 filled block' do
+          expect(bar.count("█")).to be >= 1
+        end
+      end
+
       context 'at 50% used' do
         let(:used_pct) { 50 }
 

@@ -18,7 +18,7 @@ module Dude
         elapsed_pct = clamp(elapsed * 100 / @window_len.to_f)
         ratio = elapsed_pct <= 0 ? 0 : @used_pct / elapsed_pct.to_f
         color = color_for_ratio(ratio)
-        bar(clamp(@used_pct), @emoji, color: color)
+        bar(clamp(@used_pct), @emoji, color: color, min_fill: 1)
       end
 
       private
