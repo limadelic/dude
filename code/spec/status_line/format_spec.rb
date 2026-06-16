@@ -174,6 +174,18 @@ describe Dude::StatusLine::Format do
       stripped = Dude::StatusLine::Format.strip(result)
       expect(stripped).to match(/🧠 +[█░]+/)
     end
+
+    it 'shows 0 blocks at 0%' do
+      result = sut.bar(0, '🧠')
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped.count('█')).to eq(0)
+    end
+
+    it 'shows at least 1 block for small nonzero pct' do
+      result = sut.bar(3, '🧠')
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped.count('█')).to be >= 1
+    end
   end
 
   describe '#emoji_str' do

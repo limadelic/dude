@@ -31,7 +31,7 @@
   "model": "opus",
   "statusLine": {
     "type": "command",
-    "command": "dude status_line",
+    "command": "/opt/homebrew/lib/ruby/gems/4.0.0/bin/dude status_line",
     "padding": 0
   },
   "extraKnownMarketplaces": {},
