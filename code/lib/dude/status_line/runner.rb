@@ -11,6 +11,8 @@ require_relative 'anthropic_token'
 require_relative 'anthropic_spend_client'
 require_relative 'spend_cache'
 require_relative 'rate_limit'
+require_relative 'enterprise_spend'
+require_relative 'daily_checkpoint'
 
 module Dude
   module StatusLine
@@ -58,9 +60,15 @@ module Dude
       end
 
       def build_status_line(dudes_instance)
-        sections = [
-          context_section, five_hour_section, seven_day_section, models_section
-        ]
+        if @session['rate_limits']
+          sections = [
+            context_section, five_hour_section, seven_day_section, models_section
+          ]
+        else
+          sections = [
+            context_section, enterprise_daily_section, enterprise_monthly_section, models_section
+          ]
+        end
         sections.compact.join(' ')
       end
 
@@ -121,6 +129,51 @@ module Dude
           window_len: 7 * 24 * 3600,
           emoji: '🌙'
         ).to_s
+      end
+
+      def enterprise_daily_section
+        enterprise_spend&.daily_bar
+      end
+
+      def enterprise_monthly_section
+        enterprise_spend&.monthly_bar
+      end
+
+      def enterprise_spend
+        return @enterprise_spend if defined?(@enterprise_spend)
+
+        @enterprise_spend = begin
+          token = Dude::StatusLine::AnthropicToken.fetch
+          return nil if token.nil? || token.empty?
+
+          month_spend = Dude::StatusLine::SpendCache.new.fetch do
+            Dude::StatusLine::AnthropicSpendClient.new(token).fetch
+          end
+          ensure_daily_lock(month_spend)
+          checkpoint_spent = Dude::StatusLine::DailyCheckpoint.new.read[:spent] || 0
+          today_spend = month_spend - checkpoint_spent
+          Dude::StatusLine::EnterpriseSpend.new(month_spend, today_spend)
+        rescue StandardError
+          nil
+        end
+      end
+
+      def ensure_daily_lock(month_spend)
+        checkpoint = Dude::StatusLine::DailyCheckpoint.new
+        data = checkpoint.read
+        today = Date.today.to_s
+
+        if data[:date].nil? || data[:date] != today
+          last_day = Date.new(Date.today.year, Date.today.month, -1)
+          days_left = (last_day - Date.today).to_i + 1
+          checkpoint.write(
+            spent: month_spend,
+            date: today,
+            month_spend_at_day_start: month_spend,
+            days_left: days_left
+          )
+        end
+      rescue StandardError
       end
     end
   end

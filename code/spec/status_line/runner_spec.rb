@@ -2,8 +2,14 @@ require_relative '../spec_helper'
 require_relative '../../lib/dude/status_line/runner'
 
 describe Dude::StatusLine::Runner do
+  include RR::DSL
+
   describe 'context bar rendering' do
     let(:sut) { described_class.new(input.to_json) }
+
+    before do
+      stub(Dude::StatusLine::AnthropicToken).fetch { '' }
+    end
 
     context 'with token counts' do
       let(:input) do
@@ -109,6 +115,10 @@ describe Dude::StatusLine::Runner do
           'context_window' => { 'used_percentage' => 10 },
           'model' => { 'id' => 'claude-opus-4-8' }
         }
+      end
+
+      before do
+        stub(Dude::StatusLine::AnthropicToken).fetch { '' }
       end
 
       it 'renders neither sun nor moon emojis' do

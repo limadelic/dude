@@ -23,7 +23,11 @@ module Examples
       def mock_session(model = 'opus', context = 25)
         {
           'model' => { 'id' => "claude-#{model}-4-6" },
-          'context_window' => { 'used_percentage' => context }
+          'context_window' => { 'used_percentage' => context },
+          'rate_limits' => {
+            'five_hour' => { 'used_percentage' => 10, 'resets_at' => 1000000 },
+            'seven_day' => { 'used_percentage' => 5, 'resets_at' => 2000000 }
+          }
         }
       end
 
