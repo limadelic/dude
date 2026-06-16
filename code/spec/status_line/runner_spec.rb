@@ -2,8 +2,8 @@ require_relative '../spec_helper'
 require_relative '../../lib/dude/status_line/runner'
 
 describe Dude::StatusLine::Runner do
-  describe '#context_percentage' do
-    subject { described_class.new(input.to_json).send(:context_percentage) }
+  describe 'context bar rendering' do
+    let(:sut) { described_class.new(input.to_json) }
 
     context 'with token counts' do
       let(:input) do
@@ -17,8 +17,11 @@ describe Dude::StatusLine::Runner do
         }
       end
 
-      it 'computes percentage from tokens' do
-        expect(subject).to eq(51)
+      it 'renders 5 filled blocks from tokens (51%)' do
+        output = capture_output { sut.run }
+        filled = strip(output).count('█')
+
+        expect(filled).to eq(5)
       end
     end
 
@@ -31,16 +34,22 @@ describe Dude::StatusLine::Runner do
         }
       end
 
-      it 'uses used_percentage when tokens unavailable' do
-        expect(subject).to eq(9)
+      it 'renders 1 filled block from used_percentage (9%, min-fill)' do
+        output = capture_output { sut.run }
+        filled = strip(output).count('█')
+
+        expect(filled).to eq(1)
       end
     end
 
     context 'with no context_window' do
       let(:input) { {} }
 
-      it 'defaults to 0' do
-        expect(subject).to eq(0)
+      it 'renders 0 filled blocks (0%)' do
+        output = capture_output { sut.run }
+        filled = strip(output).count('█')
+
+        expect(filled).to eq(0)
       end
     end
 
@@ -56,8 +65,11 @@ describe Dude::StatusLine::Runner do
         }
       end
 
-      it 'falls back to used_percentage' do
-        expect(subject).to eq(9)
+      it 'renders 1 filled block from fallback (9%, min-fill)' do
+        output = capture_output { sut.run }
+        filled = strip(output).count('█')
+
+        expect(filled).to eq(1)
       end
     end
   end
