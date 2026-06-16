@@ -165,7 +165,7 @@ module Dude
         data = checkpoint.read
         today = Date.today.to_s
 
-        if data[:date].nil? || data[:date] != today
+        if data[:date].nil? || data[:date] != today || data[:month_spend_at_day_start].nil? || data[:days_left].nil?
           last_day = Date.new(Date.today.year, Date.today.month, -1)
           days_left = (last_day - Date.today).to_i + 1
           checkpoint.write(
