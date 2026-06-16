@@ -104,6 +104,21 @@ describe Dude::StatusLine::EnterpriseSpend do
 
       expect(result).to include("\033[38;5;226m")
     end
+
+    it 'returns nil when days_left is 0 (checkpoint today, no crash)' do
+      cp = Dude::StatusLine::DailyCheckpoint.new(checkpoint_path)
+      cp.write(
+        spent: 50.0,
+        date: '2026-06-15',
+        month_spend_at_day_start: 40.0,
+        days_left: 0
+      )
+      sut_end_of_month = described_class.new(50.0, 10.0, time_provider, date_provider, cp)
+
+      result = sut_end_of_month.daily_bar
+
+      expect(result).to be_nil
+    end
   end
 
   describe '#monthly_bar' do

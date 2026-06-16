@@ -8,8 +8,6 @@ module Dude
       include Dude::StatusLine::Format
       MONTHLY_BUDGET = 175.0
 
-      attr_reader :daily_bar, :monthly_bar
-
       def initialize(month_spend, today_spend, time_provider = nil, date_provider = nil, checkpoint = nil)
         @month_spend = month_spend
         @today_spend = today_spend
@@ -20,7 +18,7 @@ module Dude
 
       def daily_bar
         daily_budget = calculate_daily_budget
-        return nil if daily_budget.nil? || daily_budget <= 0
+        return nil if daily_budget.nil? || !daily_budget.finite? || daily_budget <= 0
 
         used_pct = (@today_spend / daily_budget) * 100
 
@@ -69,7 +67,7 @@ module Dude
         month_spend_at_start = checkpoint_data[:month_spend_at_day_start]
         days_left = checkpoint_data[:days_left]
 
-        if checkpoint_date == current_date && month_spend_at_start && days_left
+        if checkpoint_date == current_date && month_spend_at_start && days_left && days_left.to_i > 0
           (MONTHLY_BUDGET - month_spend_at_start) / days_left.to_f
         else
           nil
