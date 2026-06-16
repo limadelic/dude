@@ -144,15 +144,17 @@ module Dude
 
         @enterprise_spend = begin
           token = Dude::StatusLine::AnthropicToken.fetch
-          return nil if token.nil? || token.empty?
-
-          month_spend = Dude::StatusLine::SpendCache.new.fetch do
-            Dude::StatusLine::AnthropicSpendClient.new(token).fetch
+          if token.nil? || token.empty?
+            nil
+          else
+            month_spend = Dude::StatusLine::SpendCache.new.fetch do
+              Dude::StatusLine::AnthropicSpendClient.new(token).fetch
+            end
+            ensure_daily_lock(month_spend)
+            checkpoint_spent = Dude::StatusLine::DailyCheckpoint.new.read[:spent] || 0
+            today_spend = month_spend - checkpoint_spent
+            Dude::StatusLine::EnterpriseSpend.new(month_spend, today_spend)
           end
-          ensure_daily_lock(month_spend)
-          checkpoint_spent = Dude::StatusLine::DailyCheckpoint.new.read[:spent] || 0
-          today_spend = month_spend - checkpoint_spent
-          Dude::StatusLine::EnterpriseSpend.new(month_spend, today_spend)
         rescue StandardError
           nil
         end
