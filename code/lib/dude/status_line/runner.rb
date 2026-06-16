@@ -69,7 +69,13 @@ module Dude
 
       def context_percentage
         @context_percentage ||= begin
-          pct = @session.dig('context_window', 'used_percentage') || 0
+          cw = @session['context_window'] || {}
+          size = cw['context_window_size']
+          if size && size > 0 && (cw['total_input_tokens'] || cw['total_output_tokens'])
+            pct = (cw['total_input_tokens'].to_i + cw['total_output_tokens'].to_i) * 100 / size.to_f
+          else
+            pct = cw['used_percentage'] || 0
+          end
           clamp(pct)
         end
       end
