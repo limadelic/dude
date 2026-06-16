@@ -32,3 +32,6 @@ remote-settings.json
 catalog-info.yaml
 plans/
 /.last-cleanup
+
+.spend-cache.json
+*.gem
