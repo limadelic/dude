@@ -5,7 +5,7 @@ module Dude
     class Models
       include Dude::StatusLine::Format
 
-      MODELS = [['haiku', '🐸'], ['opus', '🎭'], ['sonnet', '🎸']]
+      MODELS = [['haiku', '🐸'], ['opus', '🎭'], ['sonnet', '🎸'], ['fable', '🦄']]
 
       def initialize(session, activity_data)
         @session = session

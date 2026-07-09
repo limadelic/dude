@@ -31,6 +31,15 @@ describe Dude::StatusLine::Models do
       end
     end
 
+    context 'when using fable' do
+      let(:session) { { 'model' => { 'id' => 'claude-fable-5' } } }
+      let(:sut) { Dude::StatusLine::Models.new(session, {}) }
+
+      it 'returns fable emoji' do
+        expect(sut.to_s).to eq('🦄')
+      end
+    end
+
     context 'when model id is not recognized' do
       let(:session) { { 'model' => { 'id' => 'unknown-model' } } }
       let(:sut) { Dude::StatusLine::Models.new(session, {}) }
