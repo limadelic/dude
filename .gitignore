@@ -2,3 +2,5 @@ dude/
 walter/
 donny/
 status.json
+.DS_Store
+.idea/
