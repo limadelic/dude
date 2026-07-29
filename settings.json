@@ -7,7 +7,12 @@
   },
   "permissions": {
     "allow": [
-      "Bash(mix credo)"
+      "Bash(mix credo)",
+      "Bash(python3 -c *)",
+      "Bash(kill -9 *)",
+      "Bash(kill *)",
+      "Bash(pkill *)",
+      "Bash(epmd *)"
     ],
     "deny": [
       "AskUserQuestion",
@@ -20,15 +25,13 @@
       "CronDelete",
       "CronList",
       "ScheduleWakeup",
-      "Bash(gh run watch*)",
       "Bash(rm *)",
-      "Bash(sleep *)",
-      "Bash(python*)",
       "mcp__*"
     ],
     "defaultMode": "dontAsk"
   },
   "model": "opus",
+  "hooks": {},
   "statusLine": {
     "type": "command",
     "command": "/opt/homebrew/lib/ruby/gems/4.0.0/bin/dude status_line",
@@ -57,10 +60,11 @@
   },
   "effortLevel": "low",
   "autoCompactWindow": 200000,
-  "autoUpdatesChannel": "stable",
+  "autoUpdatesChannel": "latest",
+  "tui": "fullscreen",
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark",
+  "theme": "auto",
   "preferredNotifChannel": "notifications_disabled",
   "autoCompactEnabled": true
 }
