@@ -38,12 +38,9 @@ describe Dude::StatusLine::Models do
 
       it 'renders each model emoji repeated by percentage divided by 10' do
         result = strip(sut.to_s)
-        haiku_count = result.count('🐸')
-        sonnet_count = result.count('🎸')
-        opus_count = result.count('🎭')
-        expect(haiku_count).to eq(5)
-        expect(sonnet_count).to eq(4)
-        expect(opus_count).to eq(1)
+        expect(result).to include('🐸⁵')
+        expect(result).to include('🎸⁴')
+        expect(result).to include('🎭¹')
       end
 
       it 'sorts by request count descending' do
@@ -73,7 +70,7 @@ describe Dude::StatusLine::Models do
 
       it 'renders single model bar' do
         result = strip(sut.to_s)
-        expect(result).to eq('🐸' * 10)
+        expect(result).to eq('🐸¹⁰')
       end
     end
 
@@ -94,8 +91,8 @@ describe Dude::StatusLine::Models do
         { 'model' => { 'id' => 'claude-opus-4-8' } }
       end
 
-      it 'returns empty string' do
-        expect(sut.to_s).to eq('')
+      it 'returns current model emoji' do
+        expect(sut.to_s).to eq('🎭')
       end
     end
 
@@ -104,8 +101,8 @@ describe Dude::StatusLine::Models do
         {}
       end
 
-      it 'returns empty string' do
-        expect(sut.to_s).to eq('')
+      it 'returns current model emoji' do
+        expect(sut.to_s).to eq('🎭')
       end
     end
 
@@ -114,8 +111,8 @@ describe Dude::StatusLine::Models do
         stub(request_counter).count(transcript_path) { raise StandardError }
       end
 
-      it 'returns empty string without raising' do
-        expect(sut.to_s).to eq('')
+      it 'returns current model emoji without raising' do
+        expect(sut.to_s).to eq('🎭')
       end
     end
 
@@ -126,10 +123,8 @@ describe Dude::StatusLine::Models do
 
       it 'rounds percentage division by 10 correctly' do
         result = strip(sut.to_s)
-        haiku_count = result.count('🐸')
-        opus_count = result.count('🎭')
-        expect(haiku_count).to eq(5)
-        expect(opus_count).to eq(5)
+        expect(result).to include('🐸⁵')
+        expect(result).to include('🎭⁵')
       end
     end
   end

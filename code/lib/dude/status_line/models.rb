@@ -15,17 +15,21 @@ module Dude
 
       def to_s
         transcript_path = @session.dig('transcript_path')
-        return '' unless transcript_path
+        return fallback_emoji unless transcript_path
 
         counts = request_counter.count(transcript_path)
-        return '' if counts.empty?
+        return fallback_emoji if counts.empty?
 
         usage_share(counts)
       rescue StandardError
-        ''
+        fallback_emoji
       end
 
       private
+
+      def fallback_emoji
+        model_emoji(current_model) || ''
+      end
 
       def request_counter
         Dude::Transcript::RequestCounter.new
@@ -47,15 +51,10 @@ module Dude
       def render_model(model_name, emoji_count)
         emoji = model_emoji(model_name)
         return '' unless emoji
+        return '' if emoji_count.zero?
 
         is_current = current_model == model_name
-        repeated = emoji * emoji_count
-
-        if is_current
-          "#{BG_MAP[COLORS[:green]]}#{WHITE}#{repeated}#{COLORS[:reset]}"
-        else
-          "#{COLORS[:green]}#{repeated}#{COLORS[:reset]}"
-        end
+        emoji_group(emoji, emoji_count, is_current, COLORS[:green])
       end
 
       def model_emoji(model_name)

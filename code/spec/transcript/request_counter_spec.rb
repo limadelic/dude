@@ -15,9 +15,18 @@ describe Dude::Transcript::RequestCounter do
       expect(result).to eq({})
     end
 
+    it 'returns empty hash when file is a directory' do
+      stub(File).exist? { true }
+      stub(File).read { raise Errno::EISDIR }
+
+      result = sut.count('/tmp')
+
+      expect(result).to eq({})
+    end
+
     it 'returns empty hash when file is not readable' do
       stub(File).exist? { true }
-      stub(File).read { raise IOError }
+      stub(File).read { raise Errno::EACCES }
 
       result = sut.count('/unreadable/path.jsonl')
 
@@ -136,6 +145,32 @@ describe Dude::Transcript::RequestCounter do
       ].join("\n")
       stub(File).exist? { true }
       stub(File).read { content }
+
+      result = sut.count('/path/transcript.jsonl')
+
+      expect(result).to eq({ 'opus' => 1 })
+    end
+
+    it 'includes counts from subagent files' do
+      main_content = '{"message":{"model":"claude-opus-5","id":"msg-1"}}'
+      agent_content = '{"message":{"model":"claude-haiku-4-5-20251001","id":"msg-2"}}'
+
+      stub(File).exist? { true }
+      stub(File).read('/path/transcript.jsonl') { main_content }
+      stub(File).read('/path/subagents/agent-1.jsonl') { agent_content }
+      stub(Dir).exist? { true }
+      stub(Dir).glob { ['/path/subagents/agent-1.jsonl'] }
+
+      result = sut.count('/path/transcript.jsonl')
+
+      expect(result).to eq({ 'opus' => 1, 'haiku' => 1 })
+    end
+
+    it 'handles missing subagents directory' do
+      content = '{"message":{"model":"claude-opus-5","id":"msg-1"}}'
+      stub(File).exist? { true }
+      stub(File).read { content }
+      stub(Dir).exist? { false }
 
       result = sut.count('/path/transcript.jsonl')
 
