@@ -5,6 +5,18 @@ LABEL="${2:-work}"
 ROUND="${3:-1}"
 SILENT="${4:-}"
 STATUS_FILE="/tmp/pomo.status"
+LOCK_FILE="/tmp/pomo.lock"
+
+if [ -z "$CHAINED" ] && [ -f "$LOCK_FILE" ]; then
+  old_pid=$(cat "$LOCK_FILE")
+  if ps -p "$old_pid" -o command= 2>/dev/null | grep -q timer.sh; then
+    echo "pomo already running"
+    exit 0
+  fi
+fi
+
+echo $$ > "$LOCK_FILE"
+export CHAINED=1
 
 SECONDS_TOTAL=$(echo "$MINUTES * 60" | bc | cut -d. -f1)
 END_TIME=$(($(date +%s) + SECONDS_TOTAL))
@@ -17,6 +29,7 @@ sleep "$SECONDS_TOTAL"
 # Stop if status file was removed during sleep
 if [ ! -f "$STATUS_FILE" ]; then
   echo "$(date +%H:%M:%S) pomo stopped (status file removed)"
+  rm -f "$LOCK_FILE"
   exit 0
 fi
 
@@ -41,11 +54,12 @@ if [[ "$LABEL" == *break* ]]; then
 else
   ICON="apple.icns"
 fi
-osascript -e "display dialog \"$BODY\" with title \"$TITLE\" buttons {\"OK\"} default button \"OK\" with icon POSIX file \"$HOME/.claude/skills/pomo/$ICON\""
+osascript -e "display dialog \"$BODY\" with title \"$TITLE\" buttons {\"OK\"} default button \"OK\" with icon POSIX file \"$HOME/.claude/skills/pomo/$ICON\" giving up after 300" || true
 
 # Stop if status file was removed
 if [ ! -f "$STATUS_FILE" ]; then
   echo "$(date +%H:%M:%S) pomo stopped (status file removed)"
+  rm -f "$LOCK_FILE"
   exit 0
 fi
 
@@ -53,8 +67,8 @@ fi
 HOUR=$(date +%H)
 MIN=$(date +%M)
 if [ "$HOUR" -eq 12 ] || { [ "$HOUR" -ge 16 ] && [ "$MIN" -ge 20 ]; } || [ "$HOUR" -ge 17 ]; then
-  echo "$(date +%H:%M:%S) pomo paused (quiet hours)"
-  rm -f "$STATUS_FILE"
+  echo "$(date +%H:%M:%S) pomo stopped (quiet hours)"
+  rm -f "$STATUS_FILE" "$LOCK_FILE"
   exit 0
 fi
 

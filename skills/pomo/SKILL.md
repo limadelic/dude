@@ -5,19 +5,24 @@ description: Pomodoro timer for focus sessions. Use when user feels overwhelmed,
 
 # Pomo
 
-Auto-cycling pomodoro. Start once, it handles the rest.
+Fire and forget. ONE command. Then leave it alone.
 
 ## Start
-
-Two steps - BOTH required:
 
 ```bash
 nohup ~/.claude/skills/pomo/timer.sh 25 work 1 > /tmp/pomo.log 2>&1 & disown
 ```
 
-```bash
-~/.claude/skills/pomo/resume.sh  # run_in_background: true
-```
+That's it. Say "pomo started" and move on.
+
+## DO NOT
+
+- DO NOT spawn an agent to watch pomo
+- DO NOT poll, tail, or re-check whether it is alive
+- DO NOT restart it because you are unsure it worked
+
+`timer.sh` auto-chains every phase itself via `exec` and survives independently of
+this session. There is nothing to supervise. If the command returned, it is running.
 
 ## Silent Mode
 
@@ -35,21 +40,18 @@ Still shows visual dialog, just no ding sound.
 - 5 min break
 - repeat 4x then 15 min long break
 - loops forever until stopped
+- auto-pauses during quiet hours (lunch 12-1, after 4:20pm)
+
+## Status
+
+Only when the user asks:
+
+```bash
+cat /tmp/pomo.status    # label|end_epoch|round
+```
 
 ## Stop
 
-Three steps - ALL required, in this order:
-
 ```bash
-pkill -f "timer.sh"        # 1. kill the timer process
+pkill -f timer.sh; rm -f /tmp/pomo.status
 ```
-
-Stop the resume.sh background task (TaskStop).  # 2. stop the watcher
-
-```bash
-rm /tmp/pomo.status         # 3. remove status file
-```
-
-## Recovery
-
-Run resume.sh with run_in_background - picks up wherever it left off.
