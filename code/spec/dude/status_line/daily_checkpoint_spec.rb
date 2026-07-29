@@ -78,7 +78,7 @@ describe Dude::StatusLine::DailyCheckpoint do
       end
       stub(File).rename(tmp_path, status_path)
 
-      sut.write(month_total: 10, date: '2026-06-03')
+      sut.write(spent: 10, date: '2026-06-03')
 
       expect(written_data['spent']).to eq(10)
       expect(written_data['date']).to eq('2026-06-03')
@@ -95,7 +95,7 @@ describe Dude::StatusLine::DailyCheckpoint do
       end
       stub(File).rename(tmp_path, status_path)
 
-      sut.write(month_total: 15, date: '2026-06-04')
+      sut.write(spent: 15, date: '2026-06-04')
 
       expect(written_data['spent']).to eq(15)
       expect(written_data['date']).to eq('2026-06-04')
@@ -114,7 +114,7 @@ describe Dude::StatusLine::DailyCheckpoint do
       end
       stub(File).rename(tmp_path, status_path)
 
-      sut.write(month_total: 20, date: '2026-06-03')
+      sut.write(spent: 20, date: '2026-06-03')
 
       expect(written_data['spent']).to eq(20)
       expect(written_data['date']).to eq('2026-06-03')
@@ -132,7 +132,7 @@ describe Dude::StatusLine::DailyCheckpoint do
       end
       stub(File).rename(tmp_path, default_path)
 
-      sut_default.write(month_total: 5, date: '2026-06-03')
+      sut_default.write(spent: 5, date: '2026-06-03')
 
       expect(written_data['spent']).to eq(5)
     end
@@ -146,7 +146,7 @@ describe Dude::StatusLine::DailyCheckpoint do
       end
       stub(File).rename(tmp_path, status_path)
 
-      sut.write(month_total: 8, date: '2026-06-03')
+      sut.write(spent: 8, date: '2026-06-03')
 
       expect(written_data).to be_a(Hash)
       expect(written_data['spent']).to eq(8)
@@ -162,7 +162,7 @@ describe Dude::StatusLine::DailyCheckpoint do
       stub(File).write(tmp_path, is_a(String)) { write_called = true }
       stub(File).rename(tmp_path, status_path) { rename_called = true }
 
-      sut.write(month_total: 12, date: '2026-06-03')
+      sut.write(spent: 12, date: '2026-06-03')
 
       expect(write_called).to be true
       expect(rename_called).to be true
@@ -176,9 +176,128 @@ describe Dude::StatusLine::DailyCheckpoint do
       stub(File).write(tmp_path, is_a(String)) { call_order << :write }
       stub(File).rename(tmp_path, status_path) { call_order << :rename }
 
-      sut.write(month_total: 12, date: '2026-06-03')
+      sut.write(spent: 12, date: '2026-06-03')
 
       expect(call_order).to eq([:write, :rename])
+    end
+
+    it 'snapshots month_spend_at_day_start and days_left on new day' do
+      stub(File).exist?(status_path) { false }
+      written_data = nil
+      tmp_path = status_path + '.tmp'
+      stub(File).write(tmp_path, is_a(String)) do |path, data|
+        written_data = JSON.parse(data)
+      end
+      stub(File).rename(tmp_path, status_path)
+
+      sut.write(spent: 100, date: '2026-06-15', month_spend_at_day_start: 500, days_left: 16)
+
+      expect(written_data['month_spend_at_day_start']).to eq(500)
+      expect(written_data['days_left']).to eq(16)
+    end
+
+    it 'persists lock values with checkpoint fields' do
+      stub(File).exist?(status_path) { false }
+      written_data = nil
+      tmp_path = status_path + '.tmp'
+      stub(File).write(tmp_path, is_a(String)) do |path, data|
+        written_data = JSON.parse(data)
+      end
+      stub(File).rename(tmp_path, status_path)
+
+      sut.write(spent: 75, date: '2026-06-15', month_spend_at_day_start: 450, days_left: 16)
+
+      expect(written_data['spent']).to eq(75)
+      expect(written_data['date']).to eq('2026-06-15')
+      expect(written_data['month_spend_at_day_start']).to eq(450)
+      expect(written_data['days_left']).to eq(16)
+    end
+
+    it 'omits lock values when not provided' do
+      stub(File).exist?(status_path) { false }
+      written_data = nil
+      tmp_path = status_path + '.tmp'
+      stub(File).write(tmp_path, is_a(String)) do |path, data|
+        written_data = JSON.parse(data)
+      end
+      stub(File).rename(tmp_path, status_path)
+
+      sut.write(spent: 90, date: '2026-06-15')
+
+      expect(written_data).not_to have_key('month_spend_at_day_start')
+      expect(written_data).not_to have_key('days_left')
+    end
+  end
+
+  describe 'daily budget lock behavior' do
+    it 'reads locked values when present' do
+      file_content = {
+        'spent' => 100,
+        'date' => '2026-06-15',
+        'month_spend_at_day_start' => 500,
+        'days_left' => 16
+      }
+      stub(File).exist?(status_path) { true }
+      stub(File).read(status_path) { JSON.generate(file_content) }
+
+      result = sut.read
+
+      expect(result[:month_spend_at_day_start]).to eq(500)
+      expect(result[:days_left]).to eq(16)
+    end
+
+    it 'keeps locked values on same day re-read' do
+      initial_content = {
+        'spent' => 100,
+        'date' => '2026-06-15',
+        'month_spend_at_day_start' => 500,
+        'days_left' => 16
+      }
+      stub(File).exist?(status_path) { true }
+      stub(File).read(status_path) { JSON.generate(initial_content) }
+
+      result = sut.read
+
+      expect(result[:month_spend_at_day_start]).to eq(500)
+      expect(result[:days_left]).to eq(16)
+    end
+
+    it 'allows fresh lock values on new day' do
+      existing_content = {
+        'spent' => 100,
+        'date' => '2026-06-15',
+        'month_spend_at_day_start' => 500,
+        'days_left' => 16
+      }
+      stub(File).exist?(status_path) { true }
+      stub(File).read(status_path) { JSON.generate(existing_content) }
+      written_data = nil
+      tmp_path = status_path + '.tmp'
+      stub(File).write(tmp_path, is_a(String)) do |path, data|
+        written_data = JSON.parse(data)
+      end
+      stub(File).rename(tmp_path, status_path)
+
+      sut.write(spent: 150, date: '2026-06-16', month_spend_at_day_start: 480, days_left: 15)
+
+      expect(written_data['date']).to eq('2026-06-16')
+      expect(written_data['month_spend_at_day_start']).to eq(480)
+      expect(written_data['days_left']).to eq(15)
+    end
+
+    it 'maintains backward compatibility with existing fields' do
+      stub(File).exist?(status_path) { false }
+      written_data = nil
+      tmp_path = status_path + '.tmp'
+      stub(File).write(tmp_path, is_a(String)) do |path, data|
+        written_data = JSON.parse(data)
+      end
+      stub(File).rename(tmp_path, status_path)
+
+      sut.write(spent: 120, date: '2026-06-15', month_spend_at_day_start: 500, days_left: 16)
+
+      expect(written_data['spent']).to eq(120)
+      expect(written_data['date']).to eq('2026-06-15')
     end
   end
 end

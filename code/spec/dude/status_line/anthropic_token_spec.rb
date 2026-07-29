@@ -1,5 +1,6 @@
 require_relative '../../spec_helper'
 require 'dude/status_line/anthropic_token'
+require 'open3'
 
 describe Dude::StatusLine::AnthropicToken do
   include RR::DSL
@@ -20,6 +21,9 @@ describe Dude::StatusLine::AnthropicToken do
     it 'returns empty string when credentials.json missing' do
       creds_path = File.expand_path('~/.claude/.credentials.json')
       stub(File).exist?(creds_path) { false }
+      failed = Object.new
+      def failed.success?; false; end
+      stub(Open3).capture3(anything, anything, anything, anything, anything, anything) { ['', '', failed] }
 
       token = sut.fetch
 
@@ -30,6 +34,9 @@ describe Dude::StatusLine::AnthropicToken do
       creds_path = File.expand_path('~/.claude/.credentials.json')
       stub(File).exist?(creds_path) { true }
       stub(File).read(creds_path) { 'invalid json {{{' }
+      failed = Object.new
+      def failed.success?; false; end
+      stub(Open3).capture3(anything, anything, anything, anything, anything, anything) { ['', '', failed] }
 
       token = sut.fetch
 
@@ -41,6 +48,9 @@ describe Dude::StatusLine::AnthropicToken do
       creds = { 'claudeAiOauth' => { 'someOtherField' => 'value' } }
       stub(File).exist?(creds_path) { true }
       stub(File).read(creds_path) { JSON.generate(creds) }
+      failed = Object.new
+      def failed.success?; false; end
+      stub(Open3).capture3(anything, anything, anything, anything, anything, anything) { ['', '', failed] }
 
       token = sut.fetch
 

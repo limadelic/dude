@@ -28,10 +28,10 @@ describe Dude::StatusLine::Runner do
       expect(strip(output)).to include('🧠')
     end
 
-    it 'includes spend section' do
+    it 'includes rate limit sun emoji' do
       output = capture_output { sut.run }
 
-      expect(strip(output)).to include('💰')
+      expect(strip(output)).to include('☀️')
     end
 
     it 'includes dudes section' do
@@ -40,11 +40,11 @@ describe Dude::StatusLine::Runner do
       expect(strip(output)).to include('🎭')
     end
 
-    it 'has context before spend' do
+    it 'has context before rate limits' do
       output = capture_output { sut.run }
       stripped = strip(output)
 
-      expect(stripped.index('🧠')).to be < stripped.index('💰')
+      expect(stripped.index('🧠')).to be < stripped.index('☀️')
     end
   end
 

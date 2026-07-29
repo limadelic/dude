@@ -32,3 +32,12 @@ remote-settings.json
 catalog-info.yaml
 plans/
 /.last-cleanup
+jobs/
+daemon/
+daemon.log
+gh-pr-status-cache.json
+.last-update-result.json
+
+.spend-cache.json
+*.gem
+mcp-needs-auth-cache.json

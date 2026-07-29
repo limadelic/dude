@@ -34,6 +34,7 @@ module Dude
 
       def bar(pct, emoji, lo: 33, hi: 66, color: nil)
         filled = (clamp(pct) * 9 / 100.0).round
+        filled = 1 if filled < 1 && clamp(pct) > 0
         col = color || color_for_pct(clamp(pct), lo, hi)
         pad = JETBRAINS ? ' ' : ''
         bars = "#{'█' * filled}#{'░' * (9 - filled)}"
