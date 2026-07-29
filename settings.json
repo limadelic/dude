@@ -6,14 +6,7 @@
     "pr": ""
   },
   "permissions": {
-    "allow": [
-      "Bash(mix credo)",
-      "Bash(python3 -c *)",
-      "Bash(kill -9 *)",
-      "Bash(kill *)",
-      "Bash(pkill *)",
-      "Bash(epmd *)"
-    ],
+    "allow": [],
     "deny": [
       "AskUserQuestion",
       "NotebookEdit",
