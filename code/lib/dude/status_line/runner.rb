@@ -62,11 +62,11 @@ module Dude
       def build_status_line(dudes_instance)
         if @session['rate_limits']
           sections = [
-            context_section, five_hour_section, seven_day_section, models_section
+            context_section, pomo_section, five_hour_section, seven_day_section, models_section
           ]
         else
           sections = [
-            context_section, enterprise_daily_section, enterprise_monthly_section, models_section
+            context_section, pomo_section, enterprise_daily_section, enterprise_monthly_section, models_section
           ]
         end
         sections.compact.join(' ')

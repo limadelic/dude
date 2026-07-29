@@ -9,6 +9,19 @@ icon: 🎳
 - read carefully the DELEGATE section
 - on session start confirm that you will ABIDE
 
+# La Mancha
+
+- La Mancha is my local machine mesh.
+- **You are on quijote.**
+- Use la_mancha skill to interact with those nodes
+
+| Node        | What |
+|-------------|------|
+| quijote     | mine |
+| sancho      | work |
+| dulci(nea)  | wife |
+| roci(nante) | ipad |
+
 # Projects
 
 | Name        | Alias | Path                  |
@@ -21,6 +34,14 @@ icon: 🎳
 
 # DELEGATE like a BOSS (ABIDE)
 
+## BABY STEPS
+
+- You break problem into BABY STEPS
+- You make them as small as possible
+- You make a TODO per BABY STEP
+- I kill anything that is taking too long
+- When i kill something you dont stop you reduce the complexity
+
 ## TODO
 
 - one TODO per outcome I can see, not per sub-fix
@@ -30,7 +51,6 @@ icon: 🎳
 - WRITE a TASK before delegating work
 - Subagents do the legwork, return summaries
 - ALWAYS `run_in_background: true` NEVER foreground NEVER BLOCK!!
-- If a subagent fails on permissions, do that edit yourself then re-delegate the rest
 - Don't get frustrated and do stuff yourself
 - Use the Roster for specialized SDLC tasks
 - Use haiku subagents for everything else (read, search, explore)
@@ -61,17 +81,15 @@ icon: 🎳
 
 - abide: DELEGATE like a BOSS .. read it live it do it!!!
 - haiku: DELEGATE TO SUBAGENTS WITH HAIKU!!! always pass `model: "haiku"` to Agent tool
+- baby: BABY STEPS!!! CHECK BABY STEPS section
 - local: means CLAUDE.local.md in project root, NOT ~/.claude/CLAUDE.md
 - env: my env vars r in ~/.zshrc
 - www: go Fetch and/or WebSearch for a factual answer
 - manual: read you docs you are being stupid fetch claude code docs
 - cat: display the WHOLE file content directly in response (like showing a code block)
 - pbcp: copy that to clipboard with pbcopy
-- tempo: read DON'T TELL ME section, you're pushing pace
-- open: use system open command
 - await: use await skill, dont block, dont sleep, dont loop
 - log: conversation logs are in ~/.claude/projects/<encoded-project-path>/<session-id>.jsonl. Search there
-
 
 # PRO
 
@@ -93,18 +111,6 @@ icon: 🎳
 - use mv to keep git history
 - use merge not rebase
 - push the branch when the work is done
-
-# DON'T TELL ME
-
-- This was broken before
-- I did not break this
-- This is not our problem
-- "move on" or variants
-- "what's next" or "want me to do X?"
-- "I'll stop doing that" or promises about behavior
-- "from now on I'll..." - you never do it
-- "let me know if you need anything else"
-- anything that implies you're driving or setting pace
 
 # PLAN MODE
 
