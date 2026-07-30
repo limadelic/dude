@@ -39,13 +39,34 @@ module Dude
         total = counts.values.sum
         return '' if total.zero?
 
-        sorted_models = counts.sort_by { |_, count| -count }
-        bars = sorted_models.map do |model_name, count|
-          pct = percentage(count, total)
-          emoji_count = (pct / 10.0).round
-          render_model(model_name, emoji_count)
+        emoji_counts = counts.sort_by { |_, c| -c }
+          .map { |n, c| [n, ((c * 100 / total) / 10.0).round] }
+        adjust_for_minimum_visibility(emoji_counts, counts)
+          .map { |n, c| render_model(n, c) }.join
+      end
+
+      def adjust_for_minimum_visibility(emoji_counts, counts)
+        filtered = emoji_counts.select { |m, _| counts[m] > 0 }
+        adjusted = filtered.map { |n, c| [n, [c, 1].max] }
+
+        current_sum = adjusted.map(&:last).sum
+        if current_sum < 10
+          (10 - current_sum).times { |i| adjusted[i % adjusted.size][1] += 1 }
+        elsif current_sum > 10
+          idx = 0
+          (current_sum - 10).times do
+            loop do
+              if adjusted[idx % adjusted.size][1] > 1
+                adjusted[idx % adjusted.size][1] -= 1
+                idx += 1
+                break
+              end
+              idx += 1
+            end
+          end
         end
-        bars.join
+
+        adjusted
       end
 
       def render_model(model_name, emoji_count)

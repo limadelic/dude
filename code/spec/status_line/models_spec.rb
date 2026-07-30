@@ -127,5 +127,54 @@ describe Dude::StatusLine::Models do
         expect(result).to include('🎭⁵')
       end
     end
+
+    context 'when all four models have equal requests' do
+      let :counts do
+        { 'haiku' => 1, 'opus' => 1, 'sonnet' => 1, 'fable' => 1 }
+      end
+
+      it 'renders all four models with positive superscripts' do
+        result = strip(sut.to_s)
+        expect(result).to include('🐸')
+        expect(result).to include('🎭')
+        expect(result).to include('🎸')
+        expect(result).to include('🦄')
+        expect(result).not_to include('⁰')
+      end
+    end
+
+    context 'when zero-request model is current' do
+      let :session do
+        {
+          'model' => { 'id' => 'claude-opus-5' },
+          'transcript_path' => transcript_path
+        }
+      end
+
+      let :counts do
+        { 'haiku' => 100, 'opus' => 0 }
+      end
+
+      it 'renders only models with actual requests' do
+        result = strip(sut.to_s)
+        expect(result).to eq('🐸¹⁰')
+        expect(result).not_to include('🎭')
+      end
+    end
+
+    context 'with equal usage across all models' do
+      let :counts do
+        { 'haiku' => 1, 'opus' => 1, 'sonnet' => 1, 'fable' => 1 }
+      end
+
+      it 'distributes superscripts so all four models are present without zero' do
+        result = strip(sut.to_s)
+        expect(result).to include('🐸')
+        expect(result).to include('🎭')
+        expect(result).to include('🎸')
+        expect(result).to include('🦄')
+        expect(result).not_to include('⁰')
+      end
+    end
   end
 end
