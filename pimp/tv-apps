@@ -1,12 +1,11 @@
 #!/bin/zsh
-set -e
 
-source ~/.zshrc
+source ~/.zshrc 2>/dev/null || true
 
 APPS_DIR="$HOME/Applications"
 REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 ICON_CACHE_DIR="$REPO_DIR/pimp/tv-icons"
-mkdir -p "$APPS_DIR" "$ICON_CACHE_DIR"
+mkdir -p "$APPS_DIR" "$ICON_CACHE_DIR" 2>/dev/null || true
 
 capitalize() {
   local str="$1"
@@ -74,6 +73,11 @@ convert_to_icns() {
   return 0
 }
 
+if [[ -z "${TV_SITES}" ]]; then
+  print "Error: TV_SITES not found in profile"
+  exit 1
+fi
+
 declare -a icon_results
 for site in "${(k)TV_SITES[@]}"; do
   url="${TV_SITES[$site]}"
@@ -81,14 +85,14 @@ for site in "${(k)TV_SITES[@]}"; do
   app_path="$APPS_DIR/$app_name"
   bundle_id="com.dude.tv.${site}"
 
-  mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources"
+  mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources" 2>/dev/null || continue
 
   executable="$app_path/Contents/MacOS/$(capitalize "$site")"
   cat > "$executable" << EOF
 #!/bin/bash
-open -na "Google Chrome" --args --app="$url"
+open -g -na "Google Chrome" --args --app="$url" --window-size=3420,1410 --window-position=10,30
 EOF
-  chmod +x "$executable"
+  chmod +x "$executable" 2>/dev/null || true
 
   icon_source="none"
   icon_file=""
@@ -130,7 +134,7 @@ EOF
 </plist>
 EOF
 
-  touch "$app_path"
+  touch "$app_path" 2>/dev/null || true
 done
 
 print "Generated TV apps in $APPS_DIR"
