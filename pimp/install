@@ -6,7 +6,7 @@ PIMP_DIR="$REPO_DIR/pimp"
 
 brew install tmux broot fd bat 2>/dev/null || true
 
-mkdir -p ~/.config/bat/themes ~/.config/bat/syntaxes ~/.config/broot/skins
+mkdir -p ~/.config/bat/themes ~/.config/bat/syntaxes ~/.config/broot/skins ~/.config/micro/colorschemes
 
 install_link() {
   local src="$1" tgt="$2"
@@ -26,6 +26,8 @@ install_link "$PIMP_DIR/bat/syntaxes/Gherkin.sublime-syntax" ~/.config/bat/synta
 install_link "$PIMP_DIR/broot/conf.hjson" ~/.config/broot/conf.hjson
 install_link "$PIMP_DIR/broot/verbs.hjson" ~/.config/broot/verbs.hjson
 install_link "$PIMP_DIR/broot/skins/rasta.hjson" ~/.config/broot/skins/rasta.hjson
+install_link "$PIMP_DIR/micro/settings.json" ~/.config/micro/settings.json
+install_link "$PIMP_DIR/micro/colorschemes/rasta.micro" ~/.config/micro/colorschemes/rasta.micro
 
 cd "$HOME"
 bat cache --build
