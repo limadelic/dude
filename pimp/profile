@@ -27,7 +27,7 @@ typeset -A TV_SITES=(
 tv() {
   local url=${TV_SITES[$1]}
   [[ -z $url ]] && { print "tv: $(print -l ${(k)TV_SITES} | sort | tr '\n' ' ')"; return 1; }
-  open -g -na "Google Chrome" --args --app="$url" --window-size=3420,1410 --window-position=10,30
+  open -na "Google Chrome" --args --app="$url" --start-maximized
 }
 
 (( $+functions[compdef] )) && compdef '_values service ${(k)TV_SITES}' tv
