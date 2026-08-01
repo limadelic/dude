@@ -1,5 +1,6 @@
 {
 	"colorscheme": "rasta",
 	"softwrap": true,
-	"wordwrap": true
+	"wordwrap": true,
+	"ruler": false
 }
