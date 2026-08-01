@@ -5,18 +5,15 @@ require_relative '../pomo/pomo'
 require_relative '../dudes/dudes'
 require_relative 'context'
 require_relative 'context_percentage'
-require_relative 'spend'
 require_relative 'models'
 require_relative 'dudes'
 require_relative 'rate_limit'
 require_relative 'enterprise_spend_provider'
-require_relative 'spend_section'
 
 module Dude
   module StatusLine
     class Runner
       include Dude::StatusLine::Format
-      include Dude::StatusLine::SpendSection
 
       def initialize(json_input, activity: nil, dudes: nil, cwd: Dir.pwd)
         @session = (JSON.parse(json_input) rescue default_session)
@@ -53,19 +50,19 @@ module Dude
 
       def build_status_line(dudes_instance)
         r = @session['rate_limits'] ? rate_limit_sections : enterprise_sections
-        r.compact.join(' ')
+        [*r.compact, dudes_instance.to_s].compact.join(' ')
       end
 
       def rate_limit_sections
         [
-          context_section, spend_section(token), pomo_section,
+          context_section, pomo_section,
           five_hour_section, seven_day_section, models_section
         ]
       end
 
       def enterprise_sections
         [
-          context_section, spend_section(token), pomo_section,
+          context_section, pomo_section,
           enterprise_daily_section, enterprise_monthly_section, models_section
         ]
       end
