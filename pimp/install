@@ -36,4 +36,4 @@ mkdir -p "$PIMP_DIR/hooks"
 cd "$HOME"
 bat cache --build
 
-zsh "$PIMP_DIR/tv-apps"
+zsh "$PIMP_DIR/tv-apps" 2>&1 || echo "Warning: TV app generation had issues, but installation continues"
