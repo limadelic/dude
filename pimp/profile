@@ -1,0 +1,51 @@
+export ANTHROPIC_MODEL="haiku"
+
+export CLAUDE_CODE_DISABLE_1M_CONTEXT=1
+export XXXCLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS=1
+export XXXCLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
+export XXXCLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=0
+export XXXCLAUDE_CODE_MAX_CONTEXT_TOKENS=100000
+export CLAUDE_CODE_SUBAGENT_MODEL=haiku
+
+alias mixdg="mix deps.get"
+alias tcr='./tcr.sh'
+source ~/.claude/skills/restart/yolo.sh
+export PS1="%c > "
+
+export sancho='REDACTED'
+export quijote=REDACTED
+source ~/.claude/skills/la_mancha/fun.sh
+
+typeset -A TV_SITES=(
+  hbo       https://play.max.com
+  netflix   https://www.netflix.com
+  hulu      https://www.hulu.com
+  disney    https://www.disneyplus.com
+  paramount https://www.paramountplus.com
+  peacock   https://www.peacocktv.com
+)
+
+tv() {
+  local url=${TV_SITES[$1]}
+  [[ -z $url ]] && { print "tv: $(print -l ${(k)TV_SITES} | sort | tr '\n' ' ')"; return 1; }
+  open -na "Google Chrome" --args --app="$url"
+}
+
+(( $+functions[compdef] )) && compdef '_values service ${(k)TV_SITES}' tv
+
+source /Users/mike/.config/broot/launcher/bash/br
+
+HISTSIZE=1000000
+SAVEHIST=1000000
+HISTFILE=~/.zsh_history
+
+setopt SHARE_HISTORY
+setopt INC_APPEND_HISTORY
+setopt HIST_IGNORE_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_REDUCE_BLANKS
+setopt HIST_IGNORE_SPACE
+
+[[ -f ~/.secrets ]] && source ~/.secrets
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
+alias rc='micro /Users/mike/dude/pimp/profile'

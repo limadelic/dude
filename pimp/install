@@ -19,6 +19,7 @@ install_link() {
   ln -sf "$src" "$tgt"
 }
 
+install_link "$PIMP_DIR/profile" ~/.zshrc
 install_link "$PIMP_DIR/tmux.conf" ~/.tmux.conf
 install_link "$PIMP_DIR/bat/config" ~/.config/bat/config
 install_link "$PIMP_DIR/bat/themes/rasta.tmTheme" ~/.config/bat/themes/rasta.tmTheme
