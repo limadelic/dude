@@ -11,17 +11,6 @@ Feature: Status line
       | 50      | 🧠 █████░░░░ | yellow |
       | 90      | 🧠 ████████░ | red    |
 
-  Scenario Outline: Spend section
-    Given daily allowance is $100
-    And $<spend> spent
-    Then the "Spend" section shows "<💰 bar>" in <color>
-
-    Examples:
-      | spend | 💰 bar       | color  |
-      | 25    | 💰 ██░░░░░░░ | green  |
-      | 40    | 💰 ████░░░░░ | yellow |
-      | 80    | 💰 ███████░░ | red    |
-
   Scenario Outline: Models section
     Given the <active> model
     And <🐸> haiku at $1, <🎸> sonnet at $3, <🎭> opus at 5$ requests

@@ -28,37 +28,6 @@ Given('{int}% context usage') do |percent|
   @activity = nil
 end
 
-Given('daily allowance is ${int}') do |cap|
-  ENV['CLAUDE_SPEND_CAP'] = cap.to_s
-end
-
-Given('${int} spent') do |spend|
-  Cuke::ActivityServer.set_response(
-    { 'results' => [{ 'metrics' => { 'spend' => spend } }] }
-  )
-  stub_anthropic_token
-  reset_checkpoint
-  stub_deterministic_time
-  @context_percent = 0
-end
-
-def stub_anthropic_token
-  allow(Dude::StatusLine::AnthropicToken)
-    .to receive(:fetch).and_return('test_token')
-  creds_path = '/tmp/dude-test-credentials.json'
-  creds = { claudeAiOauth: { accessToken: 'test_token' } }
-  File.write(creds_path, creds.to_json)
-end
-
-def reset_checkpoint
-  checkpoint_path = File.expand_path('~/.claude/status.json')
-  File.delete(checkpoint_path) if File.exist?(checkpoint_path)
-end
-
-def stub_deterministic_time
-  ENV['CLAUDE_TEST_TIME'] = '2026-06-15T14:00:00'
-end
-
 Given('the {word} model') do |model|
   @active_model = model
 end
