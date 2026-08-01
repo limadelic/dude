@@ -12,47 +12,60 @@ capitalize() {
   echo "${(U)str[1]}${str[2,-1]}"
 }
 
+is_png() {
+  local file="$1"
+  [[ "$(od -A n -t x1 "$file" 2>/dev/null | head -1)" == *"89  50  4e"* ]]
+}
+
+to_png() {
+  local src="$1" dst="$2"
+  file_type=$(file -b "$src" 2>/dev/null)
+  if [[ "$file_type" == *"PNG"* ]]; then
+    cp "$src" "$dst" && return 0
+  fi
+  sips -s format png "$src" --out "$dst" >/dev/null 2>&1 && return 0
+  return 1
+}
+
 fetch_icon() {
-  local site="$1" url="$2" source="$3"
+  local site="$1" url="$2"
   local cache_file="$ICON_CACHE_DIR/${site}.png"
+  local ua="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
 
   if [[ -f "$cache_file" ]]; then
-    echo "$cache_file|$source"
+    echo "$cache_file|cached"
     return 0
   fi
 
   local domain=$(echo "$url" | sed -E 's|https?://([^/]+).*|\1|')
-  local html=""
+  local tmp_file="$ICON_CACHE_DIR/${site}.tmp"
 
-  html=$(curl -s -m 3 "$url" 2>/dev/null | head -c 100000)
-
+  local html=$(curl -s -m 10 -H "User-Agent: $ua" "$url" 2>/dev/null | head -c 100000)
   local touch_icon=$(echo "$html" | grep -oE 'href="[^"]*apple-touch-icon[^"]*"' | head -1 | cut -d'"' -f2)
+
   if [[ -n "$touch_icon" ]]; then
     [[ "$touch_icon" != http* ]] && touch_icon="https://${domain}${touch_icon}"
-    if curl -s -m 3 -o "$cache_file" "$touch_icon" 2>/dev/null && [[ -s "$cache_file" ]]; then
-      echo "$cache_file|apple-touch-icon"
-      return 0
+    if curl -s -L -m 10 -H "User-Agent: $ua" -o "$tmp_file" "$touch_icon" 2>/dev/null && [[ -s "$tmp_file" ]]; then
+      is_png "$tmp_file" && mv "$tmp_file" "$cache_file" && echo "$cache_file|apple-touch-icon" && return 0
+      to_png "$tmp_file" "$cache_file" 2>/dev/null && echo "$cache_file|apple-touch-icon" && return 0
     fi
-    rm -f "$cache_file"
+    rm -f "$tmp_file" 2>/dev/null
   fi
 
-  if curl -s -m 3 -o "$cache_file" "https://${domain}/apple-touch-icon.png" 2>/dev/null && [[ -s "$cache_file" ]]; then
-    echo "$cache_file|apple-touch-icon"
-    return 0
+  if curl -s -L -m 10 -H "User-Agent: $ua" -o "$tmp_file" "https://${domain}/apple-touch-icon.png" 2>/dev/null && [[ -s "$tmp_file" ]]; then
+    is_png "$tmp_file" && mv "$tmp_file" "$cache_file" && echo "$cache_file|apple-touch-icon.png" && return 0
+    rm -f "$tmp_file" 2>/dev/null
   fi
-  rm -f "$cache_file"
 
-  if curl -s -m 3 -o "$cache_file" "https://www.google.com/s2/favicons?domain=${domain}&sz=256" 2>/dev/null && [[ -s "$cache_file" ]]; then
-    echo "$cache_file|google-favicon"
-    return 0
+  if curl -s -L -m 10 -H "User-Agent: $ua" -o "$tmp_file" "https://www.google.com/s2/favicons?domain=${domain}&sz=256" 2>/dev/null && [[ -s "$tmp_file" ]]; then
+    is_png "$tmp_file" && mv "$tmp_file" "$cache_file" && echo "$cache_file|google-favicon" && return 0
+    rm -f "$tmp_file" 2>/dev/null
   fi
-  rm -f "$cache_file"
 
-  if curl -s -m 3 -o "$cache_file" "https://${domain}/favicon.ico" 2>/dev/null && [[ -s "$cache_file" ]]; then
-    echo "$cache_file|favicon.ico"
-    return 0
+  if curl -s -L -m 10 -H "User-Agent: $ua" -o "$tmp_file" "https://${domain}/favicon.ico" 2>/dev/null && [[ -s "$tmp_file" ]]; then
+    to_png "$tmp_file" "$cache_file" 2>/dev/null && echo "$cache_file|favicon.ico" && return 0
+    rm -f "$tmp_file" 2>/dev/null
   fi
-  rm -f "$cache_file"
 
   return 1
 }
