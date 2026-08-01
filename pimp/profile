@@ -47,5 +47,5 @@ setopt HIST_REDUCE_BLANKS
 setopt HIST_IGNORE_SPACE
 
 [[ -f ~/.secrets ]] && source ~/.secrets
-[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-alias envs='micro /Users/mike/dude/pimp/profile'
+[[ -f ~/.profile.local ]] && source ~/.profile.local
+alias cfg='micro /Users/mike/dude/pimp/profile'
