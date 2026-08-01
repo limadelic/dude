@@ -48,4 +48,4 @@ setopt HIST_IGNORE_SPACE
 
 [[ -f ~/.secrets ]] && source ~/.secrets
 [[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
-alias rc='micro /Users/mike/dude/pimp/profile'
+alias envs='micro /Users/mike/dude/pimp/profile'
