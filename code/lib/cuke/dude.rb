@@ -1,5 +1,6 @@
 require 'open3'
 require_relative 'process_detector'
+require_relative 'paths'
 
 module Cuke
   module Dude
@@ -7,7 +8,6 @@ module Cuke
       dude: ->(dh) { File.join(dh, '..') },
       elita: ->(dh) { File.join(dh, '..', 'elita') }
     }
-    DEV_NULL = { out: '/dev/null', err: '/dev/null' }
     def home(label)
       resolver = DUDE_HOMES[label.to_sym]
       resolver ? resolver.call(@dude_home) : label
@@ -25,17 +25,15 @@ module Cuke
 
     RUNNERS = {
       'abide' => [->(_) { ABIDE }, true],
-      'tell' => [->(c) { "dude #{c}; #{ABIDE}" }, true],
-      'ask' => [->(c) { "dude #{c}; #{ABIDE}" }, true],
-      'reply' => [->(c) { "dude #{c}; #{ABIDE}" }, true],
-      'abided' => [->(c) { "dude #{c}; #{ABIDE}" }, true]
+      'tell' => [->(c) { "dude #{c}; #{ABIDE}" }, false],
+      'ask' => [->(c) { "dude #{c}; #{ABIDE}" }, false],
+      'reply' => [->(c) { "dude #{c}; #{ABIDE}" }, false],
+      'abided' => [->(c) { "dude #{c}; #{ABIDE}" }, false]
     }
-
     def claude(home, cmd: 'tail -f /dev/null', replace: false)
       kill_for(home) if replace
       full_cmd = build_spawn_command(cmd)
-      @sessions ||= {}
-      @sessions[home] = spawn(full_cmd, chdir: home, pgroup: true, **DEV_NULL)
+      spawn_with_env(home, full_cmd)
       wait_for_process_startup(home) if replace
     end
 
@@ -46,9 +44,8 @@ module Cuke
     end
 
     def cleanup
-      (@sessions || {}).each_value do |pid|
-        Process.kill('TERM', -pid) rescue nil
-        Process.wait(pid) rescue nil
+      (@sessions || {}).each_value do |p|
+        (Process.kill('TERM', -p) rescue nil) && (Process.wait(p) rescue nil)
       end
     end
 
@@ -58,12 +55,9 @@ module Cuke
     end
 
     def dude(*args, stdin: nil, chdir: nil)
-      cmd = "dude #{args.join(' ')}"
+      cmd = "#{Paths::DUDE_BIN} #{args.join(' ')}"
       opts = { stdin_data: stdin.to_s, chdir: chdir }.compact
-      output, _, status = Open3.capture3(cmd, **opts)
-      raise "CLI failed: #{cmd}" unless status.success?
-
-      output
+      capture_dude_output({ 'RUBYLIB' => Paths::DUDE_LIB }, cmd, opts)
     end
 
     def wait_for(description, timeout: 10, interval: 0.2)
@@ -75,25 +69,36 @@ module Cuke
 
     private
 
+    def capture_dude_output(env, cmd, opts)
+      output, _, status = Open3.capture3(env, cmd, **opts)
+      status.success? ? output : raise("CLI failed: #{cmd}")
+    end
+
+    def spawn_with_env(home, full_cmd)
+      @sessions ||= {}
+      opts = { chdir: home, pgroup: true, **Paths::DEV_NULL }
+      env = { 'RUBYLIB' => Paths::DUDE_LIB }
+      @sessions[home] = spawn(env, full_cmd, **opts)
+    end
+
     def build_spawn_command(cmd)
-      escaped_cmd = cmd.gsub("'", "'\\\\''")
-      wrapper = cmd.include?('&') ? "sh -c '#{escaped_cmd}'" : cmd
+      dude_cmd = cmd.gsub(/\bdude\b/, Paths::DUDE_BIN)
+      escaped = dude_cmd.gsub("'", "'\\\\''")
+      wrapper = dude_cmd.include?('&') ? "sh -c '#{escaped}'" : dude_cmd
       "exec -a dude_test #{wrapper}"
     end
 
     def wait_for_process_startup(home)
-      wait_for("process startup for #{home}", timeout: 10, interval: 0.05) do
+      wait_for("process startup for #{home}", timeout: 10, interval: 0.05) {
         ProcessDetector.visible_with_cwd?(home)
-      end
+      }
     end
 
     def kill_for(home)
-      @sessions ||= {}
-      pid = @sessions.delete(home)
-      return unless pid
-
-      Process.kill('TERM', -pid) rescue nil
-      Process.wait(pid) rescue nil
+      (@sessions ||= {}).delete(home)&.tap do |pid|
+        Process.kill('TERM', -pid) rescue nil
+        Process.wait(pid) rescue nil
+      end
     end
 
     def poll_until_deadline(deadline, interval)
@@ -114,7 +119,7 @@ module Cuke
     end
 
     def setup_without_abide(row)
-      setup(@home, row["icon"])
+      setup(@home, row['icon'])
       dude('pub', row['home'], chdir: @home) if row['pub'] == 'yes'
     end
   end
