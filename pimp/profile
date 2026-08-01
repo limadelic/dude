@@ -12,7 +12,7 @@ alias tcr='./tcr.sh'
 source ~/.claude/skills/restart/yolo.sh
 export PS1="%c > "
 
-[[ -f ~/.data ]] && source ~/.data
+[[ -f ~/.env ]] && source ~/.env
 source ~/.claude/skills/la_mancha/fun.sh
 
 typeset -A TV_SITES=(
