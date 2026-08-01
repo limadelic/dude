@@ -62,14 +62,25 @@ module Dude
       end
 
       def pids_for_target(target)
-        normalized = target.chomp('/')
         pids.select { |_, cwd|
-          cwd.chomp('/') == normalized ||
-            File.dirname(normalized) == cwd.chomp('/')
+          match_paths?(target, cwd)
         }.keys
       end
 
       private
+
+      def canonical_path(path)
+        File.realpath(path)
+      rescue Errno::ENOENT
+        path
+      end
+
+      def match_paths?(target, cwd)
+        canonical_target = canonical_path(target.chomp('/'))
+        canonical_cwd = canonical_path(cwd.chomp('/'))
+        canonical_target == canonical_cwd ||
+          File.dirname(canonical_target) == canonical_cwd
+      end
 
       def load_all_with_pid_binding
         names = @home.list_dude_names(::Dude::GLOBAL_DIR)
