@@ -48,8 +48,23 @@ module Dude
         @path_resolver ||= ::Dude::Dudes::PathResolver.new
       end
 
+      def canonical_path(path)
+        File.realpath(path)
+      rescue Errno::ENOENT
+        path
+      end
+
       def is_accessible?(target)
-        ::Dude::Dudes::Dudes.pids.any? { |_pid, cwd| cwd == target || File.dirname(target) == cwd }
+        ::Dude::Dudes::Dudes.pids.any? do |_pid, cwd|
+          match_paths?(target, cwd)
+        end
+      end
+
+      def match_paths?(target, cwd)
+        canonical_target = canonical_path(target)
+        canonical_cwd = canonical_path(cwd)
+        canonical_target == canonical_cwd ||
+          File.dirname(canonical_target) == canonical_cwd
       end
     end
   end
