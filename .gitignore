@@ -59,7 +59,7 @@ id_dsa
 .env
 .env.local
 .env.*.local
-.secrets
+.data
 .netrc
 .npmrc
 .pypirc
