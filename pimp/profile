@@ -12,8 +12,7 @@ alias tcr='./tcr.sh'
 source ~/.claude/skills/restart/yolo.sh
 export PS1="%c > "
 
-export sancho='REDACTED'
-export quijote=REDACTED
+[[ -f ~/.secrets ]] && source ~/.secrets
 source ~/.claude/skills/la_mancha/fun.sh
 
 typeset -A TV_SITES=(
@@ -46,6 +45,5 @@ setopt HIST_SAVE_NO_DUPS
 setopt HIST_REDUCE_BLANKS
 setopt HIST_IGNORE_SPACE
 
-[[ -f ~/.secrets ]] && source ~/.secrets
 [[ -f ~/.profile.local ]] && source ~/.profile.local
 alias cfg='micro /Users/mike/dude/pimp/profile'
