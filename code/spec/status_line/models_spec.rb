@@ -167,7 +167,7 @@ describe Dude::StatusLine::Models do
         { 'haiku' => 1, 'opus' => 1, 'sonnet' => 1, 'fable' => 1 }
       end
 
-      it 'distributes superscripts so all four models are present without zero' do
+      it 'distributes superscripts across all four models' do
         result = strip(sut.to_s)
         expect(result).to include('🐸')
         expect(result).to include('🎭')

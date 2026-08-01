@@ -12,7 +12,10 @@ describe Dude::StatusLine::RateLimit do
   describe '#to_s' do
     describe 'fill percentage' do
       subject {
-        described_class.new(used_pct: used_pct, resets_at: resets_at_time, window_len: window_len, emoji: '☀️').to_s
+        described_class.new(
+          used_pct: used_pct, resets_at: resets_at_time,
+          window_len: window_len, emoji: '☀️'
+        ).to_s
       }
 
       let(:bar) { Dude::StatusLine::Format.strip(subject)[/☀️ ([█░]+)/, 1] }

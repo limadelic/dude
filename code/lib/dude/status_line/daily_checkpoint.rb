@@ -12,15 +12,13 @@ module Dude
         extract_checkpoint_fields(data)
       end
 
-      def write(spent:, date:, month_spend_at_day_start: nil, days_left: nil)
+      def write(spent:, date:, month_spend_at_day_start: nil,
+        days_left: nil)
         data = read_all
-        data['spent'] = spent
-        data['date'] = date
-        data['month_spend_at_day_start'] = month_spend_at_day_start if month_spend_at_day_start
-        data['days_left'] = days_left if days_left
-        tmp = @path + '.tmp'
-        File.write(tmp, JSON.generate(data))
-        File.rename(tmp, @path)
+        update_data(
+          data, spent, date, month_spend_at_day_start, days_left
+        )
+        write_file(data)
       end
 
       private
@@ -33,17 +31,35 @@ module Dude
         {}
       end
 
+      def update_data(data, spent, date, month_spend_at_day_start,
+        days_left)
+        data['spent'] = spent
+        data['date'] = date
+        data['month_spend_at_day_start'] = month_spend_at_day_start if
+          month_spend_at_day_start
+        data['days_left'] = days_left if days_left
+      end
+
+      def write_file(data)
+        tmp = @path + '.tmp'
+        File.write(tmp, JSON.generate(data))
+        File.rename(tmp, @path)
+      end
+
+      def extract_field(data, key, data_key)
+        data.key?(data_key) ? { key => data[data_key] } : {}
+      end
+
       def extract_checkpoint_fields(data)
-        result = {}
-        result[:spent] =
-          data['spent'] if data.key?('spent')
-        result[:date] =
-          data['date'] if data.key?('date')
-        result[:month_spend_at_day_start] =
-          data['month_spend_at_day_start'] if data.key?('month_spend_at_day_start')
-        result[:days_left] =
-          data['days_left'] if data.key?('days_left')
-        result
+        extract_field(data, :spent, 'spent')
+          .merge(extract_field(data, :date, 'date'))
+          .merge(
+            extract_field(
+              data, :month_spend_at_day_start,
+              'month_spend_at_day_start'
+            )
+          )
+          .merge(extract_field(data, :days_left, 'days_left'))
       end
     end
   end

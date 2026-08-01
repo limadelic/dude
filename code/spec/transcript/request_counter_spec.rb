@@ -135,7 +135,12 @@ describe Dude::Transcript::RequestCounter do
 
       result = sut.count('/path/transcript.jsonl')
 
-      expect(result).to eq({ 'opus' => 2, 'haiku' => 1, 'sonnet' => 1, 'fable' => 1 })
+      expect(result).to eq(
+        {
+          'opus' => 2, 'haiku' => 1, 'sonnet' => 1,
+          'fable' => 1
+        }
+      )
     end
 
     it 'ignores entries with missing id' do
@@ -153,7 +158,9 @@ describe Dude::Transcript::RequestCounter do
 
     it 'includes counts from subagent files' do
       main_content = '{"message":{"model":"claude-opus-5","id":"msg-1"}}'
-      agent_content = '{"message":{"model":"claude-haiku-4-5-20251001","id":"msg-2"}}'
+      agent_content = (
+        '{"message":{"model":"claude-haiku-4-5-20251001","id":"msg-2"}}'
+      )
 
       stub(File).exist? { true }
       stub(File).read('/path/transcript.jsonl') { main_content }

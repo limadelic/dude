@@ -41,3 +41,5 @@ gh-pr-status-cache.json
 .spend-cache.json
 *.gem
 mcp-needs-auth-cache.json
+.credentials.json
+policy-limits.json

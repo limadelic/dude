@@ -25,12 +25,9 @@ module Dude
 
       def color_for_ratio(ratio)
         case ratio
-        when 0..1.0
-          COLORS[:green]
-        when 1.0..2.0
-          COLORS[:yellow]
-        else
-          COLORS[:red]
+        when 0..1.0 then COLORS[:green]
+        when 1.0..2.0 then COLORS[:yellow]
+        else COLORS[:red]
         end
       end
     end

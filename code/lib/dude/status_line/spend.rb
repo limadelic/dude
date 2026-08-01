@@ -1,3 +1,4 @@
+require 'time'
 require_relative 'format'
 require_relative 'daily_checkpoint'
 
@@ -6,20 +7,19 @@ module Dude
     class Spend
       include Dude::StatusLine::Format
 
-      def initialize(token_fetcher, client = nil)
+      def initialize(token_fetcher, client = nil, clock = nil)
         @token_fetcher = token_fetcher
         @client = client
+        @clock = clock || Time
       end
 
       def to_s
         bootstrap_checkpoint
         handle_day_rollover
-
         token = @token_fetcher.fetch
         return empty_bar if token.empty?
 
-        pct = calculate_rate_per_min
-        build_bar(pct)
+        build_bar(calculate_rate_per_min)
       end
 
       private
@@ -27,76 +27,91 @@ module Dude
       def bootstrap_checkpoint
         checkpoint = Dude::StatusLine::DailyCheckpoint.new
         if checkpoint.read.empty?
-          checkpoint.write(spent: 0, date: Date.today.to_s)
+          today = now.to_date.to_s
+          checkpoint.write(spent: 0, date: today)
         end
       end
 
       def handle_day_rollover
         checkpoint = Dude::StatusLine::DailyCheckpoint.new
-        data = checkpoint.read
-        checkpoint_date = data[:date]
-        today = Date.today.to_s
-
-        if checkpoint_date && checkpoint_date != today
-          monthly_spend = @client ? @client.fetch : 0
-          days_left = days_remaining_in_month
-          checkpoint.write(
-            spent: monthly_spend,
-            date: today,
-            month_spend_at_day_start: monthly_spend,
-            days_left: days_left
-          )
-        elsif !checkpoint_date
-          monthly_spend = @client ? @client.fetch : 0
-          days_left = days_remaining_in_month
-          checkpoint.write(
-            spent: monthly_spend,
-            date: today,
-            month_spend_at_day_start: monthly_spend,
-            days_left: days_left
-          )
-        end
+        today = now.to_date.to_s
+        write_new_checkpoint(checkpoint, today) if
+          !checkpoint.read[:date] || checkpoint.read[:date] != today
       rescue StandardError
       end
 
       def days_remaining_in_month
-        today = Date.today
+        today = now.to_date
         last_day = Date.new(today.year, today.month, -1)
         (last_day - today).to_i + 1
       end
 
       def calculate_rate_per_min
-        baseline_rate_per_min = 175.0 / 1440.0
+        mins = minutes_elapsed_today
+        return 0 if mins < 1
 
-        monthly_spend = @client ? @client.fetch : 0
-        checkpoint = Dude::StatusLine::DailyCheckpoint.new
-        checkpoint_data = checkpoint.read
-        checkpoint_spent = checkpoint_data[:spent] || 0
-
-        today_spend = monthly_spend - checkpoint_spent
-
-        now = Time.now
-        midnight = Time.new(now.year, now.month, now.day, 0, 0, 0)
-        mins_since_midnight = ((now - midnight) / 60).to_i
-
-        return 0 if mins_since_midnight < 1
-
-        rate_per_min = today_spend / mins_since_midnight.to_f
-        pct = (rate_per_min / baseline_rate_per_min) * 100
-        [[pct, 0].max, 300].min
-      rescue StandardError
+        spend_cap_pct || burn_rate_pct(mins)
+      rescue
         0
+      end
+
+      def spend_cap_pct
+        spend_cap = ENV['CLAUDE_SPEND_CAP'].to_i if ENV['CLAUDE_SPEND_CAP']
+        (current_day_spend / spend_cap.to_f) * 100 if spend_cap && spend_cap > 0
+      end
+
+      def burn_rate_pct(mins)
+        clamp_rate(calculate_pct(mins))
       end
 
       def build_bar(pct)
         blocks = [(pct * 9 / 100.0).round, pct > 0 ? 1 : 0].max
         blocks = [blocks, 9].min
         bars = "#{'█' * blocks}#{'░' * (9 - blocks)}"
-        "#{color_for_pct(pct, 100, 300)}💰 #{bars}#{COLORS[:reset]}"
+        # Use different thresholds when using spend cap vs burn rate
+        thresholds = ENV['CLAUDE_SPEND_CAP'] ? [33, 66] : [100, 300]
+        "#{color_for_pct(pct, *thresholds)}💰 #{bars}#{COLORS[:reset]}"
       end
 
       def empty_bar
         "#{color_for_pct(0)}💰 #{'░' * 9}#{COLORS[:reset]}"
+      end
+
+      def write_new_checkpoint(checkpoint, today)
+        monthly_spend = @client ? @client.fetch : 0
+        days_left = days_remaining_in_month
+        checkpoint.write(
+          spent: monthly_spend,
+          date: today,
+          month_spend_at_day_start: monthly_spend,
+          days_left: days_left
+        )
+      end
+
+      def current_day_spend
+        monthly_spend = @client ? @client.fetch : 0
+        checkpoint = Dude::StatusLine::DailyCheckpoint.new
+        checkpoint_spent = checkpoint.read[:spent] || 0
+        monthly_spend - checkpoint_spent
+      end
+
+      def minutes_elapsed_today
+        ct = now
+        midnight = Time.new(ct.year, ct.month, ct.day, 0, 0, 0)
+        ((ct - midnight) / 60).to_i
+      end
+
+      def now
+        @clock.now
+      end
+
+      def calculate_pct(mins)
+        baseline = 175.0 / 1440.0
+        (current_day_spend / mins.to_f / baseline) * 100
+      end
+
+      def clamp_rate(pct)
+        [[pct, 0].max, 300].min
       end
     end
   end

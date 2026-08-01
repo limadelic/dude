@@ -46,7 +46,9 @@ describe Dude::StatusLine::SpendCache do
     it 'writes cache in JSON format' do
       stub(File).exist?(cache_path) { false }
       written_data = nil
-      stub(File).write(cache_path, is_a(String)) { |path, data| written_data = JSON.parse(data) }
+      stub(File).write(cache_path, is_a(String)) { |path, data|
+        written_data = JSON.parse(data)
+      }
 
       sut.fetch { 15.5 }
 

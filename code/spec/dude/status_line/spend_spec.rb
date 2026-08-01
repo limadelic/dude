@@ -158,7 +158,6 @@ describe Dude::StatusLine::Spend do
       expect(checkpoint_data[:date]).to eq('2026-06-15')
     end
 
-
     it 'returns 0 at midnight (0 mins into day)' do
       stub(token_fetcher).fetch { 'token' }
       stub(client).fetch { 5.0 }
