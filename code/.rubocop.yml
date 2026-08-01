@@ -96,6 +96,7 @@ Naming/FileName:
     - 'spec/**/*'
     - 'bin/**/*'
     - 'features/step_definitions/**/*'
+    - '.simplecov'
 
 Style:
   Enabled: false

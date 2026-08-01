@@ -18,12 +18,14 @@ describe 'Runner spend_section integration' do
 
   describe 'Pro account (with rate_limits)' do
     let(:session_input) do
-      JSON.generate({
-        'rate_limits' => {
-          'five_hour' => { 'used_percentage' => 25, 'resets_at' => 1000000 },
-          'seven_day' => { 'used_percentage' => 15, 'resets_at' => 2000000 }
+      JSON.generate(
+        {
+          'rate_limits' => {
+            'five_hour' => { 'used_percentage' => 25, 'resets_at' => 1000000 },
+            'seven_day' => { 'used_percentage' => 15, 'resets_at' => 2000000 }
+          }
         }
-      })
+      )
     end
 
     it 'shows rate limit bars, not enterprise spend' do
@@ -48,7 +50,12 @@ describe 'Runner spend_section integration' do
       stub(spend_cache_instance).fetch { 100.5 }
       stub(Dude::StatusLine::AnthropicSpendClient).new(anything) { Object.new }
       stub(Dude::StatusLine::DailyCheckpoint).new { checkpoint_instance }
-      stub(checkpoint_instance).read { { spent: 50.0, date: Date.today.to_s, month_spend_at_day_start: 100.5, days_left: 15 } }
+      stub(checkpoint_instance).read {
+        {
+          spent: 50.0, date: Date.today.to_s, month_spend_at_day_start: 100.5,
+          days_left: 15
+        }
+      }
       stub(checkpoint_instance).write(anything) { nil }
       stub(Dude::StatusLine::EnterpriseSpend).new(anything, anything) { enterprise_spend_instance }
       stub(enterprise_spend_instance).daily_bar { '☀️ enterprise_daily' }
@@ -63,7 +70,8 @@ describe 'Runner spend_section integration' do
       expect(output).to include('🌙 enterprise_monthly')
     end
 
-    it 'memoizes token fetch so it runs exactly once for both daily and monthly sections' do
+    it 'memoizes token fetch so it runs exactly once for both ' \
+       'daily and monthly sections' do
       sut = Dude::StatusLine::Runner.new(session_input)
       capture_output { sut.run }
     end
@@ -110,7 +118,8 @@ describe 'Runner spend_section integration' do
       stub(enterprise_spend_instance).monthly_bar { '🌙 enterprise_monthly' }
     end
 
-    it 'writes lock even though date matches today, when lock fields are missing' do
+    it 'writes lock even though date matches today, ' \
+       'when lock fields are missing' do
       sut = Dude::StatusLine::Runner.new(session_input)
       output = capture_output { sut.run }
 

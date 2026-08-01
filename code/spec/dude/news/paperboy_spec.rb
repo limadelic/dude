@@ -31,21 +31,25 @@ describe Dude::News::Paperboy do
   describe '#releases' do
     it 'returns array of hashes with tag and body' do
       result = sut.releases(3)
-      expect(result).to eq([
-        {tag: 'v1.0.0', body: 'Release v1.0.0 body'},
-        {tag: 'v0.9.0', body: 'Release v0.9.0 body'},
-        {tag: 'v0.8.0', body: 'Release v0.8.0 body'}
-      ])
+      expect(result).to eq(
+        [
+          { tag: 'v1.0.0', body: 'Release v1.0.0 body' },
+          { tag: 'v0.9.0', body: 'Release v0.9.0 body' },
+          { tag: 'v0.8.0', body: 'Release v0.8.0 body' }
+        ]
+      )
     end
 
     it 'filters empty lines from gh output' do
       stub(gh).run(/release list.*--limit 3/) { "v1.0.0\n\nv0.9.0\nv0.8.0" }
       result = sut.releases(3)
-      expect(result).to eq([
-        {tag: 'v1.0.0', body: 'Release v1.0.0 body'},
-        {tag: 'v0.9.0', body: 'Release v0.9.0 body'},
-        {tag: 'v0.8.0', body: 'Release v0.8.0 body'}
-      ])
+      expect(result).to eq(
+        [
+          { tag: 'v1.0.0', body: 'Release v1.0.0 body' },
+          { tag: 'v0.9.0', body: 'Release v0.9.0 body' },
+          { tag: 'v0.8.0', body: 'Release v0.8.0 body' }
+        ]
+      )
     end
 
     it 'respects the limit parameter' do
@@ -55,13 +59,15 @@ describe Dude::News::Paperboy do
       stub(gh).run(/release view v0.7.0/) { "Release v0.7.0 body" }
       stub(gh).run(/release view v0.6.0/) { "Release v0.6.0 body" }
       result = sut.releases(5)
-      expect(result).to eq([
-        {tag: 'v1.0.0', body: 'Release v1.0.0 body'},
-        {tag: 'v0.9.0', body: 'Release v0.9.0 body'},
-        {tag: 'v0.8.0', body: 'Release v0.8.0 body'},
-        {tag: 'v0.7.0', body: 'Release v0.7.0 body'},
-        {tag: 'v0.6.0', body: 'Release v0.6.0 body'}
-      ])
+      expect(result).to eq(
+        [
+          { tag: 'v1.0.0', body: 'Release v1.0.0 body' },
+          { tag: 'v0.9.0', body: 'Release v0.9.0 body' },
+          { tag: 'v0.8.0', body: 'Release v0.8.0 body' },
+          { tag: 'v0.7.0', body: 'Release v0.7.0 body' },
+          { tag: 'v0.6.0', body: 'Release v0.6.0 body' }
+        ]
+      )
     end
   end
 end

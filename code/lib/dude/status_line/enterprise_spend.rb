@@ -8,7 +8,8 @@ module Dude
       include Dude::StatusLine::Format
       MONTHLY_BUDGET = 175.0
 
-      def initialize(month_spend, today_spend, time_provider = nil, date_provider = nil, checkpoint = nil)
+      def initialize(month_spend, today_spend, time_provider = nil,
+        date_provider = nil, checkpoint = nil)
         @month_spend = month_spend
         @today_spend = today_spend
         @time_provider = time_provider || method(:default_time)
@@ -18,36 +19,52 @@ module Dude
 
       def daily_bar
         daily_budget = calculate_daily_budget
-        return nil if daily_budget.nil? || !daily_budget.finite? || daily_budget <= 0
+        return nil if invalid_budget?(daily_budget)
 
-        used_pct = (@today_spend / daily_budget) * 100
-
-        midnight_tonight = next_midnight
-        window_len = 86400
-
-        Dude::StatusLine::RateLimit.new(
-          used_pct: used_pct,
-          resets_at: midnight_tonight,
-          window_len: window_len,
-          emoji: '☀️'
-        ).to_s
+        rate_limit_for_day(daily_budget).to_s
       end
 
       def monthly_bar
         used_pct = (@month_spend / MONTHLY_BUDGET) * 100
-
-        first_of_next_month = first_of_next_month_ts
-        window_len = seconds_in_current_month
-
-        Dude::StatusLine::RateLimit.new(
-          used_pct: used_pct,
-          resets_at: first_of_next_month,
-          window_len: window_len,
-          emoji: '🌙'
-        ).to_s
+        rate_limit_for_month(used_pct).to_s
       end
 
       private
+
+      def invalid_budget?(budget)
+        budget.nil? || !budget.finite? || budget <= 0
+      end
+
+      def rate_limit_for_day(budget)
+        used_pct = (@today_spend / budget) * 100
+        Dude::StatusLine::RateLimit.new(
+          used_pct: used_pct,
+          resets_at: next_midnight,
+          window_len: 86400,
+          emoji: '☀️'
+        )
+      end
+
+      def rate_limit_for_month(used_pct)
+        Dude::StatusLine::RateLimit.new(
+          used_pct: used_pct,
+          resets_at: first_of_next_month_ts,
+          window_len: seconds_in_current_month,
+          emoji: '🌙'
+        )
+      end
+
+      def read_checkpoint
+        checkpoint = @checkpoint || Dude::StatusLine::DailyCheckpoint.new
+        checkpoint.read
+      end
+
+      def checkpoint_valid?(data)
+        current_date = @date_provider.call.to_s
+        data[:date] == current_date &&
+          data[:month_spend_at_day_start] && data[:days_left] &&
+          data[:days_left].to_i > 0
+      end
 
       def default_time
         Time.now
@@ -58,20 +75,11 @@ module Dude
       end
 
       def calculate_daily_budget
-        checkpoint = @checkpoint || Dude::StatusLine::DailyCheckpoint.new
-        checkpoint_data = checkpoint.read
+        checkpoint_data = read_checkpoint
+        return nil unless checkpoint_valid?(checkpoint_data)
 
-        current_date = @date_provider.call.to_s
-        checkpoint_date = checkpoint_data[:date]
-
-        month_spend_at_start = checkpoint_data[:month_spend_at_day_start]
-        days_left = checkpoint_data[:days_left]
-
-        if checkpoint_date == current_date && month_spend_at_start && days_left && days_left.to_i > 0
-          (MONTHLY_BUDGET - month_spend_at_start) / days_left.to_f
-        else
-          nil
-        end
+        (MONTHLY_BUDGET - checkpoint_data[:month_spend_at_day_start]) /
+          checkpoint_data[:days_left].to_f
       end
 
       def next_midnight
@@ -81,23 +89,26 @@ module Dude
       end
 
       def first_of_next_month_ts
-        now = @time_provider.call
-        if now.month == 12
-          Time.new(now.year + 1, 1, 1, 0, 0, 0).to_i
-        else
-          Time.new(now.year, now.month + 1, 1, 0, 0, 0).to_i
-        end
+        next_month_time = next_month_start
+        next_month_time.to_i
       end
 
       def seconds_in_current_month
-        now = @time_provider.call
-        if now.month == 12
-          end_of_month = Time.new(now.year + 1, 1, 1, 0, 0, 0)
-        else
-          end_of_month = Time.new(now.year, now.month + 1, 1, 0, 0, 0)
-        end
-        start_of_month = Time.new(now.year, now.month, 1, 0, 0, 0)
+        end_of_month = next_month_start
+        start_of_month = month_start
         (end_of_month - start_of_month).to_i
+      end
+
+      def next_month_start
+        now = @time_provider.call
+        month = now.month == 12 ? 1 : now.month + 1
+        year = now.month == 12 ? now.year + 1 : now.year
+        Time.new(year, month, 1, 0, 0, 0)
+      end
+
+      def month_start
+        now = @time_provider.call
+        Time.new(now.year, now.month, 1, 0, 0, 0)
       end
     end
   end

@@ -14,24 +14,30 @@ module Dude
         creds_path = File.expand_path('~/.claude/.credentials.json')
         return nil unless File.exist?(creds_path)
 
-        creds = JSON.parse(File.read(creds_path))
-        creds.dig('claudeAiOauth', 'accessToken')
+        extract_token(JSON.parse(File.read(creds_path)))
       rescue StandardError
         nil
       end
 
       def self.token_from_keychain
-        out, _, status = Open3.capture3(
+        out, _, status = capture_keychain
+        return '' unless status.success?
+
+        extract_token(JSON.parse(out)) || ''
+      rescue StandardError
+        ''
+      end
+
+      def self.capture_keychain
+        Open3.capture3(
           'security', 'find-generic-password',
           '-s', 'Claude Code-credentials',
           '-w'
         )
-        return '' unless status.success?
+      end
 
-        creds = JSON.parse(out)
-        creds.dig('claudeAiOauth', 'accessToken') || ''
-      rescue StandardError
-        ''
+      def self.extract_token(creds)
+        creds.dig('claudeAiOauth', 'accessToken')
       end
     end
   end

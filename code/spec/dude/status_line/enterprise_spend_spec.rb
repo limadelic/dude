@@ -12,7 +12,10 @@ describe Dude::StatusLine::EnterpriseSpend do
   let(:checkpoint) { Dude::StatusLine::DailyCheckpoint.new(checkpoint_path) }
 
   let(:sut) do
-    described_class.new(month_spend, today_spend, time_provider, date_provider, checkpoint)
+    described_class.new(
+      month_spend, today_spend, time_provider, date_provider,
+      checkpoint
+    )
   end
   let(:month_spend) { 50.0 }
   let(:today_spend) { 10.0 }
@@ -113,7 +116,10 @@ describe Dude::StatusLine::EnterpriseSpend do
         month_spend_at_day_start: 40.0,
         days_left: 0
       )
-      sut_end_of_month = described_class.new(50.0, 10.0, time_provider, date_provider, cp)
+      sut_end_of_month = described_class.new(
+        50.0, 10.0, time_provider,
+        date_provider, cp
+      )
 
       result = sut_end_of_month.daily_bar
 
@@ -145,7 +151,10 @@ describe Dude::StatusLine::EnterpriseSpend do
     end
 
     it 'shows higher fill when more of month is spent' do
-      sut_later = described_class.new(100.0, 50.0, time_provider, date_provider, checkpoint)
+      sut_later = described_class.new(
+        100.0, 50.0, time_provider,
+        date_provider, checkpoint
+      )
 
       result = sut_later.monthly_bar
 
@@ -157,7 +166,10 @@ describe Dude::StatusLine::EnterpriseSpend do
     it 'keeps daily_budget locked when month_spend increases mid-day' do
       bar1 = sut.daily_bar
 
-      sut_later_spend = described_class.new(60.0, 20.0, time_provider, date_provider, checkpoint)
+      sut_later_spend = described_class.new(
+        60.0, 20.0, time_provider,
+        date_provider, checkpoint
+      )
       bar2 = sut_later_spend.daily_bar
 
       expect(bar1).to be_nil

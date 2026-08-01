@@ -23,7 +23,12 @@ describe Dude::StatusLine::AnthropicToken do
       stub(File).exist?(creds_path) { false }
       failed = Object.new
       def failed.success?; false; end
-      stub(Open3).capture3(anything, anything, anything, anything, anything, anything) { ['', '', failed] }
+      stub(Open3).capture3(
+        anything, anything, anything, anything, anything,
+        anything
+      ) {
+        ['', '', failed]
+      }
 
       token = sut.fetch
 
@@ -36,7 +41,12 @@ describe Dude::StatusLine::AnthropicToken do
       stub(File).read(creds_path) { 'invalid json {{{' }
       failed = Object.new
       def failed.success?; false; end
-      stub(Open3).capture3(anything, anything, anything, anything, anything, anything) { ['', '', failed] }
+      stub(Open3).capture3(
+        anything, anything, anything, anything, anything,
+        anything
+      ) {
+        ['', '', failed]
+      }
 
       token = sut.fetch
 
@@ -50,7 +60,12 @@ describe Dude::StatusLine::AnthropicToken do
       stub(File).read(creds_path) { JSON.generate(creds) }
       failed = Object.new
       def failed.success?; false; end
-      stub(Open3).capture3(anything, anything, anything, anything, anything, anything) { ['', '', failed] }
+      stub(Open3).capture3(
+        anything, anything, anything, anything, anything,
+        anything
+      ) {
+        ['', '', failed]
+      }
 
       token = sut.fetch
 

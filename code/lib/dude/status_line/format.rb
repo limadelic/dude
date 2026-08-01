@@ -33,12 +33,20 @@ module Dude
       end
 
       def bar(pct, emoji, lo: 33, hi: 66, color: nil)
-        filled = (clamp(pct) * 9 / 100.0).round
-        filled = 1 if filled < 1 && clamp(pct) > 0
+        filled = bar_filled(pct)
         col = color || color_for_pct(clamp(pct), lo, hi)
         pad = JETBRAINS ? ' ' : ''
-        bars = "#{'█' * filled}#{'░' * (9 - filled)}"
+        bars = bar_segments(filled)
         "#{col}#{emoji}#{pad} #{bars}#{COLORS[:reset]}"
+      end
+
+      def bar_filled(pct)
+        filled = (clamp(pct) * 9 / 100.0).round
+        filled < 1 && clamp(pct) > 0 ? 1 : filled
+      end
+
+      def bar_segments(filled)
+        "#{'█' * filled}#{'░' * (9 - filled)}"
       end
 
       def emoji_str(emoji, color, sup)
