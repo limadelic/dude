@@ -35,3 +35,5 @@ mkdir -p "$PIMP_DIR/hooks"
 
 cd "$HOME"
 bat cache --build
+
+zsh "$PIMP_DIR/tv-apps"

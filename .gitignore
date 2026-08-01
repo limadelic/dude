@@ -44,6 +44,8 @@ mcp-needs-auth-cache.json
 .credentials.json
 policy-limits.json
 
+pimp/tv-icons/
+
 # Secrets and credentials
 *.key
 *.p12
