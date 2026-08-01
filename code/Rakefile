@@ -6,7 +6,8 @@ desc 'Build and install gem'
 task :install do
   Dir.chdir(__dir__) do
     sh 'gem build dude.gemspec'
-    sh 'gem install dude-*.gem && rm dude-*.gem'
+    sh "gem install --install-dir #{Gem.dir} --bindir #{Gem.bindir} dude-*.gem"
+    sh 'rm dude-*.gem'
   end
 end
 
@@ -20,7 +21,13 @@ task :cop do
   sh 'bundle exec rubocop -a lib/'
 end
 
-desc 'Full check: rubocop → spec → install → features'
-task shipit: [:cop, :spec, :install, :features]
+desc 'Verify installed binary works'
+task :verify_install do
+  output = `echo '{}' | #{File.join(Gem.bindir, 'dude')} status_line 2>&1`
+  raise 'Install verification failed' unless output.include?('🧠')
+end
+
+desc 'Full check: rubocop → spec → install → features → verify'
+task shipit: [:cop, :spec, :install, :features, :verify_install]
 
 task default: :spec
