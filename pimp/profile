@@ -22,6 +22,7 @@ typeset -A TV_SITES=(
   disney    https://www.disneyplus.com
   paramount https://www.paramountplus.com
   peacock   https://www.peacocktv.com
+  prime     https://www.primevideo.com
 )
 
 tv() {
