@@ -23,7 +23,7 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "model": "fable",
+  "model": "opus",
   "hooks": {},
   "statusLine": {
     "type": "command",
