@@ -23,7 +23,7 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "model": "fable",
+  "model": "sonnet",
   "hooks": {},
   "statusLine": {
     "type": "command",

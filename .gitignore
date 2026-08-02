@@ -31,6 +31,7 @@ remote-settings.json
 .github/
 catalog-info.yaml
 plans/
+settings.json
 /.last-cleanup
 jobs/
 daemon/

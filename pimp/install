@@ -30,6 +30,10 @@ install_link "$PIMP_DIR/broot/skins/rasta.hjson" ~/.config/broot/skins/rasta.hjs
 install_link "$PIMP_DIR/micro/settings.json" ~/.config/micro/settings.json
 install_link "$PIMP_DIR/micro/colorschemes/rasta.micro" ~/.config/micro/colorschemes/rasta.micro
 
+if [[ ! -f "$REPO_DIR/settings.json" ]]; then
+  cp "$REPO_DIR/settings.example.json" "$REPO_DIR/settings.json"
+fi
+
 # Make sure pimp hooks exist (they're called by .githooks)
 mkdir -p "$PIMP_DIR/hooks"
 
