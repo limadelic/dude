@@ -1,0 +1,82 @@
+%YAML 1.2
+---
+name: Gherkin
+file_extensions:
+  - feature
+scope: source.gherkin
+
+contexts:
+  main:
+    # Tags: @word
+    - match: '@[\w.-]+'
+      scope: entity.name.tag
+
+    # Comments: lines starting with #
+    - match: '#.*$'
+      scope: comment.line.number-sign
+
+    # Scenario Outline / Scenario Template (must come before Scenario)
+    # Capture: 1=keyword, 2=colon, 3=name
+    - match: '^\s*(Scenario Outline|Scenario Template)(:)(.*)$'
+      captures:
+        1: keyword.control
+        2: punctuation.separator
+        3: entity.name.section
+
+    # Scenario: (must come before generic keyword match)
+    - match: '^\s*(Scenario)(:)(.*)$'
+      captures:
+        1: keyword.control
+        2: punctuation.separator
+        3: entity.name.section
+
+    # Feature, Background, Rule, Examples, Scenarios
+    - match: '^\s*(Feature|Background|Rule|Examples|Scenarios)(:)(.*)$'
+      captures:
+        1: keyword.control
+        2: punctuation.separator
+        3: entity.name.section
+
+    # Step keywords: Given, When, Then, And, But, *
+    # Narrow match so strings and numbers can be captured after
+    - match: '^\s*(Given|When|Then|And|But|\*)\b'
+      scope: keyword.control
+
+    # Table pipes - scope the | characters
+    - match: '\|'
+      scope: punctuation.separator.table
+
+    # Numbers in steps
+    - match: '\b\d+\b'
+      scope: constant.numeric
+
+    # Docstrings: triple quotes (""" or ```)
+    - match: '"""'
+      scope: string.quoted.triple
+      push: docstring-double
+    - match: '```'
+      scope: string.quoted.triple
+      push: docstring-backtick
+
+    # Placeholders in angle brackets: <param>
+    - match: '<[\w.]+>'
+      scope: variable.parameter
+
+    # Strings in quotes (must come after step keywords and numbers)
+    # Use Gherkin-specific scope to avoid affecting code file strings
+    - match: '"[^"]*"'
+      scope: string.quoted.double.gherkin
+
+  docstring-double:
+    - match: '"""'
+      scope: string.quoted.triple
+      pop: true
+    - match: '.+'
+      scope: string.quoted.triple
+
+  docstring-backtick:
+    - match: '```'
+      scope: string.quoted.triple
+      pop: true
+    - match: '.+'
+      scope: string.quoted.triple

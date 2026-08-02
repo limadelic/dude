@@ -1,0 +1,7 @@
+#!/bin/bash
+exec </dev/null >/tmp/hook_push.log 2>&1
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$(dirname "$SCRIPT_DIR")/code"
+bundle exec rubocop || exit 1
+bundle exec rspec
+exit $?

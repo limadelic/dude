@@ -1,60 +1,179 @@
 require_relative '../spec_helper'
 require_relative '../../lib/dude/status_line/models'
+require_relative '../../lib/dude/transcript/request_counter'
 require_relative '../examples/shared'
 
 describe Dude::StatusLine::Models do
-  describe 'to_s' do
-    context 'when using opus' do
-      let(:session) { { 'model' => { 'id' => 'claude-opus-4-8' } } }
-      let(:sut) { Dude::StatusLine::Models.new(session, {}) }
+  include RR::DSL
 
-      it 'returns opus emoji' do
+  describe 'to_s' do
+    let :request_counter do
+      Object.new
+    end
+
+    let :transcript_path do
+      '/path/to/transcript.jsonl'
+    end
+
+    let :session do
+      {
+        'model' => { 'id' => 'claude-opus-4-8' },
+        'transcript_path' => transcript_path
+      }
+    end
+
+    let :sut do
+      Dude::StatusLine::Models.new(session, {})
+    end
+
+    before do
+      stub(Dude::Transcript::RequestCounter).new { request_counter }
+      stub(request_counter).count(transcript_path) { counts }
+    end
+
+    context 'with usage across multiple models sorted descending' do
+      let :counts do
+        { 'haiku' => 47, 'opus' => 12, 'sonnet' => 41 }
+      end
+
+      it 'renders each model emoji repeated by percentage divided by 10' do
+        result = strip(sut.to_s)
+        expect(result).to include('🐸⁵')
+        expect(result).to include('🎸⁴')
+        expect(result).to include('🎭¹')
+      end
+
+      it 'sorts by request count descending' do
+        result = strip(sut.to_s)
+        haiku_pos = result.index('🐸')
+        sonnet_pos = result.index('🎸')
+        opus_pos = result.index('🎭')
+        expect(haiku_pos).to be < sonnet_pos
+        expect(sonnet_pos).to be < opus_pos
+      end
+
+      it 'highlights current model with emoji_group' do
+        result = sut.to_s
+        expect(result).to include("\033[42m")
+      end
+
+      it 'uses neutral green color' do
+        result = sut.to_s
+        expect(result).to include("\033[32m")
+      end
+    end
+
+    context 'with only one model in use' do
+      let :counts do
+        { 'haiku' => 100 }
+      end
+
+      it 'renders single model bar' do
+        result = strip(sut.to_s)
+        expect(result).to eq('🐸¹⁰')
+      end
+    end
+
+    context 'with models having zero requests' do
+      let :counts do
+        { 'haiku' => 50, 'opus' => 50 }
+      end
+
+      it 'excludes models with zero requests' do
+        result = strip(sut.to_s)
+        expect(result).not_to include('🎸')
+        expect(result).not_to include('🦄')
+      end
+    end
+
+    context 'with no transcript path in session' do
+      let :session do
+        { 'model' => { 'id' => 'claude-opus-4-8' } }
+      end
+
+      it 'returns current model emoji' do
         expect(sut.to_s).to eq('🎭')
       end
     end
 
-    context 'when using sonnet' do
-      let(:session) { { 'model' => { 'id' => 'claude-sonnet-4-5' } } }
-      let(:sut) { Dude::StatusLine::Models.new(session, {}) }
+    context 'with empty counts' do
+      let :counts do
+        {}
+      end
 
-      it 'returns sonnet emoji' do
-        expect(sut.to_s).to eq('🎸')
+      it 'returns current model emoji' do
+        expect(sut.to_s).to eq('🎭')
       end
     end
 
-    context 'when using haiku' do
-      let(:session) { { 'model' => { 'id' => 'claude-haiku-4-5' } } }
-      let(:sut) { Dude::StatusLine::Models.new(session, {}) }
+    context 'when request counter raises error' do
+      before do
+        stub(request_counter).count(transcript_path) { raise StandardError }
+      end
 
-      it 'returns haiku emoji' do
-        expect(sut.to_s).to eq('🐸')
+      it 'returns current model emoji without raising' do
+        expect(sut.to_s).to eq('🎭')
       end
     end
 
-    context 'when using fable' do
-      let(:session) { { 'model' => { 'id' => 'claude-fable-5' } } }
-      let(:sut) { Dude::StatusLine::Models.new(session, {}) }
+    context 'with rounding at percentage boundary' do
+      let :counts do
+        { 'haiku' => 49, 'opus' => 51 }
+      end
 
-      it 'returns fable emoji' do
-        expect(sut.to_s).to eq('🦄')
+      it 'rounds percentage division by 10 correctly' do
+        result = strip(sut.to_s)
+        expect(result).to include('🐸⁵')
+        expect(result).to include('🎭⁵')
       end
     end
 
-    context 'when model id is not recognized' do
-      let(:session) { { 'model' => { 'id' => 'unknown-model' } } }
-      let(:sut) { Dude::StatusLine::Models.new(session, {}) }
+    context 'when all four models have equal requests' do
+      let :counts do
+        { 'haiku' => 1, 'opus' => 1, 'sonnet' => 1, 'fable' => 1 }
+      end
 
-      it 'returns empty string' do
-        expect(sut.to_s).to eq('')
+      it 'renders all four models with positive superscripts' do
+        result = strip(sut.to_s)
+        expect(result).to include('🐸')
+        expect(result).to include('🎭')
+        expect(result).to include('🎸')
+        expect(result).to include('🦄')
+        expect(result).not_to include('⁰')
       end
     end
 
-    context 'when no model is provided' do
-      let(:session) { {} }
-      let(:sut) { Dude::StatusLine::Models.new(session, {}) }
+    context 'when zero-request model is current' do
+      let :session do
+        {
+          'model' => { 'id' => 'claude-opus-5' },
+          'transcript_path' => transcript_path
+        }
+      end
 
-      it 'returns empty string' do
-        expect(sut.to_s).to eq('')
+      let :counts do
+        { 'haiku' => 100, 'opus' => 0 }
+      end
+
+      it 'renders only models with actual requests' do
+        result = strip(sut.to_s)
+        expect(result).to eq('🐸¹⁰')
+        expect(result).not_to include('🎭')
+      end
+    end
+
+    context 'with equal usage across all models' do
+      let :counts do
+        { 'haiku' => 1, 'opus' => 1, 'sonnet' => 1, 'fable' => 1 }
+      end
+
+      it 'distributes superscripts across all four models' do
+        result = strip(sut.to_s)
+        expect(result).to include('🐸')
+        expect(result).to include('🎭')
+        expect(result).to include('🎸')
+        expect(result).to include('🦄')
+        expect(result).not_to include('⁰')
       end
     end
   end

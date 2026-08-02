@@ -54,6 +54,28 @@ describe Dude::Dudes::Home do
 
       expect(sut.read_dude_link(dudes_dir, 'x')).to be_nil
     end
+
+    it 'matches symlinked and canonical paths' do
+      stub(File).readlink(link_path) { '/var/folders/x' }
+      stub(path_resolver).expand_target('/var/folders/x', dudes_dir) {
+        '/var/folders/x'
+      }
+      stub(Dude::Dudes::Dudes).pids { { 12345 => '/private/var/folders/x' } }
+      stub(File).realpath('/var/folders/x') { '/private/var/folders/x' }
+      stub(File).realpath('/private/var/folders/x') { '/private/var/folders/x' }
+
+      expect(sut.read_dude_link(dudes_dir, dude_name)).to eq('/var/folders/x')
+    end
+
+    it 'degrades to string comparison on ENOENT' do
+      stub(File).readlink(link_path) { '/vanished' }
+      stub(path_resolver).expand_target('/vanished', dudes_dir) { '/vanished' }
+      stub(Dude::Dudes::Dudes).pids { { 12345 => '/vanished' } }
+      stub(File).realpath('/vanished') { raise Errno::ENOENT }
+      stub(File).realpath(anything) { raise Errno::ENOENT }
+
+      expect(sut.read_dude_link(dudes_dir, dude_name)).to eq('/vanished')
+    end
   end
 
   describe '#read_dude_data' do

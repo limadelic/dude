@@ -1,0 +1,14 @@
+#!/bin/bash
+exec </dev/null >/tmp/hook_commit.log 2>&1
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Run secret detection first (structural guarantee)
+"$REPO_ROOT/pimp/hooks/pre-commit" || exit 1
+
+# Then run tests
+cd "$REPO_ROOT/code"
+bundle exec rubocop || exit 1
+bundle exec rspec || exit 1
+exit 0

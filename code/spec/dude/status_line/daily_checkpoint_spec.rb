@@ -26,10 +26,12 @@ describe Dude::StatusLine::DailyCheckpoint do
 
       result = sut.read
 
-      expect(result).to eq({
-        spent: 42,
-        date: '2026-06-03'
-      })
+      expect(result).to eq(
+        {
+          spent: 42,
+          date: '2026-06-03'
+        }
+      )
     end
 
     it 'returns empty hash when JSON is corrupted' do
@@ -190,7 +192,10 @@ describe Dude::StatusLine::DailyCheckpoint do
       end
       stub(File).rename(tmp_path, status_path)
 
-      sut.write(spent: 100, date: '2026-06-15', month_spend_at_day_start: 500, days_left: 16)
+      sut.write(
+        spent: 100, date: '2026-06-15', month_spend_at_day_start: 500,
+        days_left: 16
+      )
 
       expect(written_data['month_spend_at_day_start']).to eq(500)
       expect(written_data['days_left']).to eq(16)
@@ -205,7 +210,10 @@ describe Dude::StatusLine::DailyCheckpoint do
       end
       stub(File).rename(tmp_path, status_path)
 
-      sut.write(spent: 75, date: '2026-06-15', month_spend_at_day_start: 450, days_left: 16)
+      sut.write(
+        spent: 75, date: '2026-06-15', month_spend_at_day_start: 450,
+        days_left: 16
+      )
 
       expect(written_data['spent']).to eq(75)
       expect(written_data['date']).to eq('2026-06-15')
@@ -278,7 +286,10 @@ describe Dude::StatusLine::DailyCheckpoint do
       end
       stub(File).rename(tmp_path, status_path)
 
-      sut.write(spent: 150, date: '2026-06-16', month_spend_at_day_start: 480, days_left: 15)
+      sut.write(
+        spent: 150, date: '2026-06-16', month_spend_at_day_start: 480,
+        days_left: 15
+      )
 
       expect(written_data['date']).to eq('2026-06-16')
       expect(written_data['month_spend_at_day_start']).to eq(480)
@@ -294,7 +305,10 @@ describe Dude::StatusLine::DailyCheckpoint do
       end
       stub(File).rename(tmp_path, status_path)
 
-      sut.write(spent: 120, date: '2026-06-15', month_spend_at_day_start: 500, days_left: 16)
+      sut.write(
+        spent: 120, date: '2026-06-15', month_spend_at_day_start: 500,
+        days_left: 16
+      )
 
       expect(written_data['spent']).to eq(120)
       expect(written_data['date']).to eq('2026-06-15')

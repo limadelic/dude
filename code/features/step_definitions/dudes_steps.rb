@@ -2,9 +2,11 @@ require 'tmpdir'
 require 'fileutils'
 require 'rspec/mocks/standalone'
 require_relative '../../lib/cuke/dude'
+require_relative '../support/dudes_helpers'
 
 World(Cuke::Dude)
 World(RSpec::Mocks::ExampleMethods)
+World(DudesHelpers)
 
 Before('@dudes') do
   @temp_dir = Dir.mktmpdir('dude_test_')
@@ -92,7 +94,7 @@ When(/^! ([^:]+):$/) do |cmd, table|
   output = `#{cmd}`.chomp
   table.raw.flatten.each do |expected|
     expected = expected.strip.gsub(/\$(\w+)/) { ENV[$1] || $& }
-    raise "Expected '#{expected}' in output of '#{cmd}':\n#{output}" unless output.include?(expected)
+    verify_shell_output(cmd, expected, output)
   end
 end
 
@@ -106,53 +108,4 @@ When(/^> \/(.+):$/) do |command, table|
   end
 
   verify_table(table)
-end
-
-def stub_backticks(mocks)
-  allow_any_instance_of(Object).to receive(:`) do |_receiver, cmd|
-    match = mocks.find do |pattern, _|
-      pattern.split.all? { |word| cmd.include?(word) }
-    end
-    match ? match[1] : ''
-  end
-end
-
-def capture_stdout
-  original = $stdout
-  $stdout = StringIO.new
-  yield
-  $stdout.string.chomp
-ensure
-  $stdout = original
-end
-
-def verify_table(table)
-  table.raw.flatten.each do |row|
-    row = row.strip
-    if row.start_with?('(') && row.end_with?(')')
-      verify_negative(row[1..-2])
-    else
-      verify_positive(row)
-    end
-  end
-end
-
-def verify_positive(expected)
-  if @mocks
-    raise "Expected '#{expected}' in output:\n#{@output}" unless @output.include?(expected)
-  else
-    wait_for("shows #{expected}") do
-      output = dude('status_line').strip
-      expected.split.all? { |part| output.include?(part) }
-    end
-  end
-end
-
-def verify_negative(val)
-  if @mocks
-    raise "Not expected '#{val}' in output:\n#{@output}" if @output.include?(val)
-  else
-    output = dude('status_line').strip
-    raise "Not expected '#{val}' in status line:\n#{output}" if output.include?(val)
-  end
 end

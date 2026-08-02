@@ -1,0 +1,39 @@
+#!/bin/bash
+set -e
+
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PIMP_DIR="$REPO_DIR/pimp"
+
+brew install tmux broot fd bat 2>/dev/null || true
+
+mkdir -p ~/.config/bat/themes ~/.config/bat/syntaxes ~/.config/broot/skins ~/.config/micro/colorschemes
+
+install_link() {
+  local src="$1" tgt="$2"
+  mkdir -p "$(dirname "$tgt")"
+
+  if [[ -e "$tgt" && ! -L "$tgt" ]]; then
+    mv "$tgt" "${tgt}.$(date +%s)"
+  fi
+
+  ln -sf "$src" "$tgt"
+}
+
+install_link "$PIMP_DIR/profile" ~/.zshrc
+install_link "$PIMP_DIR/tmux.conf" ~/.tmux.conf
+install_link "$PIMP_DIR/bat/config" ~/.config/bat/config
+install_link "$PIMP_DIR/bat/themes/rasta.tmTheme" ~/.config/bat/themes/rasta.tmTheme
+install_link "$PIMP_DIR/bat/syntaxes/Gherkin.sublime-syntax" ~/.config/bat/syntaxes/Gherkin.sublime-syntax
+install_link "$PIMP_DIR/broot/conf.hjson" ~/.config/broot/conf.hjson
+install_link "$PIMP_DIR/broot/verbs.hjson" ~/.config/broot/verbs.hjson
+install_link "$PIMP_DIR/broot/skins/rasta.hjson" ~/.config/broot/skins/rasta.hjson
+install_link "$PIMP_DIR/micro/settings.json" ~/.config/micro/settings.json
+install_link "$PIMP_DIR/micro/colorschemes/rasta.micro" ~/.config/micro/colorschemes/rasta.micro
+
+# Make sure pimp hooks exist (they're called by .githooks)
+mkdir -p "$PIMP_DIR/hooks"
+
+cd "$HOME"
+bat cache --build
+
+zsh "$PIMP_DIR/tv-apps" 2>&1 || echo "Warning: TV app generation had issues, but installation continues"

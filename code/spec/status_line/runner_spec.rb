@@ -25,9 +25,9 @@ describe Dude::StatusLine::Runner do
 
       it 'renders 6 filled blocks from tokens (62%)' do
         output = capture_output { sut.run }
-        filled = strip(output).count('█')
+        bar_match = strip(output)[/🧠 ([█░]+)/, 1]
 
-        expect(filled).to eq(6)
+        expect(bar_match.count('█')).to eq(6)
       end
     end
 
@@ -42,9 +42,9 @@ describe Dude::StatusLine::Runner do
 
       it 'renders 1 filled block from used_percentage (9%, min-fill)' do
         output = capture_output { sut.run }
-        filled = strip(output).count('█')
+        bar_match = strip(output)[/🧠 ([█░]+)/, 1]
 
-        expect(filled).to eq(1)
+        expect(bar_match.count('█')).to eq(1)
       end
     end
 
@@ -53,9 +53,9 @@ describe Dude::StatusLine::Runner do
 
       it 'renders 0 filled blocks (0%)' do
         output = capture_output { sut.run }
-        filled = strip(output).count('█')
+        bar_match = strip(output)[/🧠 ([█░]+)/, 1]
 
-        expect(filled).to eq(0)
+        expect(bar_match.count('█')).to eq(0)
       end
     end
 
@@ -73,9 +73,9 @@ describe Dude::StatusLine::Runner do
 
       it 'renders 1 filled block from fallback (9%, min-fill)' do
         output = capture_output { sut.run }
-        filled = strip(output).count('█')
+        bar_match = strip(output)[/🧠 ([█░]+)/, 1]
 
-        expect(filled).to eq(1)
+        expect(bar_match.count('█')).to eq(1)
       end
     end
   end

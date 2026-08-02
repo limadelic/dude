@@ -61,7 +61,10 @@ describe Dude::Dudes::PlatformDetector do
       it 'raises error' do
         expect {
           described_class.detect(['app.py'])
-        }.to raise_error(RuntimeError, /TCR only supports .rb, .ex, .exs, .cs, .ts, .js files/)
+        }.to raise_error(
+          RuntimeError,
+          /TCR only supports .rb, .ex, .exs, .cs, .ts, .js files/
+        )
       end
     end
 

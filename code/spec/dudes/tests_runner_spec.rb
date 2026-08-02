@@ -65,9 +65,11 @@ describe Dude::Dudes::TestsRunner do
     context 'with multiple files' do
       let(:files) { %w[spec/a_spec.rb spec/b_spec.rb] }
       let(:sut) { described_class.new(files, :ruby) }
+      let(:expected_cmd) do
+        'bundle exec rspec spec/a_spec.rb spec/b_spec.rb > /dev/null 2>&1'
+      end
 
       it 'joins multiple files for ruby' do
-        expected_cmd = 'bundle exec rspec spec/a_spec.rb spec/b_spec.rb > /dev/null 2>&1'
         stub(sut).system(expected_cmd) { true }
 
         expect(sut.pass?).to eq true

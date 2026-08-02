@@ -1,0 +1,80 @@
+#!/bin/bash
+# Block commits with high-confidence secret patterns only
+# Runs git diff --cached to check staged content
+
+errors=0
+tmpfile=$(mktemp)
+trap "rm -f $tmpfile" EXIT
+
+git diff --cached > "$tmpfile"
+file=""
+
+while IFS= read -r line; do
+  # Track filename from diff header
+  [[ $line =~ ^\+\+\+\ b/ ]] && file="${line#+++\ b/}"
+
+  # Only check added lines
+  [[ $line =~ ^\+ ]] || continue
+  line="${line:1}"
+
+  # Private key blocks: "BEGIN ... PRIVATE KEY"
+  if echo "$line" | grep -qiE 'BEGIN[[:space:]]+(RSA|OPENSSH|DSA|EC|PGP)?[[:space:]]*PRIVATE[[:space:]]+KEY'; then
+    echo "BLOCKED: $file - private key block detected"
+    ((errors++))
+    continue
+  fi
+
+  # Anthropic: sk-ant- followed by 80+ chars, NOT the placeholder sk-ant-...
+  if echo "$line" | grep -qE 'sk-ant-[a-zA-Z0-9_-]{80,}' && ! echo "$line" | grep -q 'sk-ant-\.\.\.'; then
+    echo "BLOCKED: $file - Anthropic API key"
+    ((errors++))
+    continue
+  fi
+
+  # GitHub tokens: ghp_ gho_ ghu_ ghs_ ghr_ github_pat_
+  if echo "$line" | grep -qE '(ghp_|gho_|ghu_|ghs_|ghr_|github_pat_)[a-zA-Z0-9_-]{36,}'; then
+    echo "BLOCKED: $file - GitHub token"
+    ((errors++))
+    continue
+  fi
+
+  # AWS access key ID: AKIA[0-9A-Z]{16}
+  if echo "$line" | grep -qE 'AKIA[0-9A-Z]{16}'; then
+    echo "BLOCKED: $file - AWS access key ID"
+    ((errors++))
+    continue
+  fi
+
+  # Slack token: xox[baprs]-
+  if echo "$line" | grep -qE 'xox[baprs]-[a-zA-Z0-9_-]{10,}'; then
+    echo "BLOCKED: $file - Slack token"
+    ((errors++))
+    continue
+  fi
+
+  # Google API key: AIza[0-9A-Za-z_-]{35}
+  if echo "$line" | grep -qE 'AIza[0-9A-Za-z_-]{35,}'; then
+    echo "BLOCKED: $file - Google API key"
+    ((errors++))
+    continue
+  fi
+
+done < "$tmpfile"
+
+if [ $errors -gt 0 ]; then
+  cat >&2 << 'EOF'
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ⚠️  COMMIT BLOCKED: Potential secrets detected.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  See details above. Remove the secret and re-stage.
+
+  To bypass (not recommended):
+    git commit --no-verify
+
+EOF
+  exit 1
+fi
+
+exit 0

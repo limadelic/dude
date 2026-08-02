@@ -1,0 +1,160 @@
+#!/bin/zsh
+
+source ~/.zshrc 2>/dev/null || true
+
+APPS_DIR="$HOME/Applications"
+REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+ICON_CACHE_DIR="$REPO_DIR/pimp/tv-icons"
+mkdir -p "$APPS_DIR" "$ICON_CACHE_DIR" 2>/dev/null || true
+
+capitalize() {
+  local str="$1"
+  echo "${(U)str[1]}${str[2,-1]}"
+}
+
+is_png() {
+  local file="$1"
+  [[ "$(od -A n -t x1 "$file" 2>/dev/null | head -1)" == *"89  50  4e"* ]]
+}
+
+to_png() {
+  local src="$1" dst="$2"
+  file_type=$(file -b "$src" 2>/dev/null)
+  if [[ "$file_type" == *"PNG"* ]]; then
+    cp "$src" "$dst" && return 0
+  fi
+  sips -s format png "$src" --out "$dst" >/dev/null 2>&1 && return 0
+  return 1
+}
+
+fetch_icon() {
+  local site="$1" url="$2"
+  local cache_file="$ICON_CACHE_DIR/${site}.png"
+  local ua="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+
+  if [[ -f "$cache_file" ]]; then
+    echo "$cache_file|cached"
+    return 0
+  fi
+
+  local domain=$(echo "$url" | sed -E 's|https?://([^/]+).*|\1|')
+  local tmp_file="$ICON_CACHE_DIR/${site}.tmp"
+
+  local html=$(curl -s -m 10 -H "User-Agent: $ua" "$url" 2>/dev/null | head -c 100000)
+  local touch_icon=$(echo "$html" | grep -oE 'href="[^"]*apple-touch-icon[^"]*"' | head -1 | cut -d'"' -f2)
+
+  if [[ -n "$touch_icon" ]]; then
+    [[ "$touch_icon" != http* ]] && touch_icon="https://${domain}${touch_icon}"
+    if curl -s -L -m 10 -H "User-Agent: $ua" -o "$tmp_file" "$touch_icon" 2>/dev/null && [[ -s "$tmp_file" ]]; then
+      is_png "$tmp_file" && mv "$tmp_file" "$cache_file" && echo "$cache_file|apple-touch-icon" && return 0
+      to_png "$tmp_file" "$cache_file" 2>/dev/null && echo "$cache_file|apple-touch-icon" && return 0
+    fi
+    rm -f "$tmp_file" 2>/dev/null
+  fi
+
+  if curl -s -L -m 10 -H "User-Agent: $ua" -o "$tmp_file" "https://${domain}/apple-touch-icon.png" 2>/dev/null && [[ -s "$tmp_file" ]]; then
+    is_png "$tmp_file" && mv "$tmp_file" "$cache_file" && echo "$cache_file|apple-touch-icon.png" && return 0
+    rm -f "$tmp_file" 2>/dev/null
+  fi
+
+  if curl -s -L -m 10 -H "User-Agent: $ua" -o "$tmp_file" "https://www.google.com/s2/favicons?domain=${domain}&sz=256" 2>/dev/null && [[ -s "$tmp_file" ]]; then
+    is_png "$tmp_file" && mv "$tmp_file" "$cache_file" && echo "$cache_file|google-favicon" && return 0
+    rm -f "$tmp_file" 2>/dev/null
+  fi
+
+  if curl -s -L -m 10 -H "User-Agent: $ua" -o "$tmp_file" "https://${domain}/favicon.ico" 2>/dev/null && [[ -s "$tmp_file" ]]; then
+    to_png "$tmp_file" "$cache_file" 2>/dev/null && echo "$cache_file|favicon.ico" && return 0
+    rm -f "$tmp_file" 2>/dev/null
+  fi
+
+  return 1
+}
+
+convert_to_icns() {
+  local src="$1" dst="$2"
+  local tmp_iconset="${dst%.icns}.iconset"
+
+  mkdir -p "$tmp_iconset"
+
+  for size in 16 32 128 256 512; do
+    sips -z $size $size "$src" --out "$tmp_iconset/icon_${size}x${size}.png" >/dev/null 2>&1 || return 1
+    sips -z $((size*2)) $((size*2)) "$src" --out "$tmp_iconset/icon_${size}x${size}@2x.png" >/dev/null 2>&1 || return 1
+  done
+
+  iconutil -c icns -o "$dst" "$tmp_iconset" >/dev/null 2>&1 || return 1
+  rm -rf "$tmp_iconset"
+  return 0
+}
+
+if [[ -z "${TV_SITES}" ]]; then
+  print "Error: TV_SITES not found in profile"
+  exit 1
+fi
+
+declare -a icon_results
+for site in "${(k)TV_SITES[@]}"; do
+  url="${TV_SITES[$site]}"
+  app_name="$(capitalize "$site").app"
+  app_path="$APPS_DIR/$app_name"
+  bundle_id="com.dude.tv.${site}"
+
+  mkdir -p "$app_path/Contents/MacOS" "$app_path/Contents/Resources" 2>/dev/null || continue
+
+  executable="$app_path/Contents/MacOS/$(capitalize "$site")"
+  cat > "$executable" << EOF
+#!/bin/bash
+open -na "Google Chrome" --args --app="$url"
+EOF
+  chmod +x "$executable" 2>/dev/null || true
+
+  icon_source="none"
+  icon_file=""
+  if result=$(fetch_icon "$site" "$url" 2>/dev/null); then
+    icon_src="${result%%|*}"
+    icon_method="${result##*|}"
+    icns_path="$app_path/Contents/Resources/icon.icns"
+    if convert_to_icns "$icon_src" "$icns_path" 2>/dev/null; then
+      icon_source="$icon_method"
+      icon_file="<key>CFBundleIconFile</key><string>icon</string>"
+    fi
+  fi
+  icon_results+=("$site: $icon_source")
+
+  plist="$app_path/Contents/Info.plist"
+  cat > "$plist" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDevelopmentRegion</key>
+  <string>en</string>
+  <key>CFBundleExecutable</key>
+  <string>$(capitalize "$site")</string>
+  <key>CFBundleIdentifier</key>
+  <string>$bundle_id</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundleName</key>
+  <string>$(capitalize "$site")</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleShortVersionString</key>
+  <string>1.0</string>
+  <key>CFBundleVersion</key>
+  <string>1</string>
+  $icon_file
+</dict>
+</plist>
+EOF
+
+  touch "$app_path" 2>/dev/null || true
+done
+
+print "Generated TV apps in $APPS_DIR"
+print "Icon sources:"
+for result in $icon_results; do
+  print "  $result"
+done
+
+mdimport "$APPS_DIR" 2>/dev/null || true
+killall Dock 2>/dev/null || true

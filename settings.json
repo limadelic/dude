@@ -23,7 +23,7 @@
     ],
     "defaultMode": "dontAsk"
   },
-  "model": "opus",
+  "model": "fable",
   "hooks": {},
   "statusLine": {
     "type": "command",
@@ -51,7 +51,7 @@
       "Drifting"
     ]
   },
-  "effortLevel": "low",
+  "effortLevel": "medium",
   "autoCompactWindow": 200000,
   "autoUpdatesChannel": "latest",
   "tui": "fullscreen",

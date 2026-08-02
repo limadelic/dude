@@ -66,7 +66,9 @@ describe Dude::Dudes::AlleyPr do
 
     context 'multiple PRs found' do
       before do
-        stub(sut).`(/gh pr list.*head/) { "https://github.com/UKGEPIC/dude/pull/122\nhttps://github.com/UKGEPIC/dude/pull/123" }
+        stub(sut).`(/gh pr list.*head/) {
+          "https://github.com/UKGEPIC/dude/pull/122\nhttps://github.com/UKGEPIC/dude/pull/123"
+        }
       end
 
       it 'uses newest PR and warns' do
@@ -86,5 +88,4 @@ describe Dude::Dudes::AlleyPr do
       end
     end
   end
-
 end

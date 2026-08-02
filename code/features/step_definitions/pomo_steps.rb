@@ -1,9 +1,13 @@
 require_relative '../../lib/dude/status_line/format'
 require_relative '../../lib/cuke/pomo'
+require_relative '../support/pomo_helpers'
 
 World(Cuke::Pomo)
+World(PomoHelpers)
 
-Given(/^(\d+) passed into a (work|break|long break) session$/) do |minutes, session_type|
+Given(
+  /^(\d+) passed into a (work|break|long break) session$/
+) do |minutes, session_type|
   config = {
     'work' => ['default', 1500],
     'break' => ['break', 300],
@@ -17,8 +21,8 @@ Then('the "Pomo" bar shows {string} in {word}') do |bar, color_name|
   output = dude('pomo').strip
   expected_color = Dude::StatusLine::Format::COLORS[color_name.to_sym]
   cleaned = Dude::StatusLine::Format.strip(output)
-  raise "Expected bar '#{bar}' in output, got: #{cleaned}" unless cleaned.include?(bar)
-  raise "Expected color #{color_name} in output" unless output.include?(expected_color)
+  verify_pomo_bar(bar, cleaned)
+  verify_pomo_color(color_name, output, expected_color)
 end
 
 After do

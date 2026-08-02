@@ -16,12 +16,13 @@ describe Dude::StatusLine::Dudes do
 
   def make_dude(name:, icon:, messages:, context:, is_current:, is_abiding:)
     dude = Object.new
-    stub(dude).name { name }
-    stub(dude).icon { icon }
-    stub(dude).messages { messages }
-    stub(dude).context { context }
-    stub(dude).is_current? { is_current }
-    stub(dude).is_abiding? { is_abiding }
+    [
+      [:name, name], [:icon, icon], [:messages, messages],
+      [:context, context], [:is_current?, is_current],
+      [:is_abiding?, is_abiding]
+    ].each do |method, value|
+      stub(dude).__send__(method) { value }
+    end
     dude
   end
 
