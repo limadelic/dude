@@ -23,12 +23,24 @@ typeset -A TV_SITES=(
   paramount https://www.paramountplus.com
   peacock   https://www.peacocktv.com
   prime     https://www.primevideo.com
+  matrix    file:///Users/mike/.claude/pimp/matrix/matrix.html
 )
 
 tv() {
   local url=${TV_SITES[$1]}
   [[ -z $url ]] && { print "tv: $(print -l ${(k)TV_SITES} | sort | tr '\n' ' ')"; return 1; }
-  open -na "Google Chrome" --args --app="$url"
+  local bounds=$(osascript -e 'tell application "Finder" to get bounds of window of desktop' 2>/dev/null)
+  if [[ -n "$bounds" ]]; then
+    bounds=$(echo "$bounds" | tr -d ' ')
+    IFS=',' read -r x1 y1 x2 y2 <<< "$bounds"
+    local x1_clamped=$((x1 < 0 ? 0 : x1))
+    local y1_clamped=$((y1 < 0 ? 0 : y1))
+    local w=$((x2 - x1_clamped))
+    local h=$((y2 - y1_clamped))
+    open -na "Google Chrome" --args --app="$url" --window-position=0,0 --window-size=$w,$h
+  else
+    open -na "Google Chrome" --args --app="$url"
+  fi
 }
 
 (( $+functions[compdef] )) && compdef '_values service ${(k)TV_SITES}' tv
