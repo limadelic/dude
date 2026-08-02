@@ -23,6 +23,7 @@ typeset -A TV_SITES=(
   paramount https://www.paramountplus.com
   peacock   https://www.peacocktv.com
   prime     https://www.primevideo.com
+  matrix    file:///Users/mike/.claude/pimp/matrix/matrix.html
 )
 
 tv() {
@@ -50,3 +51,5 @@ setopt HIST_IGNORE_SPACE
 alias cfg='micro /Users/mike/dude/pimp/profile'
 
 el() { ANTHROPIC_API_KEY=$elita command el "$@"; }
+
+[[ -z $TMUX && $TERM_PROGRAM != vscode ]] && exec tmux

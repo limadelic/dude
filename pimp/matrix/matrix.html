@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Matrix</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; overflow: hidden; cursor: none; }
+    canvas { display: block; width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const glyphs = 'ｦｧｨｩｪｫｬｭｮｯﾀﾁﾂﾃﾄﾅﾆﾇﾈﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾗﾘﾜ0123456789';
+    const chars = glyphs.split('');
+
+    const settings = {
+      fontSize: 16,
+      cellHeightRatio: 1.15,
+      frameThrottle: 33,
+      stepEveryMin: 1,
+      stepEveryMax: 4,
+      trailLengthMin: 15,
+      trailLengthMax: 25,
+      whiteToGreenRampLength: 3,
+      density: 0.5,
+      glyphChurn: 0,
+      resetChance: 0.03
+    };
+
+    let cellWidth = 0;
+    let cellHeight = 0;
+    let cols = 0;
+    let rows = 0;
+    const columns = [];
+    let lastFrame = 0;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      ctx.font = `bold ${settings.fontSize}px monospace`;
+      cellWidth = Math.ceil(ctx.measureText('A').width);
+      cellHeight = Math.ceil(settings.fontSize * settings.cellHeightRatio);
+
+      cols = Math.floor(canvas.width / cellWidth);
+      rows = Math.floor(canvas.height / cellHeight);
+
+      columns.length = 0;
+      for (let i = 0; i < cols; i++) {
+        if (Math.random() < settings.density) {
+          const trailLen = settings.trailLengthMin + Math.floor(Math.random() * (settings.trailLengthMax - settings.trailLengthMin));
+          const stepEvery = settings.stepEveryMin + Math.floor(Math.random() * (settings.stepEveryMax - settings.stepEveryMin + 1));
+          columns.push({
+            col: i,
+            head: Math.floor(Math.random() * rows),
+            trailLen: trailLen,
+            trail: Array(trailLen).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]),
+            stepEvery: stepEvery,
+            stepCounter: 0
+          });
+        }
+      }
+    }
+
+    function animate(time) {
+      if (time - lastFrame < settings.frameThrottle) {
+        requestAnimationFrame(animate);
+        return;
+      }
+      lastFrame = time;
+
+      canvas.width = canvas.width;
+
+      for (let col of columns) {
+        col.stepCounter++;
+        if (col.stepCounter >= col.stepEvery) {
+          col.stepCounter = 0;
+          col.head++;
+          col.trail.unshift(chars[Math.floor(Math.random() * chars.length)]);
+          col.trail.pop();
+          if (col.head >= rows + col.trailLen) {
+            if (Math.random() < settings.resetChance) {
+              col.head = -col.trailLen;
+              const newTrailLen = settings.trailLengthMin + Math.floor(Math.random() * (settings.trailLengthMax - settings.trailLengthMin));
+              col.trailLen = newTrailLen;
+              const newStepEvery = settings.stepEveryMin + Math.floor(Math.random() * (settings.stepEveryMax - settings.stepEveryMin + 1));
+              col.stepEvery = newStepEvery;
+              col.trail = Array(newTrailLen).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]);
+            }
+          }
+        }
+
+        if (Math.random() < settings.glyphChurn) {
+          const idx = Math.floor(Math.random() * col.trail.length);
+          col.trail[idx] = chars[Math.floor(Math.random() * chars.length)];
+        }
+
+        for (let i = 0; i < col.trail.length; i++) {
+          const row = col.head - i;
+          if (row < 0 || row >= rows) continue;
+
+          const x = col.col * cellWidth;
+          const y = row * cellHeight + settings.fontSize;
+          const char = col.trail[i];
+          const opacity = i === 0 ? 1 : Math.max(0, 1 - i / col.trailLen);
+
+          if (i < settings.whiteToGreenRampLength) {
+            const t = i / settings.whiteToGreenRampLength;
+            const r = Math.round(255 - (255 - 10) * t);
+            const b = Math.round(255 - (255 - 10) * t);
+            ctx.font = `bold ${settings.fontSize}px monospace`;
+            ctx.fillStyle = `rgba(${r}, 255, ${b}, ${opacity})`;
+            ctx.fillText(char, x, y);
+          } else {
+            ctx.font = `bold ${settings.fontSize}px monospace`;
+            ctx.fillStyle = `rgba(10, 255, 10, ${opacity * 0.8})`;
+            ctx.fillText(char, x, y);
+          }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    requestAnimationFrame(animate);
+  </script>
+</body>
+</html>
