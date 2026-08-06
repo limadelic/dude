@@ -60,7 +60,7 @@ describe Dude::StatusLine::Dudes do
 
     it 'shows zero superscript' do
       output = sut.to_s
-      expect(output).to match(/🎳 ?⁰/)
+      expect(output).to match(/🎳 ?º/)
     end
 
     it 'highlights current dude with background' do

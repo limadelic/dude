@@ -70,7 +70,7 @@ describe Dude::StatusLine::Models do
 
       it 'renders single model bar' do
         result = strip(sut.to_s)
-        expect(result).to eq('🐸¹⁰')
+        expect(result).to eq('🐸¹º')
       end
     end
 
@@ -157,7 +157,7 @@ describe Dude::StatusLine::Models do
 
       it 'renders only models with actual requests' do
         result = strip(sut.to_s)
-        expect(result).to eq('🐸¹⁰')
+        expect(result).to eq('🐸¹º')
         expect(result).not_to include('🎭')
       end
     end

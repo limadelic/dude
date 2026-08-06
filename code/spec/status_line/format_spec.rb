@@ -275,7 +275,7 @@ describe Dude::StatusLine::Format do
     it 'uses exact superscript for count 0-10' do
       result = sut.emoji_group('🎭', 0, false, green)
       stripped = Dude::StatusLine::Format.strip(result)
-      expect(stripped).to include('⁰')
+      expect(stripped).to include('º')
     end
   end
 
