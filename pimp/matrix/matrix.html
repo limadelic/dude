@@ -29,7 +29,8 @@
       whiteToGreenRampLength: 3,
       density: 0.5,
       glyphChurn: 0,
-      resetChance: 0.03
+      resetChance: 0.03,
+      speed: 1
     };
 
     let cellWidth = 0;
@@ -38,6 +39,28 @@
     let rows = 0;
     const columns = [];
     let lastFrame = 0;
+
+    function makeColumn(i) {
+      const trailLen = settings.trailLengthMin + Math.floor(Math.random() * (settings.trailLengthMax - settings.trailLengthMin));
+      const stepEvery = settings.stepEveryMin + Math.floor(Math.random() * (settings.stepEveryMax - settings.stepEveryMin + 1));
+      return {
+        col: i,
+        head: Math.floor(Math.random() * rows),
+        trailLen: trailLen,
+        trail: Array(trailLen).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]),
+        stepEvery: stepEvery,
+        stepCounter: 0
+      };
+    }
+
+    function rebuildColumns() {
+      columns.length = 0;
+      const targetCount = Math.round(cols * settings.density);
+      for (let i = 0; i < targetCount; i++) {
+        const colIdx = Math.floor(Math.random() * cols);
+        columns.push(makeColumn(colIdx));
+      }
+    }
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
@@ -50,21 +73,7 @@
       cols = Math.floor(canvas.width / cellWidth);
       rows = Math.floor(canvas.height / cellHeight);
 
-      columns.length = 0;
-      for (let i = 0; i < cols; i++) {
-        if (Math.random() < settings.density) {
-          const trailLen = settings.trailLengthMin + Math.floor(Math.random() * (settings.trailLengthMax - settings.trailLengthMin));
-          const stepEvery = settings.stepEveryMin + Math.floor(Math.random() * (settings.stepEveryMax - settings.stepEveryMin + 1));
-          columns.push({
-            col: i,
-            head: Math.floor(Math.random() * rows),
-            trailLen: trailLen,
-            trail: Array(trailLen).fill(0).map(() => chars[Math.floor(Math.random() * chars.length)]),
-            stepEvery: stepEvery,
-            stepCounter: 0
-          });
-        }
-      }
+      rebuildColumns();
     }
 
     function animate(time) {
@@ -77,9 +86,9 @@
       canvas.width = canvas.width;
 
       for (let col of columns) {
-        col.stepCounter++;
-        if (col.stepCounter >= col.stepEvery) {
-          col.stepCounter = 0;
+        col.stepCounter += settings.speed;
+        while (col.stepCounter >= col.stepEvery) {
+          col.stepCounter -= col.stepEvery;
           col.head++;
           col.trail.unshift(chars[Math.floor(Math.random() * chars.length)]);
           col.trail.pop();
@@ -126,6 +135,45 @@
 
       requestAnimationFrame(animate);
     }
+
+    function normalizeKey(key) {
+      if (key === '+' || key === '=' || key === 'Add') return '+';
+      if (key === '-' || key === '_' || key === 'Subtract') return '-';
+      return key;
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const key = normalizeKey(e.key);
+
+      if (key === '+' && !e.ctrlKey) {
+        settings.density = Math.min(4.0, settings.density + 0.1);
+        const targetCount = Math.round(cols * settings.density);
+        const activeIndices = new Set(columns.map(c => c.col));
+        const freeIndices = [];
+        for (let i = 0; i < cols; i++) {
+          if (!activeIndices.has(i)) freeIndices.push(i);
+        }
+        while (columns.length < targetCount) {
+          const colIdx = freeIndices.length > 0
+            ? freeIndices.splice(Math.floor(Math.random() * freeIndices.length), 1)[0]
+            : Math.floor(Math.random() * cols);
+          columns.push(makeColumn(colIdx));
+        }
+      } else if (key === '-' && !e.ctrlKey) {
+        settings.density = Math.max(0.1, settings.density - 0.1);
+        const targetCount = Math.round(cols * settings.density);
+        while (columns.length > targetCount) {
+          const idx = Math.floor(Math.random() * columns.length);
+          columns.splice(idx, 1);
+        }
+      } else if (key === '+' && e.ctrlKey) {
+        e.preventDefault();
+        settings.speed = Math.min(4, settings.speed * 1.25);
+      } else if (key === '-' && e.ctrlKey) {
+        e.preventDefault();
+        settings.speed = Math.max(0.25, settings.speed / 1.25);
+      }
+    });
 
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
