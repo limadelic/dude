@@ -25,7 +25,7 @@ module Dude
 
       def trigger_and_wait_for_workflow(branch)
         push_and_trigger(branch)
-        run_id = wait_for_workflow_completion
+        run_id = wait_for_workflow_completion(branch)
         build_run_url(run_id).tap { |url| check_workflow_success(run_id) }
       end
 
@@ -35,18 +35,18 @@ module Dude
         `gh workflow run dude.yml --ref #{branch} -f prompt="#{prompt}"`
       end
 
-      def wait_for_workflow_completion
-        run_id = get_run_id
+      def wait_for_workflow_completion(branch)
+        run_id = get_run_id(branch)
         Helpers::Wait.new.until { completed?(run_id) }
         run_id
       end
 
-      def get_run_id
-        `gh run list --json databaseId -q '.[0].databaseId'`.strip
+      def get_run_id(branch)
+        `gh run list --workflow=dude.yml --branch #{branch} --json databaseId -q '.[0].databaseId'`.strip
       end
 
       def completed?(run_id)
-        status = `gh run list --json status -q '.[0].status'`.strip
+        status = `gh run view #{run_id} --json status -q '.status'`.strip
         status == 'completed'
       end
 
