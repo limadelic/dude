@@ -18,7 +18,8 @@ describe Dude::StatusLine::Models do
     let :session do
       {
         'model' => { 'id' => 'claude-opus-4-8' },
-        'transcript_path' => transcript_path
+        'transcript_path' => transcript_path,
+        'rate_limits' => {}
       }
     end
 
@@ -70,7 +71,7 @@ describe Dude::StatusLine::Models do
 
       it 'renders single model bar' do
         result = strip(sut.to_s)
-        expect(result).to eq('🐸¹º')
+        expect(result).to eq('🐸¹⁰')
       end
     end
 
@@ -88,7 +89,10 @@ describe Dude::StatusLine::Models do
 
     context 'with no transcript path in session' do
       let :session do
-        { 'model' => { 'id' => 'claude-opus-4-8' } }
+        {
+          'model' => { 'id' => 'claude-opus-4-8' },
+          'rate_limits' => {}
+        }
       end
 
       it 'returns current model emoji' do
@@ -147,7 +151,8 @@ describe Dude::StatusLine::Models do
       let :session do
         {
           'model' => { 'id' => 'claude-opus-5' },
-          'transcript_path' => transcript_path
+          'transcript_path' => transcript_path,
+          'rate_limits' => {}
         }
       end
 
@@ -157,7 +162,7 @@ describe Dude::StatusLine::Models do
 
       it 'renders only models with actual requests' do
         result = strip(sut.to_s)
-        expect(result).to eq('🐸¹º')
+        expect(result).to eq('🐸¹⁰')
         expect(result).not_to include('🎭')
       end
     end
@@ -174,6 +179,55 @@ describe Dude::StatusLine::Models do
         expect(result).to include('🎸')
         expect(result).to include('🦄')
         expect(result).not_to include('⁰')
+      end
+    end
+
+    context 'with multi-digit request count' do
+      let :counts do
+        { 'haiku' => 100, 'opus' => 100 }
+      end
+
+      it 'renders multi-digit superscript from composition' do
+        result = strip(sut.to_s)
+        expect(result).to include('⁵')
+      end
+    end
+
+    context 'on Enterprise (no rate_limits key in session)' do
+      let :session do
+        {
+          'model' => { 'id' => 'claude-opus-4-8' },
+          'transcript_path' => transcript_path
+        }
+      end
+
+      let :counts do
+        { 'haiku' => 47, 'opus' => 12, 'sonnet' => 41 }
+      end
+
+      it 'returns current model emoji only, ignoring usage counts' do
+        expect(sut.to_s).to eq('🎭')
+      end
+    end
+
+    context 'on Personal with rate_limits key' do
+      let :session do
+        {
+          'model' => { 'id' => 'claude-opus-4-8' },
+          'transcript_path' => transcript_path,
+          'rate_limits' => {}
+        }
+      end
+
+      let :counts do
+        { 'haiku' => 47, 'opus' => 12, 'sonnet' => 41 }
+      end
+
+      it 'renders per-model usage counters' do
+        result = strip(sut.to_s)
+        expect(result).to include('🐸⁵')
+        expect(result).to include('🎸⁴')
+        expect(result).to include('🎭¹')
       end
     end
   end

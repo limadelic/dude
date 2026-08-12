@@ -13,12 +13,22 @@ module Dude
       end
 
       def to_s
+        return fallback_emoji if enterprise?
+
+        personal_usage_display
+      rescue StandardError
+        fallback_emoji
+      end
+
+      def enterprise?
+        !@session['rate_limits']
+      end
+
+      def personal_usage_display
         counts = load_counts
         return fallback_emoji if counts.empty?
 
         usage_share(counts)
-      rescue StandardError
-        fallback_emoji
       end
 
       def load_counts
