@@ -1,0 +1,3 @@
+typeset -U path
+for d in /opt/homebrew/lib/ruby/gems/*/bin(N) $HOME/.gem/ruby/*/bin(N); do PATH="$d:$PATH"; done
+export PATH

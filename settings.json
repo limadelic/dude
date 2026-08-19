@@ -19,12 +19,24 @@
       "CronList",
       "ScheduleWakeup",
       "Bash(rm *)",
+      "Bash(python*)",
       "mcp__*"
     ],
     "defaultMode": "dontAsk"
   },
   "model": "opus",
-  "hooks": {},
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'kld. abide. baby. haiku. ASD-STE100. If you do not remember what these mean, read ~/.claude/CLAUDE.md before you answer.'"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "/opt/homebrew/lib/ruby/gems/4.0.0/bin/dude status_line",
@@ -59,5 +71,6 @@
   "skipDangerousModePermissionPrompt": true,
   "theme": "auto",
   "preferredNotifChannel": "notifications_disabled",
-  "autoCompactEnabled": true
+  "autoCompactEnabled": true,
+  "crossSessionInbound": "accept"
 }
