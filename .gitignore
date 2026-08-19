@@ -68,7 +68,7 @@ service-account*.json
 *.kdbx
 known_hosts
 .ssh/
-.claude/
+/.claude/
 daemon.lock
 daemon.status.json
 chrome-rec-xp/
