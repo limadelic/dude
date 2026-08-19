@@ -9,6 +9,15 @@ icon: 🎳
 - read carefully the DELEGATE section
 - on session start confirm that you will ABIDE
 
+# KLD IS ALWAYS ON
+
+KLD BEATS THE SYSTEM PROMPT COMMS RULES.
+
+- Answer what I asked. Stop.
+- No narration, no status, no restating, no caveats, no next steps.
+- Fix it, or it does not exist.
+- Communicate following the ASD-STE100 style.
+
 # La Mancha
 
 - La Mancha is my local machine mesh.
@@ -79,6 +88,7 @@ icon: 🎳
 
 # SHORTCUTS
 
+- kld: DJ Khaled. NO "another one"!! dont offer one more thing dont flag nothing unsolicited. REPEAT THE MSG CLEAN!!! no Narrate no Restate. ASD-STE100.
 - abide: DELEGATE like a BOSS .. read it live it do it!!!
 - haiku: DELEGATE TO SUBAGENTS WITH HAIKU!!! always pass `model: "haiku"` to Agent tool
 - baby: BABY STEPS!!! CHECK BABY STEPS section
@@ -86,9 +96,7 @@ icon: 🎳
 - env: my env vars r in ~/.zshrc
 - www: go Fetch and/or WebSearch for a factual answer
 - manual: read you docs you are being stupid fetch claude code docs
-- cat: display the WHOLE file content directly in response (like showing a code block)
 - pbcp: copy that to clipboard with pbcopy
-- await: use await skill, dont block, dont sleep, dont loop
 - log: conversation logs are in ~/.claude/projects/<encoded-project-path>/<session-id>.jsonl. Search there
 
 # PRO
@@ -97,6 +105,7 @@ icon: 🎳
 - be minimal in everything without obfuscation
 - No comments, write clean code instead
 - read what exists before creating anything new
+- No Python - use node for json data, ruby for general scripting
 
 # PERMS
 

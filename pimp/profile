@@ -6,6 +6,8 @@ export XXXCLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1
 export XXXCLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=0
 export XXXCLAUDE_CODE_MAX_CONTEXT_TOKENS=100000
 export CLAUDE_CODE_SUBAGENT_MODEL=haiku
+export CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION=1024
+
 
 alias mixdg="mix deps.get"
 alias tcr='./tcr.sh'
@@ -52,4 +54,4 @@ alias cfg='micro /Users/mike/dude/pimp/profile'
 
 el() { ANTHROPIC_API_KEY=$elita command el "$@"; }
 
-[[ -z $TMUX && $TERM_PROGRAM != vscode ]] && exec tmux
+[[ -z $TMUX && $TERM_PROGRAM != vscode ]] && tmux -L "w$$"

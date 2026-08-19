@@ -11,10 +11,9 @@ module Dude
         bg_yellow: "\033[48;5;226m"
       }
 
-      SUPERSCRIPTS = {
-        0 => 'º', 1 => '¹', 2 => '²', 3 => '³', 4 => '⁴', 5 => '⁵', 6 => '⁶',
-        7 => '⁷', 8 => '⁸', 9 => '⁹',
-        10 => '¹º'
+      DIGIT_SUPERSCRIPTS = {
+        '0' => '⁰', '1' => '¹', '2' => '²', '3' => '³', '4' => '⁴', '5' => '⁵',
+        '6' => '⁶', '7' => '⁷', '8' => '⁸', '9' => '⁹'
       }
       BG_MAP = {
         "\033[32m" => "\033[42m",
@@ -55,11 +54,17 @@ module Dude
       end
 
       def emoji_group(emoji, count, active, color)
-        sup = count.is_a?(String) ? count : SUPERSCRIPTS[count] || '⁹⁺'
+        sup = format_superscript(count)
         pad = JETBRAINS ? ' ' : ''
         fg = color == COLORS[:yellow] ? "\033[30m" : WHITE
         active ? "#{BG_MAP[color]}#{fg}#{emoji}#{pad}#{sup}#{COLORS[:reset]}" :
                emoji_str(emoji, color, sup)
+      end
+
+      def format_superscript(count)
+        return count if count.is_a?(String)
+
+        count.to_s.each_char.map { |d| DIGIT_SUPERSCRIPTS[d] }.join
       end
 
       def percentage(part, total)

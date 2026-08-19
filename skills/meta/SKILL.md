@@ -30,6 +30,7 @@ description: Use when...
 Before saving, verify:
 - Frontmatter: name + description only
 - Description starts with "Use when" or verb
+- Description says what it is, never what it isn't, no NOT lists
 - Max 3 sections after heading
 - Each section under 25 lines
 - Total under 50 lines

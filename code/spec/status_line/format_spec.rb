@@ -266,16 +266,28 @@ describe Dude::StatusLine::Format do
       expect(stripped).to include('⁹⁺')
     end
 
-    it 'uses 9+ for count above 10' do
-      result = sut.emoji_group('🎭', 15, false, green)
+    it 'renders multi-digit count 10' do
+      result = sut.emoji_group('🎭', 10, false, green)
       stripped = Dude::StatusLine::Format.strip(result)
-      expect(stripped).to include('⁹⁺')
+      expect(stripped).to include('¹⁰')
     end
 
-    it 'uses exact superscript for count 0-10' do
+    it 'renders multi-digit count 42' do
+      result = sut.emoji_group('🎭', 42, false, green)
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to include('⁴²')
+    end
+
+    it 'renders multi-digit count 137' do
+      result = sut.emoji_group('🎭', 137, false, green)
+      stripped = Dude::StatusLine::Format.strip(result)
+      expect(stripped).to include('¹³⁷')
+    end
+
+    it 'uses exact superscript for count 0' do
       result = sut.emoji_group('🎭', 0, false, green)
       stripped = Dude::StatusLine::Format.strip(result)
-      expect(stripped).to include('º')
+      expect(stripped).to include('⁰')
     end
   end
 
