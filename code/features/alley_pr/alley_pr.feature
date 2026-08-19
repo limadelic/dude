@@ -1,3 +1,4 @@
+@alley_pr
 Feature: Alley-PR
 
   Scenario: Refuses to run on main
@@ -6,14 +7,14 @@ Feature: Alley-PR
     * > /alley-pr:
       | Cannot run on main branch |
 
-  Scenario: UKGEPIC workflow happy path
+  Scenario: Workflow enabled happy path
     * ~ git branch --show-current
       | feature-branch |
     * ~ git remote get-url origin
-      | git@github.com:UKGEPIC/repo.git |
+      | git@github.com:BuildBot/repo.git |
     * ~ git push
       | Everything up-to-date |
-    * ~ gh workflow run dude.yml
+    * ~ gh workflow run dude.yml --ref
       | triggered workflow |
     * ~ gh run list --json databaseId
       | 12345 |
@@ -22,18 +23,18 @@ Feature: Alley-PR
     * ~ gh run view --json conclusion
       | success |
     * ~ gh pr list --head feature-branch
-      | https://github.com/UKGEPIC/repo/pull/123 |
+      | https://github.com/BuildBot/repo/pull/123 |
     * > /alley-pr:
-      | https://github.com/UKGEPIC/repo/pull/123 |
+      | https://github.com/BuildBot/repo/pull/123 |
 
-  Scenario: UKGEPIC workflow fails
+  Scenario: Workflow enabled workflow fails
     * ~ git branch --show-current
       | feature-branch |
     * ~ git remote get-url origin
-      | git@github.com:UKGEPIC/repo.git |
+      | git@github.com:BuildBot/repo.git |
     * ~ git push
       | Enumerating objects |
-    * ~ gh workflow run dude.yml
+    * ~ gh workflow run dude.yml --ref
       | triggered workflow |
     * ~ gh run list --json databaseId
       | 12345 |
@@ -43,16 +44,16 @@ Feature: Alley-PR
       | failure |
     * > /alley-pr:
       | Workflow failed |
-      | https://github.com/UKGEPIC/repo/actions/runs/12345 |
+      | https://github.com/BuildBot/repo/actions/runs/12345 |
 
-  Scenario: UKGEPIC workflow succeeds but no PR
+  Scenario: Workflow enabled workflow succeeds but no PR
     * ~ git branch --show-current
       | feature-branch |
     * ~ git remote get-url origin
-      | git@github.com:UKGEPIC/repo.git |
+      | git@github.com:BuildBot/repo.git |
     * ~ git push
       | Enumerating objects |
-    * ~ gh workflow run dude.yml
+    * ~ gh workflow run dude.yml --ref
       | triggered workflow |
     * ~ gh run list --json databaseId
       | 12345 |
@@ -64,16 +65,16 @@ Feature: Alley-PR
       |  |
     * > /alley-pr:
       | No PR found |
-      | https://github.com/UKGEPIC/repo/actions/runs/12345 |
+      | https://github.com/BuildBot/repo/actions/runs/12345 |
 
-  Scenario: Multiple PRs for branch in UKGEPIC workflow
+  Scenario: Multiple PRs for branch in workflow enabled
     * ~ git branch --show-current
       | feature-branch |
     * ~ git remote get-url origin
-      | git@github.com:UKGEPIC/repo.git |
+      | git@github.com:BuildBot/repo.git |
     * ~ git push
       | Enumerating objects |
-    * ~ gh workflow run dude.yml
+    * ~ gh workflow run dude.yml --ref
       | triggered workflow |
     * ~ gh run list --json databaseId
       | 12345 |
@@ -82,14 +83,14 @@ Feature: Alley-PR
     * ~ gh run view --json conclusion
       | success |
     * ~ gh pr list --head feature-branch
-      | https://github.com/UKGEPIC/repo/pull/122 |
-      | https://github.com/UKGEPIC/repo/pull/124 |
+      | https://github.com/BuildBot/repo/pull/122 |
+      | https://github.com/BuildBot/repo/pull/124 |
     * ~ echo pbcopy
       |  |
     * ~ git commit
       |  |
     * > /alley-pr:
-      | https://github.com/UKGEPIC/repo/pull/124 |
+      | https://github.com/BuildBot/repo/pull/124 |
       | Multiple PRs found, using newest |
 
   Scenario: Simple PR path happy path
