@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {},
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "permissions": {
+    "allow": [],
+    "deny": [
+      "AskUserQuestion",
+      "NotebookEdit",
+      "EnterWorktree",
+      "ExitWorktree",
+      "EnterPlanMode",
+      "ExitPlanMode",
+      "CronCreate",
+      "CronDelete",
+      "CronList",
+      "ScheduleWakeup",
+      "Bash(rm *)",
+      "Bash(python*)",
+      "mcp__*"
+    ],
+    "defaultMode": "dontAsk"
+  },
+  "model": "opus",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'kld. abide. baby. haiku. ASD-STE100. If you do not remember what these mean, read ~/.claude/CLAUDE.md before you answer.'"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "/opt/homebrew/lib/ruby/gems/4.0.0/bin/dude status_line",
+    "padding": 0
+  },
+  "extraKnownMarketplaces": {},
+  "spinnerVerbs": {
+    "mode": "replace",
+    "verbs": [
+      "Abiding",
+      "Bowling",
+      "Sipping",
+      "Rolling",
+      "Striking",
+      "Mixing",
+      "Bathing",
+      "Napping",
+      "Opining",
+      "Mellowing",
+      "Chilling",
+      "Vibing",
+      "Taking it easy",
+      "Lounging",
+      "Drifting"
+    ]
+  },
+  "effortLevel": "medium",
+  "autoCompactWindow": 200000,
+  "autoUpdatesChannel": "latest",
+  "tui": "fullscreen",
+  "autoMemoryEnabled": false,
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "auto",
+  "preferredNotifChannel": "notifications_disabled",
+  "autoCompactEnabled": true,
+  "crossSessionInbound": "accept"
+}
