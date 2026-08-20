@@ -72,5 +72,7 @@
   "theme": "auto",
   "preferredNotifChannel": "notifications_disabled",
   "autoCompactEnabled": true,
-  "crossSessionInbound": "accept"
+  "crossSessionInbound": "accept",
+  "hookRegistry": {},
+  "outputStyle": "Concise"
 }
