@@ -5,9 +5,7 @@
     "pr": ""
   },
   "permissions": {
-    "allow": [
-      "Bash(rm *)"
-    ],
+    "allow": [],
     "deny": [
       "AskUserQuestion",
       "NotebookEdit",
@@ -19,6 +17,7 @@
       "CronDelete",
       "CronList",
       "ScheduleWakeup",
+      "Bash(rm *)",
       "Bash(python*)",
       "mcp__*"
     ],
