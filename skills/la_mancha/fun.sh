@@ -1,47 +1,5 @@
 export LA_MANCHA_NODE=quijote
 
-sdir() {
-  echo $1
-}
-
-sget() {
-  local out
-  out=$(mktemp /tmp/sget.XXXXXX)
-  scp -q sancho:"$1" "$out" && echo $out
-}
-
-sput() {
-  scp -q "$1" sancho:"$2"
-}
-
-smaster() {
-  ssh -O check sancho >/dev/null 2>&1 && return
-  ssh -N -f -o ControlMaster=yes -o ConnectTimeout=10 -o BatchMode=yes sancho \
-    </dev/null >/dev/null 2>&1
-}
-
-sancho() {
-  local out rc dir= secs=300 cmd
-  out=$(mktemp /tmp/sancho.XXXXXX)
-  smaster
-  while true; do
-    case $1 in
-      -C) dir=$(sdir $2); shift 2 ;;
-      -t) secs=$2; shift 2 ;;
-      *) break ;;
-    esac
-  done
-  cmd="$*"
-  local to=(); (( $+commands[gtimeout] )) && to=(gtimeout $secs)
-  $to ssh -n -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 \
-    -o BatchMode=yes sancho \
-    "security unlock-keychain -p ${(q)sancho} 2>/dev/null; ${dir:+cd ~/${(q)dir} && }zsh -lic ${(q)cmd}" > $out 2>&1
-  rc=$?
-  echo $out
-  [[ $(wc -l < $out) -le 50 ]] && cat $out
-  return $rc
-}
-
 ddir() {
   echo $1
 }
