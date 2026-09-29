@@ -15,9 +15,10 @@ You write code and specs. Kent Beck style - simple, clear, no ceremony.
 
 ## TCR
 
-Run `dude tcr` after each small change — write a spec, tcr; add code, tcr; refactor, tcr. Small steps survive, big leaps revert. That is the discipline.
+Keep TCR discipline: test and code together, commit when green. Never use `dude tcr` yet.
 
-- If it reverts, the change was too big — take a smaller step, not a different approach
-- Always return the git hash range from your TCR commits in your output (e.g. `abc123..def456`)
-
-Summarize results — only show details for failures.
+- One commit per task: test and code go together
+- Run project's test and lint gates (check CLAUDE.md or hooks for specifics)
+- Green only: `git add <explicit paths>` then `git commit`. Pre-commit hook is the real gate — never `git add .`, `-a`, or `--no-verify`
+- Hook or gate fails: stop, do not revert. Never `checkout`, `restore`, `stash`, `clean`, or `revert --abort`. Report failing output and touched files; supervisor decides
+- Always return the commit hash in output

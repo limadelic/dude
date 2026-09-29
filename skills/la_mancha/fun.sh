@@ -1,41 +1,7 @@
+export LA_MANCHA_NODE=quijote
+
 sdir() {
   echo $1
-}
-
-qdir() {
-  local p=$(sdir $1) root=${LA_MANCHA_ROOT:-$HOME}
-  echo $root/${p#dev/}
-}
-
-xfer() {
-  rsync -az \
-    --exclude .git --exclude node_modules --exclude obj --exclude bin \
-    --exclude .idea --exclude .DS_Store --exclude coverage --exclude dist \
-    "$@"
-}
-
-spull() {
-  local p=$(sdir $1) l=$(qdir $1)
-  if [[ -d $l || $1 != */*.* ]]; then
-    mkdir -p $l
-    xfer --delete sancho:$p/ $l/
-  else
-    mkdir -p ${l%/*}
-    xfer sancho:$p $l
-  fi
-  echo $l
-}
-
-windmill() {
-  local p=$(sdir $1) l=$(qdir $1) parent
-  if [[ -d $l ]]; then
-    parent=$p
-    xfer --rsync-path="mkdir -p ~/$parent && rsync" $l/ sancho:$p/
-  else
-    parent=${p%/*}
-    xfer --rsync-path="mkdir -p ~/$parent && rsync" $l sancho:$p
-  fi
-  echo sancho:$p
 }
 
 sget() {
@@ -74,6 +40,61 @@ sancho() {
   echo $out
   [[ $(wc -l < $out) -le 50 ]] && cat $out
   return $rc
+}
+
+ddir() {
+  echo $1
+}
+
+dget() {
+  local out
+  out=$(mktemp /tmp/dget.XXXXXX)
+  scp -q dolce:"$1" "$out" && echo $out
+}
+
+dput() {
+  scp -q "$1" dolce:"$2"
+}
+
+dmaster() {
+  ssh -O check dolce >/dev/null 2>&1 && return
+  ssh -N -f -o ControlMaster=yes -o ConnectTimeout=10 -o BatchMode=yes dolce \
+    </dev/null >/dev/null 2>&1
+}
+
+dolce() {
+  local out rc dir= secs=300 cmd
+  out=$(mktemp /tmp/dolce.XXXXXX)
+  dmaster
+  while true; do
+    case $1 in
+      -C) dir=$(ddir $2); shift 2 ;;
+      -t) secs=$2; shift 2 ;;
+      *) break ;;
+    esac
+  done
+  cmd="$*"
+  local to=(); (( $+commands[gtimeout] )) && to=(gtimeout $secs)
+  $to ssh -n -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 \
+    -o BatchMode=yes dolce \
+    "${dir:+cd ~/${(q)dir} && }zsh -lic ${(q)cmd}" > $out 2>&1
+  rc=$?
+  echo $out
+  [[ $(wc -l < $out) -le 50 ]] && cat $out
+  return $rc
+}
+
+azor() {
+  local to=${1#@}; shift
+  local sess=${to%%@*} node=${to#*@} f=${from:-azor}
+  [[ $f != *@* && -n $LA_MANCHA_NODE ]] && f=$f@$LA_MANCHA_NODE
+  if [[ $to == *@* && $node != $LA_MANCHA_NODE ]]; then
+    typeset -f $node > /dev/null || { echo "azor: no reach to $node"; return 1; }
+    $node "from=$f azor @$sess $*"
+    return
+  fi
+  claude -p --agent azor --model haiku --name "$f" \
+    "deliver to $sess: $*"
 }
 
 [[ -n $LA_MANCHA_LOCAL && -f $LA_MANCHA_LOCAL ]] && source $LA_MANCHA_LOCAL

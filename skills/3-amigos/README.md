@@ -44,21 +44,4 @@ There's only one brain here - Opus. But by splitting it into three agent persona
 
 ## The Cast
 
-### liz
-
-- Named after [Liz Keogh](https://lizkeogh.com) - Deliberate Discovery, BDD practitioner
-- Hunts ignorance, surfaces assumptions, asks "what if?"
-- The one who finds what you don't know you don't know
-
-### kent
-
-- Named after [Kent Beck](https://www.kentbeck.com) - XP, TDD, simplicity
-- Grounds in code, checks feasibility, simplifies
-- The one who asks "what's the simplest thing that could work?"
-
-### dude (El Dude - the domain expert)
-
-- The third slot - whoever knows the product best and speaks from the user's perspective
-- Guards ubiquitous language, challenges terminology across all three layers (El, Dude, CC)
-- A more generic choice would be an Eric (as in [Eric Evans](https://www.domainlanguage.com), Domain-Driven Design)
-- In our case the domain is the dude itself, and El is his shell - El Dude abides
+Mike names the three silos and their roles every time. There is no default cast.

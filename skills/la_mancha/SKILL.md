@@ -1,6 +1,6 @@
 ---
 name: la_mancha
-description: Instructions to operate nodes in the mesh.
+description: Use when operating a node in the la mancha mesh
 ---
 
 # WHOAMI
@@ -12,9 +12,11 @@ description: Instructions to operate nodes in the mesh.
 
 - Always operate another node through its subagent.
 - Use fresh subagent per request Ralph Loop it!
-- `windmill <path>` pushes quijote → sancho. `spull <path>` pulls sancho → quijote. Same path both directions.
-- Path starts with directory alias. Default roots: `$HOME` (quijote), `~/dev` (sancho).
-- Aliases and the local root come from an optional per-machine override. Set `LA_MANCHA_LOCAL` env var to the path of a shell file that redefines `sdir()` and `LA_MANCHA_ROOT`.
-- Alias alone is its default working copy. Paths after the alias resolve directly.
-- Works on single files or whole directories. Skips build junk: .git, node_modules, obj, bin, dist, coverage, .idea, .DS_Store
-- Examples: `windmill myalias/wip/.claude/plans`, `spull myalias`
+- Node helpers live in `~/.claude/skills/la_mancha/fun.sh`. Source it to run them.
+
+## Milling files
+
+- Moving files between nodes is molly's job. Ask molly.
+- Name the path and the destination. She reads the direction off the destination.
+- Do not run `windmill` or `spull` yourself. `--delete` is live on them and a
+  mistaken path replaces a working copy instead of merging into it.

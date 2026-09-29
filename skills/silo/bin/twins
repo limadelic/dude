@@ -1,0 +1,38 @@
+#!/usr/bin/env ruby
+require 'json'
+require 'open3'
+
+all_flag = ARGV.include?('--all')
+stdout, _, status = Open3.capture3('claude agents --all --json')
+exit puts '{"twins":[]}' unless status.success?
+
+base_name = proc { |name| name.to_s.strip }
+agents = JSON.parse(stdout).group_by { |a| base_name.call(a['name']) }
+groups = all_flag ? agents : agents.select { |_, r| r.length >= 2 && r.map { |x| x['sessionId'] }.uniq.length >= 2 }
+
+results = groups.map do |name, rows|
+  { name: name, sessions: rows.map do |row|
+    d = {fullName: row['name'], sessionId: row['sessionId'], pid: row['pid'], state: row['state'], status: row['status'], cwd: row['cwd'], startedAt: row['startedAt'], color: nil, pinger: nil, pingerFrom: nil}
+    tf = Dir.glob(File.expand_path('~/.claude/projects/*')).find { |p| File.exist?(File.join(p, "#{row['sessionId']}.jsonl")) }
+    tf &&= File.join(tf, "#{row['sessionId']}.jsonl")
+    if tf && File.readable?(tf)
+      File.readlines(tf).each do |line|
+        begin
+          e = JSON.parse(line)
+          next unless e.is_a?(Hash)
+          c = e['type'] == 'system' && e['content'] ? e['content'] : (e['message']&.[]('content') || '')
+          c = c.is_a?(Array) ? c.map { |i| i.is_a?(String) ? i : i['text'].to_s }.join : c
+          d[:color] = $1 if c.include?('<command-name>/color</command-name>') && c =~ /<command-args>([^<]+)<\/command-args>/
+          if d[:pinger].nil? && c.include?('<cross-session-message') && c =~ /<cross-session-message\s+([^>]*)>/
+            as = $1
+            d[:pinger] = $1 if as =~ /from-name="([^"]*)"/
+            d[:pingerFrom] = $1 if as =~ /from="([^"]*)"/
+          end
+        rescue StandardError; end
+      end
+    end
+    d
+  end}
+end
+
+puts JSON.pretty_generate({twins: results})

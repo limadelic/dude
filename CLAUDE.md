@@ -28,8 +28,27 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 |-------------|------|
 | quijote     | mine |
 | sancho      | work |
+| dolce       | new  |
 | dulci(nea)  | wife |
 | roci(nante) | ipad |
+
+## azor
+
+- @azor is la mancha mail. Use it to reach agents across la mancha: message @azor with `session@node text`.
+
+## Silos
+
+- A silo is one long-running bg session, one specialist, one job.
+- Use the silo skill to find-or-create one. Never spawn a twin.
+- Project silos live in the project CLAUDE.md roster.
+
+| Silo        | Home     | Job              |
+|-------------|----------|------------------|
+| azor        | ~/dev    | la mancha mail   |
+| arana.quijote | ~/dev  | browsing via Chrome |
+| mac         | ~/dev/.claude/silos/mac    | controls the Mac |
+| pimp        | ~/dev/.claude/silos/pimp | shell, env and dotfiles |
+| gito        | ~/.claude/silos/gito | git sync of all dude folders |
 
 # Projects
 
@@ -66,16 +85,16 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 
 ## Roster
 
-| Agent   | Model  | Role                                | When                        |
-|---------|--------|-------------------------------------|-----------------------------|
-| dude    | opus   | Domain expert                       | plan, amigos                |
-| kent    | opus   | Senior dev/architect/coach          | plan, dev, amigos, katmandu |
-| liz     | opus   | BDD discovery, Tester hat in amigos | plan, amigos                |
-| lisa    | sonnet | ATDD, tester, test architect        | qa, gherkin, gwt            |
-| eric    | sonnet | Domain reviewer, challenges lisa    | qa, dev, gherkin, gwt       |
-| kenny   | haiku  | TDD coder, writes code+tests        | dev, katmandu, TCRalph      |
-| cartman | haiku  | Code reviewer, adversarial          | dev, katmandu               |
-| arana   | haiku  | Web browser, Chrome DevTools        | browse                      |
+| Agent         | Model  | Role                                | When                        |
+|---------------|--------|-------------------------------------|-----------------------------|
+| dude          | opus   | Domain expert                       | plan                        |
+| kent          | opus   | Senior dev/architect/coach          | plan, dev, katmandu         |
+| liz           | opus   | BDD discovery, Tester hat in amigos | plan                        |
+| lisa          | sonnet | ATDD, tester, test architect        | qa, gherkin, gwt            |
+| eric          | sonnet | Domain reviewer, challenges lisa    | qa, dev, gherkin, gwt       |
+| kenny         | haiku  | TDD coder, writes code+tests        | dev, katmandu, TCRalph      |
+| cartman       | haiku  | Code reviewer, adversarial          | dev, katmandu               |
+| arana.quijote | haiku  | Web browser, Chrome DevTools        | browse                      |
 
 ## Haiku
 
@@ -89,6 +108,7 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 # SHORTCUTS
 
 - kld: DJ Khaled. NO "another one"!! dont offer one more thing dont flag nothing unsolicited. REPEAT THE MSG CLEAN!!! no Narrate no Restate. ASD-STE100.
+- silent: SHUT UP till the result!!! no msgs no relays no status. speak only for the result or a blocker I MUST fix.
 - abide: DELEGATE like a BOSS .. read it live it do it!!!
 - haiku: DELEGATE TO SUBAGENTS WITH HAIKU!!! always pass `model: "haiku"` to Agent tool
 - baby: BABY STEPS!!! CHECK BABY STEPS section
@@ -98,6 +118,8 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 - manual: read you docs you are being stupid fetch claude code docs
 - pbcp: copy that to clipboard with pbcopy
 - log: conversation logs are in ~/.claude/projects/<encoded-project-path>/<session-id>.jsonl. Search there
+- riley: say the current TODO in one line. If it is missing or wrong, I set it, and mine is the current TODO.
+- migos: the silos that work on the current riley. Answer only [name, name, ...].
 
 # PRO
 
