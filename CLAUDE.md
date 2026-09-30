@@ -27,9 +27,8 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 
 Dom:
 
-| Prop | Value      |
-|------|------------|
 | Name | dude       |
+|------|------------|
 | Desc | meta silos |
 | Don  | dude       |
 
