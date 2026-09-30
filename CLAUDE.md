@@ -42,7 +42,6 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 
 | Silo        | Home     | Job              |
 |-------------|----------|------------------|
-| arana.quijote | ~/dev  | browsing via Chrome |
 | mac         | ~/dev/.claude/silos/mac    | controls the Mac |
 | pimp        | ~/dev/.claude/silos/pimp | shell, env and dotfiles |
 | gito        | ~/dude/silos/gito | git sync of all dude folders |
@@ -91,7 +90,6 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 | eric          | sonnet | Domain reviewer, challenges lisa    | qa, dev, gherkin, gwt       |
 | kenny         | haiku  | TDD coder, writes code+tests        | dev, katmandu, TCRalph      |
 | cartman       | haiku  | Code reviewer, adversarial          | dev, katmandu               |
-| arana.quijote | haiku  | Web browser, Chrome DevTools        | browse                      |
 
 ## Haiku
 
