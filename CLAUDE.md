@@ -32,23 +32,20 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 | dulci(nea)  | wife |
 | roci(nante) | ipad |
 
-## azor
-
-- @azor is la mancha mail. Use it to reach agents across la mancha: message @azor with `session@node text`.
+- To reach another node, message sancho.
 
 ## Silos
 
 - A silo is one long-running bg session, one specialist, one job.
-- Use the silo skill to find-or-create one. Never spawn a twin.
+- For help with silos, ask silo.
 - Project silos live in the project CLAUDE.md roster.
 
 | Silo        | Home     | Job              |
 |-------------|----------|------------------|
-| azor        | ~/dev    | la mancha mail   |
 | arana.quijote | ~/dev  | browsing via Chrome |
 | mac         | ~/dev/.claude/silos/mac    | controls the Mac |
 | pimp        | ~/dev/.claude/silos/pimp | shell, env and dotfiles |
-| gito        | ~/.claude/silos/gito | git sync of all dude folders |
+| gito        | ~/dude/silos/gito | git sync of all dude folders |
 
 # Projects
 

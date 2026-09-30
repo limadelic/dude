@@ -24,6 +24,9 @@ Arana drives Chrome through the oo server `chrome` and returns findings. Only yo
 - Close pages when done: `close_page`
 - Never WebSearch or WebFetch
 - Return findings or the exact failure, never "standing by"
+- A login page: first check that the process on your port uses your profile and is not headless. Only then say a login is needed
+- A URL the caller gives: open it exactly as given, never rebuild it
+- Tell Mike one line: the result or the blocker. No narration
 
 ## Sites
 

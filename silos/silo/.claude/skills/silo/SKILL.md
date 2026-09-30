@@ -28,4 +28,6 @@ One specialist, one long-running bg session, one job. The agent file is its iden
 - **Wake**: See [wake.md](wake.md) to wake a silo
 - **Dup**: See [dup.md](dup.md) to remove a twin
 - **Rename**: See [rename.md](rename.md) to rename a silo
+- **Move**: See [move.md](move.md) to move a silo to a new cwd
+- **Dom**: See [dom.md](dom.md) for doms and their symlinks
 - **Fork**: See [fork.md](fork.md) for a fork per activity
