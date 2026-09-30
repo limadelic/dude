@@ -31,3 +31,4 @@ One specialist, one long-running bg session, one job. The agent file is its iden
 - **Move**: See [move.md](move.md) to move a silo to a new cwd
 - **Dom**: See [dom.md](dom.md) for doms and their symlinks
 - **Fork**: See [fork.md](fork.md) for a fork per activity
+- **Role**: See [role.md](role.md) for one role in many doms
