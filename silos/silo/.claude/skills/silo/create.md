@@ -7,6 +7,7 @@ Silo makes every new silo. One identity, one session.
 ## How
 
 - Identity in the home's `CLAUDE.md`, or `.claude/CLAUDE.md` when the repo tracks one, ~20 lines, dispatch don't do
+- Write its sub `<home>/.claude/agents/<name>.md`: haiku, `skills: [<name>]`, body says do the one task and return evidence only. Its CLAUDE.md says every read, edit and run goes to that sub
 - No agent file, `--agent` does not find one in an added dir
 - Its own skill `<home>/.claude/skills/<silo>/SKILL.md` for how it works, shared procedure skills beside it, `silo` always among them
 - Roster row in the dom's CLAUDE.md
