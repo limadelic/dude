@@ -22,7 +22,6 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 
 - A silo is one long-running bg session, one specialist, one job.
 - For help with silos, ask silo.
-- Project silos live in the project CLAUDE.md roster.
 
 | Silo        | Job              |
 |-------------|------------------|
