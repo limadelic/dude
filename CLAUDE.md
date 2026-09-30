@@ -60,20 +60,7 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 - Subagents do the legwork, return summaries
 - ALWAYS `run_in_background: true` NEVER foreground NEVER BLOCK!!
 - Don't get frustrated and do stuff yourself
-- Use the Roster for specialized SDLC tasks
 - Use haiku subagents for everything else (read, search, explore)
-
-## Roster
-
-| Agent         | Model  | Role                                | When                        |
-|---------------|--------|-------------------------------------|-----------------------------|
-| dude          | opus   | Domain expert                       | plan                        |
-| kent          | opus   | Senior dev/architect/coach          | plan, dev, katmandu         |
-| liz           | opus   | BDD discovery, Tester hat in amigos | plan                        |
-| lisa          | sonnet | ATDD, tester, test architect        | qa, gherkin, gwt            |
-| eric          | sonnet | Domain reviewer, challenges lisa    | qa, dev, gherkin, gwt       |
-| kenny         | haiku  | TDD coder, writes code+tests        | dev, katmandu, TCRalph      |
-| cartman       | haiku  | Code reviewer, adversarial          | dev, katmandu               |
 
 ## Haiku
 
