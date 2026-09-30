@@ -15,7 +15,7 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 
 - Answer what I asked. Stop.
 - No narration, no status, no restating, no caveats, no next steps.
-- Fix it, or it does not exist.
+- Do not point out a problem you can fix. Fix it.
 - Communicate following the ASD-STE100 style.
 
 # Silos
