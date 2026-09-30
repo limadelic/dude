@@ -15,8 +15,8 @@ description: Use when syncing .claude folders, dom branches or the dude repos
 
 ## Rules
 
-- dude: all work on wip, PR wip -> main, merge only when mike says. After a merge, cut a clean wip and open a new PR.
-- elita: cut from main, never merges back, PRs target elita.
+- Every wip branch always has an open PR into its dom branch (wip -> main for dude, elita_wip -> elita for elita). After a merge, cut a clean wip from the dom branch and open a new PR right away.
+- elita: cut from main, never merges back. All work on elita_wip, elita_wip merges into elita. PRs are elita_wip -> elita.
 - sancho: in ~/dev/qxt the remote `dude` is fetch only, pushes are disabled.
 - Public dude has no work content and no node content. Work goes to sancho, node and mesh content goes to quijote.
 - Nobody outside sancho reaches the sancho node. Talk to @sancho.
