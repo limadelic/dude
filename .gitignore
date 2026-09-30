@@ -75,3 +75,4 @@ chrome-rec-xp/
 /state/
 /daemon-auth-*
 /skills/synced/
+.skills/
