@@ -18,23 +18,7 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 - Fix it, or it does not exist.
 - Communicate following the ASD-STE100 style.
 
-# La Mancha
-
-- La Mancha is my local machine mesh.
-- **You are on quijote.**
-- Use la_mancha skill to interact with those nodes
-
-| Node        | What |
-|-------------|------|
-| quijote     | mine |
-| sancho      | work |
-| dolce       | new  |
-| dulci(nea)  | wife |
-| roci(nante) | ipad |
-
-- To reach another node, message sancho.
-
-## Silos
+# Silos
 
 - A silo is one long-running bg session, one specialist, one job.
 - For help with silos, ask silo.
@@ -42,8 +26,8 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 
 | Silo        | Home     | Job              |
 |-------------|----------|------------------|
-| mac         | ~/dev/.claude/silos/mac    | controls the Mac |
-| pimp        | ~/dev/.claude/silos/pimp | shell, env and dotfiles |
+| dude        | ~/dude            | domain expert |
+| silo        | ~/dude/silos/silo | makes and wakes silos |
 | gito        | ~/dude/silos/gito | git sync of all dude folders |
 
 # Projects
