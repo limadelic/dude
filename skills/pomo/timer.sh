@@ -79,8 +79,8 @@ if [[ "$LABEL" == "work" ]]; then
   else
     exec "$0" 5 break "$ROUND" "$SILENT"
   fi
-elif [[ "$LABEL" == "break" ]]; then
-  exec "$0" 25 work $((ROUND + 1)) "$SILENT"
 elif [[ "$LABEL" == "long break" ]]; then
   exec "$0" 25 work 1 "$SILENT"
+else
+  exec "$0" 25 work $((ROUND + 1)) "$SILENT"
 fi

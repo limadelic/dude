@@ -5,7 +5,7 @@ PATH
       thor
 
 GEM
-  remote: https://ukgartifactory.pe.jfrog.io/artifactory/api/gems/rubygems/
+  remote: https://rubygems.org/
   specs:
     ast (2.4.3)
     base64 (0.3.0)

@@ -27,16 +27,17 @@ describe Dude::Dudes::AlleyPr do
       stub(sut).`(/gh workflow run/) { '' }
       stub(sut).`(/gh run list.*databaseId/) { '12345' }
       stub(sut).`(/gh run list.*status/) { 'completed' }
-      stub(sut).`(/git remote get-url/) { 'git@github.com:UKGEPIC/dude.git' }
+      stub(sut).`(/git remote get-url/) { 'git@github.com:BuildBot/dude.git' }
       stub(sut).`(/gh run view.*conclusion/) { 'success' }
-      stub(sut).`(/gh pr list.*head/) { 'https://github.com/UKGEPIC/dude/pull/123' }
+      stub(sut).`(/gh pr list.*head/) { 'https://github.com/BuildBot/dude/pull/123' }
       stub(sut).`(/pbcopy/) { '' }
       stub(sut).`(/git commit/) { '' }
+      stub(sut).configured_workflow_org { 'BuildBot' }
     end
 
     context 'happy path' do
       it 'executes full sequence and returns PR URL' do
-        expect(sut.execute).to eq 'https://github.com/UKGEPIC/dude/pull/123'
+        expect(sut.execute).to eq 'https://github.com/BuildBot/dude/pull/123'
       end
     end
 
@@ -47,7 +48,7 @@ describe Dude::Dudes::AlleyPr do
 
       it 'raises error with run URL' do
         expect { sut.execute }.to raise_error(
-          'Workflow failed: https://github.com/UKGEPIC/dude/actions/runs/12345'
+          'Workflow failed: https://github.com/BuildBot/dude/actions/runs/12345'
         )
       end
     end
@@ -59,7 +60,7 @@ describe Dude::Dudes::AlleyPr do
 
       it 'raises error with run URL' do
         expect { sut.execute }.to raise_error(
-          'No PR found: https://github.com/UKGEPIC/dude/actions/runs/12345'
+          'No PR found: https://github.com/BuildBot/dude/actions/runs/12345'
         )
       end
     end
@@ -67,18 +68,19 @@ describe Dude::Dudes::AlleyPr do
     context 'multiple PRs found' do
       before do
         stub(sut).`(/gh pr list.*head/) {
-          "https://github.com/UKGEPIC/dude/pull/122\nhttps://github.com/UKGEPIC/dude/pull/123"
+          "https://github.com/BuildBot/dude/pull/122\nhttps://github.com/BuildBot/dude/pull/123"
         }
       end
 
       it 'uses newest PR and warns' do
         mock($stdout).puts(/Multiple PRs found, using newest/)
-        expect(sut.execute).to eq 'https://github.com/UKGEPIC/dude/pull/123'
+        expect(sut.execute).to eq 'https://github.com/BuildBot/dude/pull/123'
       end
     end
 
-    context 'non-UKGEPIC repo' do
+    context 'workflow not configured' do
       before do
+        stub(sut).configured_workflow_org { nil }
         stub(sut).`(/git remote get-url/) { 'git@github.com:foo/bar.git' }
         stub(sut).`(/gh pr create --fill/) { 'https://github.com/foo/bar/pull/1' }
       end

@@ -16,6 +16,10 @@ Before('@dudes') do
   ENV['DUDE_PROCESS'] = 'dude_test'
 end
 
+Before('@alley_pr') do
+  ENV['ALLEY_PR_WORKFLOW_ORG'] = 'BuildBot'
+end
+
 After do
   RSpec::Mocks.teardown if @mocks
   RSpec::Mocks.setup if @mocks
@@ -28,6 +32,10 @@ After('@dudes') do
   ENV.delete('DUDE_HOME')
   ENV.delete('DUDE_PROCESS')
   FileUtils.rm_rf(@temp_dir) if @temp_dir && Dir.exist?(@temp_dir)
+end
+
+After('@alley_pr') do
+  ENV.delete('ALLEY_PR_WORKFLOW_ORG')
 end
 
 Given(/^dudes$/) do |table|

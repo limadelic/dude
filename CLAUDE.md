@@ -9,18 +9,35 @@ icon: 🎳
 - read carefully the DELEGATE section
 - on session start confirm that you will ABIDE
 
-# La Mancha
+# KLD IS ALWAYS ON
 
-- La Mancha is my local machine mesh.
-- **You are on quijote.**
-- Use la_mancha skill to interact with those nodes
+KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 
-| Node        | What |
-|-------------|------|
-| quijote     | mine |
-| sancho      | work |
-| dulci(nea)  | wife |
-| roci(nante) | ipad |
+- Answer what I asked. Stop.
+- No narration, no status, no restating, no caveats, no next steps.
+- Do not point out a problem you can fix. Fix it.
+- Communicate following the ASD-STE100 style.
+
+# Silos
+
+- A silo is one long-running bg session, one specialist, one job.
+- @silo handles silos.
+- Silos group by doms.
+- A dom has a don.
+
+Dom:
+
+Name: dude
+Desc: meta silos
+Don: @dude
+
+Silos:
+
+| Name  | Role            |
+|-------|-----------------|
+| @dude | domain expert   |
+| @silo | handles silos   |
+| @gito | git ops on doms |
 
 # Projects
 
@@ -52,21 +69,7 @@ icon: 🎳
 - Subagents do the legwork, return summaries
 - ALWAYS `run_in_background: true` NEVER foreground NEVER BLOCK!!
 - Don't get frustrated and do stuff yourself
-- Use the Roster for specialized SDLC tasks
-- Use haiku subagents for everything else (read, search, explore)
-
-## Roster
-
-| Agent   | Model  | Role                                | When                        |
-|---------|--------|-------------------------------------|-----------------------------|
-| dude    | opus   | Domain expert                       | plan, amigos                |
-| kent    | opus   | Senior dev/architect/coach          | plan, dev, amigos, katmandu |
-| liz     | opus   | BDD discovery, Tester hat in amigos | plan, amigos                |
-| lisa    | sonnet | ATDD, tester, test architect        | qa, gherkin, gwt            |
-| eric    | sonnet | Domain reviewer, challenges lisa    | qa, dev, gherkin, gwt       |
-| kenny   | haiku  | TDD coder, writes code+tests        | dev, katmandu, TCRalph      |
-| cartman | haiku  | Code reviewer, adversarial          | dev, katmandu               |
-| arana   | haiku  | Web browser, Chrome DevTools        | browse                      |
+- Use haiku subagents for everything (read, search, explore)
 
 ## Haiku
 
@@ -79,6 +82,8 @@ icon: 🎳
 
 # SHORTCUTS
 
+- kld: DJ Khaled. NO "another one"!! dont offer one more thing dont flag nothing unsolicited. REPEAT THE MSG CLEAN!!! no Narrate no Restate. ASD-STE100.
+- silent: SHUT UP till the result!!! no msgs no relays no status. speak only for the result or a blocker I MUST fix.
 - abide: DELEGATE like a BOSS .. read it live it do it!!!
 - haiku: DELEGATE TO SUBAGENTS WITH HAIKU!!! always pass `model: "haiku"` to Agent tool
 - baby: BABY STEPS!!! CHECK BABY STEPS section
@@ -86,10 +91,10 @@ icon: 🎳
 - env: my env vars r in ~/.zshrc
 - www: go Fetch and/or WebSearch for a factual answer
 - manual: read you docs you are being stupid fetch claude code docs
-- cat: display the WHOLE file content directly in response (like showing a code block)
 - pbcp: copy that to clipboard with pbcopy
-- await: use await skill, dont block, dont sleep, dont loop
 - log: conversation logs are in ~/.claude/projects/<encoded-project-path>/<session-id>.jsonl. Search there
+- riley: say the current TODO in one line. If it is missing or wrong, I set it, and mine is the current TODO.
+- migos: the silos that work on the current riley. Answer only [name, name, ...].
 
 # PRO
 
@@ -97,6 +102,7 @@ icon: 🎳
 - be minimal in everything without obfuscation
 - No comments, write clean code instead
 - read what exists before creating anything new
+- No Python - use node for json data, ruby for general scripting
 
 # PERMS
 

@@ -6,7 +6,7 @@ module Dude
       def execute
         branch = `git branch --show-current`.strip
         guard_main_branch(branch)
-        ukgepic? ? workflow_pr(branch) : simple_pr(branch)
+        use_pr_workflow? ? workflow_pr(branch) : simple_pr(branch)
       end
 
       private
@@ -25,7 +25,7 @@ module Dude
 
       def trigger_and_wait_for_workflow(branch)
         push_and_trigger(branch)
-        run_id = wait_for_workflow_completion
+        run_id = wait_for_workflow_completion(branch)
         build_run_url(run_id).tap { |url| check_workflow_success(run_id) }
       end
 
@@ -35,19 +35,19 @@ module Dude
         `gh workflow run dude.yml --ref #{branch} -f prompt="#{prompt}"`
       end
 
-      def wait_for_workflow_completion
-        run_id = get_run_id
+      def wait_for_workflow_completion(branch)
+        run_id = get_run_id(branch)
         Helpers::Wait.new.until { completed?(run_id) }
         run_id
       end
 
-      def get_run_id
-        `gh run list --json databaseId -q '.[0].databaseId'`.strip
+      def get_run_id(branch)
+        `gh run list --workflow=dude.yml --branch #{branch} --json databaseId -q '.[0].databaseId'`.strip # rubocop:disable Layout/LineLength
       end
 
       def completed?(run_id)
-        status = `gh run list --json status -q '.[0].status'`.strip
-        status == 'completed'
+        status = `gh run view #{run_id} --json conclusion -q '.conclusion'`.strip # rubocop:disable Layout/LineLength
+        status != ''
       end
 
       def build_run_url(run_id)
@@ -55,8 +55,12 @@ module Dude
         "https://github.com/#{repo}/actions/runs/#{run_id}"
       end
 
-      def ukgepic?
-        extract_org_from_remote == 'UKGEPIC'
+      def use_pr_workflow?
+        configured_workflow_org == extract_org_from_remote
+      end
+
+      def configured_workflow_org
+        ENV['ALLEY_PR_WORKFLOW_ORG']
       end
 
       def extract_org_from_remote
