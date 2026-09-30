@@ -24,11 +24,11 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 - For help with silos, ask silo.
 - Project silos live in the project CLAUDE.md roster.
 
-| Silo        | Home     | Job              |
-|-------------|----------|------------------|
-| dude        | ~/dude            | domain expert |
-| silo        | ~/dude/silos/silo | makes and wakes silos |
-| gito        | ~/dude/silos/gito | git sync of all dude folders |
+| Silo        | Job              |
+|-------------|------------------|
+| dude        | domain expert |
+| silo        | makes and wakes silos |
+| gito        | git sync of all dude folders |
 
 # Projects
 
