@@ -25,11 +25,11 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 - Silos group by doms.
 - A dom has a don.
 
-| Dom         |            |
-|-------------|------------|
-| Name        | dude       |
-| Description | meta silos |
-| Don         | dude       |
+| Dom      |            |
+|----------|------------|
+| Name     | dude       |
+| Desc     | meta silos |
+| Don      |            |
 
 | Silo | Job             |
 |------|-----------------|
