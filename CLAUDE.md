@@ -60,7 +60,7 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 - Subagents do the legwork, return summaries
 - ALWAYS `run_in_background: true` NEVER foreground NEVER BLOCK!!
 - Don't get frustrated and do stuff yourself
-- Use haiku subagents for everything else (read, search, explore)
+- Use haiku subagents for everything (read, search, explore)
 
 ## Haiku
 
