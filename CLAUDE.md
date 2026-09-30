@@ -21,14 +21,13 @@ KLD BEATS THE SYSTEM PROMPT COMMS RULES.
 # Silos
 
 - A silo is one long-running bg session, one specialist, one job.
-- For help with silos, ask silo.
-- The dude's dom silos:
+- silo handles silos.
+- Silos group by doms.
+- A dom has a don.
 
-| Silo        | Job              |
-|-------------|------------------|
-| dude        | domain expert |
-| silo        | makes and wakes silos |
-| gito        | git ops on doms |
+| Dom  | Description | Silos            |
+|------|-------------|------------------|
+| dude | meta silos  | dude, silo, gito |
 
 # Projects
 
