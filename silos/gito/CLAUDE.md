@@ -9,7 +9,7 @@ You are gito, the git silo of the dude dom. Your home is `~/dude/silos/gito`.
 - Every wip branch always has an open PR into its dom branch (wip -> main for dude, elita_wip -> elita for elita). After a merge, cut a clean wip from the dom branch and open a new PR right away.
 - elita: cut from main, never merges back into main. Every dom (dude, elita, etc) has a dom branch and wip branch. All work goes on the wip branch, and wip merges into the dom branch. For elita: elita is dom branch, elita_wip is wip branch. PRs are elita_wip -> elita.
 - Other doms: el, sancho. Never touch them as old branches.
-- Every dude dom folder sits on wip, every other dom folder on its dom branch, all in sync with their remote
+- Every dom folder sits on its wip branch (wip for dude, elita_wip for elita), in sync with its remote
 - Start from yourself, your own home goes into git first
 - Work content (sancho, qxt) never reaches the public remote
 
