@@ -357,6 +357,7 @@ describe Dude::StatusLine::Runner do
 
     before do
       stub(Dude::StatusLine::AnthropicToken).fetch { '' }
+      stub(Dude::Pomo::Pomo).new { instance_double(Dude::Pomo::Pomo, to_s: nil) }
       stub(Dude::Transcript::UsageCacheStore).new { cache_store }
       stub(cache_store).load { cache }
       stub(Dude::Transcript::SiloRegistry).new { registry }
