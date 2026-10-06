@@ -387,11 +387,10 @@ describe Dude::StatusLine::Runner do
 
   describe 'silo_list rendering' do
     let(:sut) { described_class.new(input.to_json, dudes: nil, cwd: Dir.pwd) }
-    let(:cache) { instance_double(Dude::Transcript::UsageCache) }
-    let(:cache_store) { instance_double(Dude::Transcript::UsageCacheStore) }
     let(:registry) { instance_double(Dude::Transcript::SiloRegistry) }
     let(:silo_usage) { instance_double(Dude::Transcript::SiloUsage) }
     let(:silo_list) { instance_double(Dude::StatusLine::SiloList) }
+    let(:five_hour_band) { instance_double(Dude::StatusLine::SunBand) }
     let(:input) do
       {
         'context_window' => { 'used_percentage' => 10 },
@@ -407,13 +406,9 @@ describe Dude::StatusLine::Runner do
 
     before do
       stub(Dude::StatusLine::AnthropicToken).fetch { '' }
-      stub(Dude::Transcript::UsageCacheStore).new { cache_store }
-      stub(cache_store).load { cache }
-      stub(cache_store).instance_variable_get { {} }
-      stub(Dude::Transcript::SiloRegistry).new { registry }
-      stub(registry).load
-      stub(registry).roster { {} }
-      stub(Dude::Transcript::SiloUsage).new { silo_usage }
+      stub(Dude::StatusLine::SunBand).new { five_hour_band }
+      stub(five_hour_band).call { nil }
+      stub(five_hour_band).silo_list_data { [silo_usage, registry] }
       stub(Dude::StatusLine::SiloList).new { silo_list }
     end
 

@@ -30,6 +30,14 @@ module Dude
         nil
       end
 
+      def silo_list_data
+        return nil if cache_is_stale?
+
+        [silo_usage, silo_registry]
+      rescue StandardError
+        nil
+      end
+
       private
 
       def cache_is_stale?
@@ -64,6 +72,8 @@ module Dude
         )
       end
 
+      protected
+
       def silo_registry
         @registry ||= Dude::Transcript::SiloRegistry.new.tap(&:load)
       end
@@ -73,6 +83,8 @@ module Dude
           cache_store, sessions_to_silos, @window
         )
       end
+
+      private
 
       def cache_store
         @cache ||= Dude::Transcript::UsageCacheStore.new.load(price_table)

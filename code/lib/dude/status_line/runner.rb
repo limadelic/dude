@@ -19,68 +19,6 @@ require_relative '../transcript/usage_cache_store'
 
 module Dude
   module StatusLine
-    class SiloListBuilder
-      def initialize(session)
-        @session = session
-      end
-
-      def build_usage
-        cache_store = load_cache_store
-        registry = build_registry
-        Dude::Transcript::SiloUsage.new(
-          cache_store, build_sessions_to_silos(registry), '5h'
-        )
-      rescue StandardError
-        nil
-      end
-
-      def build_registry
-        Dude::Transcript::SiloRegistry.new.tap(&:load)
-      rescue StandardError
-        nil
-      end
-
-      private
-
-      def build_sessions_to_silos(registry)
-        return {} unless registry
-
-        map_sessions_to_silos(registry, extract_session_ids)
-      rescue StandardError
-        {}
-      end
-
-      def map_sessions_to_silos(registry, session_ids)
-        roster = registry.roster
-        session_ids.each_with_object({}) do |session_id, map|
-          silo_id = find_silo_for_session(session_id, roster)
-          map[session_id] = silo_id if silo_id
-        end
-      end
-
-      def find_silo_for_session(session_id, roster)
-        roster.each_value do |silo_data|
-          return silo_data['id'] if silo_data['id'] == session_id
-        end
-        nil
-      end
-
-      def extract_session_ids
-        windows = load_cache_store&.instance_variable_get(:@windows)
-        return [] unless windows
-
-        windows.each_value.flat_map { |w| w[:costs]&.keys }.compact.uniq
-      rescue StandardError
-        []
-      end
-
-      def load_cache_store
-        Dude::Transcript::UsageCacheStore.new.load(
-          Dude::StatusLine::PriceTable.new
-        )
-      end
-    end
-
     class Runner
       include Dude::StatusLine::Format
 
@@ -192,30 +130,17 @@ module Dude
           resets_at: @session.dig('rate_limits', 'five_hour', 'resets_at') || 0,
           window_len: 5 * 3600,
           emoji: '☀️',
-          band: five_hour_band
+          band: five_hour_band.call
         ).to_s
       end
 
       def silo_list_section
-        return unless @session['rate_limits']&.dig('five_hour')
+        return unless @session['rate_limits']&.dig('five_hour') &&
+          (data = five_hour_band&.silo_list_data)
 
-        render_silo_list
+        Dude::StatusLine::SiloList.new(*data).call.then { |r| r.empty? ? nil : r }
       rescue StandardError
         nil
-      end
-
-      def render_silo_list
-        builder = SiloListBuilder.new(@session)
-        build_and_render_list(builder)
-      end
-
-      def build_and_render_list(builder)
-        silo_usage = builder.build_usage
-        registry = builder.build_registry
-        return unless silo_usage && registry
-
-        result = Dude::StatusLine::SiloList.new(silo_usage, registry).call
-        result.empty? ? nil : result
       end
 
       def seven_day_section
@@ -252,7 +177,7 @@ module Dude
       end
 
       def five_hour_band
-        @five_hour_band ||= Dude::StatusLine::SunBand.new(@session).call
+        @five_hour_band ||= Dude::StatusLine::SunBand.new(@session)
       end
 
       def seven_day_band
