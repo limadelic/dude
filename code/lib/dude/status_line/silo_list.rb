@@ -1,13 +1,11 @@
 require_relative '../transcript/band'
+require_relative 'format'
 
 module Dude
   module StatusLine
     class SiloList
-      BG_COLORS = {
-        yellow: "\033[48;5;226m",
-        red: "\033[41m"
-      }
-      RESET = "\033[0m"
+      include Dude::StatusLine::Format
+      COLORS = Dude::StatusLine::Format::COLORS
 
       def initialize(silo_usage, registry)
         @silo_usage = silo_usage
@@ -77,8 +75,8 @@ module Dude
       end
 
       def format_emoji(emoji, band)
-        bg = BG_COLORS[band]
-        "#{bg}#{emoji}#{RESET}"
+        bg = band == :yellow ? COLORS[:bg_yellow] : COLORS[:bg_red]
+        "#{bg}#{emoji}#{COLORS[:reset]}"
       end
     end
   end
