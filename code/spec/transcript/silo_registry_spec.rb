@@ -13,7 +13,8 @@ describe Dude::Transcript::SiloRegistry do
           'id' => 'uuid-dude',
           'dom' => 'dude',
           'home' => '/Users/mike/dude',
-          'color' => 'orange'
+          'color' => 'orange',
+          'emoji' => '🤠'
         },
         'code' => {
           'id' => 'uuid-code',
@@ -25,7 +26,8 @@ describe Dude::Transcript::SiloRegistry do
           'id' => 'uuid-kent',
           'dom' => 'dude',
           'home' => '/Users/mike/dude/silos/kent',
-          'color' => 'green'
+          'color' => 'green',
+          'emoji' => '🏅'
         }
       }
     }
@@ -121,6 +123,40 @@ describe Dude::Transcript::SiloRegistry do
 
       it 'returns nil for any name' do
         expect(sut.silo_id('dude')).to be_nil
+      end
+    end
+  end
+
+  describe '#emoji' do
+    before { stub(File).exist?(registry_path) { true } }
+
+    context 'with loaded registry' do
+      before do
+        stub(JSON).load_file(registry_path) { silos_data }
+        sut.load
+      end
+
+      it 'returns emoji for silo with emoji field' do
+        expect(sut.emoji('dude')).to eq('🤠')
+      end
+
+      it 'returns nil when emoji field is absent' do
+        expect(sut.emoji('code')).to be_nil
+      end
+
+      it 'returns nil for unknown name' do
+        expect(sut.emoji('unknown')).to be_nil
+      end
+    end
+
+    context 'with empty registry' do
+      before do
+        stub(JSON).load_file(registry_path) { { 'silos' => {} } }
+        sut.load
+      end
+
+      it 'returns nil for any name' do
+        expect(sut.emoji('dude')).to be_nil
       end
     end
   end

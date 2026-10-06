@@ -26,6 +26,11 @@ module Dude
         silo_data&.dig('id')
       end
 
+      def emoji(name)
+        silo_data = @roster[name]
+        silo_data&.dig('emoji')
+      end
+
       private
 
       def default_path
