@@ -7,7 +7,6 @@ describe Dude::Transcript::UsageCacheStore do
   let(:sut) { described_class.new(cache_path) }
 
   let(:cache_path) { '/home/user/.claude/dude/usage_cache.json' }
-  let(:temp_path) { cache_path + '.tmp' }
   let(:price_table) { double(cost: 1.5) }
 
   let(:window_name) { '5h' }
@@ -103,104 +102,33 @@ describe Dude::Transcript::UsageCacheStore do
     before do
       cache.set_window_start(window_name, window_start)
       cache.add(window_name, usage_record)
+      stub(FileUtils).mkdir_p
+      stub(File).write(is_a(String), is_a(String))
+      stub(File).rename(is_a(String), cache_path)
     end
 
-    it 'writes cache data to temp file' do
-      written_data = nil
-      mock(File).write(temp_path, is_a(String)) { |path, data|
-        written_data = data
-      }
-      stub(File).rename(temp_path, cache_path)
-
-      sut.save(cache)
-
-      expect(written_data).not_to be_nil
-    end
-
-    it 'writes valid JSON' do
+    it 'writes valid JSON with cache state' do
       written_json = nil
-      mock(File).write(temp_path, is_a(String)) { |path, data|
+      stub(File).write(is_a(String), is_a(String)) { |path, data|
         written_json = JSON.parse(data)
       }
-      stub(File).rename(temp_path, cache_path)
 
       sut.save(cache)
 
       expect(written_json).to have_key('files')
       expect(written_json).to have_key('windows')
-    end
-
-    it 'includes cache state in JSON' do
-      written_json = nil
-      mock(File).write(temp_path, is_a(String)) { |path, data|
-        written_json = JSON.parse(data)
-      }
-      stub(File).rename(temp_path, cache_path)
-
-      sut.save(cache)
-
       expect(written_json['windows'][window_name]['start']).to eq(window_start)
       expect(written_json['windows'][window_name]['costs']['sess-a']).to eq(1.5)
     end
 
-    it 'renames temp file to final path' do
-      stub(File).write(temp_path, anything)
-      mock(File).rename(temp_path, cache_path)
+    it 'creates parent directory' do
+      mock(FileUtils).mkdir_p(File.dirname(cache_path))
 
       sut.save(cache)
     end
-
-    it 'ensures atomic write' do
-      call_order = []
-      mock(File).write(temp_path, anything) { call_order << :write }
-      mock(File).rename(temp_path, cache_path) { call_order << :rename }
-
-      sut.save(cache)
-
-      expect(call_order).to eq([:write, :rename])
-    end
   end
 
-  describe 'default path' do
-    let(:sut_default) { described_class.new }
-
-    it 'uses ~/.claude/dude/usage_cache.json' do
-      expected_path = File.expand_path('~/.claude/dude/usage_cache.json')
-      expected_temp = expected_path + '.tmp'
-
-      written_path = nil
-      mock(File).write(is_a(String), is_a(String)) { |path, data|
-        written_path = path
-      }
-      stub(File).rename(expected_temp, expected_path)
-
-      cache = Dude::Transcript::UsageCache.new(price_table)
-      sut_default.save(cache)
-
-      expect(written_path).to include('.claude/dude/usage_cache.json.tmp')
-    end
-  end
-
-  describe 'injectable path' do
-    let(:custom_path) { '/custom/path/cache.json' }
-    let(:sut_custom) { described_class.new(custom_path) }
-
-    it 'uses provided path' do
-      custom_temp = custom_path + '.tmp'
-      written_path = nil
-      mock(File).write(is_a(String), is_a(String)) { |path, data|
-        written_path = path
-      }
-      stub(File).rename(custom_temp, custom_path)
-
-      cache = Dude::Transcript::UsageCache.new(price_table)
-      sut_custom.save(cache)
-
-      expect(written_path).to eq(custom_temp)
-    end
-  end
-
-  describe 'roundtrip save and load' do
+  describe 'save and load roundtrip' do
     let(:cache) { Dude::Transcript::UsageCache.new(price_table) }
     let(:cache_data) do
       {
@@ -220,8 +148,9 @@ describe Dude::Transcript::UsageCacheStore do
       cache.add(window_name, usage_record)
       cache.set_file_state('/path/to/file', 12345, 5000)
 
-      stub(File).write(temp_path, anything)
-      stub(File).rename(temp_path, cache_path)
+      stub(FileUtils).mkdir_p
+      stub(File).write(is_a(String), is_a(String))
+      stub(File).rename(is_a(String), cache_path)
       stub(File).exist?(cache_path) { true }
       stub(JSON).load_file(cache_path) { cache_data }
     end

@@ -1,4 +1,5 @@
 require 'json'
+require 'fileutils'
 
 module Dude
   module Transcript
@@ -17,8 +18,9 @@ module Dude
 
       def save(cache)
         data = cache.to_h
-        temp_path = @path + '.tmp'
+        temp_path = @path + ".tmp.#{$$}"
 
+        FileUtils.mkdir_p(File.dirname(@path))
         File.write(temp_path, JSON.generate(data))
         File.rename(temp_path, @path)
       end
