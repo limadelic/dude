@@ -5,16 +5,8 @@ require_relative '../../lib/dude/transcript/usage_cache_store'
 require_relative '../../lib/dude/transcript/usage_cache'
 require_relative '../../lib/dude/transcript/silo_registry'
 
-class SimplePriceTable
-  def cost(model, usage)
-    1.5
-  end
-end
-
 describe Dude::StatusLine::WeekBand do
-  ScannerSpawner = Dude::Transcript::ScannerSpawner
-
-  let(:session_data) { {} }
+  include_context 'band spec setup'
 
   context 'with yellow band in 7d window' do
     let(:session_data) { { 'session_name' => 'test_silo' } }

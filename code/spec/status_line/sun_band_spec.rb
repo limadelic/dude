@@ -5,16 +5,10 @@ require_relative '../../lib/dude/transcript/usage_cache_store'
 require_relative '../../lib/dude/transcript/usage_cache'
 require_relative '../../lib/dude/transcript/silo_registry'
 
-class SimplePriceTable
-  def cost(model, usage)
-    1.5
-  end
-end
-
 describe Dude::StatusLine::SunBand do
-  ScannerSpawner = Dude::Transcript::ScannerSpawner
+  include_context 'band spec setup'
 
-  let(:session_data) { {} }
+  ScannerSpawner = Dude::Transcript::ScannerSpawner
 
   context 'when no session_name, customTitle, or agentName' do
     let(:session_data) { {} }
