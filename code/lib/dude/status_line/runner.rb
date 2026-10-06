@@ -11,6 +11,7 @@ require_relative 'rate_limit'
 require_relative 'enterprise_spend_provider'
 require_relative 'price_table'
 require_relative 'sun_band'
+require_relative 'week_band'
 
 module Dude
   module StatusLine
@@ -139,7 +140,8 @@ module Dude
           ) || 0,
           resets_at: @session.dig('rate_limits', 'seven_day', 'resets_at') || 0,
           window_len: 7 * 24 * 3600,
-          emoji: '🌙'
+          emoji: '🌙',
+          band: seven_day_band
         ).to_s
       end
 
@@ -163,6 +165,10 @@ module Dude
 
       def five_hour_band
         @five_hour_band ||= Dude::StatusLine::SunBand.new(@session).call
+      end
+
+      def seven_day_band
+        @seven_day_band ||= Dude::StatusLine::WeekBand.new(@session).call
       end
     end
   end

@@ -436,15 +436,185 @@ describe Dude::StatusLine::Runner do
       expect(output).to include("\e[41m☀️")
     end
 
-    it 'renders moon emoji unchanged from no band version' do
-      output_with_band = capture_output { sut.run }
-      stub(band).color { nil }
-      output_no_band = capture_output { sut.run }
+    it 'renders red background code before moon emoji' do
+      output = capture_output { sut.run }
 
-      moon_with_band = output_with_band[/☀️.*?(🌙[^\s]*)/m, 1]
-      moon_no_band = output_no_band[/☀️.*?(🌙[^\s]*)/m, 1]
+      expect(output).to include("\e[41m🌙")
+    end
+  end
 
-      expect(moon_with_band).to eq(moon_no_band)
+  describe 'moon band rendering' do
+    let(:sut) { described_class.new(input.to_json, dudes: nil, cwd: cwd) }
+    let(:cache) { instance_double(Dude::Transcript::UsageCache) }
+    let(:cache_store) { instance_double(Dude::Transcript::UsageCacheStore) }
+    let(:registry) { instance_double(Dude::Transcript::SiloRegistry) }
+    let(:current_silo) { instance_double(Dude::Transcript::CurrentSilo) }
+    let(:silo_usage) { instance_double(Dude::Transcript::SiloUsage) }
+    let(:band) { instance_double(Dude::Transcript::Band) }
+    let(:cwd) { Dir.pwd }
+    let(:input) do
+      {
+        'context_window' => { 'used_percentage' => 10 },
+        'model' => { 'id' => 'claude-opus-4-8' },
+        'rate_limits' => {
+          'seven_day' => {
+            'used_percentage' => 41,
+            'resets_at' => (Time.now.to_i + 86400 * 3)
+          }
+        }
+      }
+    end
+
+    before do
+      stub(Dude::StatusLine::AnthropicToken).fetch { '' }
+      stub(Dude::Transcript::UsageCacheStore).new { cache_store }
+      stub(cache_store).load { cache }
+      stub(Dude::Transcript::SiloRegistry).new { registry }
+      stub(registry).load
+      stub(registry).roster { {} }
+      stub(Dude::Transcript::CurrentSilo).new { current_silo }
+      stub(Dude::Transcript::SiloUsage).new { silo_usage }
+      stub(Dude::Transcript::Band).new { band }
+    end
+
+    context 'when cache loads successfully and band is computed' do
+      before do
+        stub(current_silo).call { 'uuid-code' }
+        stub(silo_usage).ratio { 2.5 }
+        stub(silo_usage).active_count { 2 }
+        stub(band).color { :yellow }
+        stub(Dude::StatusLine::RateLimit).new do
+          double(to_s: '🌙 bar')
+        end
+      end
+
+      it 'passes band to rate_limit' do
+        output = capture_output { sut.run }
+
+        expect(output).to include('🌙 bar')
+      end
+    end
+
+    context 'when silo is nil' do
+      before do
+        stub(current_silo).call { nil }
+        stub(Dude::StatusLine::RateLimit).new do
+          double(to_s: '🌙 bar')
+        end
+      end
+
+      it 'passes no band to rate_limit' do
+        output = capture_output { sut.run }
+
+        expect(output).to include('🌙')
+      end
+    end
+
+    context 'when cache is empty' do
+      before do
+        stub(current_silo).call { 'uuid-code' }
+        stub(silo_usage).active_count { 0 }
+        stub(Dude::StatusLine::RateLimit).new do
+          double(to_s: '🌙 bar')
+        end
+      end
+
+      it 'passes no band to rate_limit' do
+        output = capture_output { sut.run }
+
+        expect(output).to include('🌙')
+      end
+    end
+
+    context 'when band color is nil (green)' do
+      before do
+        stub(current_silo).call { 'uuid-code' }
+        stub(silo_usage).ratio { 1.5 }
+        stub(silo_usage).active_count { 2 }
+        stub(band).color { nil }
+        stub(Dude::StatusLine::RateLimit).new do
+          double(to_s: '🌙 bar')
+        end
+      end
+
+      it 'passes no band to rate_limit' do
+        output = capture_output { sut.run }
+
+        expect(output).to include('🌙')
+      end
+    end
+
+    context 'when input lacks seven_day rate_limit' do
+      let(:input) do
+        {
+          'context_window' => { 'used_percentage' => 10 },
+          'model' => { 'id' => 'claude-opus-4-8' },
+          'rate_limits' => {
+            'five_hour' => {
+              'used_percentage' => 41,
+              'resets_at' => (Time.now.to_i + 3600)
+            }
+          }
+        }
+      end
+
+      it 'does not compute band' do
+        output = capture_output { sut.run }
+
+        expect(output).not_to include('🌙')
+      end
+    end
+  end
+
+  describe 'red band rendering for moon' do
+    let(:sut) { described_class.new(input.to_json, dudes: nil, cwd: Dir.pwd) }
+    let(:band) { instance_double(Dude::Transcript::Band) }
+    let(:cache) { instance_double(Dude::Transcript::UsageCache) }
+    let(:cache_store) { instance_double(Dude::Transcript::UsageCacheStore) }
+    let(:cache_checker) { instance_double(Dude::Transcript::CacheStalenessChecker) }
+    let(:registry) { instance_double(Dude::Transcript::SiloRegistry) }
+    let(:current_silo) { instance_double(Dude::Transcript::CurrentSilo) }
+    let(:silo_usage) { instance_double(Dude::Transcript::SiloUsage) }
+    let(:input) do
+      {
+        'context_window' => { 'used_percentage' => 41 },
+        'model' => { 'id' => 'claude-opus-4-8' },
+        'rate_limits' => {
+          'five_hour' => {
+            'used_percentage' => 41,
+            'resets_at' => (Time.now.to_i + 3600)
+          },
+          'seven_day' => {
+            'used_percentage' => 99,
+            'resets_at' => (Time.now.to_i + 86400 * 3)
+          }
+        }
+      }
+    end
+
+    before do
+      stub(Dude::StatusLine::AnthropicToken).fetch { '' }
+      stub(Dude::Transcript::UsageCacheStore).new { cache_store }
+      stub(cache_store).load { cache }
+      stub(cache).instance_variable_get { {} }
+      stub(Dude::Transcript::SiloRegistry).new { registry }
+      stub(registry).load
+      stub(registry).roster { {} }
+      stub(Dude::Transcript::CurrentSilo).new { current_silo }
+      stub(Dude::Transcript::SiloUsage).new { silo_usage }
+      stub(Dude::Transcript::Band).new { band }
+      stub(Dude::Transcript::CacheStalenessChecker).new { cache_checker }
+      stub(cache_checker).stale? { false }
+      stub(current_silo).call { 'uuid-code' }
+      stub(silo_usage).active_count { 2 }
+      stub(silo_usage).ratio('uuid-code') { 3.5 }
+      stub(band).color { :red }
+    end
+
+    it 'renders red background code before moon emoji' do
+      output = capture_output { sut.run }
+
+      expect(output).to include("\e[41m🌙")
     end
   end
 end
