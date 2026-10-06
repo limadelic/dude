@@ -375,10 +375,12 @@ describe Dude::StatusLine::Runner do
 
     it 'renders rate limits without background band on sun emoji' do
       output = capture_output { sut.run }
+      expected_output = (
+        "\e[38;5;226m🧠 ████░░░░░\e[0m \e[32m☀️ ████░░░░░\e[0m " \
+        "\e[32m🌙 █░░░░░░░░\e[0m 🎭 \n"
+      )
 
-      sun_match = output[/☀️ ([^🌙]*)🌙/, 1]
-      expect(output).to include('☀️')
-      expect(output).not_to include("\e[41m")
+      expect(output).to eq(expected_output)
     end
   end
 
