@@ -8,57 +8,34 @@ describe Dude::Transcript::ScannerSpawner do
   let(:cache_path) { '/home/user/.claude/dude/usage_cache.json' }
   let(:lock_path) { "#{cache_path}.lock" }
   let(:scanner_pid) { 12345 }
+  let(:spawn_command) { ['dude', 'transcript', 'scan'] }
+  let(:spawn_options) { { out: File::NULL, err: File::NULL } }
 
   describe '#spawn' do
     context 'when no scan is currently running' do
       before do
         stub(File).exist?(lock_path) { false }
-        stub(Process).spawn(
-          'dude', 'transcript', 'scan',
-          out: File::NULL, err: File::NULL
-        ) { scanner_pid }
+        stub(Process).spawn(*spawn_command, **spawn_options) { scanner_pid }
         stub(Process).detach(scanner_pid)
         stub(File).write(lock_path, scanner_pid.to_s)
       end
 
       it 'spawns the scanner in background' do
-        mock(Process).spawn(
-          'dude', 'transcript', 'scan',
-          out: File::NULL, err: File::NULL
-        )
-
+        mock(Process).spawn(*spawn_command, **spawn_options)
         sut.spawn
       end
 
       it 'detaches the spawned process' do
-        stub(Process).spawn(
-          'dude', 'transcript', 'scan',
-          out: File::NULL, err: File::NULL
-        ) { scanner_pid }
         mock(Process).detach(scanner_pid)
-
         sut.spawn
       end
 
       it 'writes lock file with scanner pid' do
-        stub(Process).spawn(
-          'dude', 'transcript', 'scan',
-          out: File::NULL, err: File::NULL
-        ) { scanner_pid }
-        stub(Process).detach(scanner_pid)
         mock(File).write(lock_path, scanner_pid.to_s)
-
         sut.spawn
       end
 
       it 'returns true indicating spawn happened' do
-        stub(Process).spawn(
-          'dude', 'transcript', 'scan',
-          out: File::NULL, err: File::NULL
-        ) { scanner_pid }
-        stub(Process).detach(scanner_pid)
-        stub(File).write(lock_path, scanner_pid.to_s)
-
         expect(sut.spawn).to be true
       end
     end
@@ -82,10 +59,7 @@ describe Dude::Transcript::ScannerSpawner do
     context 'when spawn fails with an error' do
       before do
         stub(File).exist?(lock_path) { false }
-        stub(Process).spawn(
-          'dude', 'transcript', 'scan',
-          out: File::NULL, err: File::NULL
-        ) {
+        stub(Process).spawn(*spawn_command, **spawn_options) {
           raise StandardError.new('spawn failed')
         }
       end
@@ -102,10 +76,7 @@ describe Dude::Transcript::ScannerSpawner do
     context 'when detach fails with an error' do
       before do
         stub(File).exist?(lock_path) { false }
-        stub(Process).spawn(
-          'dude', 'transcript', 'scan',
-          out: File::NULL, err: File::NULL
-        ) { scanner_pid }
+        stub(Process).spawn(*spawn_command, **spawn_options) { scanner_pid }
         stub(Process).detach(scanner_pid) {
           raise StandardError.new('detach failed')
         }
