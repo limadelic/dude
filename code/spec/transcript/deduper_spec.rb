@@ -28,6 +28,10 @@ describe Dude::Transcript::Deduper do
 
   let(:records) { [record_one, record_two] }
 
+  def record_by_id(result, id)
+    result.find { |r| r[:id] == id }
+  end
+
   describe '#call' do
     it 'returns all records when no duplicates' do
       result = sut.call(records)
@@ -44,8 +48,7 @@ describe Dude::Transcript::Deduper do
       result = sut.call(input)
 
       expect(result.length).to eq(2)
-      kept_msg_1 = result.find { |r| r[:id] == 'msg-1' }
-      expect(kept_msg_1[:epoch]).to eq(1000)
+      expect(record_by_id(result, 'msg-1')[:epoch]).to eq(1000)
     end
 
     it 'drops records with nil id' do
@@ -67,8 +70,7 @@ describe Dude::Transcript::Deduper do
       result = sut.call(input)
 
       expect(result.length).to eq(2)
-      kept = result.find { |r| r[:id] == 'msg-1' }
-      expect(kept[:epoch]).to eq(1000)
+      expect(record_by_id(result, 'msg-1')[:epoch]).to eq(1000)
     end
 
     it 'handles all nil ids by dropping them' do
@@ -88,22 +90,19 @@ describe Dude::Transcript::Deduper do
     end
 
     it 'preserves record data when deduping' do
-      dup_with_different_model = record_one.merge(
+      dup = record_one.merge(
         epoch: 3000,
         model: 'claude-sonnet-5',
         usage: { 'input_tokens' => 200, 'output_tokens' => 100 }
       )
-      input = [record_one, dup_with_different_model]
+      input = [record_one, dup]
 
       result = sut.call(input)
 
-      kept = result.find { |r| r[:id] == 'msg-1' }
+      kept = record_by_id(result, 'msg-1')
       expect(kept[:model]).to eq('claude-opus-5')
       expect(kept[:usage]).to eq(
-        {
-          'input_tokens' => 100,
-          'output_tokens' => 50
-        }
+        { 'input_tokens' => 100, 'output_tokens' => 50 }
       )
     end
   end
