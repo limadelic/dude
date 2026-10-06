@@ -14,8 +14,7 @@ module Dude
         @session = session_data
         @cache = cache
         @registry = registry
-        default_path = '~/.claude/dude/usage_cache.json'
-        @cache_path = cache_path || File.expand_path(default_path)
+        @cache_path = cache_path || resolve_cache_path
       end
 
       def call
@@ -102,6 +101,12 @@ module Dude
 
       def band_color(ratio, active_count)
         Dude::Transcript::Band.new(ratio, active_count).color
+      end
+
+      def resolve_cache_path
+        default = ENV['DUDE_CACHE_PATH'] ||
+          '~/.claude/dude/usage_cache.json'
+        File.expand_path(default)
       end
     end
   end

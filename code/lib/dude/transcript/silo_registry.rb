@@ -29,7 +29,10 @@ module Dude
       private
 
       def default_path
-        File.expand_path('~/dude/silos/silo/.claude/skills/silo/silos.json')
+        cache_path = ENV['DUDE_SILOS_PATH']
+        cache_path || File.expand_path(
+          '~/dude/silos/silo/.claude/skills/silo/silos.json'
+        )
       end
     end
   end
