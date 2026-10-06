@@ -335,4 +335,110 @@ describe Dude::StatusLine::Runner do
       end
     end
   end
+
+  describe 'no band rendering' do
+    let(:sut) { described_class.new(input.to_json, dudes: nil, cwd: Dir.pwd) }
+    let(:input) do
+      {
+        'context_window' => { 'used_percentage' => 41 },
+        'model' => { 'id' => 'claude-opus-4-8' },
+        'rate_limits' => {
+          'five_hour' => {
+            'used_percentage' => 41,
+            'resets_at' => (Time.now.to_i + 3600)
+          },
+          'seven_day' => {
+            'used_percentage' => 4,
+            'resets_at' => (Time.now.to_i + 86400 * 3)
+          }
+        }
+      }
+    end
+
+    before do
+      stub(Dude::StatusLine::AnthropicToken).fetch { '' }
+      stub(Dude::Transcript::UsageCacheStore).new { cache_store }
+      stub(cache_store).load { cache }
+      stub(Dude::Transcript::SiloRegistry).new { registry }
+      stub(registry).load
+      stub(registry).roster { {} }
+      stub(Dude::Transcript::CurrentSilo).new { current_silo }
+      stub(Dude::Transcript::SiloUsage).new { silo_usage }
+      stub(current_silo).call { nil }
+    end
+
+    let(:cache_store) { instance_double(Dude::Transcript::UsageCacheStore) }
+    let(:cache) { instance_double(Dude::Transcript::UsageCache) }
+    let(:registry) { instance_double(Dude::Transcript::SiloRegistry) }
+    let(:current_silo) { instance_double(Dude::Transcript::CurrentSilo) }
+    let(:silo_usage) { instance_double(Dude::Transcript::SiloUsage) }
+
+    it 'renders rate limits without background band on sun emoji' do
+      output = capture_output { sut.run }
+
+      sun_match = output[/☀️ ([^🌙]*)🌙/, 1]
+      expect(output).to include('☀️')
+      expect(output).not_to include("\e[41m")
+    end
+  end
+
+  describe 'red band rendering' do
+    let(:sut) { described_class.new(input.to_json, dudes: nil, cwd: Dir.pwd) }
+    let(:band) { instance_double(Dude::Transcript::Band) }
+    let(:cache) { instance_double(Dude::Transcript::UsageCache) }
+    let(:cache_store) { instance_double(Dude::Transcript::UsageCacheStore) }
+    let(:registry) { instance_double(Dude::Transcript::SiloRegistry) }
+    let(:current_silo) { instance_double(Dude::Transcript::CurrentSilo) }
+    let(:silo_usage) { instance_double(Dude::Transcript::SiloUsage) }
+    let(:input) do
+      {
+        'context_window' => { 'used_percentage' => 41 },
+        'model' => { 'id' => 'claude-opus-4-8' },
+        'rate_limits' => {
+          'five_hour' => {
+            'used_percentage' => 99,
+            'resets_at' => (Time.now.to_i + 3600)
+          },
+          'seven_day' => {
+            'used_percentage' => 4,
+            'resets_at' => (Time.now.to_i + 86400 * 3)
+          }
+        }
+      }
+    end
+
+    before do
+      stub(Dude::StatusLine::AnthropicToken).fetch { '' }
+      stub(Dude::Transcript::UsageCacheStore).new { cache_store }
+      stub(cache_store).load { cache }
+      stub(cache).instance_variable_get { {} }
+      stub(Dude::Transcript::SiloRegistry).new { registry }
+      stub(registry).load
+      stub(registry).roster { {} }
+      stub(Dude::Transcript::CurrentSilo).new { current_silo }
+      stub(Dude::Transcript::SiloUsage).new { silo_usage }
+      stub(Dude::Transcript::Band).new { band }
+      stub(current_silo).call { 'uuid-code' }
+      stub(silo_usage).active_count { 2 }
+      stub(silo_usage).ratio('uuid-code') { 3.5 }
+      stub(band).color { :red }
+    end
+
+    it 'renders red background code before sun emoji' do
+      output = capture_output { sut.run }
+
+      expect(output).to include("\e[41m☀️")
+    end
+
+    it 'renders moon emoji unchanged from no band version' do
+      output_with_band = capture_output { sut.run }
+      stub(band).color { nil }
+      output_no_band = capture_output { sut.run }
+
+      moon_with_band = output_with_band[/☀️.*?(🌙[^\s]*)/m, 1]
+      moon_no_band = output_no_band[/☀️.*?(🌙[^\s]*)/m, 1]
+
+      expect(moon_with_band).to eq(moon_no_band)
+    end
+  end
 end

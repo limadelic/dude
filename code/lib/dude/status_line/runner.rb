@@ -14,7 +14,6 @@ require_relative 'sun_band'
 
 module Dude
   module StatusLine
-    # rubocop:disable Metrics/ClassLength
     class Runner
       include Dude::StatusLine::Format
 
@@ -51,10 +50,39 @@ module Dude
         puts "🧠 [ERROR: #{e.class}]"
       end
 
-      def build_status_line(dudes_instance)
-        r = @session['rate_limits'] ? rate_limit_sections : enterprise_sections
-        [*r.compact, dudes_instance.to_s].compact.join(' ')
+      def context_percentage
+        @context_percentage ||= Dude::StatusLine::ContextPercentage.new(@session).value
       end
+
+      def build_status_line(dudes_instance)
+        sections = SectionBuilder.new(
+          @session, @activity,
+          context_percentage
+        ).build
+        [*sections.compact, dudes_instance.to_s].compact.join(' ')
+      end
+
+      def load_dudes
+        Dude::Dudes::Dudes.new.all
+      end
+    end
+
+    class SectionBuilder
+      def initialize(session, activity, context_pct)
+        @session = session
+        @activity = activity
+        @context_pct = context_pct
+      end
+
+      def build
+        if @session['rate_limits']
+          rate_limit_sections
+        else
+          enterprise_sections
+        end
+      end
+
+      private
 
       def rate_limit_sections
         [
@@ -70,24 +98,8 @@ module Dude
         ]
       end
 
-      def token
-        @memoized_token ||= Dude::StatusLine::AnthropicToken.fetch
-      end
-
       def context_section
-        Dude::StatusLine::Context.new(@session, context_percentage).to_s
-      end
-
-      def context_percentage
-        @context_percentage ||= Dude::StatusLine::ContextPercentage.new(@session).value
-      end
-
-      def load_dudes
-        Dude::Dudes::Dudes.new.all
-      end
-
-      def activity_data
-        @activity_data ||= @activity || {}
+        Dude::StatusLine::Context.new(@session, @context_pct).to_s
       end
 
       def pomo_section
@@ -96,6 +108,10 @@ module Dude
 
       def models_section
         Dude::StatusLine::Models.new(@session, activity_data).to_s
+      end
+
+      def activity_data
+        @activity_data ||= @activity || {}
       end
 
       def five_hour_section
@@ -141,10 +157,13 @@ module Dude
         ).get
       end
 
+      def token
+        @memoized_token ||= Dude::StatusLine::AnthropicToken.fetch
+      end
+
       def five_hour_band
         @five_hour_band ||= Dude::StatusLine::SunBand.new(@session).call
       end
     end
-    # rubocop:enable Metrics/ClassLength
   end
 end

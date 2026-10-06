@@ -8,23 +8,30 @@ require_relative 'price_table'
 module Dude
   module StatusLine
     class SunBand
-      def initialize(session_data)
+      def initialize(session_data, cache: nil, registry: nil)
         @session = session_data
+        @cache = cache
+        @registry = registry
       end
 
-      # rubocop:disable Metrics/MethodLength
       def call
-        return nil unless (silo_id = current_silo)
-        return nil if (usage = silo_usage).active_count <= 1
+        silo_id = current_silo
+        return nil unless silo_id
 
-        ratio = usage.ratio(silo_id)
-        band_color(ratio, usage.active_count) if ratio
+        band_for_silo(silo_id)
       rescue StandardError
         nil
       end
-      # rubocop:enable Metrics/MethodLength
 
       private
+
+      def band_for_silo(silo_id)
+        usage = silo_usage
+        return nil if usage.active_count <= 1
+
+        ratio = usage.ratio(silo_id)
+        band_color(ratio, usage.active_count) if ratio
+      end
 
       def current_silo
         @current_silo ||= Dude::Transcript::CurrentSilo.new(silo_registry).call(
@@ -35,16 +42,16 @@ module Dude
       end
 
       def silo_registry
-        @silo_registry ||= Dude::Transcript::SiloRegistry.new.tap(&:load)
+        @registry ||= Dude::Transcript::SiloRegistry.new.tap(&:load)
       end
 
       def silo_usage
         @silo_usage ||= Dude::Transcript::SiloUsage.new(
-          cache, sessions_to_silos, '5h'
+          cache_store, sessions_to_silos, '5h'
         )
       end
 
-      def cache
+      def cache_store
         @cache ||= Dude::Transcript::UsageCacheStore.new.load(price_table)
       end
 
@@ -69,7 +76,7 @@ module Dude
       end
 
       def session_ids
-        windows = cache.instance_variable_get(:@windows)
+        windows = cache_store.instance_variable_get(:@windows)
         windows.each_value.flat_map { |window| window[:costs].keys }.uniq
       end
 
