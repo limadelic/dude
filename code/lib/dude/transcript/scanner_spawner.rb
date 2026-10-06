@@ -50,10 +50,9 @@ module Dude
       end
 
       def process_alive?(pid)
-        Process.kill(0, pid)
-        true
-      rescue Errno::ESRCH
-        false
+        Process.kill(0, pid); true
+      rescue Errno::ESRCH, Errno::EPERM => e
+        !e.is_a?(Errno::ESRCH)
       end
     end
   end

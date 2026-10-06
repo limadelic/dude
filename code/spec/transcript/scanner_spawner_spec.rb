@@ -40,41 +40,63 @@ describe Dude::Transcript::ScannerSpawner do
       end
     end
 
-    context 'when lock file contains a live pid' do
+    context 'when lock file contains a pid' do
       before do
         stub(File).exist?(lock_path) { true }
         stub(File).read(lock_path) { scanner_pid.to_s }
-        stub(Process).kill(0, scanner_pid)
       end
 
-      it 'does not spawn another process' do
-        dont_allow(Process).spawn
+      context 'when pid is alive' do
+        before do
+          stub(Process).kill(0, scanner_pid)
+        end
 
-        sut.spawn
+        it 'does not spawn another process' do
+          dont_allow(Process).spawn
+
+          sut.spawn
+        end
+
+        it 'returns false indicating no spawn' do
+          expect(sut.spawn).to be false
+        end
       end
 
-      it 'returns false indicating no spawn' do
-        expect(sut.spawn).to be false
-      end
-    end
+      context 'when pid is dead' do
+        before do
+          stub(Process).kill(0, scanner_pid) { raise Errno::ESRCH }
+          stub(Process).spawn(*spawn_command, **spawn_options) { scanner_pid }
+          stub(Process).detach(scanner_pid)
+          stub(File).write(lock_path, scanner_pid.to_s)
+        end
 
-    context 'when lock file contains a dead pid' do
-      before do
-        stub(File).exist?(lock_path) { true }
-        stub(File).read(lock_path) { scanner_pid.to_s }
-        stub(Process).kill(0, scanner_pid) { raise Errno::ESRCH }
-        stub(Process).spawn(*spawn_command, **spawn_options) { scanner_pid }
-        stub(Process).detach(scanner_pid)
-        stub(File).write(lock_path, scanner_pid.to_s)
-      end
+        it 'spawns the scanner in background' do
+          mock(Process).spawn(*spawn_command, **spawn_options)
+          sut.spawn
+        end
 
-      it 'spawns the scanner in background' do
-        mock(Process).spawn(*spawn_command, **spawn_options)
-        sut.spawn
+        it 'returns true indicating spawn happened' do
+          expect(sut.spawn).to be true
+        end
       end
 
-      it 'returns true indicating spawn happened' do
-        expect(sut.spawn).to be true
+      context 'when pid is owned by another user' do
+        before do
+          stub(Process).kill(0, scanner_pid) { raise Errno::EPERM }
+          stub(Process).spawn(*spawn_command, **spawn_options) { scanner_pid }
+          stub(Process).detach(scanner_pid)
+          stub(File).write(lock_path, scanner_pid.to_s)
+        end
+
+        it 'does not spawn another process' do
+          dont_allow(Process).spawn
+
+          sut.spawn
+        end
+
+        it 'returns false indicating no spawn' do
+          expect(sut.spawn).to be false
+        end
       end
     end
 
