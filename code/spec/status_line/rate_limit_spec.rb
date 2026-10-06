@@ -137,5 +137,49 @@ describe Dude::StatusLine::RateLimit do
         expect(output).to include('🌙')
       end
     end
+
+    describe 'band background' do
+      let(:base_output) {
+        described_class.new(
+          used_pct: 25,
+          resets_at: now_time + 3600,
+          window_len: 3600,
+          emoji: '☀️'
+        ).to_s
+      }
+
+      it 'with nil band, output is identical to no band argument' do
+        with_nil_band = described_class.new(
+          used_pct: 25,
+          resets_at: now_time + 3600,
+          window_len: 3600,
+          emoji: '☀️',
+          band: nil
+        ).to_s
+        expect(with_nil_band).to eq(base_output)
+      end
+
+      it 'with :yellow band, wraps emoji with yellow background' do
+        output = described_class.new(
+          used_pct: 25,
+          resets_at: now_time + 3600,
+          window_len: 3600,
+          emoji: '☀️',
+          band: :yellow
+        ).to_s
+        expect(output).to include("\033[48;5;226m☀️\033[0m")
+      end
+
+      it 'with :red band, wraps emoji with red background' do
+        output = described_class.new(
+          used_pct: 25,
+          resets_at: now_time + 3600,
+          window_len: 3600,
+          emoji: '☀️',
+          band: :red
+        ).to_s
+        expect(output).to include("\033[41m☀️\033[0m")
+      end
+    end
   end
 end

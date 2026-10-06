@@ -31,12 +31,20 @@ module Dude
         pct < lo ? COLORS[:green] : (pct <= hi ? COLORS[:yellow] : COLORS[:red])
       end
 
-      def bar(pct, emoji, lo: 33, hi: 66, color: nil)
+      def bar(pct, emoji, lo: 33, hi: 66, color: nil, band: nil)
         filled = bar_filled(pct)
         col = color || color_for_pct(clamp(pct), lo, hi)
         pad = JETBRAINS ? ' ' : ''
         bars = bar_segments(filled)
-        "#{col}#{emoji}#{pad} #{bars}#{COLORS[:reset]}"
+        emoji_with_band(emoji, col, pad, bars, band)
+      end
+
+      def emoji_with_band(emoji, col, pad, bars, band)
+        bg = band == :yellow ? COLORS[:bg_yellow] : COLORS[:bg_red] if band
+        return "#{col}#{emoji}#{pad} #{bars}#{COLORS[:reset]}" unless bg
+
+        "#{bg}#{emoji}#{COLORS[:reset]}#{col}#{pad} #{bars}" \
+        "#{COLORS[:reset]}"
       end
 
       def bar_filled(pct)
