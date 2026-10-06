@@ -47,9 +47,7 @@ describe Dude::StatusLine::WindowBand do
     end
 
     context 'when error occurs' do
-      before do
-        stub(sut).cache_is_stale? { raise StandardError, 'cache check failed' }
-      end
+      let(:cache_is_stale) { raise StandardError, 'cache check failed' }
 
       it 'returns nil' do
         expect(sut.silo_list_data).to be_nil
