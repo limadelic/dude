@@ -3,27 +3,47 @@ require_relative '../transcript/silo_registry'
 require_relative '../transcript/current_silo'
 require_relative '../transcript/silo_usage'
 require_relative '../transcript/band'
+require_relative '../transcript/cache_staleness_checker'
+require_relative '../transcript/scanner_spawner'
 require_relative 'price_table'
 
 module Dude
   module StatusLine
     class SunBand
-      def initialize(session_data, cache: nil, registry: nil)
+      def initialize(session_data, cache: nil, registry: nil, cache_path: nil)
         @session = session_data
         @cache = cache
         @registry = registry
+        default_path = '~/.claude/dude/usage_cache.json'
+        @cache_path = cache_path || File.expand_path(default_path)
       end
 
       def call
-        silo_id = current_silo
-        return nil unless silo_id
+        return nil if cache_is_stale?
+        return nil unless current_silo
 
-        band_for_silo(silo_id)
+        band_for_silo(current_silo)
       rescue StandardError
         nil
       end
 
       private
+
+      def cache_is_stale?
+        return false unless check_staleness
+
+        spawn_scanner
+        true
+      end
+
+      def check_staleness
+        checker = Dude::Transcript::CacheStalenessChecker.new(@cache_path)
+        checker.stale?
+      end
+
+      def spawn_scanner
+        Dude::Transcript::ScannerSpawner.new(@cache_path).spawn
+      end
 
       def band_for_silo(silo_id)
         usage = silo_usage

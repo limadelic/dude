@@ -389,6 +389,7 @@ describe Dude::StatusLine::Runner do
     let(:band) { instance_double(Dude::Transcript::Band) }
     let(:cache) { instance_double(Dude::Transcript::UsageCache) }
     let(:cache_store) { instance_double(Dude::Transcript::UsageCacheStore) }
+    let(:cache_checker) { instance_double(Dude::Transcript::CacheStalenessChecker) }
     let(:registry) { instance_double(Dude::Transcript::SiloRegistry) }
     let(:current_silo) { instance_double(Dude::Transcript::CurrentSilo) }
     let(:silo_usage) { instance_double(Dude::Transcript::SiloUsage) }
@@ -420,6 +421,8 @@ describe Dude::StatusLine::Runner do
       stub(Dude::Transcript::CurrentSilo).new { current_silo }
       stub(Dude::Transcript::SiloUsage).new { silo_usage }
       stub(Dude::Transcript::Band).new { band }
+      stub(Dude::Transcript::CacheStalenessChecker).new { cache_checker }
+      stub(cache_checker).stale? { false }
       stub(current_silo).call { 'uuid-code' }
       stub(silo_usage).active_count { 2 }
       stub(silo_usage).ratio('uuid-code') { 3.5 }
