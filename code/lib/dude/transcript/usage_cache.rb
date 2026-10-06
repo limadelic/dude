@@ -79,18 +79,25 @@ module Dude
           acc[name] = {
             start: data[:start],
             costs: data[:costs].dup,
-            seen_ids: data[:seen_ids].dup
+            seen_ids: data[:seen_ids].to_a
           }
         end
       end
 
       def windows_load(windows_hash)
         windows_hash.each_with_object({}) do |(name, data), acc|
-          acc[name] = {
+          key = name.to_s
+          acc[key] = {
             start: data[:start],
-            costs: data[:costs].dup,
+            costs: normalize_hash_keys(data[:costs]),
             seen_ids: Set.new(data[:seen_ids])
           }
+        end
+      end
+
+      def normalize_hash_keys(hash)
+        hash.each_with_object({}) do |(k, v), acc|
+          acc[k.to_s] = v
         end
       end
     end
