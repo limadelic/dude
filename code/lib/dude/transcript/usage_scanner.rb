@@ -22,6 +22,7 @@ module Dude
 
         offset = resume_offset(@cache.file_state(path), stat.size)
         process(path, read_file_from(path, offset), offset, stat.mtime)
+      rescue Errno::ENOENT
       end
 
       def should_skip?(path, stat)
@@ -58,11 +59,11 @@ module Dude
       end
 
       def read_file_from(path, offset)
-        f = File.open(path, 'r')
-        f.read(offset) if offset > 0
+        f = File.open(path, 'rb')
+        f.seek(offset) if offset > 0
         content = f.read
         f.close
-        content
+        content.force_encoding('UTF-8')
       end
     end
   end
