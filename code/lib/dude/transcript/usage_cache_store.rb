@@ -1,5 +1,6 @@
 require 'json'
 require 'fileutils'
+require_relative 'usage_cache'
 
 module Dude
   module Transcript

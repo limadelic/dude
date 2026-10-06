@@ -10,17 +10,9 @@ module Dude
       end
 
       def color
-        return nil if @ratio.nil?
-        return nil if @active_count <= 1
-
-        case @ratio
-        when 0...YELLOW_THRESHOLD
-          nil
-        when YELLOW_THRESHOLD...RED_THRESHOLD
-          :yellow
-        else
-          :red
-        end
+        return nil if @ratio.nil? || @active_count <= 1
+        return :red if @ratio >= RED_THRESHOLD
+        return :yellow if @ratio >= YELLOW_THRESHOLD
       end
     end
   end

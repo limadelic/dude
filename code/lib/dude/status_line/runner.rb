@@ -9,9 +9,16 @@ require_relative 'models'
 require_relative 'dudes'
 require_relative 'rate_limit'
 require_relative 'enterprise_spend_provider'
+require_relative 'price_table'
+require_relative '../transcript/usage_cache_store'
+require_relative '../transcript/silo_registry'
+require_relative '../transcript/current_silo'
+require_relative '../transcript/silo_usage'
+require_relative '../transcript/band'
 
 module Dude
   module StatusLine
+    # rubocop:disable Metrics/ClassLength
     class Runner
       include Dude::StatusLine::Format
 
@@ -105,7 +112,8 @@ module Dude
           ) || 0,
           resets_at: @session.dig('rate_limits', 'five_hour', 'resets_at') || 0,
           window_len: 5 * 3600,
-          emoji: '☀️'
+          emoji: '☀️',
+          band: five_hour_band
         ).to_s
       end
 
@@ -135,6 +143,51 @@ module Dude
         @enterprise_spend ||= Dude::StatusLine::EnterpriseSpendProvider.new(
           @session, token
         ).get
+      end
+
+      # rubocop:disable Metrics/MethodLength, Layout/EmptyLineAfterGuardClause
+      def five_hour_band
+        return nil unless (silo = current_silo_id)
+        usage = five_hour_usage
+        return nil if usage.active_count <= 1
+        ratio = usage.ratio(silo)
+        build_band(ratio, usage.active_count) if ratio
+      end
+      # rubocop:enable Metrics/MethodLength, Layout/EmptyLineAfterGuardClause
+
+      def build_band(ratio, active_count)
+        band = Dude::Transcript::Band.new(ratio, active_count)
+        band.color ? band : nil
+      end
+
+      def current_silo_id
+        @current_silo_id ||= Dude::Transcript::CurrentSilo.new(silo_registry).call(
+          session_name: @session['session_name'],
+          customTitle: @session['customTitle'],
+          agentName: @session['agentName']
+        )
+      end
+
+      def silo_registry
+        @silo_registry ||= Dude::Transcript::SiloRegistry.new.tap(&:load)
+      end
+
+      def five_hour_usage
+        @five_hour_usage ||= Dude::Transcript::SiloUsage.new(
+          usage_cache, sessions_to_silos, '5h'
+        )
+      end
+
+      def usage_cache
+        @usage_cache ||= Dude::Transcript::UsageCacheStore.new.load(price_table)
+      end
+
+      def price_table
+        @price_table ||= Dude::StatusLine::PriceTable.new
+      end
+
+      def sessions_to_silos
+        {}
       end
     end
   end

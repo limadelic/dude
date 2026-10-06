@@ -181,4 +181,157 @@ describe Dude::StatusLine::Runner do
       end
     end
   end
+
+  describe 'band rendering' do
+    let(:sut) { described_class.new(input.to_json, dudes: nil, cwd: cwd) }
+    let(:cache) { instance_double(Dude::Transcript::UsageCache) }
+    let(:cache_store) { instance_double(Dude::Transcript::UsageCacheStore) }
+    let(:registry) { instance_double(Dude::Transcript::SiloRegistry) }
+    let(:current_silo) { instance_double(Dude::Transcript::CurrentSilo) }
+    let(:silo_usage) { instance_double(Dude::Transcript::SiloUsage) }
+    let(:band) { instance_double(Dude::Transcript::Band) }
+    let(:cwd) { Dir.pwd }
+    let(:input) do
+      {
+        'context_window' => { 'used_percentage' => 10 },
+        'model' => { 'id' => 'claude-opus-4-8' },
+        'rate_limits' => {
+          'five_hour' => {
+            'used_percentage' => 41,
+            'resets_at' => (Time.now.to_i + 3600)
+          }
+        }
+      }
+    end
+
+    before do
+      stub(Dude::StatusLine::AnthropicToken).fetch { '' }
+      stub(Dude::Transcript::UsageCacheStore).new { cache_store }
+      stub(cache_store).load { cache }
+      stub(Dude::Transcript::SiloRegistry).new { registry }
+      stub(registry).load
+      stub(Dude::Transcript::CurrentSilo).new { current_silo }
+      stub(Dude::Transcript::SiloUsage).new { silo_usage }
+      stub(Dude::Transcript::Band).new { band }
+    end
+
+    context 'when cache loads successfully and band is computed' do
+      before do
+        stub(current_silo).call { 'uuid-code' }
+        stub(silo_usage).ratio { 2.5 }
+        stub(silo_usage).active_count { 2 }
+        stub(band).color { :yellow }
+        stub(Dude::StatusLine::RateLimit).new do
+          double(to_s: '☀️ bar')
+        end
+      end
+
+      it 'passes band to rate_limit' do
+        output = capture_output { sut.run }
+
+        expect(output).to include('☀️ bar')
+      end
+    end
+
+    context 'when silo is nil' do
+      before do
+        stub(current_silo).call { nil }
+        stub(Dude::StatusLine::RateLimit).new do
+          double(to_s: '☀️ bar')
+        end
+      end
+
+      it 'passes no band to rate_limit' do
+        output = capture_output { sut.run }
+
+        expect(output).to include('☀️')
+      end
+    end
+
+    context 'when cache is empty' do
+      before do
+        stub(current_silo).call { 'uuid-code' }
+        stub(silo_usage).active_count { 0 }
+        stub(Dude::StatusLine::RateLimit).new do
+          double(to_s: '☀️ bar')
+        end
+      end
+
+      it 'passes no band to rate_limit' do
+        output = capture_output { sut.run }
+
+        expect(output).to include('☀️')
+      end
+    end
+
+    context 'when active_count is 1 (solo)' do
+      before do
+        stub(current_silo).call { 'uuid-code' }
+        stub(silo_usage).active_count { 1 }
+        stub(Dude::StatusLine::RateLimit).new do
+          double(to_s: '☀️ bar')
+        end
+      end
+
+      it 'passes no band to rate_limit' do
+        output = capture_output { sut.run }
+
+        expect(output).to include('☀️')
+      end
+    end
+
+    context 'when band color is nil (green)' do
+      before do
+        stub(current_silo).call { 'uuid-code' }
+        stub(silo_usage).ratio { 1.5 }
+        stub(silo_usage).active_count { 2 }
+        stub(band).color { nil }
+        stub(Dude::StatusLine::RateLimit).new do
+          double(to_s: '☀️ bar')
+        end
+      end
+
+      it 'passes no band to rate_limit' do
+        output = capture_output { sut.run }
+
+        expect(output).to include('☀️')
+      end
+    end
+
+    context 'when input lacks rate_limits' do
+      let(:input) do
+        {
+          'context_window' => { 'used_percentage' => 10 },
+          'model' => { 'id' => 'claude-opus-4-8' }
+        }
+      end
+
+      it 'does not compute band' do
+        output = capture_output { sut.run }
+
+        expect(output).not_to include('☀️')
+      end
+    end
+
+    context 'when input lacks five_hour rate_limit' do
+      let(:input) do
+        {
+          'context_window' => { 'used_percentage' => 10 },
+          'model' => { 'id' => 'claude-opus-4-8' },
+          'rate_limits' => {
+            'seven_day' => {
+              'used_percentage' => 4,
+              'resets_at' => (Time.now.to_i + 86400 * 3)
+            }
+          }
+        }
+      end
+
+      it 'does not compute band' do
+        output = capture_output { sut.run }
+
+        expect(output).not_to include('☀️')
+      end
+    end
+  end
 end
