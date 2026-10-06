@@ -165,6 +165,8 @@ describe Dude::Transcript::UsageScanner do
     end
 
     context 'with multibyte UTF-8 characters' do
+      let(:file_content) { '{"msg":"☀️"}\n' }
+
       before do
         stub(cache).file_state { nil }
         transcript_usage = double
@@ -172,30 +174,29 @@ describe Dude::Transcript::UsageScanner do
         stub(Dude::Transcript::TranscriptUsage).new { transcript_usage }
       end
 
-      it 'opens file in binary mode for byte-accurate seeking' do
-        file_obj = double
-        stub(file_obj).read { file_content }
-        stub(file_obj).close { nil }
-        mock(File).open(file_path, 'rb') { file_obj }
-
+      it 'stores byte offset for multibyte character content' do
+        mock(cache).set_file_state(file_path, current_mtime, file_size)
         sut.scan(cache, [file_path], windows)
       end
     end
 
     context 'with byte offset resume' do
       let(:cached_mtime) { 900 }
-      let(:byte_offset) { 30 }
+      let(:cached_offset) { line_1.bytesize + 1 }
 
       before do
-        stub(cache).file_state { [cached_mtime, byte_offset] }
+        stub(cache).file_state { [cached_mtime, cached_offset] }
         file_obj = double
-        stub(file_obj).seek(byte_offset) { nil }
+        stub(file_obj).seek(cached_offset) { nil }
         stub(file_obj).read { file_content }
         stub(file_obj).close { nil }
         stub(File).open(file_path, 'rb') { file_obj }
+
+        mock(cache).add('5h', parsed_record_2)
+        mock(cache).add('week', parsed_record_2)
       end
 
-      it 'seeks to byte offset before reading' do
+      it 'second scan adds only the new line record' do
         sut.scan(cache, [file_path], windows)
       end
     end
@@ -206,9 +207,7 @@ describe Dude::Transcript::UsageScanner do
       before do
         stub(File).stat(missing_path) { raise Errno::ENOENT }
         stub(cache).file_state { nil }
-      end
 
-      it 'skips missing file and continues with others' do
         file_obj = double
         stub(file_obj).read { file_content }
         stub(file_obj).close { nil }
@@ -216,7 +215,9 @@ describe Dude::Transcript::UsageScanner do
 
         mock(cache).add('5h', parsed_record_1)
         mock(cache).add('week', parsed_record_1)
+      end
 
+      it 'skips missing file and continues with others' do
         sut.scan(cache, [missing_path, file_path], windows)
       end
     end
