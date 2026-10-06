@@ -21,7 +21,10 @@ module Dude
       end
 
       def do_spawn
-        pid = Process.spawn('dude', 'transcript', 'scan')
+        pid = Process.spawn(
+          'dude', 'transcript', 'scan',
+          out: File::NULL, err: File::NULL
+        )
         Process.detach(pid)
         write_lock(pid)
         true
