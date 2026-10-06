@@ -10,11 +10,7 @@ require_relative 'dudes'
 require_relative 'rate_limit'
 require_relative 'enterprise_spend_provider'
 require_relative 'price_table'
-require_relative '../transcript/usage_cache_store'
-require_relative '../transcript/silo_registry'
-require_relative '../transcript/current_silo'
-require_relative '../transcript/silo_usage'
-require_relative '../transcript/band'
+require_relative 'sun_band'
 
 module Dude
   module StatusLine
@@ -145,50 +141,10 @@ module Dude
         ).get
       end
 
-      # rubocop:disable Metrics/MethodLength, Layout/EmptyLineAfterGuardClause
       def five_hour_band
-        return nil unless (silo = current_silo_id)
-        usage = five_hour_usage
-        return nil if usage.active_count <= 1
-        ratio = usage.ratio(silo)
-        build_band(ratio, usage.active_count) if ratio
-      end
-      # rubocop:enable Metrics/MethodLength, Layout/EmptyLineAfterGuardClause
-
-      def build_band(ratio, active_count)
-        band = Dude::Transcript::Band.new(ratio, active_count)
-        band.color ? band : nil
-      end
-
-      def current_silo_id
-        @current_silo_id ||= Dude::Transcript::CurrentSilo.new(silo_registry).call(
-          session_name: @session['session_name'],
-          customTitle: @session['customTitle'],
-          agentName: @session['agentName']
-        )
-      end
-
-      def silo_registry
-        @silo_registry ||= Dude::Transcript::SiloRegistry.new.tap(&:load)
-      end
-
-      def five_hour_usage
-        @five_hour_usage ||= Dude::Transcript::SiloUsage.new(
-          usage_cache, sessions_to_silos, '5h'
-        )
-      end
-
-      def usage_cache
-        @usage_cache ||= Dude::Transcript::UsageCacheStore.new.load(price_table)
-      end
-
-      def price_table
-        @price_table ||= Dude::StatusLine::PriceTable.new
-      end
-
-      def sessions_to_silos
-        {}
+        @five_hour_band ||= Dude::StatusLine::SunBand.new(@session).call
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

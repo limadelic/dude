@@ -210,6 +210,7 @@ describe Dude::StatusLine::Runner do
       stub(cache_store).load { cache }
       stub(Dude::Transcript::SiloRegistry).new { registry }
       stub(registry).load
+      stub(registry).roster { {} }
       stub(Dude::Transcript::CurrentSilo).new { current_silo }
       stub(Dude::Transcript::SiloUsage).new { silo_usage }
       stub(Dude::Transcript::Band).new { band }
