@@ -22,7 +22,8 @@ module Dude
       end
 
       def percentage_from_tokens(tokens)
-        tokens * 100 / autocompact_window.to_f
+        threshold = autocompact_window - 33_000
+        tokens * 100 / threshold.to_f
       end
 
       private
@@ -39,7 +40,7 @@ module Dude
 
       def total_tokens
         cw = @session['context_window'] || {}
-        cw['total_input_tokens'].to_i + cw['total_output_tokens'].to_i
+        cw['total_input_tokens'].to_i
       end
 
       def fallback_percentage

@@ -26,11 +26,11 @@ describe Dude::StatusLine::Runner do
         }
       end
 
-      it 'renders 6 filled blocks from tokens (62%)' do
+      it 'renders 7 filled blocks from tokens (74%)' do
         output = capture_output { sut.run }
         bar_match = strip(output)[/🧠 ([█░]+)/, 1]
 
-        expect(bar_match.count('█')).to eq(6)
+        expect(bar_match.count('█')).to eq(7)
       end
     end
 
