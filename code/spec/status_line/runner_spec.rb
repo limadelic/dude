@@ -9,6 +9,9 @@ describe Dude::StatusLine::Runner do
 
     before do
       stub(Dude::StatusLine::AnthropicToken).fetch { '' }
+      stub(ENV).[] do |key|
+        key == 'CLAUDE_CODE_AUTO_COMPACT_WINDOW' ? nil : ENV.fetch(key, nil)
+      end
     end
 
     context 'with token counts' do
