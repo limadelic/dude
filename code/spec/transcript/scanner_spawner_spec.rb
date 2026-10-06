@@ -83,9 +83,6 @@ describe Dude::Transcript::ScannerSpawner do
       context 'when pid is owned by another user' do
         before do
           stub(Process).kill(0, scanner_pid) { raise Errno::EPERM }
-          stub(Process).spawn(*spawn_command, **spawn_options) { scanner_pid }
-          stub(Process).detach(scanner_pid)
-          stub(File).write(lock_path, scanner_pid.to_s)
         end
 
         it 'does not spawn another process' do
