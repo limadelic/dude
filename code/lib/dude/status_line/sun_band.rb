@@ -9,13 +9,16 @@ require_relative 'price_table'
 
 module Dude
   module StatusLine
-    class SunBand
-      def initialize(session_data, cache: nil, registry: nil, cache_path: nil)
+    class WindowBand
+      DEFAULT_CACHE_PATH = '~/.claude/dude/usage_cache.json'
+
+      def initialize(session_data, window:, cache: nil, registry: nil,
+        cache_path: nil)
         @session = session_data
+        @window = window
         @cache = cache
         @registry = registry
-        default_path = '~/.claude/dude/usage_cache.json'
-        @cache_path = cache_path || File.expand_path(default_path)
+        @cache_path = cache_path || File.expand_path(DEFAULT_CACHE_PATH)
       end
 
       def call
@@ -67,7 +70,7 @@ module Dude
 
       def silo_usage
         @silo_usage ||= Dude::Transcript::SiloUsage.new(
-          cache_store, sessions_to_silos, '5h'
+          cache_store, sessions_to_silos, @window
         )
       end
 
@@ -102,6 +105,32 @@ module Dude
 
       def band_color(ratio, active_count)
         Dude::Transcript::Band.new(ratio, active_count).color
+      end
+    end
+
+    class SunBand < WindowBand
+      def initialize(session_data, cache: nil, registry: nil,
+        cache_path: nil)
+        super(
+          session_data,
+          window: '5h',
+          cache: cache,
+          registry: registry,
+          cache_path: cache_path
+        )
+      end
+    end
+
+    class WeekBand < WindowBand
+      def initialize(session_data, cache: nil, registry: nil,
+        cache_path: nil)
+        super(
+          session_data,
+          window: '7d',
+          cache: cache,
+          registry: registry,
+          cache_path: cache_path
+        )
       end
     end
   end
