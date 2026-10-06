@@ -171,4 +171,24 @@ describe Dude::Transcript::SiloRegistry do
       expect(sut.roster).to have_key('dude')
     end
   end
+
+  describe 'loading real JSON file' do
+    let(:temp_file) { "/tmp/silos_#{$$}_#{Time.now.to_i}.json" }
+    let(:sut) { described_class.new(temp_file) }
+
+    before do
+      File.write(temp_file, JSON.generate(silos_data))
+    end
+
+    after do
+      File.delete(temp_file) if File.exist?(temp_file)
+    end
+
+    it 'loads actual JSON file without mocking' do
+      sut.load
+
+      expect(sut.roster).to have_key('dude')
+      expect(sut.silo_id('code')).to eq('uuid-code')
+    end
+  end
 end

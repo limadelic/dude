@@ -1,3 +1,5 @@
+require 'json'
+
 module Dude
   module Transcript
     class SiloRegistry
