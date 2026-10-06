@@ -385,6 +385,85 @@ describe Dude::StatusLine::Runner do
     end
   end
 
+  describe 'silo_list rendering' do
+    let(:sut) { described_class.new(input.to_json, dudes: nil, cwd: Dir.pwd) }
+    let(:cache) { instance_double(Dude::Transcript::UsageCache) }
+    let(:cache_store) { instance_double(Dude::Transcript::UsageCacheStore) }
+    let(:registry) { instance_double(Dude::Transcript::SiloRegistry) }
+    let(:silo_usage) { instance_double(Dude::Transcript::SiloUsage) }
+    let(:silo_list) { instance_double(Dude::StatusLine::SiloList) }
+    let(:input) do
+      {
+        'context_window' => { 'used_percentage' => 10 },
+        'model' => { 'id' => 'claude-opus-4-8' },
+        'rate_limits' => {
+          'five_hour' => {
+            'used_percentage' => 41,
+            'resets_at' => (Time.now.to_i + 3600)
+          }
+        }
+      }
+    end
+
+    before do
+      stub(Dude::StatusLine::AnthropicToken).fetch { '' }
+      stub(Dude::Transcript::UsageCacheStore).new { cache_store }
+      stub(cache_store).load { cache }
+      stub(cache_store).instance_variable_get { {} }
+      stub(Dude::Transcript::SiloRegistry).new { registry }
+      stub(registry).load
+      stub(registry).roster { {} }
+      stub(Dude::Transcript::SiloUsage).new { silo_usage }
+      stub(Dude::StatusLine::SiloList).new { silo_list }
+    end
+
+    context 'when a silo is hot' do
+      before do
+        stub(silo_list).call { '🧙' }
+      end
+
+      it 'shows silo_list after five_hour section' do
+        output = capture_output { sut.run }
+
+        expect(output).to match(/☀️.*🧙/)
+      end
+    end
+
+    context 'when silo_list is empty' do
+      before do
+        stub(silo_list).call { '' }
+      end
+
+      it 'adds no section' do
+        output = capture_output { sut.run }
+
+        expect(output).to include('☀️')
+        expect(output).not_to include('🧙')
+      end
+    end
+
+    context 'when five_hour rate_limit is absent' do
+      let(:input) do
+        {
+          'context_window' => { 'used_percentage' => 10 },
+          'model' => { 'id' => 'claude-opus-4-8' },
+          'rate_limits' => {
+            'seven_day' => {
+              'used_percentage' => 4,
+              'resets_at' => (Time.now.to_i + 86400 * 3)
+            }
+          }
+        }
+      end
+
+      it 'adds no section' do
+        output = capture_output { sut.run }
+
+        expect(output).not_to include('🧙')
+      end
+    end
+  end
+
   describe 'red band rendering' do
     let(:sut) { described_class.new(input.to_json, dudes: nil, cwd: Dir.pwd) }
     let(:band) { instance_double(Dude::Transcript::Band) }
