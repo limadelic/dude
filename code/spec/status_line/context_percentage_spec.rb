@@ -81,5 +81,22 @@ describe Dude::StatusLine::ContextPercentage do
         expect(sut.value).to eq(42)
       end
     end
+
+    context 'env is not set, context_window_size is 100_000' do
+      let(:context_window_size) { 100000 }
+      let(:total_input_tokens) { 63650 }
+
+      it 'uses context_window_size as window' do
+        expect(sut.value).to eq(95)
+      end
+    end
+
+    context 'env and context_window_size are not set' do
+      let(:total_input_tokens) { 83500 }
+
+      it 'defaults window to 200_000' do
+        expect(sut.value).to eq(50)
+      end
+    end
   end
 end
