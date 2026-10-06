@@ -33,28 +33,9 @@ describe Dude::Transcript::Deduper do
   end
 
   describe '#call' do
+    let(:input) { records }
+
     it 'returns all records when no duplicates' do
-      result = sut.call(records)
-
-      expect(result.length).to eq(2)
-      expect(result).to include(record_one)
-      expect(result).to include(record_two)
-    end
-
-    it 'keeps only earliest epoch when id duplicates' do
-      duplicate_later = record_one.merge(epoch: 3000)
-      input = [record_one, duplicate_later, record_two]
-
-      result = sut.call(input)
-
-      expect(result.length).to eq(2)
-      expect(record_by_id(result, 'msg-1')[:epoch]).to eq(1000)
-    end
-
-    it 'drops records with nil id' do
-      no_id = record_one.merge(id: nil)
-      input = [record_one, no_id, record_two]
-
       result = sut.call(input)
 
       expect(result.length).to eq(2)
@@ -62,48 +43,93 @@ describe Dude::Transcript::Deduper do
       expect(result).to include(record_two)
     end
 
-    it 'keeps multiple duplicates with earliest epoch' do
-      dup_1_mid = record_one.merge(epoch: 2500)
-      dup_1_late = record_one.merge(epoch: 5000)
-      input = [dup_1_mid, record_one, dup_1_late, record_two]
+    context 'with duplicate ids' do
+      let(:input) do
+        duplicate_later = record_one.merge(epoch: 3000)
+        [record_one, duplicate_later, record_two]
+      end
 
-      result = sut.call(input)
+      it 'keeps only earliest epoch when id duplicates' do
+        result = sut.call(input)
 
-      expect(result.length).to eq(2)
-      expect(record_by_id(result, 'msg-1')[:epoch]).to eq(1000)
+        expect(result.length).to eq(2)
+        expect(record_by_id(result, 'msg-1')[:epoch]).to eq(1000)
+      end
     end
 
-    it 'handles all nil ids by dropping them' do
-      no_id_1 = record_one.merge(id: nil)
-      no_id_2 = record_two.merge(id: nil)
-      input = [no_id_1, no_id_2]
+    context 'with some nil ids' do
+      let(:input) do
+        no_id = record_one.merge(id: nil)
+        [record_one, no_id, record_two]
+      end
 
-      result = sut.call(input)
+      it 'drops records with nil id' do
+        result = sut.call(input)
 
-      expect(result).to eq([])
+        expect(result.length).to eq(2)
+        expect(result).to include(record_one)
+        expect(result).to include(record_two)
+      end
     end
 
-    it 'handles empty records' do
-      result = sut.call([])
+    context 'with multiple duplicates' do
+      let(:input) do
+        dup_1_mid = record_one.merge(epoch: 2500)
+        dup_1_late = record_one.merge(epoch: 5000)
+        [dup_1_mid, record_one, dup_1_late, record_two]
+      end
 
-      expect(result).to eq([])
+      it 'keeps multiple duplicates with earliest epoch' do
+        result = sut.call(input)
+
+        expect(result.length).to eq(2)
+        expect(record_by_id(result, 'msg-1')[:epoch]).to eq(1000)
+      end
     end
 
-    it 'preserves record data when deduping' do
-      dup = record_one.merge(
-        epoch: 3000,
-        model: 'claude-sonnet-5',
-        usage: { 'input_tokens' => 200, 'output_tokens' => 100 }
-      )
-      input = [record_one, dup]
+    context 'with all nil ids' do
+      let(:input) do
+        no_id_1 = record_one.merge(id: nil)
+        no_id_2 = record_two.merge(id: nil)
+        [no_id_1, no_id_2]
+      end
 
-      result = sut.call(input)
+      it 'handles all nil ids by dropping them' do
+        result = sut.call(input)
 
-      kept = record_by_id(result, 'msg-1')
-      expect(kept[:model]).to eq('claude-opus-5')
-      expect(kept[:usage]).to eq(
-        { 'input_tokens' => 100, 'output_tokens' => 50 }
-      )
+        expect(result).to eq([])
+      end
+    end
+
+    context 'with empty records' do
+      let(:input) { [] }
+
+      it 'handles empty records' do
+        result = sut.call(input)
+
+        expect(result).to eq([])
+      end
+    end
+
+    context 'when deduping preserves data' do
+      let(:input) do
+        dup = record_one.merge(
+          epoch: 3000,
+          model: 'claude-sonnet-5',
+          usage: { 'input_tokens' => 200, 'output_tokens' => 100 }
+        )
+        [record_one, dup]
+      end
+
+      it 'preserves record data when deduping' do
+        result = sut.call(input)
+
+        kept = record_by_id(result, 'msg-1')
+        expect(kept[:model]).to eq('claude-opus-5')
+        expect(kept[:usage]).to eq(
+          { 'input_tokens' => 100, 'output_tokens' => 50 }
+        )
+      end
     end
   end
 end
