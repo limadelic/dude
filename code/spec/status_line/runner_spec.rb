@@ -136,5 +136,49 @@ describe Dude::StatusLine::Runner do
         expect(output).to include('🎭')
       end
     end
+
+    context 'with only five_hour rate limit' do
+      let(:input) do
+        {
+          'context_window' => { 'used_percentage' => 10 },
+          'model' => { 'id' => 'claude-opus-4-8' },
+          'rate_limits' => {
+            'five_hour' => {
+              'used_percentage' => 41,
+              'resets_at' => (Time.now.to_i + 3600)
+            }
+          }
+        }
+      end
+
+      it 'renders sun emoji but not moon' do
+        output = capture_output { sut.run }
+
+        expect(output).to include('☀️')
+        expect(output).not_to include('🌙')
+      end
+    end
+
+    context 'with only seven_day rate limit' do
+      let(:input) do
+        {
+          'context_window' => { 'used_percentage' => 10 },
+          'model' => { 'id' => 'claude-opus-4-8' },
+          'rate_limits' => {
+            'seven_day' => {
+              'used_percentage' => 4,
+              'resets_at' => (Time.now.to_i + 86400 * 3)
+            }
+          }
+        }
+      end
+
+      it 'renders moon emoji but not sun' do
+        output = capture_output { sut.run }
+
+        expect(output).not_to include('☀️')
+        expect(output).to include('🌙')
+      end
+    end
   end
 end

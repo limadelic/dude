@@ -96,7 +96,7 @@ module Dude
       end
 
       def five_hour_section
-        return unless @session['rate_limits']
+        return unless @session['rate_limits']&.dig('five_hour')
 
         Dude::StatusLine::RateLimit.new(
           used_pct: @session.dig(
@@ -110,7 +110,7 @@ module Dude
       end
 
       def seven_day_section
-        return unless @session['rate_limits']
+        return unless @session['rate_limits']&.dig('seven_day')
 
         Dude::StatusLine::RateLimit.new(
           used_pct: @session.dig(
