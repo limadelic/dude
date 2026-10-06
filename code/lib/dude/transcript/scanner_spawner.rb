@@ -35,7 +35,25 @@ module Dude
       end
 
       def lock_held?
-        File.exist?(@lock_path)
+        return false unless File.exist?(@lock_path)
+
+        pid = read_lock_pid
+        return false if pid.nil? || pid == 0
+
+        process_alive?(pid)
+      end
+
+      def read_lock_pid
+        File.read(@lock_path).to_i
+      rescue StandardError
+        nil
+      end
+
+      def process_alive?(pid)
+        Process.kill(0, pid)
+        true
+      rescue Errno::ESRCH
+        false
       end
     end
   end

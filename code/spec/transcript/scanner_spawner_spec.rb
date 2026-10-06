@@ -40,9 +40,11 @@ describe Dude::Transcript::ScannerSpawner do
       end
     end
 
-    context 'when a scan is already running (lock file exists)' do
+    context 'when lock file contains a live pid' do
       before do
         stub(File).exist?(lock_path) { true }
+        stub(File).read(lock_path) { scanner_pid.to_s }
+        stub(Process).kill(0, scanner_pid)
       end
 
       it 'does not spawn another process' do
@@ -53,6 +55,26 @@ describe Dude::Transcript::ScannerSpawner do
 
       it 'returns false indicating no spawn' do
         expect(sut.spawn).to be false
+      end
+    end
+
+    context 'when lock file contains a dead pid' do
+      before do
+        stub(File).exist?(lock_path) { true }
+        stub(File).read(lock_path) { scanner_pid.to_s }
+        stub(Process).kill(0, scanner_pid) { raise Errno::ESRCH }
+        stub(Process).spawn(*spawn_command, **spawn_options) { scanner_pid }
+        stub(Process).detach(scanner_pid)
+        stub(File).write(lock_path, scanner_pid.to_s)
+      end
+
+      it 'spawns the scanner in background' do
+        mock(Process).spawn(*spawn_command, **spawn_options)
+        sut.spawn
+      end
+
+      it 'returns true indicating spawn happened' do
+        expect(sut.spawn).to be true
       end
     end
 
