@@ -19,6 +19,18 @@ describe Dude::Transcript::TranscriptUsage do
 
   let(:invalid_json) { 'not json' }
 
+  let(:line_without_timestamp) do
+    '{"sessionId":"sess-123",' \
+    '"message":{"id":"msg-1","model":"claude-opus-5",' \
+    '"usage":{"input_tokens":100,"output_tokens":50}}}'
+  end
+
+  let(:line_with_bad_timestamp) do
+    '{"timestamp":"not-a-timestamp","sessionId":"sess-123",' \
+    '"message":{"id":"msg-1","model":"claude-opus-5",' \
+    '"usage":{"input_tokens":100,"output_tokens":50}}}'
+  end
+
   describe '#parse' do
     it 'returns hash with usage, model, id, epoch, and session' do
       result = sut.parse(fixture_line)
@@ -47,6 +59,18 @@ describe Dude::Transcript::TranscriptUsage do
 
     it 'returns nil for invalid JSON' do
       result = sut.parse(invalid_json)
+
+      expect(result).to be_nil
+    end
+
+    it 'returns nil for missing timestamp' do
+      result = sut.parse(line_without_timestamp)
+
+      expect(result).to be_nil
+    end
+
+    it 'returns nil for bad timestamp' do
+      result = sut.parse(line_with_bad_timestamp)
 
       expect(result).to be_nil
     end
