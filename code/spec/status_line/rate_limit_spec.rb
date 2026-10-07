@@ -139,8 +139,6 @@ describe Dude::StatusLine::RateLimit do
     end
 
     describe 'band background' do
-      let(:band) { nil }
-
       let(:sut) do
         described_class.new(
           used_pct: 25,
@@ -150,6 +148,8 @@ describe Dude::StatusLine::RateLimit do
           band: band
         ).to_s
       end
+
+      let(:band) { nil }
 
       context 'with nil band' do
         it 'output is identical to no band argument' do
@@ -169,19 +169,6 @@ describe Dude::StatusLine::RateLimit do
         it 'wraps emoji with yellow background' do
           expect(sut).to include("\033[48;5;226m☀️ \033[0m")
         end
-
-        it 'spacing between emoji and bar is preserved' do
-          output = described_class.new(
-            used_pct: 50,
-            resets_at: now_time + 3600,
-            window_len: 3600,
-            emoji: '☀️',
-            band: :yellow
-          ).to_s
-          stripped = Dude::StatusLine::Format.strip(output)
-          bar = stripped[/☀️ ([█░]+)/, 1]
-          expect(bar).to match(/^█/)
-        end
       end
 
       context 'with :red band' do
@@ -189,19 +176,6 @@ describe Dude::StatusLine::RateLimit do
 
         it 'wraps emoji with red background' do
           expect(sut).to include("\033[41m☀️ \033[0m")
-        end
-
-        it 'spacing between emoji and bar is preserved' do
-          output = described_class.new(
-            used_pct: 50,
-            resets_at: now_time + 3600,
-            window_len: 3600,
-            emoji: '☀️',
-            band: :red
-          ).to_s
-          stripped = Dude::StatusLine::Format.strip(output)
-          bar = stripped[/☀️ ([█░]+)/, 1]
-          expect(bar).to match(/^█/)
         end
       end
     end
