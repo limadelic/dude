@@ -167,7 +167,7 @@ describe Dude::StatusLine::RateLimit do
           emoji: '☀️',
           band: :yellow
         ).to_s
-        expect(output).to include("\033[48;5;226m☀️\033[0m")
+        expect(output).to include("\033[48;5;226m☀️ \033[0m")
       end
 
       it 'with :red band, wraps emoji with red background' do
@@ -178,7 +178,7 @@ describe Dude::StatusLine::RateLimit do
           emoji: '☀️',
           band: :red
         ).to_s
-        expect(output).to include("\033[41m☀️\033[0m")
+        expect(output).to include("\033[41m☀️ \033[0m")
       end
 
       it 'with :yellow band, spacing between emoji and bar is preserved' do
@@ -222,8 +222,8 @@ describe Dude::StatusLine::RateLimit do
           emoji: '☀️',
           band: :yellow
         ).to_s
-        expect(output_red).to include("\033[41m☀️\033[0m")
-        expect(output_yellow).to include("\033[48;5;226m☀️\033[0m")
+        expect(output_red).to include("\033[41m☀️ \033[0m")
+        expect(output_yellow).to include("\033[48;5;226m☀️ \033[0m")
       end
     end
   end

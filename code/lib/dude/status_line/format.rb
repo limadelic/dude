@@ -43,7 +43,7 @@ module Dude
         bg = band == :yellow ? COLORS[:bg_yellow] : COLORS[:bg_red] if band
         return "#{col}#{emoji}#{pad} #{bars}#{COLORS[:reset]}" unless bg
 
-        "#{bg}#{emoji}#{COLORS[:reset]} #{col}#{pad}#{bars}" \
+        "#{bg}#{emoji} #{COLORS[:reset]}#{col}#{pad}#{bars}" \
         "#{COLORS[:reset]}"
       end
 
