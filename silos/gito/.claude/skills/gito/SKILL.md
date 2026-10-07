@@ -12,6 +12,7 @@ description: Use when syncing .claude folders, dom branches or the dude repos
 | quijote | ~/dev/.claude | msuarz/quijote | main, wip | private, msuarz only |
 | sancho | ~/dev/qxt (.claude inside) | msuarz/sancho | sancho | private, msuarz only |
 | elita | ~/dev/self/elita | limadelic/dude | elita | public |
+| ghost👻 | ~/dev/self/ghost (link ~/dom/ghost) | ghost (private) | main, wip | private |
 
 ## Rules
 
