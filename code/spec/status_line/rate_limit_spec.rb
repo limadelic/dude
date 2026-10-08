@@ -18,7 +18,7 @@ describe Dude::StatusLine::RateLimit do
         ).to_s
       }
 
-      let(:bar) { Dude::StatusLine::Format.strip(subject)[/☀️ ([█░]+)/, 1] }
+      let(:bar) { Dude::StatusLine::Format.strip(subject)[/☀️ +([█░]+)/, 1] }
       let(:used_pct) { 0 }
 
       let(:resets_at_time) { now_time + 3600 }

@@ -11,6 +11,8 @@ describe Dude::StatusLine::Format do
   let(:reset) { Dude::StatusLine::Format::COLORS[:reset] }
   let(:white) { Dude::StatusLine::Format::WHITE }
   let(:bg_green) { Dude::StatusLine::Format::COLORS[:bg_green] }
+  let(:bg_yellow) { Dude::StatusLine::Format::COLORS[:bg_yellow] }
+  let(:bars) { '█████░░░░' }
 
   describe '#clamp' do
     it 'returns 0 for negative values' do
@@ -185,6 +187,66 @@ describe Dude::StatusLine::Format do
       result = sut.bar(3, '🧠')
       stripped = Dude::StatusLine::Format.strip(result)
       expect(stripped.count('█')).to be >= 1
+    end
+
+    describe 'emoji spacing' do
+      let(:options) { {} }
+
+      before { stub_const('Dude::StatusLine::Format::JETBRAINS', false) }
+
+      subject { sut.bar(50, emoji, **options) }
+
+      context 'with brain emoji' do
+        let(:emoji) { '🧠' }
+
+        it 'keeps one space before bars' do
+          expect(subject).to eq("#{yellow}🧠 #{bars}#{reset}")
+        end
+      end
+
+      context 'with moon emoji' do
+        let(:emoji) { '🌙' }
+
+        it 'keeps one space before bars' do
+          expect(subject).to eq("#{yellow}🌙 #{bars}#{reset}")
+        end
+      end
+
+      context 'with sun emoji (VS16)' do
+        let(:emoji) { '☀️' }
+
+        it 'adds a second space before bars' do
+          expect(subject).to eq("#{yellow}☀️  #{bars}#{reset}")
+        end
+
+        context 'with band' do
+          let(:options) { { band: :yellow } }
+
+          it 'adds a second space before bars' do
+            expect(subject).to eq(
+              "#{bg_yellow}☀️ #{reset}#{yellow} #{bars}#{reset}"
+            )
+          end
+        end
+
+        context 'with JetBrains' do
+          before { stub_const('Dude::StatusLine::Format::JETBRAINS', true) }
+
+          it 'adds a second space before bars' do
+            expect(subject).to eq("#{yellow}☀️   #{bars}#{reset}")
+          end
+
+          context 'with band' do
+            let(:options) { { band: :yellow } }
+
+            it 'adds a second space before bars' do
+              expect(subject).to eq(
+                "#{bg_yellow}☀️ #{reset}#{yellow}  #{bars}#{reset}"
+              )
+            end
+          end
+        end
+      end
     end
   end
 
