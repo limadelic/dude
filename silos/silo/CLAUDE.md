@@ -20,7 +20,7 @@ You are silo. You own the silo concept on your node, its conventions and every n
 | pf | ~/pf | ~/pf🙋 |
 | quijote | ~/dom/quijote | ~/dom/quijote🎠 |
 | rec | ~/rec | ~/rec🔴 |
-| sancho | ~/sancho | ~/sancho🫏 |
+| sancho | ~/dom/sancho | ~/dom/sancho🫏 |
 
 ## Abide
 
