@@ -8,7 +8,7 @@ A dom is one domain of the human's work: one folder, its own silos. Doms: dude, 
 
 - A dom stays at its real path, never move it to get a short name
 - A dom has two links: `~/<dom>` to the real path, and the label `~/<dom><emoji>` to `~/<dom>`, like `~/dom/dude🎳 → ~/dude`
-- ghost, elita and dude use the label in `~/dom`: `~/dom/ghost👻`, `~/dom/elita🐶`, `~/dom/dude🎳`
+- ghost, elita, dude and quijote use the label in `~/dom`: `~/dom/ghost👻`, `~/dom/elita🐶`, `~/dom/dude🎳`, `~/dom/quijote🎠`
 - dude keeps `~/dude` as its folder link
 - A dom silo's state.json cwd and originCwd are the label `~/<dom><emoji>`, agent view shows it
 - The label in state.json cwd is the silo's dom, the roster follows it, never move a silo to match the roster

@@ -9,7 +9,7 @@ description: Use when syncing .claude folders, dom branches or the dude repos
 | Dom | Folder | Remote | Branches | Visibility |
 |---|---|---|---|---|
 | dude | ~/.claude (~/dude is a symlink) | limadelic/dude | main, wip | public |
-| quijote | ~/dev/.claude | msuarz/quijote | main, wip | private, msuarz only |
+| quijote | ~/dev/.claude (link ~/dom/quijote) | msuarz/quijote | main, wip | private, msuarz only |
 | sancho | ~/dev/qxt (.claude inside) | msuarz/sancho | sancho | private, msuarz only |
 | elita | ~/dev/self/elita (link ~/dom/elita) | limadelic/dude | elita | public |
 | ghost👻 | ~/dev/self/ghost (link ~/dom/ghost) | ghost (private) | main, wip | private |
