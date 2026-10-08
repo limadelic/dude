@@ -129,7 +129,7 @@ module Dude
           ) || 0,
           resets_at: @session.dig('rate_limits', 'five_hour', 'resets_at') || 0,
           window_len: 5 * 3600,
-          emoji: '☀️',
+          emoji: '🌞',
           band: five_hour_band.call
         ).to_s
       end

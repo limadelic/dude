@@ -212,19 +212,19 @@ describe Dude::StatusLine::Format do
         end
       end
 
-      context 'with sun emoji (VS16)' do
-        let(:emoji) { '☀️' }
+      context 'with sun emoji' do
+        let(:emoji) { '🌞' }
 
-        it 'adds a second space before bars' do
-          expect(subject).to eq("#{yellow}☀️  #{bars}#{reset}")
+        it 'keeps one space before bars' do
+          expect(subject).to eq("#{yellow}🌞 #{bars}#{reset}")
         end
 
         context 'with band' do
           let(:options) { { band: :yellow } }
 
-          it 'adds a second space before bars' do
+          it 'keeps one space before bars' do
             expect(subject).to eq(
-              "#{bg_yellow}☀️ #{reset}#{yellow} #{bars}#{reset}"
+              "#{bg_yellow}🌞 #{reset}#{yellow}#{bars}#{reset}"
             )
           end
         end
@@ -233,15 +233,15 @@ describe Dude::StatusLine::Format do
           before { stub_const('Dude::StatusLine::Format::JETBRAINS', true) }
 
           it 'adds a second space before bars' do
-            expect(subject).to eq("#{yellow}☀️   #{bars}#{reset}")
+            expect(subject).to eq("#{yellow}🌞  #{bars}#{reset}")
           end
 
           context 'with band' do
             let(:options) { { band: :yellow } }
 
-            it 'adds a second space before bars' do
+            it 'adds a space before bars' do
               expect(subject).to eq(
-                "#{bg_yellow}☀️ #{reset}#{yellow}  #{bars}#{reset}"
+                "#{bg_yellow}🌞 #{reset}#{yellow} #{bars}#{reset}"
               )
             end
           end

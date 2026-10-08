@@ -49,7 +49,7 @@ describe Dude::StatusLine::EnterpriseSpend do
       result = sut.daily_bar
 
       expect(result).not_to be_nil
-      expect(result).to include('☀️')
+      expect(result).to include('🌞')
     end
 
     it 'calculates fill percentage as today_spend / daily_budget' do
@@ -83,7 +83,7 @@ describe Dude::StatusLine::EnterpriseSpend do
       result = sut.daily_bar
 
       expect(result).not_to be_nil
-      expect(result).to include('☀️')
+      expect(result).to include('🌞')
     end
 
     it 'shows yellow when pace is medium (1 < fill/elapsed <= 2)' do

@@ -165,7 +165,7 @@ describe Dude::Transcript::UsageScanner do
     end
 
     context 'with multibyte UTF-8 characters' do
-      let(:file_content) { '{"msg":"☀️"}\n' }
+      let(:file_content) { '{"msg":"🌞"}\n' }
 
       before do
         stub(cache).file_state { nil }

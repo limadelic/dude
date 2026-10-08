@@ -107,7 +107,7 @@ describe Dude::StatusLine::Runner do
       it 'renders both sun and moon emojis' do
         output = capture_output { sut.run }
 
-        expect(output).to include('☀️')
+        expect(output).to include('🌞')
         expect(output).to include('🌙')
       end
     end
@@ -127,7 +127,7 @@ describe Dude::StatusLine::Runner do
       it 'renders neither sun nor moon emojis' do
         output = capture_output { sut.run }
 
-        expect(output).not_to include('☀️')
+        expect(output).not_to include('🌞')
         expect(output).not_to include('🌙')
       end
 
@@ -157,7 +157,7 @@ describe Dude::StatusLine::Runner do
       it 'renders sun emoji but not moon' do
         output = capture_output { sut.run }
 
-        expect(output).to include('☀️')
+        expect(output).to include('🌞')
         expect(output).not_to include('🌙')
       end
     end
@@ -179,7 +179,7 @@ describe Dude::StatusLine::Runner do
       it 'renders moon emoji but not sun' do
         output = capture_output { sut.run }
 
-        expect(output).not_to include('☀️')
+        expect(output).not_to include('🌞')
         expect(output).to include('🌙')
       end
     end
@@ -226,14 +226,14 @@ describe Dude::StatusLine::Runner do
         stub(silo_usage).active_count { 2 }
         stub(band).color { :yellow }
         stub(Dude::StatusLine::RateLimit).new do
-          double(to_s: '☀️ bar')
+          double(to_s: '🌞 bar')
         end
       end
 
       it 'passes band to rate_limit' do
         output = capture_output { sut.run }
 
-        expect(output).to include('☀️ bar')
+        expect(output).to include('🌞 bar')
       end
     end
 
@@ -241,14 +241,14 @@ describe Dude::StatusLine::Runner do
       before do
         stub(current_silo).call { nil }
         stub(Dude::StatusLine::RateLimit).new do
-          double(to_s: '☀️ bar')
+          double(to_s: '🌞 bar')
         end
       end
 
       it 'passes no band to rate_limit' do
         output = capture_output { sut.run }
 
-        expect(output).to include('☀️')
+        expect(output).to include('🌞')
       end
     end
 
@@ -257,14 +257,14 @@ describe Dude::StatusLine::Runner do
         stub(current_silo).call { 'uuid-code' }
         stub(silo_usage).active_count { 0 }
         stub(Dude::StatusLine::RateLimit).new do
-          double(to_s: '☀️ bar')
+          double(to_s: '🌞 bar')
         end
       end
 
       it 'passes no band to rate_limit' do
         output = capture_output { sut.run }
 
-        expect(output).to include('☀️')
+        expect(output).to include('🌞')
       end
     end
 
@@ -273,14 +273,14 @@ describe Dude::StatusLine::Runner do
         stub(current_silo).call { 'uuid-code' }
         stub(silo_usage).active_count { 1 }
         stub(Dude::StatusLine::RateLimit).new do
-          double(to_s: '☀️ bar')
+          double(to_s: '🌞 bar')
         end
       end
 
       it 'passes no band to rate_limit' do
         output = capture_output { sut.run }
 
-        expect(output).to include('☀️')
+        expect(output).to include('🌞')
       end
     end
 
@@ -291,14 +291,14 @@ describe Dude::StatusLine::Runner do
         stub(silo_usage).active_count { 2 }
         stub(band).color { nil }
         stub(Dude::StatusLine::RateLimit).new do
-          double(to_s: '☀️ bar')
+          double(to_s: '🌞 bar')
         end
       end
 
       it 'passes no band to rate_limit' do
         output = capture_output { sut.run }
 
-        expect(output).to include('☀️')
+        expect(output).to include('🌞')
       end
     end
 
@@ -313,7 +313,7 @@ describe Dude::StatusLine::Runner do
       it 'does not compute band' do
         output = capture_output { sut.run }
 
-        expect(output).not_to include('☀️')
+        expect(output).not_to include('🌞')
       end
     end
 
@@ -334,7 +334,7 @@ describe Dude::StatusLine::Runner do
       it 'does not compute band' do
         output = capture_output { sut.run }
 
-        expect(output).not_to include('☀️')
+        expect(output).not_to include('🌞')
       end
     end
   end
@@ -380,7 +380,7 @@ describe Dude::StatusLine::Runner do
     it 'renders rate limits without background band on sun emoji' do
       output = capture_output { sut.run }
       expected_output = (
-        "\e[38;5;226m🧠 ████░░░░░\e[0m \e[32m☀️  ████░░░░░\e[0m " \
+        "\e[38;5;226m🧠 ████░░░░░\e[0m \e[32m🌞 ████░░░░░\e[0m " \
         "\e[32m🌙 █░░░░░░░░\e[0m 🎭 \n"
       )
 
@@ -423,7 +423,7 @@ describe Dude::StatusLine::Runner do
       it 'shows silo_list after five_hour section' do
         output = capture_output { sut.run }
 
-        expect(output).to match(/☀️.*🧙/)
+        expect(output).to match(/🌞.*🧙/)
       end
     end
 
@@ -435,7 +435,7 @@ describe Dude::StatusLine::Runner do
       it 'adds no section' do
         output = capture_output { sut.run }
 
-        expect(output).to include('☀️')
+        expect(output).to include('🌞')
         expect(output).not_to include('🧙')
       end
     end
@@ -510,7 +510,7 @@ describe Dude::StatusLine::Runner do
     it 'renders red background code before sun emoji' do
       output = capture_output { sut.run }
 
-      expect(output).to include("\e[41m☀️")
+      expect(output).to include("\e[41m🌞")
     end
 
     it 'renders red background code before moon emoji' do

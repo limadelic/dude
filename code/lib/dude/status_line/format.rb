@@ -34,7 +34,7 @@ module Dude
       def bar(pct, emoji, lo: 33, hi: 66, color: nil, band: nil)
         filled = bar_filled(pct)
         col = color || color_for_pct(clamp(pct), lo, hi)
-        pad = (JETBRAINS ? ' ' : '') + (emoji.end_with?("️") ? ' ' : '')
+        pad = JETBRAINS ? ' ' : ''
         bars = bar_segments(filled)
         emoji_with_band(emoji, col, pad, bars, band)
       end

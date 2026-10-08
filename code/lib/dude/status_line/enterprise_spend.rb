@@ -41,7 +41,7 @@ module Dude
           used_pct: used_pct,
           resets_at: next_midnight,
           window_len: 86400,
-          emoji: '☀️'
+          emoji: '🌞'
         )
       end
 
