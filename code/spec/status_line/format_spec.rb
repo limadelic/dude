@@ -205,10 +205,10 @@ describe Dude::StatusLine::Format do
       end
 
       context 'with moon emoji' do
-        let(:emoji) { '🌙' }
+        let(:emoji) { '🌛' }
 
         it 'keeps one space before bars' do
-          expect(subject).to eq("#{yellow}🌙 #{bars}#{reset}")
+          expect(subject).to eq("#{yellow}🌛 #{bars}#{reset}")
         end
       end
 

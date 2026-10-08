@@ -108,7 +108,7 @@ describe Dude::StatusLine::Runner do
         output = capture_output { sut.run }
 
         expect(output).to include('🌞')
-        expect(output).to include('🌙')
+        expect(output).to include('🌛')
       end
     end
 
@@ -128,7 +128,7 @@ describe Dude::StatusLine::Runner do
         output = capture_output { sut.run }
 
         expect(output).not_to include('🌞')
-        expect(output).not_to include('🌙')
+        expect(output).not_to include('🌛')
       end
 
       it 'still renders context bar' do
@@ -158,7 +158,7 @@ describe Dude::StatusLine::Runner do
         output = capture_output { sut.run }
 
         expect(output).to include('🌞')
-        expect(output).not_to include('🌙')
+        expect(output).not_to include('🌛')
       end
     end
 
@@ -180,7 +180,7 @@ describe Dude::StatusLine::Runner do
         output = capture_output { sut.run }
 
         expect(output).not_to include('🌞')
-        expect(output).to include('🌙')
+        expect(output).to include('🌛')
       end
     end
   end
@@ -381,7 +381,7 @@ describe Dude::StatusLine::Runner do
       output = capture_output { sut.run }
       expected_output = (
         "\e[38;5;226m🧠 ████░░░░░\e[0m \e[32m🌞 ████░░░░░\e[0m " \
-        "\e[32m🌙 █░░░░░░░░\e[0m 🎭 \n"
+        "\e[32m🌛 █░░░░░░░░\e[0m 🎭 \n"
       )
 
       expect(output).to eq(expected_output)
@@ -516,7 +516,7 @@ describe Dude::StatusLine::Runner do
     it 'renders red background code before moon emoji' do
       output = capture_output { sut.run }
 
-      expect(output).to include("\e[41m🌙")
+      expect(output).to include("\e[41m🌛")
     end
   end
 
@@ -561,14 +561,14 @@ describe Dude::StatusLine::Runner do
         stub(silo_usage).active_count { 2 }
         stub(band).color { :yellow }
         stub(Dude::StatusLine::RateLimit).new do
-          double(to_s: '🌙 bar')
+          double(to_s: '🌛 bar')
         end
       end
 
       it 'passes band to rate_limit' do
         output = capture_output { sut.run }
 
-        expect(output).to include('🌙 bar')
+        expect(output).to include('🌛 bar')
       end
     end
 
@@ -576,14 +576,14 @@ describe Dude::StatusLine::Runner do
       before do
         stub(current_silo).call { nil }
         stub(Dude::StatusLine::RateLimit).new do
-          double(to_s: '🌙 bar')
+          double(to_s: '🌛 bar')
         end
       end
 
       it 'passes no band to rate_limit' do
         output = capture_output { sut.run }
 
-        expect(output).to include('🌙')
+        expect(output).to include('🌛')
       end
     end
 
@@ -592,14 +592,14 @@ describe Dude::StatusLine::Runner do
         stub(current_silo).call { 'uuid-code' }
         stub(silo_usage).active_count { 0 }
         stub(Dude::StatusLine::RateLimit).new do
-          double(to_s: '🌙 bar')
+          double(to_s: '🌛 bar')
         end
       end
 
       it 'passes no band to rate_limit' do
         output = capture_output { sut.run }
 
-        expect(output).to include('🌙')
+        expect(output).to include('🌛')
       end
     end
 
@@ -610,14 +610,14 @@ describe Dude::StatusLine::Runner do
         stub(silo_usage).active_count { 2 }
         stub(band).color { nil }
         stub(Dude::StatusLine::RateLimit).new do
-          double(to_s: '🌙 bar')
+          double(to_s: '🌛 bar')
         end
       end
 
       it 'passes no band to rate_limit' do
         output = capture_output { sut.run }
 
-        expect(output).to include('🌙')
+        expect(output).to include('🌛')
       end
     end
 
@@ -638,7 +638,7 @@ describe Dude::StatusLine::Runner do
       it 'does not compute band' do
         output = capture_output { sut.run }
 
-        expect(output).not_to include('🌙')
+        expect(output).not_to include('🌛')
       end
     end
   end

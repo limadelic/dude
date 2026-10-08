@@ -34,7 +34,7 @@ describe 'Runner spend_section integration' do
       output = capture_output { sut.run }
 
       expect(output).to include('🌞')
-      expect(output).to include('🌙')
+      expect(output).to include('🌛')
     end
   end
 
@@ -59,7 +59,7 @@ describe 'Runner spend_section integration' do
       stub(checkpoint_instance).write(anything) { nil }
       stub(Dude::StatusLine::EnterpriseSpend).new(anything, anything) { enterprise_spend_instance }
       stub(enterprise_spend_instance).daily_bar { '🌞 enterprise_daily' }
-      stub(enterprise_spend_instance).monthly_bar { '🌙 enterprise_monthly' }
+      stub(enterprise_spend_instance).monthly_bar { '🌛 enterprise_monthly' }
     end
 
     it 'builds status line with enterprise spend bars' do
@@ -67,7 +67,7 @@ describe 'Runner spend_section integration' do
       output = capture_output { sut.run }
 
       expect(output).to include('🌞 enterprise_daily')
-      expect(output).to include('🌙 enterprise_monthly')
+      expect(output).to include('🌛 enterprise_monthly')
     end
 
     it 'memoizes token fetch so it runs exactly once for both ' \
@@ -89,7 +89,7 @@ describe 'Runner spend_section integration' do
       output = capture_output { sut.run }
 
       expect(output).not_to include('🌞 enterprise_daily')
-      expect(output).not_to include('🌙 enterprise_monthly')
+      expect(output).not_to include('🌛 enterprise_monthly')
     end
   end
 
@@ -115,7 +115,7 @@ describe 'Runner spend_section integration' do
       ) { nil }
       stub(Dude::StatusLine::EnterpriseSpend).new(anything, anything) { enterprise_spend_instance }
       stub(enterprise_spend_instance).daily_bar { '🌞 enterprise_daily' }
-      stub(enterprise_spend_instance).monthly_bar { '🌙 enterprise_monthly' }
+      stub(enterprise_spend_instance).monthly_bar { '🌛 enterprise_monthly' }
     end
 
     it 'writes lock even though date matches today, ' \

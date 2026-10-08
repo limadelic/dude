@@ -132,7 +132,7 @@ describe Dude::StatusLine::EnterpriseSpend do
       result = sut.monthly_bar
 
       expect(result).not_to be_nil
-      expect(result).to include('🌙')
+      expect(result).to include('🌛')
     end
 
     it 'calculates fill percentage as month_spend / MONTHLY_BUDGET' do
@@ -147,7 +147,7 @@ describe Dude::StatusLine::EnterpriseSpend do
     it 'shows correct color based on pace' do
       result = sut.monthly_bar
 
-      expect(result).to include('🌙')
+      expect(result).to include('🌛')
     end
 
     it 'shows higher fill when more of month is spent' do
@@ -158,7 +158,7 @@ describe Dude::StatusLine::EnterpriseSpend do
 
       result = sut_later.monthly_bar
 
-      expect(result).to include('🌙')
+      expect(result).to include('🌛')
     end
   end
 

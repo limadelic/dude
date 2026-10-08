@@ -153,7 +153,7 @@ module Dude
           ) || 0,
           resets_at: @session.dig('rate_limits', 'seven_day', 'resets_at') || 0,
           window_len: 7 * 24 * 3600,
-          emoji: '🌙',
+          emoji: '🌛',
           band: seven_day_band
         ).to_s
       end

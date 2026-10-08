@@ -132,9 +132,9 @@ describe Dude::StatusLine::RateLimit do
           used_pct: 25,
           resets_at: now_time + 604800,
           window_len: 604800,
-          emoji: '🌙'
+          emoji: '🌛'
         ).to_s
-        expect(output).to include('🌙')
+        expect(output).to include('🌛')
       end
     end
 
