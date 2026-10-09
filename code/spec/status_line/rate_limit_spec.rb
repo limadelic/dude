@@ -14,11 +14,11 @@ describe Dude::StatusLine::RateLimit do
       subject {
         described_class.new(
           used_pct: used_pct, resets_at: resets_at_time,
-          window_len: window_len, emoji: '☀️'
+          window_len: window_len, emoji: '🌞'
         ).to_s
       }
 
-      let(:bar) { Dude::StatusLine::Format.strip(subject)[/☀️ ([█░]+)/, 1] }
+      let(:bar) { Dude::StatusLine::Format.strip(subject)[/🌞 ([█░]+)/, 1] }
       let(:used_pct) { 0 }
 
       let(:resets_at_time) { now_time + 3600 }
@@ -63,7 +63,7 @@ describe Dude::StatusLine::RateLimit do
           used_pct: used_pct,
           resets_at: resets_at.to_i,
           window_len: window_len,
-          emoji: '☀️'
+          emoji: '🌞'
         ).to_s
       end
 
@@ -109,7 +109,7 @@ describe Dude::StatusLine::RateLimit do
             used_pct: 50,
             resets_at: resets_at,
             window_len: 3600,
-            emoji: '☀️'
+            emoji: '🌞'
           ).to_s
           expect(output).to include("\e[32m")
         end
@@ -122,9 +122,9 @@ describe Dude::StatusLine::RateLimit do
           used_pct: 25,
           resets_at: now_time + 3600,
           window_len: 3600,
-          emoji: '☀️'
+          emoji: '🌞'
         ).to_s
-        expect(output).to include('☀️')
+        expect(output).to include('🌞')
       end
 
       it 'works with moon emoji for 7-day' do
@@ -132,9 +132,51 @@ describe Dude::StatusLine::RateLimit do
           used_pct: 25,
           resets_at: now_time + 604800,
           window_len: 604800,
-          emoji: '🌙'
+          emoji: '🌛'
         ).to_s
-        expect(output).to include('🌙')
+        expect(output).to include('🌛')
+      end
+    end
+
+    describe 'band background' do
+      let(:sut) do
+        described_class.new(
+          used_pct: 25,
+          resets_at: now_time + 3600,
+          window_len: 3600,
+          emoji: '🌞',
+          band: band
+        ).to_s
+      end
+
+      let(:band) { nil }
+
+      context 'with nil band' do
+        it 'output is identical to no band argument' do
+          base_output = described_class.new(
+            used_pct: 25,
+            resets_at: now_time + 3600,
+            window_len: 3600,
+            emoji: '🌞'
+          ).to_s
+          expect(sut).to eq(base_output)
+        end
+      end
+
+      context 'with :yellow band' do
+        let(:band) { :yellow }
+
+        it 'wraps emoji with yellow background' do
+          expect(sut).to include("\033[48;5;226m🌞 \033[0m")
+        end
+      end
+
+      context 'with :red band' do
+        let(:band) { :red }
+
+        it 'wraps emoji with red background' do
+          expect(sut).to include("\033[41m🌞 \033[0m")
+        end
       end
     end
   end

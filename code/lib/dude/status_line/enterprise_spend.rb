@@ -41,7 +41,7 @@ module Dude
           used_pct: used_pct,
           resets_at: next_midnight,
           window_len: 86400,
-          emoji: '☀️'
+          emoji: '🌞'
         )
       end
 
@@ -50,7 +50,7 @@ module Dude
           used_pct: used_pct,
           resets_at: first_of_next_month_ts,
           window_len: seconds_in_current_month,
-          emoji: '🌙'
+          emoji: '🌛'
         )
       end
 

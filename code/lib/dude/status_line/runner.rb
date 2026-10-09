@@ -9,6 +9,13 @@ require_relative 'models'
 require_relative 'dudes'
 require_relative 'rate_limit'
 require_relative 'enterprise_spend_provider'
+require_relative 'price_table'
+require_relative 'sun_band'
+require_relative 'week_band'
+require_relative 'silo_list'
+require_relative '../transcript/silo_usage'
+require_relative '../transcript/silo_registry'
+require_relative '../transcript/usage_cache_store'
 
 module Dude
   module StatusLine
@@ -48,15 +55,44 @@ module Dude
         puts "🧠 [ERROR: #{e.class}]"
       end
 
-      def build_status_line(dudes_instance)
-        r = @session['rate_limits'] ? rate_limit_sections : enterprise_sections
-        [*r.compact, dudes_instance.to_s].compact.join(' ')
+      def context_percentage
+        @context_percentage ||= Dude::StatusLine::ContextPercentage.new(@session).value
       end
+
+      def build_status_line(dudes_instance)
+        sections = SectionBuilder.new(
+          @session, @activity,
+          context_percentage
+        ).build
+        [*sections.compact, dudes_instance.to_s].compact.join(' ')
+      end
+
+      def load_dudes
+        Dude::Dudes::Dudes.new.all
+      end
+    end
+
+    class SectionBuilder
+      def initialize(session, activity, context_pct)
+        @session = session
+        @activity = activity
+        @context_pct = context_pct
+      end
+
+      def build
+        if @session['rate_limits']
+          rate_limit_sections
+        else
+          enterprise_sections
+        end
+      end
+
+      private
 
       def rate_limit_sections
         [
-          context_section, pomo_section,
-          five_hour_section, seven_day_section, models_section
+          context_section, pomo_section, five_hour_section, silo_list_section,
+          seven_day_section, models_section
         ]
       end
 
@@ -67,24 +103,8 @@ module Dude
         ]
       end
 
-      def token
-        @memoized_token ||= Dude::StatusLine::AnthropicToken.fetch
-      end
-
       def context_section
-        Dude::StatusLine::Context.new(@session, context_percentage).to_s
-      end
-
-      def context_percentage
-        @context_percentage ||= Dude::StatusLine::ContextPercentage.new(@session).value
-      end
-
-      def load_dudes
-        Dude::Dudes::Dudes.new.all
-      end
-
-      def activity_data
-        @activity_data ||= @activity || {}
+        Dude::StatusLine::Context.new(@session, @context_pct).to_s
       end
 
       def pomo_section
@@ -95,8 +115,12 @@ module Dude
         Dude::StatusLine::Models.new(@session, activity_data).to_s
       end
 
+      def activity_data
+        @activity_data ||= @activity || {}
+      end
+
       def five_hour_section
-        return unless @session['rate_limits']
+        return unless @session['rate_limits']&.dig('five_hour')
 
         Dude::StatusLine::RateLimit.new(
           used_pct: @session.dig(
@@ -105,12 +129,22 @@ module Dude
           ) || 0,
           resets_at: @session.dig('rate_limits', 'five_hour', 'resets_at') || 0,
           window_len: 5 * 3600,
-          emoji: '☀️'
+          emoji: '🌞',
+          band: five_hour_band.call
         ).to_s
       end
 
+      def silo_list_section
+        return unless @session['rate_limits']&.dig('five_hour') &&
+          (data = five_hour_band&.silo_list_data)
+
+        Dude::StatusLine::SiloList.new(*data).call.then { |r| r.empty? ? nil : r }
+      rescue StandardError
+        nil
+      end
+
       def seven_day_section
-        return unless @session['rate_limits']
+        return unless @session['rate_limits']&.dig('seven_day')
 
         Dude::StatusLine::RateLimit.new(
           used_pct: @session.dig(
@@ -119,7 +153,8 @@ module Dude
           ) || 0,
           resets_at: @session.dig('rate_limits', 'seven_day', 'resets_at') || 0,
           window_len: 7 * 24 * 3600,
-          emoji: '🌙'
+          emoji: '🌛',
+          band: seven_day_band
         ).to_s
       end
 
@@ -135,6 +170,18 @@ module Dude
         @enterprise_spend ||= Dude::StatusLine::EnterpriseSpendProvider.new(
           @session, token
         ).get
+      end
+
+      def token
+        @memoized_token ||= Dude::StatusLine::AnthropicToken.fetch
+      end
+
+      def five_hour_band
+        @five_hour_band ||= Dude::StatusLine::SunBand.new(@session)
+      end
+
+      def seven_day_band
+        @seven_day_band ||= Dude::StatusLine::WeekBand.new(@session).call
       end
     end
   end
