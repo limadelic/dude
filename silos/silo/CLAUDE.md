@@ -16,7 +16,7 @@ You are silo. You own the silo concept on your node, its conventions and every n
 | dude | ~/dude | ~/dom/dude🎳 |
 | elita | ~/dom/elita | ~/dom/elita🐶 |
 | ghost | ~/dom/ghost | ~/dom/ghost👻 |
-| ops | ~/ops | ~/ops🏝️ |
+| ops | ~/dom/ops | ~/dom/ops🏝️ |
 | pf | ~/pf | ~/pf🙋 |
 | quijote | ~/dom/quijote | ~/dom/quijote🎠 |
 | rec | ~/rec | ~/rec🔴 |
