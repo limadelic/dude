@@ -120,7 +120,7 @@ module Dude
       end
 
       def five_hour_section
-        return unless @session['rate_limits']&.dig('five_hour')
+        return unless @session['rate_limits']
 
         Dude::StatusLine::RateLimit.new(
           used_pct: @session.dig(
@@ -130,7 +130,7 @@ module Dude
           resets_at: @session.dig('rate_limits', 'five_hour', 'resets_at') || 0,
           window_len: 5 * 3600,
           emoji: '🌞',
-          band: five_hour_band.call
+          band: five_hour_band_if_present
         ).to_s
       end
 
@@ -144,7 +144,7 @@ module Dude
       end
 
       def seven_day_section
-        return unless @session['rate_limits']&.dig('seven_day')
+        return unless @session['rate_limits']
 
         Dude::StatusLine::RateLimit.new(
           used_pct: @session.dig(
@@ -154,7 +154,7 @@ module Dude
           resets_at: @session.dig('rate_limits', 'seven_day', 'resets_at') || 0,
           window_len: 7 * 24 * 3600,
           emoji: '🌛',
-          band: seven_day_band
+          band: seven_day_band_if_present
         ).to_s
       end
 
@@ -182,6 +182,14 @@ module Dude
 
       def seven_day_band
         @seven_day_band ||= Dude::StatusLine::WeekBand.new(@session).call
+      end
+
+      def five_hour_band_if_present
+        five_hour_band.call if @session['rate_limits']['five_hour']
+      end
+
+      def seven_day_band_if_present
+        seven_day_band if @session['rate_limits']['seven_day']
       end
     end
   end

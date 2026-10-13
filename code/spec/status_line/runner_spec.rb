@@ -154,11 +154,10 @@ describe Dude::StatusLine::Runner do
         }
       end
 
-      it 'renders sun emoji but not moon' do
-        output = capture_output { sut.run }
+      it 'renders empty moon bar' do
+        output = strip(capture_output { sut.run })
 
-        expect(output).to include('🌞')
-        expect(output).not_to include('🌛')
+        expect(output).to include('🌛 ░░░░░░░░░')
       end
     end
 
@@ -176,11 +175,10 @@ describe Dude::StatusLine::Runner do
         }
       end
 
-      it 'renders moon emoji but not sun' do
-        output = capture_output { sut.run }
+      it 'renders empty sun bar before moon' do
+        output = strip(capture_output { sut.run })
 
-        expect(output).not_to include('🌞')
-        expect(output).to include('🌛')
+        expect(output.index('🌞 ░░░░░░░░░')).to be < output.index('🌛')
       end
     end
   end
@@ -331,10 +329,10 @@ describe Dude::StatusLine::Runner do
         }
       end
 
-      it 'does not compute band' do
-        output = capture_output { sut.run }
+      it 'renders empty sun bar' do
+        output = strip(capture_output { sut.run })
 
-        expect(output).not_to include('🌞')
+        expect(output).to include('🌞 ░░░░░░░░░')
       end
     end
   end
@@ -635,10 +633,10 @@ describe Dude::StatusLine::Runner do
         }
       end
 
-      it 'does not compute band' do
-        output = capture_output { sut.run }
+      it 'renders empty moon bar' do
+        output = strip(capture_output { sut.run })
 
-        expect(output).not_to include('🌛')
+        expect(output).to include('🌛 ░░░░░░░░░')
       end
     end
   end
