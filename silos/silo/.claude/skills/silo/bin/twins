@@ -4,10 +4,18 @@ require 'open3'
 
 all_flag = ARGV.include?('--all')
 stdout, _, status = Open3.capture3('claude agents --all --json')
-exit puts '{"twins":[]}' unless status.success?
+exit puts '{"twins":[],"strays":[]}' unless status.success?
 
 base_name = proc { |name| name.to_s.strip }
-agents = JSON.parse(stdout).group_by { |a| base_name.call(a['name']) }
+rows = JSON.parse(stdout)
+agents = rows.group_by { |a| base_name.call(a['name']) }
+doms = File.read(File.expand_path('~/.claude/silos/silo/CLAUDE.md'))[/^## Doms\n(.+?)\n\n/m, 1].lines.drop(2).map { |l| File.expand_path(l.split('|')[3].strip) }
+strays = rows.filter_map do |row|
+  s = File.expand_path("~/.claude/jobs/#{row['sessionId'][0, 8]}/state.json")
+  cwd = File.exist?(s) ? JSON.parse(File.read(s))['cwd'] || row['cwd'] : row['cwd']
+  next if doms.include?(cwd)
+  { name: row['name'], sessionId: row['sessionId'], cwd: cwd, state: row['state'] }
+end
 groups = all_flag ? agents : agents.select { |_, r| r.length >= 2 && r.map { |x| x['sessionId'] }.uniq.length >= 2 }
 
 results = groups.map do |name, rows|
@@ -35,4 +43,4 @@ results = groups.map do |name, rows|
   end}
 end
 
-puts JSON.pretty_generate({twins: results})
+puts JSON.pretty_generate({twins: results, strays: strays})

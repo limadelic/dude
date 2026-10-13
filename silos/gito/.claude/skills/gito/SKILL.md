@@ -9,14 +9,15 @@ description: Use when syncing .claude folders, dom branches or the dude repos
 | Dom | Folder | Remote | Branches | Visibility |
 |---|---|---|---|---|
 | dude | ~/.claude (~/dude is a symlink) | limadelic/dude | main, wip | public |
-| quijote | ~/dev/.claude | msuarz/quijote | main, wip | private, msuarz only |
-| sancho | ~/dev/qxt (.claude inside) | msuarz/sancho | sancho | private, msuarz only |
-| elita | ~/dev/self/elita | limadelic/dude | elita | public |
+| quijote | ~/dev/.claude (link ~/dom/quijote) | msuarz/quijote | main, wip | private, msuarz only |
+| sancho | ~/dev/qxt (.claude inside) (link ~/dom/sancho) | msuarz/sancho | sancho | private, msuarz only |
+| elita | ~/dev/self/elita (link ~/dom/elita) | limadelic/dude | elita | public |
+| ghost👻 | ~/dev/self/ghost (link ~/dom/ghost) | ghost (private) | main, wip | private |
 
 ## Rules
 
-- dude: all work on wip, PR wip -> main, merge only when mike says. After a merge, cut a clean wip and open a new PR.
-- elita: cut from main, never merges back, PRs target elita.
+- Every wip branch always has an open PR into its dom branch (wip -> main for dude, elita_wip -> elita for elita). After a merge, cut a clean wip from the dom branch and open a new PR right away.
+- elita: cut from main, never merges back. All work on elita_wip, elita_wip merges into elita. PRs are elita_wip -> elita.
 - sancho: in ~/dev/qxt the remote `dude` is fetch only, pushes are disabled.
 - Public dude has no work content and no node content. Work goes to sancho, node and mesh content goes to quijote.
 - Nobody outside sancho reaches the sancho node. Talk to @sancho.

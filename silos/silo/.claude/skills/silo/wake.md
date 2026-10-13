@@ -8,9 +8,9 @@ An agent asks silo to wake a silo. Silo wakes it with its record and no twin, th
 
 - Resolve the name to a session id, `claude agents --all --json`, one row per name
 - Alive: do not resume, `SendMessage` it to talk to the asker
-- Dead: from its home, `claude --bg --resume <full session id>`, no prompt, no other flag
+- Dead: from its state.json cwd, `~/<dom>` for a dom silo, `claude --bg --resume <full session id>`, no prompt, no other flag
 - Dead with a color: it is mike's, do not resume it, tell mike
-- Pass: `ListAgents` shows one row, same session id, `bin/twins` is empty
+- Pass: `ListAgents` shows one row, same session id, `bin/twins` is empty; mv any job in ~/.claude/jobs with no name or stopped state to /tmp
 - Then `SendMessage` the silo: who asked, the job, talk to the asker
 - Last, `SendMessage` the asker: the listing names that are live
 

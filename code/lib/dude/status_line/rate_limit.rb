@@ -6,11 +6,12 @@ module Dude
       include Dude::StatusLine::Format
       COLORS = Dude::StatusLine::Format::COLORS
 
-      def initialize(used_pct:, resets_at:, window_len:, emoji:)
+      def initialize(used_pct:, resets_at:, window_len:, emoji:, band: nil)
         @used_pct = used_pct
         @resets_at = resets_at
         @window_len = window_len
         @emoji = emoji
+        @band = band
       end
 
       def to_s
@@ -18,7 +19,7 @@ module Dude
         elapsed_pct = clamp(elapsed * 100 / @window_len.to_f)
         ratio = elapsed_pct <= 0 ? 0 : @used_pct / elapsed_pct.to_f
         color = color_for_ratio(ratio)
-        bar(clamp(@used_pct), @emoji, color: color)
+        bar(clamp(@used_pct), @emoji, color: color, band: @band)
       end
 
       private

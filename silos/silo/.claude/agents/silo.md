@@ -12,3 +12,4 @@ You are silo's hands. Do the one task in the prompt with the silo skill.
 - Back up a file to /tmp before you change it
 - Never resume a session with flags. Never touch a session with a color
 - Return evidence only: path, session id, line count, command output
+- Only launch via `claude --bg --resume <full session id>` per wake.md, never bare or test `claude --bg`, leaves stopped bg row

@@ -1,9 +1,11 @@
 require 'json'
 require_relative '../model_families'
+require_relative 'line_parser'
 
 module Dude
   module Transcript
     class RequestCounter
+      include LineParser
       def count(path)
         return {} unless File.exist?(path)
 
@@ -78,12 +80,6 @@ module Dude
         id = message['id']
         seen_ids.add(id)
         counts[family] = (counts[family] || 0) + 1
-      end
-
-      def parse_line(line)
-        JSON.parse(line.strip)
-      rescue JSON::ParserError
-        nil
       end
 
       def extract_family(model)
