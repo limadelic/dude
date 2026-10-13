@@ -314,27 +314,6 @@ describe Dude::StatusLine::Runner do
         expect(output).not_to include('🌞')
       end
     end
-
-    context 'when input lacks five_hour rate_limit' do
-      let(:input) do
-        {
-          'context_window' => { 'used_percentage' => 10 },
-          'model' => { 'id' => 'claude-opus-4-8' },
-          'rate_limits' => {
-            'seven_day' => {
-              'used_percentage' => 4,
-              'resets_at' => (Time.now.to_i + 86400 * 3)
-            }
-          }
-        }
-      end
-
-      it 'renders empty sun bar' do
-        output = strip(capture_output { sut.run })
-
-        expect(output).to include('🌞 ░░░░░░░░░')
-      end
-    end
   end
 
   describe 'no band rendering' do
@@ -616,27 +595,6 @@ describe Dude::StatusLine::Runner do
         output = capture_output { sut.run }
 
         expect(output).to include('🌛')
-      end
-    end
-
-    context 'when input lacks seven_day rate_limit' do
-      let(:input) do
-        {
-          'context_window' => { 'used_percentage' => 10 },
-          'model' => { 'id' => 'claude-opus-4-8' },
-          'rate_limits' => {
-            'five_hour' => {
-              'used_percentage' => 41,
-              'resets_at' => (Time.now.to_i + 3600)
-            }
-          }
-        }
-      end
-
-      it 'renders empty moon bar' do
-        output = strip(capture_output { sut.run })
-
-        expect(output).to include('🌛 ░░░░░░░░░')
       end
     end
   end

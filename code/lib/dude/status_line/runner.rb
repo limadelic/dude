@@ -130,7 +130,7 @@ module Dude
           resets_at: @session.dig('rate_limits', 'five_hour', 'resets_at') || 0,
           window_len: 5 * 3600,
           emoji: '🌞',
-          band: five_hour_band_if_present
+          band: band_if_present('five_hour') { five_hour_band.call }
         ).to_s
       end
 
@@ -154,7 +154,7 @@ module Dude
           resets_at: @session.dig('rate_limits', 'seven_day', 'resets_at') || 0,
           window_len: 7 * 24 * 3600,
           emoji: '🌛',
-          band: seven_day_band_if_present
+          band: band_if_present('seven_day') { seven_day_band }
         ).to_s
       end
 
@@ -184,12 +184,8 @@ module Dude
         @seven_day_band ||= Dude::StatusLine::WeekBand.new(@session).call
       end
 
-      def five_hour_band_if_present
-        five_hour_band.call if @session['rate_limits']['five_hour']
-      end
-
-      def seven_day_band_if_present
-        seven_day_band if @session['rate_limits']['seven_day']
+      def band_if_present(window)
+        yield if @session['rate_limits'][window]
       end
     end
   end
