@@ -12,7 +12,7 @@ description: Use when syncing .claude folders, dom branches or the dude repos
 | quijote | ~/dev/.claude (link ~/dom/quijote) | msuarz/quijote | main, wip | private, msuarz only |
 | sancho | ~/dev/qxt (.claude inside) (link ~/dom/sancho) | msuarz/sancho | sancho | private, msuarz only |
 | elita | ~/dev/self/elita (link ~/dom/elita) | limadelic/dude | elita | public |
-| ghost👻 | ~/dev/self/ghost (link ~/dom/ghost) | ghost (private) | main, wip | private |
+| ghost👻 | ~/dev/self/ghost (link ~/dom/ghost) | msuarz/ghost | main, wip | private, msuarz only |
 
 ## Rules
 
@@ -28,4 +28,4 @@ description: Use when syncing .claude folders, dom branches or the dude repos
 - Map first: every .claude folder, its remote, branch, dirty count, ahead and behind.
 - Always use `git -C <folder>`. After a remote change, check `remote -v` in every folder.
 - Commit on the dom branch, merge from the remote, push the dom branch.
-- Move files with mv, never rm. Back up to /tmp first.
+- Move files with mv, never rm. Git is the backup, never /tmp. Commit the old copy before an edit.
