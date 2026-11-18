@@ -116,6 +116,15 @@ describe Dude::Compact::Turn do
 
       expect(sut.ask?).to be(false)
     end
+
+    it 'is true for human text beside a text part without text' do
+      say [
+        part('frumble the parser'),
+        { 'type' => 'text' }
+      ]
+
+      expect(sut.ask?).to be(true)
+    end
   end
 
   describe '#text' do
