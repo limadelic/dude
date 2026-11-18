@@ -27,14 +27,16 @@ describe Dude::Compact do
   end
 
   describe '#call' do
+    let(:rows) do
+      [
+        riley, described_class::HEADER,
+        'Nov 18 7:33 PM ship the parser on Monday',
+        'Nov 19 5:20 AM prepare the demo'
+      ]
+    end
+
     it 'puts riley, header, then asks oldest first' do
-      expect(sut.call).to eq(
-        [
-          riley, described_class::HEADER,
-          'Nov 18 7:33 PM ship the parser on Monday',
-          'Nov 19 5:20 AM prepare the demo'
-        ]
-      )
+      expect(sut.call).to eq(rows)
     end
 
     context 'when there is no riley line' do
@@ -57,14 +59,16 @@ describe Dude::Compact do
         stub(midnight).text { 'sleep' }
       end
 
+      let(:rows) do
+        [
+          riley, described_class::HEADER,
+          'Nov 18 12:00 PM lunch',
+          'Nov 19 12:00 AM sleep'
+        ]
+      end
+
       it 'shows twelve as the hour for both' do
-        expect(sut.call).to eq(
-          [
-            riley, described_class::HEADER,
-            'Nov 18 12:00 PM lunch',
-            'Nov 19 12:00 AM sleep'
-          ]
-        )
+        expect(sut.call).to eq(rows)
       end
     end
   end
