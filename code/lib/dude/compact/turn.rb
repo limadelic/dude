@@ -20,7 +20,7 @@ module Dude
       def ask?
         return false unless user? && !meta? && typed?
 
-        NOISE_TAGS.none? { |tag| text.start_with?(tag) }
+        !noise?(text)
       end
 
       def text
@@ -48,17 +48,21 @@ module Dude
       def plain_text
         content = @entry.dig('message', 'content')
         return content if content.is_a?(String)
-        return unless blocks?(content)
+        return unless content.is_a?(Array) && no_tool_result?(content)
 
         text_blocks(content).map { |b| b['text'] }.join("\n")
       end
 
-      def blocks?(content)
-        content.is_a?(Array) && content.none? { |b| b['type'] == 'tool_result' }
+      def no_tool_result?(blocks)
+        blocks.none? { |b| b['type'] == 'tool_result' }
       end
 
       def text_blocks(content)
-        content.select { |b| b['type'] == 'text' }
+        content.select { |b| b['type'] == 'text' && !noise?(b['text']) }
+      end
+
+      def noise?(text)
+        NOISE_TAGS.any? { |tag| text.start_with?(tag) }
       end
     end
   end

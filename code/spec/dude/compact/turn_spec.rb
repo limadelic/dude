@@ -15,6 +15,10 @@ describe Dude::Compact::Turn do
     entry['message']['content'] = words
   end
 
+  def part(words)
+    { 'type' => 'text', 'text' => words }
+  end
+
   describe '#ask?' do
     it 'is true for a human text turn' do
       expect(sut.ask?).to be(true)
@@ -56,8 +60,14 @@ describe Dude::Compact::Turn do
       expect(sut.ask?).to be(false)
     end
 
+    it 'is false for a bare hook' do
+      say '<hook>blorp</hook>'
+
+      expect(sut.ask?).to be(false)
+    end
+
     it 'is false for a system reminder' do
-      say '<system-reminder>riley is blue</system-reminder>'
+      say '<system-reminder>zarnok is blue</system-reminder>'
 
       expect(sut.ask?).to be(false)
     end
@@ -79,6 +89,33 @@ describe Dude::Compact::Turn do
 
       expect(sut.ask?).to be(false)
     end
+
+    it 'is true for list content of human text parts' do
+      say [
+        { 'type' => 'text', 'text' => 'ship' },
+        { 'type' => 'text', 'text' => 'it' }
+      ]
+
+      expect(sut.ask?).to be(true)
+    end
+
+    it 'is true for human text after a noise part' do
+      say [
+        part('<system-reminder>zarnok is blue</system-reminder>'),
+        { 'type' => 'text', 'text' => 'ship it' }
+      ]
+
+      expect(sut.ask?).to be(true)
+    end
+
+    it 'is false for list content of noise parts only' do
+      say [
+        part('<system-reminder>zarnok is blue</system-reminder>'),
+        { 'type' => 'text', 'text' => '<hook>blorp</hook>' }
+      ]
+
+      expect(sut.ask?).to be(false)
+    end
   end
 
   describe '#text' do
@@ -96,6 +133,16 @@ describe Dude::Compact::Turn do
       expect(sut.text).to eq("one\ntwo")
     end
 
+    it 'drops noise parts from list content' do
+      say [
+        part('<system-reminder>zarnok is blue</system-reminder>'),
+        { 'type' => 'text', 'text' => 'ship it' },
+        { 'type' => 'text', 'text' => '<hook>blorp</hook>' }
+      ]
+
+      expect(sut.text).to eq('ship it')
+    end
+
     it 'strips image tags' do
       say 'look at this [Image #3]'
 
@@ -111,7 +158,7 @@ describe Dude::Compact::Turn do
 
   describe '#time' do
     it 'parses the entry timestamp' do
-      expect(sut.time).to eq(Time.parse(stamp))
+      expect(sut.time).to eq(Time.utc(2026, 11, 18, 14, 3, 0))
     end
   end
 end
