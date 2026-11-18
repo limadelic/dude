@@ -1,7 +1,7 @@
 require 'time'
 
 module Dude
-  module Compact
+  class Compact
     class Turn
       NOISE_PREFIXES = [
         '<cross-session-message',

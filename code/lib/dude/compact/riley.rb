@@ -1,5 +1,5 @@
 module Dude
-  module Compact
+  class Compact
     class Riley
       FORK = /\s*⑂\s*(.+)\z/
       LINE = /\A-\s*Riley:/i
