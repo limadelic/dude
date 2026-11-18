@@ -26,6 +26,17 @@ describe Dude::Compact do
     stub(later).text { 'prepare the demo' }
   end
 
+  def ask_at(time, words)
+    Object.new.tap do |turn|
+      stub(turn).time { time }
+      stub(turn).text { words }
+    end
+  end
+
+  def units(text)
+    text.encode('UTF-16LE').bytesize / 2
+  end
+
   describe '#call' do
     let(:rows) do
       [
@@ -44,6 +55,41 @@ describe Dude::Compact do
 
       it 'starts with the header' do
         expect(sut.call.first).to eq(described_class::HEADER)
+      end
+    end
+
+    context 'when the asks pass the cap' do
+      let(:new_words) { 'frumble ' * 500 }
+      let(:old_ask) { ask_at(Time.utc(2026, 11, 18, 14, 3), 'blorp ' * 1000) }
+      let(:new_ask) { ask_at(Time.utc(2026, 11, 18, 23, 50), new_words) }
+      let(:asks) { [old_ask, new_ask] }
+
+      it 'drops the oldest ask whole' do
+        expect(sut.call.last).to eq("Nov 19 5:20 AM #{new_words}")
+      end
+    end
+
+    context 'when the newest ask alone passes the cap' do
+      let(:asks) { [ask_at(Time.utc(2026, 11, 18, 23, 50), 'blorp ' * 2000)] }
+
+      it 'keeps riley and header first' do
+        expect(sut.call.first(2)).to eq([riley, described_class::HEADER])
+      end
+
+      it 'cuts the ask to fit the cap' do
+        expect(units(sut.call.join("\n"))).to eq(10_000)
+      end
+    end
+
+    context 'when the newest ask is emoji past the cap' do
+      let(:asks) { [ask_at(Time.utc(2026, 11, 18, 23, 50), '🐳' * 6000)] }
+
+      it 'counts the emoji as two units' do
+        expect(units(sut.call.join("\n"))).to be <= 10_000
+      end
+
+      it 'cuts after a whole emoji' do
+        expect(sut.call.last[-1]).to eq('🐳')
       end
     end
 
