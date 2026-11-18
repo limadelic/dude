@@ -23,10 +23,10 @@ describe Dude::Compact do
   end
 
   def ask(time, text)
-    obj = Object.new
-    stub(obj).time { time }
-    stub(obj).text { text }
-    obj
+    fake_ask = Object.new
+    stub(fake_ask).time { time }
+    stub(fake_ask).text { text }
+    fake_ask
   end
 
   def units(text)
@@ -55,8 +55,8 @@ describe Dude::Compact do
     end
 
     context 'when the asks pass the cap' do
-      let(:new_words) { 'frumble ' * 500 }
-      let(:old_ask) { ask(early_time, 'blorp ' * 1000) }
+      let(:new_words) { 'frumble ' * (cap / 2 / 'frumble '.length) }
+      let(:old_ask) { ask(early_time, 'blorp ' * (cap * 2 / 'blorp '.length)) }
       let(:new_ask) { ask(late_time, new_words) }
       let(:asks) { [old_ask, new_ask] }
 
@@ -68,7 +68,7 @@ describe Dude::Compact do
     end
 
     context 'when the newest ask alone passes the cap' do
-      let(:huge) { ask(late_time, 'blorp ' * 2000) }
+      let(:huge) { ask(late_time, 'blorp ' * (cap * 2 / 'blorp '.length)) }
       let(:asks) { [huge] }
 
       it 'keeps riley and header first' do
@@ -81,7 +81,7 @@ describe Dude::Compact do
     end
 
     context 'when riley and header alone pass the cap' do
-      let(:riley) { "riley: #{'ship ' * 2000}" }
+      let(:riley) { "riley: #{'ship ' * (cap * 2 / 'ship '.length)}" }
 
       it 'keeps riley and header' do
         expect(sut.call).to eq([riley, described_class::HEADER])
@@ -89,7 +89,7 @@ describe Dude::Compact do
     end
 
     context 'when the newest ask is emoji past the cap' do
-      let(:emoji) { ask(late_time, '🐳' * 6000) }
+      let(:emoji) { ask(late_time, '🐳' * cap) }
       let(:asks) { [emoji] }
 
       it 'counts the emoji as two units' do
@@ -102,8 +102,10 @@ describe Dude::Compact do
     end
 
     context 'when an ask is at noon or midnight' do
-      let(:noon) { ask(Time.utc(2026, 11, 18, 6, 30), 'lunch') }
-      let(:midnight) { ask(Time.utc(2026, 11, 18, 18, 30), 'sleep') }
+      let(:noon_time) { Time.utc(2026, 11, 18, 6, 30) }
+      let(:midnight_time) { Time.utc(2026, 11, 18, 18, 30) }
+      let(:noon) { ask(noon_time, 'lunch') }
+      let(:midnight) { ask(midnight_time, 'sleep') }
       let(:asks) { [midnight, noon] }
 
       let(:rows) do
