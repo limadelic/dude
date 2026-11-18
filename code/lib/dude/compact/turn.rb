@@ -3,15 +3,22 @@ require 'time'
 module Dude
   module Compact
     class Turn
-      NOISE_TAGS = %w[
-        <cross-session-message
-        <user-prompt-submit-hook
-        <hook
-        <system-reminder
-        <task-notification
+      NOISE_PREFIXES = [
+        '<cross-session-message',
+        '<user-prompt-submit-hook',
+        '<hook',
+        '<system-reminder',
+        '<task-notification',
+        '<scheduled-task',
+        'heartbeat:',
+        'Base directory for this skill:'
       ]
       INTERRUPT = '[Request interrupted by user]'
       IMAGE_TAG = /\s*\[Image #\d+\]/
+      PASTE = %r{<pasted_content[^>]*>.*?</pasted_content>}m
+      PASTE_MARK = '[paste]'
+      COMMAND_NAME = %r{<command-name>(.*?)</command-name>}m
+      COMMAND_ARGS = %r{<command-args>(.*?)</command-args>}m
 
       def initialize(entry)
         @entry = entry
@@ -24,7 +31,9 @@ module Dude
       end
 
       def text
-        plain_text&.gsub(IMAGE_TAG, '')&.strip
+        return command if command?
+
+        plain_text&.gsub(PASTE, PASTE_MARK)&.gsub(IMAGE_TAG, '')&.strip
       end
 
       def time
@@ -43,6 +52,16 @@ module Dude
 
       def typed?
         !text.to_s.empty? && text != INTERRUPT
+      end
+
+      def command?
+        plain_text&.include?('<command-name>')
+      end
+
+      def command
+        name = plain_text[COMMAND_NAME, 1]
+        args = plain_text[COMMAND_ARGS, 1]
+        [name, args].join(' ').strip
       end
 
       def plain_text
@@ -64,7 +83,7 @@ module Dude
       end
 
       def noise?(text)
-        NOISE_TAGS.any? { |tag| text.start_with?(tag) }
+        NOISE_PREFIXES.any? { |prefix| text.start_with?(prefix) }
       end
     end
   end

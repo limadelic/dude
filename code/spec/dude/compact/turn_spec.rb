@@ -78,6 +78,32 @@ describe Dude::Compact::Turn do
       expect(sut.ask?).to be(false)
     end
 
+    it 'is false for a heartbeat' do
+      say 'heartbeat: check the zarnok queue'
+
+      expect(sut.ask?).to be(false)
+    end
+
+    it 'is false for an expanded skill body' do
+      say 'Base directory for this skill: /frumble/skills/blorp'
+
+      expect(sut.ask?).to be(false)
+    end
+
+    it 'is false for a meta skill body after a slash command' do
+      entry['isMeta'] = true
+      say 'Base directory for this skill: /frumble/skills/blorp'
+
+      expect(sut.ask?).to be(false)
+    end
+
+    it 'is true for a slash command' do
+      say "<command-name>/zim</command-name>\n" \
+          "<command-args>blorp now</command-args>"
+
+      expect(sut.ask?).to be(true)
+    end
+
     it 'is false for an interrupt' do
       say '[Request interrupted by user]'
 
@@ -171,6 +197,20 @@ describe Dude::Compact::Turn do
       say [{ 'type' => 'tool_result' }]
 
       expect(sut.text).to be_nil
+    end
+
+    it 'replaces a paste with [paste]' do
+      say '<pasted_content id="1">zarnok frumble blorp</pasted_content>'
+
+      expect(sut.text).to eq('[paste]')
+    end
+
+    it 'returns a slash command as its name and args' do
+      say "<command-message>zim</command-message>\n" \
+          "<command-name>/zim</command-name>\n" \
+          "<command-args>blorp now</command-args>"
+
+      expect(sut.text).to eq('/zim blorp now')
     end
   end
 
