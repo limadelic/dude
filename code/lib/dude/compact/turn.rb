@@ -58,7 +58,9 @@ module Dude
       end
 
       def text_blocks(content)
-        content.select { |b| b['type'] == 'text' && !noise?(b['text']) }
+        content.select do |b|
+          b['type'] == 'text' && b['text'] && !noise?(b['text'])
+        end
       end
 
       def noise?(text)

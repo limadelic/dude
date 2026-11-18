@@ -92,8 +92,8 @@ describe Dude::Compact::Turn do
 
     it 'is true for list content of human text parts' do
       say [
-        { 'type' => 'text', 'text' => 'ship' },
-        { 'type' => 'text', 'text' => 'it' }
+        part('ship'),
+        part('it')
       ]
 
       expect(sut.ask?).to be(true)
@@ -102,7 +102,7 @@ describe Dude::Compact::Turn do
     it 'is true for human text after a noise part' do
       say [
         part('<system-reminder>zarnok is blue</system-reminder>'),
-        { 'type' => 'text', 'text' => 'ship it' }
+        part('ship it')
       ]
 
       expect(sut.ask?).to be(true)
@@ -111,7 +111,7 @@ describe Dude::Compact::Turn do
     it 'is false for list content of noise parts only' do
       say [
         part('<system-reminder>zarnok is blue</system-reminder>'),
-        { 'type' => 'text', 'text' => '<hook>blorp</hook>' }
+        part('<hook>blorp</hook>')
       ]
 
       expect(sut.ask?).to be(false)
@@ -125,9 +125,9 @@ describe Dude::Compact::Turn do
 
     it 'joins the text blocks of list content' do
       say [
-        { 'type' => 'text', 'text' => 'one' },
+        part('one'),
         { 'type' => 'image' },
-        { 'type' => 'text', 'text' => 'two' }
+        part('two')
       ]
 
       expect(sut.text).to eq("one\ntwo")
@@ -136,8 +136,17 @@ describe Dude::Compact::Turn do
     it 'drops noise parts from list content' do
       say [
         part('<system-reminder>zarnok is blue</system-reminder>'),
-        { 'type' => 'text', 'text' => 'ship it' },
-        { 'type' => 'text', 'text' => '<hook>blorp</hook>' }
+        part('ship it'),
+        part('<hook>blorp</hook>')
+      ]
+
+      expect(sut.text).to eq('ship it')
+    end
+
+    it 'drops text parts without text' do
+      say [
+        part('ship it'),
+        { 'type' => 'text' }
       ]
 
       expect(sut.text).to eq('ship it')
