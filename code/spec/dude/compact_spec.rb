@@ -7,8 +7,10 @@ describe Dude::Compact do
   let(:sut) { described_class.new(riley, asks) }
   let(:riley) { 'riley: ship the parser' }
   let(:asks) { [later, earlier] }
-  let(:earlier) { Object.new }
-  let(:later) { Object.new }
+  let(:earlier) { ask(early_time, 'ship the parser on Monday') }
+  let(:later) { ask(late_time, 'prepare the demo') }
+  let(:early_time) { Time.utc(2026, 11, 18, 14, 3) }
+  let(:late_time) { Time.utc(2026, 11, 18, 23, 50) }
   let(:zone) { 'IST-5:30' }
   let(:cap) { 10_000 }
 
@@ -20,11 +22,11 @@ describe Dude::Compact do
     ENV['TZ'] = saved
   end
 
-  before do
-    stub(earlier).time { Time.utc(2026, 11, 18, 14, 3) }
-    stub(earlier).text { 'ship the parser on Monday' }
-    stub(later).time { Time.utc(2026, 11, 18, 23, 50) }
-    stub(later).text { 'prepare the demo' }
+  def ask(time, text)
+    obj = Object.new
+    stub(obj).time { time }
+    stub(obj).text { text }
+    obj
   end
 
   def units(text)
@@ -54,16 +56,9 @@ describe Dude::Compact do
 
     context 'when the asks pass the cap' do
       let(:new_words) { 'frumble ' * 500 }
-      let(:old_ask) { Object.new }
-      let(:new_ask) { Object.new }
+      let(:old_ask) { ask(early_time, 'blorp ' * 1000) }
+      let(:new_ask) { ask(late_time, new_words) }
       let(:asks) { [old_ask, new_ask] }
-
-      before do
-        stub(old_ask).time { Time.utc(2026, 11, 18, 14, 3) }
-        stub(old_ask).text { 'blorp ' * 1000 }
-        stub(new_ask).time { Time.utc(2026, 11, 18, 23, 50) }
-        stub(new_ask).text { new_words }
-      end
 
       it 'drops the oldest ask whole' do
         expect(sut.call).to eq(
@@ -73,13 +68,8 @@ describe Dude::Compact do
     end
 
     context 'when the newest ask alone passes the cap' do
-      let(:huge) { Object.new }
+      let(:huge) { ask(late_time, 'blorp ' * 2000) }
       let(:asks) { [huge] }
-
-      before do
-        stub(huge).time { Time.utc(2026, 11, 18, 23, 50) }
-        stub(huge).text { 'blorp ' * 2000 }
-      end
 
       it 'keeps riley and header first' do
         expect(sut.call.first(2)).to eq([riley, described_class::HEADER])
@@ -99,13 +89,8 @@ describe Dude::Compact do
     end
 
     context 'when the newest ask is emoji past the cap' do
-      let(:emoji) { Object.new }
+      let(:emoji) { ask(late_time, '🐳' * 6000) }
       let(:asks) { [emoji] }
-
-      before do
-        stub(emoji).time { Time.utc(2026, 11, 18, 23, 50) }
-        stub(emoji).text { '🐳' * 6000 }
-      end
 
       it 'counts the emoji as two units' do
         expect(units(sut.call.join("\n"))).to be <= cap
@@ -117,8 +102,8 @@ describe Dude::Compact do
     end
 
     context 'when an ask is at noon or midnight' do
-      let(:noon) { Object.new }
-      let(:midnight) { Object.new }
+      let(:noon) { ask(Time.utc(2026, 11, 18, 6, 30), 'lunch') }
+      let(:midnight) { ask(Time.utc(2026, 11, 18, 18, 30), 'sleep') }
       let(:asks) { [midnight, noon] }
 
       let(:rows) do
@@ -127,13 +112,6 @@ describe Dude::Compact do
           'Nov 18 12:00 PM lunch',
           'Nov 19 12:00 AM sleep'
         ]
-      end
-
-      before do
-        stub(noon).time { Time.utc(2026, 11, 18, 6, 30) }
-        stub(noon).text { 'lunch' }
-        stub(midnight).time { Time.utc(2026, 11, 18, 18, 30) }
-        stub(midnight).text { 'sleep' }
       end
 
       it 'shows twelve as the hour for both' do
