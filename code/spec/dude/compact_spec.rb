@@ -52,19 +52,19 @@ describe Dude::Compact do
       let(:midnight) { Object.new }
       let(:asks) { [midnight, noon] }
 
-      before do
-        stub(noon).time { Time.utc(2026, 11, 18, 6, 30) }
-        stub(noon).text { 'lunch' }
-        stub(midnight).time { Time.utc(2026, 11, 18, 18, 30) }
-        stub(midnight).text { 'sleep' }
-      end
-
       let(:rows) do
         [
           riley, described_class::HEADER,
           'Nov 18 12:00 PM lunch',
           'Nov 19 12:00 AM sleep'
         ]
+      end
+
+      before do
+        stub(noon).time { Time.utc(2026, 11, 18, 6, 30) }
+        stub(noon).text { 'lunch' }
+        stub(midnight).time { Time.utc(2026, 11, 18, 18, 30) }
+        stub(midnight).text { 'sleep' }
       end
 
       it 'shows twelve as the hour for both' do
