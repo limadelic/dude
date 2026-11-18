@@ -26,7 +26,10 @@ module Dude
     def within(rows, budget)
       used = 0
       kept = rows.take_while { |row| (used += cost(row)) <= budget }
-      kept.empty? && rows.any? ? [cut(rows.first, budget - 1)] : kept
+      return kept unless kept.empty?
+      return [] unless rows.any?
+
+      [cut(rows.first, budget - 1)].reject(&:empty?)
     end
 
     def cost(row)

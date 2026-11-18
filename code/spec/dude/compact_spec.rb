@@ -10,6 +10,7 @@ describe Dude::Compact do
   let(:earlier) { Object.new }
   let(:later) { Object.new }
   let(:zone) { 'IST-5:30' }
+  let(:cap) { 10_000 }
 
   around do |example|
     saved = ENV.fetch('TZ', nil)
@@ -24,13 +25,6 @@ describe Dude::Compact do
     stub(earlier).text { 'ship the parser on Monday' }
     stub(later).time { Time.utc(2026, 11, 18, 23, 50) }
     stub(later).text { 'prepare the demo' }
-  end
-
-  def ask_at(time, words)
-    Object.new.tap do |turn|
-      stub(turn).time { time }
-      stub(turn).text { words }
-    end
   end
 
   def units(text)
@@ -60,32 +54,61 @@ describe Dude::Compact do
 
     context 'when the asks pass the cap' do
       let(:new_words) { 'frumble ' * 500 }
-      let(:old_ask) { ask_at(Time.utc(2026, 11, 18, 14, 3), 'blorp ' * 1000) }
-      let(:new_ask) { ask_at(Time.utc(2026, 11, 18, 23, 50), new_words) }
+      let(:old_ask) { Object.new }
+      let(:new_ask) { Object.new }
       let(:asks) { [old_ask, new_ask] }
 
+      before do
+        stub(old_ask).time { Time.utc(2026, 11, 18, 14, 3) }
+        stub(old_ask).text { 'blorp ' * 1000 }
+        stub(new_ask).time { Time.utc(2026, 11, 18, 23, 50) }
+        stub(new_ask).text { new_words }
+      end
+
       it 'drops the oldest ask whole' do
-        expect(sut.call.last).to eq("Nov 19 5:20 AM #{new_words}")
+        expect(sut.call).to eq(
+          [riley, described_class::HEADER, "Nov 19 5:20 AM #{new_words}"]
+        )
       end
     end
 
     context 'when the newest ask alone passes the cap' do
-      let(:asks) { [ask_at(Time.utc(2026, 11, 18, 23, 50), 'blorp ' * 2000)] }
+      let(:huge) { Object.new }
+      let(:asks) { [huge] }
+
+      before do
+        stub(huge).time { Time.utc(2026, 11, 18, 23, 50) }
+        stub(huge).text { 'blorp ' * 2000 }
+      end
 
       it 'keeps riley and header first' do
         expect(sut.call.first(2)).to eq([riley, described_class::HEADER])
       end
 
       it 'cuts the ask to fit the cap' do
-        expect(units(sut.call.join("\n"))).to eq(10_000)
+        expect(units(sut.call.join("\n"))).to eq(cap)
+      end
+    end
+
+    context 'when riley and header alone pass the cap' do
+      let(:riley) { "riley: #{'ship ' * 2000}" }
+
+      it 'keeps riley and header' do
+        expect(sut.call).to eq([riley, described_class::HEADER])
       end
     end
 
     context 'when the newest ask is emoji past the cap' do
-      let(:asks) { [ask_at(Time.utc(2026, 11, 18, 23, 50), '🐳' * 6000)] }
+      let(:emoji) { Object.new }
+      let(:asks) { [emoji] }
+
+      before do
+        stub(emoji).time { Time.utc(2026, 11, 18, 23, 50) }
+        stub(emoji).text { '🐳' * 6000 }
+      end
 
       it 'counts the emoji as two units' do
-        expect(units(sut.call.join("\n"))).to be <= 10_000
+        expect(units(sut.call.join("\n"))).to be <= cap
       end
 
       it 'cuts after a whole emoji' do
