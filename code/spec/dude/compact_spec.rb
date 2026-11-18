@@ -13,6 +13,8 @@ describe Dude::Compact do
   let(:late_time) { Time.utc(2026, 11, 18, 23, 50) }
   let(:zone) { 'IST-5:30' }
   let(:cap) { 10_000 }
+  let(:half_cap) { cap / 2 }
+  let(:over_cap) { cap * 2 }
 
   around do |example|
     saved = ENV.fetch('TZ', nil)
@@ -31,6 +33,10 @@ describe Dude::Compact do
 
   def units(text)
     text.encode('UTF-16LE').bytesize / 2
+  end
+
+  def filler(word, size)
+    word * (size / word.length)
   end
 
   describe '#call' do
@@ -55,8 +61,8 @@ describe Dude::Compact do
     end
 
     context 'when the asks pass the cap' do
-      let(:new_words) { 'frumble ' * (cap / 2 / 'frumble '.length) }
-      let(:old_ask) { ask(early_time, 'blorp ' * (cap * 2 / 'blorp '.length)) }
+      let(:new_words) { filler('frumble ', half_cap) }
+      let(:old_ask) { ask(early_time, filler('blorp ', over_cap)) }
       let(:new_ask) { ask(late_time, new_words) }
       let(:asks) { [old_ask, new_ask] }
 
@@ -68,7 +74,7 @@ describe Dude::Compact do
     end
 
     context 'when the newest ask alone passes the cap' do
-      let(:huge) { ask(late_time, 'blorp ' * (cap * 2 / 'blorp '.length)) }
+      let(:huge) { ask(late_time, filler('blorp ', over_cap)) }
       let(:asks) { [huge] }
 
       it 'keeps riley and header first' do
@@ -81,7 +87,7 @@ describe Dude::Compact do
     end
 
     context 'when riley and header alone pass the cap' do
-      let(:riley) { "riley: #{'ship ' * (cap * 2 / 'ship '.length)}" }
+      let(:riley) { "riley: #{filler('ship ', over_cap)}" }
 
       it 'keeps riley and header' do
         expect(sut.call).to eq([riley, described_class::HEADER])
