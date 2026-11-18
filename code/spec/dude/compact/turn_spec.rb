@@ -84,13 +84,19 @@ describe Dude::Compact::Turn do
       expect(sut.ask?).to be(false)
     end
 
+    it 'is false for a scheduled task' do
+      say '<scheduled-task>nightly sweep</scheduled-task>'
+
+      expect(sut.ask?).to be(false)
+    end
+
     it 'is false for an expanded skill body' do
       say 'Base directory for this skill: /frumble/skills/blorp'
 
       expect(sut.ask?).to be(false)
     end
 
-    it 'is false for a meta skill body after a slash command' do
+    it 'is false for a meta skill body' do
       entry['isMeta'] = true
       say 'Base directory for this skill: /frumble/skills/blorp'
 
@@ -203,6 +209,13 @@ describe Dude::Compact::Turn do
       say '<pasted_content id="1">zarnok frumble blorp</pasted_content>'
 
       expect(sut.text).to eq('[paste]')
+    end
+
+    it 'keeps the human text around a paste' do
+      say 'look at this <pasted_content id="1">' \
+          'zarnok frumble blorp</pasted_content> ship it'
+
+      expect(sut.text).to eq('look at this [paste] ship it')
     end
 
     it 'returns a slash command as its name and args' do
