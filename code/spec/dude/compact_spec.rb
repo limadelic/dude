@@ -20,6 +20,7 @@ describe Dude::Compact do
   let(:utf16_bytes_per_unit) { 2 }
   let(:head) { 2 }
   let(:last_index) { -1 }
+  let(:header) { described_class::HEADER }
 
   around do |example|
     saved = ENV.fetch('TZ', nil)
@@ -38,6 +39,10 @@ describe Dude::Compact do
 
   def units(text)
     text.encode('UTF-16LE').bytesize / utf16_bytes_per_unit
+  end
+
+  def units_with(*rows)
+    units([riley, header, *rows].join("\n"))
   end
 
   def filler(word, size)
@@ -138,6 +143,51 @@ describe Dude::Compact do
 
       it 'keeps the output within the cap in utf-16 units' do
         expect(units(sut.call.join("\n"))).to be <= cap
+      end
+    end
+
+    context 'when the riley line holds emoji' do
+      let(:emoji_count) { 100 }
+      let(:riley) { "riley: #{'🐳' * emoji_count}" }
+      let(:older_row) { 'Nov 18 7:33 PM older' }
+      let(:newer_prefix) { 'Nov 19 5:20 AM ' }
+      let(:newer_text) { 'x' * (cap - units_with(newer_prefix)) }
+      let(:asks) { [ask(early_time, 'older'), ask(late_time, newer_text)] }
+
+      it 'keeps the output within the cap in utf-16 units' do
+        expect(units(sut.call.join("\n"))).to be <= cap
+      end
+    end
+
+    context 'when the asks total exactly the cap' do
+      let(:fill_char) { 'x' }
+      let(:older_text) { 'x' * tenth_cap }
+      let(:older_row) { "Nov 18 7:33 PM #{older_text}" }
+      let(:newer_prefix) { 'Nov 19 5:20 AM ' }
+      let(:fit_text) { fill_char * (cap - units_with(older_row, newer_prefix)) }
+      let(:newer_text) { fit_text }
+      let(:newer_row) { "#{newer_prefix}#{newer_text}" }
+      let(:asks) { [ask(early_time, older_text), ask(late_time, newer_text)] }
+      let(:all_rows) { [riley, header, older_row, newer_row] }
+
+      it 'keeps every ask' do
+        expect(sut.call).to eq(all_rows)
+      end
+
+      context 'when the newest ask is one unit longer' do
+        let(:newer_text) { "#{fit_text}#{fill_char}" }
+
+        it 'drops the oldest ask whole' do
+          expect(sut.call).to eq([riley, header, newer_row])
+        end
+      end
+
+      context 'when the fit is made of U+FFFF' do
+        let(:fill_char) { "￿" }
+
+        it 'keeps every ask' do
+          expect(sut.call).to eq(all_rows)
+        end
       end
     end
 
