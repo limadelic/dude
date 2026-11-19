@@ -65,6 +65,14 @@ describe Dude::Compact do
       end
     end
 
+    context 'when there are no asks' do
+      let(:asks) { [] }
+
+      it 'keeps riley and header' do
+        expect(sut.call).to eq([riley, described_class::HEADER])
+      end
+    end
+
     context 'when the asks pass the cap' do
       let(:new_words) { filler('frumble ', half_cap) }
       let(:old_ask) { ask(early_time, filler('blorp ', over_cap)) }
