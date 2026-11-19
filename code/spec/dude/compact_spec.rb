@@ -15,6 +15,8 @@ describe Dude::Compact do
   let(:cap) { 10_000 }
   let(:half_cap) { cap / 2 }
   let(:over_cap) { cap * 2 }
+  let(:tenth_cap) { cap / 10 }
+  let(:utf16_bytes_per_unit) { 2 }
 
   around do |example|
     saved = ENV.fetch('TZ', nil)
@@ -32,7 +34,7 @@ describe Dude::Compact do
   end
 
   def units(text)
-    text.encode('UTF-16LE').bytesize / 2
+    text.encode('UTF-16LE').bytesize / utf16_bytes_per_unit
   end
 
   def filler(word, size)
@@ -69,6 +71,18 @@ describe Dude::Compact do
       it 'drops the oldest ask whole' do
         expect(sut.call).to eq(
           [riley, described_class::HEADER, "Nov 19 5:20 AM #{new_words}"]
+        )
+      end
+    end
+
+    context 'when the oldest ask fits alone but not with the newest' do
+      let(:old_text) { filler('blorp ', tenth_cap * 3) }
+      let(:new_text) { filler('frumble ', cap - tenth_cap) }
+      let(:asks) { [ask(early_time, old_text), ask(late_time, new_text)] }
+
+      it 'keeps only the newest ask' do
+        expect(sut.call).to eq(
+          [riley, described_class::HEADER, "Nov 19 5:20 AM #{new_text}"]
         )
       end
     end
