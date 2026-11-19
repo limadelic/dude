@@ -122,7 +122,7 @@ describe Dude::Compact do
     end
 
     context 'when the emoji is under the cap in chars but over in utf-16' do
-      let(:emoji_count) { cap * 3 / 5 }
+      let(:emoji_count) { half_cap + tenth_cap }
       let(:asks) { [ask(late_time, '🐳' * emoji_count)] }
 
       it 'keeps the output within the cap in utf-16 units' do
