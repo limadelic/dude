@@ -1,6 +1,16 @@
+class SimplePriceTable
+  def cost(model, usage)
+    1.5
+  end
+end
+
 module Examples
   module Shared
     require_relative '../../lib/dude/status_line/runner'
+
+    RSpec.shared_context 'band spec setup' do
+      let(:session_data) { {} }
+    end
 
     RSpec.shared_examples 'color threshold' do |low, mid, high|
       it 'is green at low threshold' do

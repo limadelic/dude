@@ -32,6 +32,61 @@ module Dude
       end
     end
 
+    class TranscriptCommand < Thor
+      desc "scan", "Scan transcripts and update usage cache"
+      def scan
+        run_scan_with_cleanup
+      end
+
+      private
+
+      def run_scan_with_cleanup
+        safe_perform_scan
+      ensure
+        remove_lock_file
+      end
+
+      def safe_perform_scan
+        load_transcript_dependencies
+        perform_scan
+      rescue StandardError => e
+        handle_scan_error(e)
+      end
+
+      def load_transcript_dependencies
+        require_relative '../transcript/usage_cache_store'
+        require_relative '../transcript/usage_scanner'
+        require_relative '../status_line/price_table'
+      end
+
+      def perform_scan
+        cache = load_cache
+        scan_and_save(cache)
+      end
+
+      def load_cache
+        cache_store = Dude::Transcript::UsageCacheStore.new
+        cache_store.load(Dude::StatusLine::PriceTable.new)
+      end
+
+      def scan_and_save(cache)
+        scanner = Dude::Transcript::UsageScanner.new
+        paths = Dir.glob(File.expand_path('~/.claude/**/*.jsonl'))
+        scanner.scan(cache, paths, ['5h', '7d'])
+        Dude::Transcript::UsageCacheStore.new.save(cache)
+        puts "scan complete"
+      end
+
+      def handle_scan_error(error)
+        puts "scan error: #{error.message}"
+      end
+
+      def remove_lock_file
+        lock_path = File.expand_path('~/.claude/dude/usage_cache.json.lock')
+        File.delete(lock_path) if File.exist?(lock_path)
+      end
+    end
+
     class Cli < Thor
       desc "status_line", "Render status line"
       def status_line
@@ -132,6 +187,9 @@ module Dude
 
       desc "background_tasks", "Manage background tasks"
       subcommand :background_tasks, BackgroundTasksCommand
+
+      desc "transcript", "Manage transcripts"
+      subcommand :transcript, TranscriptCommand
 
       private
 

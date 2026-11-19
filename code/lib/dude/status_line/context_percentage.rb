@@ -5,7 +5,7 @@ module Dude
     class ContextPercentage
       include Dude::StatusLine::Format
 
-      AUTOCOMPACT_WINDOW = 200_000
+      DEFAULT_WINDOW = 200_000
 
       def initialize(session)
         @session = session
@@ -22,14 +22,25 @@ module Dude
       end
 
       def percentage_from_tokens(tokens)
-        tokens * 100 / AUTOCOMPACT_WINDOW.to_f
+        threshold = autocompact_window - 33_000
+        tokens * 100 / threshold.to_f
       end
 
       private
 
+      def autocompact_window
+        env_window = ENV['CLAUDE_CODE_AUTO_COMPACT_WINDOW'].to_i
+        cw = @session['context_window'] || {}
+        session_window = cw['context_window_size'].to_i
+
+        candidates = [env_window, session_window, DEFAULT_WINDOW]
+          .select { |w| w > 0 }
+        candidates.min
+      end
+
       def total_tokens
         cw = @session['context_window'] || {}
-        cw['total_input_tokens'].to_i + cw['total_output_tokens'].to_i
+        cw['total_input_tokens'].to_i
       end
 
       def fallback_percentage
