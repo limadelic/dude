@@ -10,6 +10,7 @@ describe Dude::Compact::Agents do
   let(:command) { %w[claude agents --json] }
   let(:error) { Dude::Compact::Agents::Error }
   let(:frumble) { row('frumble', 'zorb-session', '/proj/frumble') }
+  let(:upper) { row('Frumble', 'zorb-session', '/proj/upper') }
   let(:blorp) { row('blorp', 'quux-session', '/proj/blorp') }
   let(:fork) { row('frumble ⑂ zim', 'wibble-session', '/proj/zim') }
   let(:twin) { row('frumble', 'plonk-session', '/proj/twin') }
@@ -39,25 +40,38 @@ describe Dude::Compact::Agents do
       expect(sut.find).to eq(frumble)
     end
 
-    context 'when the silo is a fork' do
-      let(:silo) { 'frumble ⑂ zim' }
+    context 'when a fork of the silo exists' do
       let(:rows) { [blorp, fork] }
 
-      it 'returns the session row named like the fork' do
-        expect(sut.find).to eq(fork)
+      context 'and the silo is the fork' do
+        let(:silo) { 'frumble ⑂ zim' }
+
+        it 'returns the session row named like the fork' do
+          expect(sut.find).to eq(fork)
+        end
+      end
+
+      context 'and the silo is only the base' do
+        it 'raises an error listing the candidate names' do
+          expect { sut.find }.to raise_error(error, /frumble ⑂ zim\z/)
+        end
       end
     end
 
-    context 'when only a fork of the silo exists' do
-      let(:rows) { [blorp, fork] }
+    context 'when a session differs from the silo only in case' do
+      let(:rows) { [blorp, upper] }
 
       it 'raises an error listing the candidate names' do
-        expect { sut.find }.to raise_error(error, /frumble ⑂ zim\z/)
+        expect { sut.find }.to raise_error(error, /blorp, Frumble\z/)
       end
     end
 
     context 'when no session has the silo name' do
       let(:silo) { 'zorb' }
+
+      before do
+        mock(Open3).capture2(*command) { run }
+      end
 
       it 'raises an error listing the candidate names' do
         expect { sut.find }.to raise_error(error, /candidates: blorp, frumble/)

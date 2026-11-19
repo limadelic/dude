@@ -1,11 +1,10 @@
 require 'json'
 require 'open3'
+require_relative 'agents/error'
 
 module Dude
   class Compact
     class Agents
-      class Error < StandardError; end
-
       COMMAND = %w[claude agents --json]
       MISSING = 'compact error: claude not found'
       FAILED = 'compact error: claude agents failed'
@@ -16,18 +15,15 @@ module Dude
       end
 
       def find
-        matches = named
-        raise Error, unknown_message if matches.empty?
+        sessions = rows
+        matches = sessions.select { |row| row['name'] == @name }
+        raise Error, unknown_message(sessions) if matches.empty?
         raise Error, ambiguous_message(matches) if matches.size > 1
 
         matches.first
       end
 
       private
-
-      def named
-        rows.select { |row| row['name'] == @name }
-      end
 
       def rows
         Array(JSON.parse(output)).grep(Hash)
@@ -44,12 +40,13 @@ module Dude
         raise Error, MISSING
       end
 
-      def unknown_message
-        "compact error: no silo named #{@name}, candidates: #{names.join(', ')}"
+      def unknown_message(sessions)
+        candidates = names(sessions).join(', ')
+        "compact error: no silo named #{@name}, candidates: #{candidates}"
       end
 
-      def names
-        rows.map { |row| row['name'] }.compact
+      def names(sessions)
+        sessions.map { |row| row['name'] }.compact
       end
 
       def ambiguous_message(matches)
