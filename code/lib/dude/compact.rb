@@ -1,5 +1,3 @@
-require_relative './compact/turn'
-
 module Dude
   class Compact
     HEADER = "The human's own words before this compaction, newest last:"
