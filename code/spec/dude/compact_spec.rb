@@ -121,6 +121,15 @@ describe Dude::Compact do
       end
     end
 
+    context 'when the emoji is under the cap in chars but over in utf-16' do
+      let(:emoji_count) { cap * 3 / 5 }
+      let(:asks) { [ask(late_time, '🐳' * emoji_count)] }
+
+      it 'keeps the output within the cap in utf-16 units' do
+        expect(units(sut.call.join("\n"))).to be <= cap
+      end
+    end
+
     context 'when an ask is at noon or midnight' do
       let(:noon_time) { Time.utc(2026, 11, 18, 6, 30) }
       let(:midnight_time) { Time.utc(2026, 11, 18, 18, 30) }
