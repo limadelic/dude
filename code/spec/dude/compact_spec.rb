@@ -16,7 +16,10 @@ describe Dude::Compact do
   let(:half_cap) { cap / 2 }
   let(:over_cap) { cap * 2 }
   let(:tenth_cap) { cap / 10 }
+  let(:three_tenths_cap) { tenth_cap * 3 }
   let(:utf16_bytes_per_unit) { 2 }
+  let(:head) { 2 }
+  let(:last_index) { -1 }
 
   around do |example|
     saved = ENV.fetch('TZ', nil)
@@ -76,7 +79,7 @@ describe Dude::Compact do
     end
 
     context 'when the oldest ask fits alone but not with the newest' do
-      let(:old_text) { filler('blorp ', tenth_cap * 3) }
+      let(:old_text) { filler('blorp ', three_tenths_cap) }
       let(:new_text) { filler('frumble ', cap - tenth_cap) }
       let(:asks) { [ask(early_time, old_text), ask(late_time, new_text)] }
 
@@ -92,7 +95,7 @@ describe Dude::Compact do
       let(:asks) { [huge] }
 
       it 'keeps riley and header first' do
-        expect(sut.call.first(2)).to eq([riley, described_class::HEADER])
+        expect(sut.call.first(head)).to eq([riley, described_class::HEADER])
       end
 
       it 'cuts the ask to fit the cap' do
@@ -117,7 +120,7 @@ describe Dude::Compact do
       end
 
       it 'cuts after a whole emoji' do
-        expect(sut.call.last[-1]).to eq('🐳')
+        expect(sut.call.last[last_index]).to eq('🐳')
       end
     end
 
